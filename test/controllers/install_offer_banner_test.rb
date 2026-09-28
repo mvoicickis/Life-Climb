@@ -84,10 +84,18 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     assert_select "[data-install-offer-tip]", count: 0
   end
 
-  test "settings always includes install offer row" do
+  test "settings includes install offer row when not installed" do
+    @user.update!(install_offer_installed_at: nil)
     get settings_path
     assert_response :success
     assert_select "#you-row-install-offer", count: 1
     assert_match(/Add to home screen/, response.body)
+  end
+
+  test "settings hides install offer row when already installed" do
+    @user.update!(install_offer_installed_at: Time.current)
+    get settings_path
+    assert_response :success
+    assert_select "#you-row-install-offer", count: 0
   end
 end

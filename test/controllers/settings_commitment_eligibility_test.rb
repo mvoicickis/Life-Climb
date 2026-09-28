@@ -12,14 +12,11 @@ class SettingsCommitmentEligibilityTest < ActionDispatch::IntegrationTest
     Today::Commitment.apply_preset!(@journey, "easy")
   end
 
-  test "settings shows ineligible Medium/Hard as disabled with gap copy" do
+  test "settings page loads without commitment UI" do
     get settings_path
     assert_response :success
-    assert_select ".lp-settings-commitment__btn.is-disabled", minimum: 2
-    assert_match(/needs 3 Today habits/i, response.body)
-    assert_match(/needs 3 planned camps/i, response.body)
-    assert_select "a[href=?]", habits_path, text: /Open Habits/i
-    assert_select "a[href=?]", life_journey_path(@journey), text: /Open Mountain/i
+    assert_select "#you-commitment", count: 0
+    assert_select ".lp-settings-commitment__btn", count: 0
   end
 
   test "direct PATCH with ineligible Medium is rejected server-side" do
