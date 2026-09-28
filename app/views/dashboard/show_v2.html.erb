@@ -25,7 +25,6 @@
   data-battle-day-push-offer-eligible-value="<%= flash[:push_offer_eligible] ? 'true' : 'false' %>"
   data-battle-day-open-count-value="<%= @battle_open_count.to_i %>"
   <% if battlefield_ui %>
-  data-today-notch-fight-toast-value="<%= t('dash.battlefield.fight_toast') %>"
   data-today-notch-share-toast-value="<%= t('dash.battlefield.share_toast') %>"
   data-today-notch-recap-text-value="<%= recap_share %>"
   <% end %>>
@@ -121,20 +120,9 @@
         undo_habit_id: toast[:undo_habit_id] || toast["undo_habit_id"] %>
 <% end %>
 
-<% if battlefield_ui %>
-  <div id="today-dash-nav">
-    <%= render "shared/lp_dash_nav_today_v2",
-          active: :today,
-          notch: {
-            open_count: @battle_open_count,
-            day_ended: @battlefield_day_ended,
-            all_clear: @battlefield_health.all_clear?,
-            recap_share_text: recap_share
-          } %>
-  </div>
-<% else %>
+<div id="today-dash-nav">
   <%= render "shared/lp_dash_nav", active: :today %>
-<% end %>
+</div>
 
 <div id="climb-reward-host">
   <%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>

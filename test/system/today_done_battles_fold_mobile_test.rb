@@ -35,11 +35,11 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
-    assert_selector ".lp-dash-nav.is-today-v2", wait: 8
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", wait: 8
     visit dashboard_path
 
     assert_today_v2_all_clear_shell!
-    assert_selector ".lp-dash-nav.is-today-v2", visible: true, wait: 5
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", visible: true, wait: 5
     assert_no_legacy_today_shell!
     assert_no_selector "#today-battlefield-rows .lp-today-v2-row"
     assert_battle_row_absent!(title: @todo.title)

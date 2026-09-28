@@ -44,9 +44,9 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     metrics = page.evaluate_script(<<~JS)
       (() => {
         const header = document.querySelector('.lp-today-v2-header');
-        const nav = document.querySelector('.lp-dash-nav.is-today-v2');
+        const nav = document.querySelector('#today-dash-nav .lp-dash-nav.is-v4');
         const tap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lp-tap')) || 44;
-        const navLink = document.querySelector('.lp-dash-nav.is-today-v2 .lp-dash-nav__link');
+        const navLink = document.querySelector('#today-dash-nav .lp-dash-nav.is-v4 .lp-dash-nav__link');
         return {
           headerH: header.getBoundingClientRect().height,
           navH: navLink?.getBoundingClientRect().height,

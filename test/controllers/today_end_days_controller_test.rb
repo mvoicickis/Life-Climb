@@ -25,11 +25,11 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-today-v2-eod-takeover.is-closed", count: 1
     assert_select ".lp-today-v2-eod-card__kicker", text: /See you tomorrow/
-    assert_select "#today-dash-nav .lp-dash-nav.is-today-v2", count: 1
+    assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
     assert_select ".lp-today-v2-eod-ack", count: 1
     assert_select ".lp-today-v2-eod-step--plan", count: 0
     assert_select "a", text: "Reopen day"
-    assert_select ".lp-today-v2-notch.is-day-closed", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", minimum: 1
   end
@@ -63,6 +63,6 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-step--win", count: 0
     assert_select ".lp-today-v2-eod-ack", count: 1
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
-    assert_select ".lp-today-v2-notch.is-end-day", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 1
   end
 end

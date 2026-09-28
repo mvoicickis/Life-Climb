@@ -1,17 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Today V2 nav notch — Fight / End day / New day + toast nudges.
+// Today end-of-day Share recap + share toast (controller on #today-dash-root).
 export default class extends Controller {
   static targets = [ "toast" ]
   static values = {
-    fightToast: String,
     shareToast: String,
     recapText: String
-  }
-
-  fight(event) {
-    event.preventDefault()
-    this.showToast(this.fightToastValue || "Tap a battle above to fight it")
   }
 
   shareRecap(event) {

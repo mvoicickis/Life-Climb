@@ -352,6 +352,21 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   display: none;
 }
 
+#today-battlefield-end-day-host {
+  margin: 0.5rem 0.75rem 0.85rem;
+}
+
+.lp-today-battlefield-end-day__form {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.lp-today-battlefield-end-day__btn {
+  margin-top: 0;
+}
+
 .lp-today-v2-won {
   border-radius: 12px;
   border: 1px solid var(--today-card-border);
@@ -613,94 +628,6 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   pointer-events: none;
 }
 
-/* Dark bottom nav + notch (Today V2) */
-.lp-dash-nav.is-today-v2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto 1fr 1fr;
-  align-items: end;
-  gap: 0.15rem;
-  padding: 0.45rem 0.6rem calc(0.45rem + env(safe-area-inset-bottom));
-  background: rgba(16, 10, 6, 0.92);
-  border-top: 0;
-  backdrop-filter: blur(26px) saturate(180%);
-  -webkit-backdrop-filter: blur(26px) saturate(180%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 -1px 0 rgba(0, 0, 0, 0.3);
-  color: rgba(247, 234, 217, 0.45);
-  z-index: 50;
-}
-
-.lp-dash-nav.is-today-v2 .lp-dash-nav__link {
-  color: rgba(247, 234, 217, 0.45);
-  font-size: 0.59rem;
-  font-weight: 600;
-  gap: 0.25rem;
-}
-
-.lp-dash-nav.is-today-v2 .lp-dash-nav__link.is-active {
-  color: var(--today-amber);
-  background: rgba(240, 169, 27, 0.13);
-  border-radius: 14px;
-}
-
-.lp-dash-nav.is-today-v2 .lp-dash-nav__icon svg {
-  width: 1.4375rem;
-  height: 1.4375rem;
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch {
-  width: 58px;
-  height: 58px;
-  margin: -26px 0 0;
-  border: 0;
-  border-radius: 999px;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-shadow:
-    0 0 0 5px rgba(16, 10, 6, 0.92),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
-  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch:active {
-  transform: scale(0.9);
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-fight {
-  background: linear-gradient(170deg, #f5b02a, #d8781a);
-  box-shadow:
-    0 0 0 5px rgba(16, 10, 6, 0.92),
-    0 6px 18px rgba(216, 120, 26, 0.55),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-end-day {
-  background: linear-gradient(170deg, #34d76b, #1fa855);
-  box-shadow:
-    0 0 0 5px rgba(16, 10, 6, 0.92),
-    0 6px 18px rgba(31, 168, 85, 0.5),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
-  animation: todayAttentionGlowGreen 1.8s ease-in-out infinite;
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-day-closed {
-  background: linear-gradient(170deg, #34d76b, #1fa855);
-  box-shadow:
-    0 0 0 5px rgba(16, 10, 6, 0.92),
-    0 6px 18px rgba(31, 168, 85, 0.5),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label.is-day-closed {
-  color: rgba(247, 234, 217, 0.6);
-}
-
 .lp-today-v2-eod-stats {
   margin: 0.5rem 0 0;
   font-size: 0.8125rem;
@@ -728,52 +655,6 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 .lp-today-v2-end-of-day.is-closed .lp-today-v2-big-ack,
 .lp-today-v2-signoff.is-closed {
   animation: todayCardIn 0.3s ease both;
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-new-day {
-  background: linear-gradient(170deg, #4a4038, #332b25);
-  box-shadow:
-    0 0 0 5px rgba(16, 10, 6, 0.92),
-    0 6px 16px rgba(0, 0, 0, 0.4),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.15);
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch__badge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  min-width: 1.125rem;
-  height: 1.125rem;
-  padding: 0 0.25rem;
-  border-radius: 99px;
-  background: var(--today-danger);
-  color: #fff;
-  font-size: 0.625rem;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label {
-  position: absolute;
-  bottom: -1.35rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.59rem;
-  font-weight: 700;
-  white-space: nowrap;
-  letter-spacing: 0.01em;
-}
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label.is-fight { color: var(--today-amber); }
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label.is-end-day { color: var(--today-safe); }
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-label.is-new-day { color: rgba(247, 234, 217, 0.6); }
-
-.lp-dash-nav.is-today-v2 .lp-today-v2-notch-form {
-  margin: 0;
-  padding: 0;
-  display: contents;
 }
 
 @keyframes todayHpPulse {
@@ -1604,7 +1485,6 @@ html.lp-app-welcome-pending .lp-legacy-host-banner {
   .lp-today-v2-eod-win__glow,
   .lp-today-v2-hp-bar.is-pulse,
   .lp-today-v2-mountain-link.is-clear,
-  .lp-dash-nav.is-today-v2 .lp-today-v2-notch.is-end-day,
   .lp-today-v2-row.is-leaving,
   .lp-today-v2-row.is-sliding,
   .lp-today-v2-row__box.is-won,
@@ -1665,7 +1545,7 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0 var(--lp-gutter) 1rem;
+  padding: 0 var(--lp-gutter) calc(5.5rem + env(safe-area-inset-bottom));
 }
 
 .lp-dash.is-today-v2.is-today-photo #today-battle-surface {

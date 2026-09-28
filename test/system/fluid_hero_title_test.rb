@@ -140,7 +140,7 @@ class FluidHeroTitleTest < ApplicationSystemTestCase
   def assert_today_v2_battlefield(width, height)
     page.driver.browser.manage.window.resize_to(width, height)
     sign_in_user!
-    assert_selector ".lp-dash-nav.is-today-v2", wait: 8
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", wait: 8
     within(".lp-dash-nav") { click_link "Today" } if page.has_css?(".lp-dash-nav__link", text: /Today/i)
     assert_today_v2_shell!
     assert_selector ".lp-today-v2-header--compact", visible: :all

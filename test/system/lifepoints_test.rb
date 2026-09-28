@@ -42,7 +42,7 @@ class LifepointsTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
 
-    assert_selector ".lp-dash-nav.is-today-v2", wait: 5
+    assert_selector "#today-dash-nav .lp-dash-nav.is-v4", wait: 5
     assert_selector ".lp-dash-nav__link", text: /Today/i
     assert_selector ".lp-dash-nav__link", text: /Mountain/i
     assert_selector ".lp-today-v2-header__name", text: /Ship LifePoints/
