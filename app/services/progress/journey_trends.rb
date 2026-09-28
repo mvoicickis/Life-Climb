@@ -86,7 +86,7 @@ module Progress
 
       quantified_ids = projects.select(&:quantified?).map(&:id)
       logs_by_goal = load_quantity_logs(quantified_ids)
-      battle_map = battle_ids_by_project(projects)
+      battle_map = Strategy::BattleIdsByProject.call(user: @user, journey: @journey, projects: projects)
       completions_by_project = load_completions_by_project(battle_map)
 
       projects.map do |project|
@@ -144,28 +144,6 @@ module Progress
         .where("logged_on <= ?", data_range_end)
         .order(:logged_on, :id)
         .group_by(&:strategy_goal_id)
-    end
-
-    def battle_ids_by_project(projects)
-      goals = @user.strategy_goals
-        .where(life_journey_id: @journey.id)
-        .select(:id, :parent_id, :horizon, :title)
-        .to_a
-      by_parent = goals.group_by(&:parent_id)
-
-      projects.each_with_object({}) do |project, memo|
-        memo[project.id] = collect_battle_ids(project.id, by_parent)
-      end
-    end
-
-    def collect_battle_ids(node_id, by_parent)
-      (by_parent[node_id] || []).flat_map do |child|
-        if child.horizon == "day"
-          Strategy::EnsureFolderQuest.checklist_host?(child) ? [] : [ child.id ]
-        else
-          collect_battle_ids(child.id, by_parent)
-        end
-      end
     end
 
     def load_completions_by_project(battle_map)
