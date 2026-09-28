@@ -127,18 +127,51 @@ module Stats
 
     test "counts_by_date uses bounded queries across many days" do
       travel_to Time.find_zone!(@zone).local(2026, 8, 15, 12, 0, 0) do
-        from = Date.new(2026, 8, 1)
-        to = Date.new(2026, 8, 30)
-        queries = 0
-        callback = lambda do |_name, _start, _finish, _id, payload|
-          queries += 1 if payload[:sql].present?
+        journey = seed_climb!(@user, today_mission: "One shot win")
+        project = @user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+        one_shot = @user.strategy_goals.find_by!(horizon: "day", title: "One shot win")
+        one_shot.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 5, 9, 0, 0))
+
+        daily = project.children.create!(
+          user: @user,
+          life_area: journey.life_area,
+          life_journey: journey,
+          horizon: "day",
+          title: "Daily win",
+          scheduled_on: Date.current,
+          position: 1,
+          repeat: "daily"
+        )
+        range_from = Date.new(2026, 8, 1)
+        range_to = range_from + 59
+        Strategy::CascadeToDaily.call(user: @user, life_area: daily.life_area, from: range_from, to: range_to)
+        daily_todo = @user.daily_todos.for_day(Date.new(2026, 8, 12)).find_by!(strategy_goal_id: daily.id)
+        daily_todo.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 12, 10, 0, 0))
+
+        stats = BattleWins.call(user: @user)
+        stats.time_zone
+
+        count_queries = lambda do |from, to|
+          queries = 0
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            next if payload[:cached]
+            next if payload[:name] == "SCHEMA" || payload[:name] == "TRANSACTION"
+
+            queries += 1 if payload[:sql].present?
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            stats.counts_by_date(from: from, to: to)
+          end
+          queries
         end
 
-        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
-          BattleWins.call(user: @user).counts_by_date(from: from, to: to)
-        end
+        single_day = Date.new(2026, 8, 15)
+        one_day_queries = count_queries.call(single_day, single_day)
+        wide_queries = count_queries.call(range_from, range_to)
 
-        assert_operator queries, :<=, 6, "expected batched queries, got #{queries}"
+        assert_equal one_day_queries, wide_queries,
+                     "expected batched queries (1-day=#{one_day_queries}, 60-day=#{wide_queries})"
       end
     end
 
