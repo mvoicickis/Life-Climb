@@ -1,0 +1,8 @@
+<%# locals: row %>
+<article class="lp-stats-more__card">
+  <div class="lp-stats-more__copy">
+    <p class="lp-stats-more__value"><%= stats_more_display_value(row) %></p>
+    <p class="lp-stats-more__label"><%= stats_more_card_label(row) %></p>
+  </div>
+  <%= stats_more_line_chart_svg(row[:points], row[:x_labels]) %>
+</article>

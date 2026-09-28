@@ -1,0 +1,28 @@
+<%# locals: period, charts %>
+<% payload = stats_more_payload(charts, period) %>
+<% cards = [payload[:battles], payload[:camps]] + payload[:habits] %>
+
+<% content_for :title, t("progress.stats.more.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<div class="lp-progress lp-stats lp-stats-more is-calm">
+  <div class="lp-stats-more__wrap">
+    <%= link_to t("progress.stats.more.back"), life_points_path, class: "lp-stats-hero__link lp-stats-more__back" %>
+    <h1 class="lp-stats-more__head"><%= t("progress.stats.more.title") %></h1>
+
+    <%= render "life_points/stats_more_picker", period: period %>
+
+    <div class="lp-stats-more__list" aria-live="polite">
+      <% cards.each do |row| %>
+        <%= render "life_points/stats_more_card", row: row %>
+      <% end %>
+    </div>
+
+    <%= render "life_points/stats_more_weekdays",
+          weekday_wins: charts[:weekday_wins],
+          days: charts[:days] %>
+  </div>
+</div>
+
+<%= render "shared/lp_dash_nav", active: :journey %>

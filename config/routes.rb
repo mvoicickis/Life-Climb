@@ -114,7 +114,9 @@ Rails.application.routes.draw do
     end
   end
   resources :finished_products, only: %i[ index show ]
-  resource :life_points, only: :show, controller: "life_points"
+  resource :life_points, only: :show, controller: "life_points" do
+    get :more
+  end
   resources :dreams, only: :update
   resources :goals, only: :create
   resource :support, only: :show, controller: "supports"

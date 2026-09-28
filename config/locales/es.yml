@@ -3,6 +3,7 @@ es:
     formats:
       chart_day: "%a"
       long: "%-d %b"
+      stats_more_axis: "%-d %b"
       renewal: "%-d de %B de %Y"
   app_name: "LifePoints"
   legacy_host_banner:
@@ -860,6 +861,23 @@ es:
       legend_one: "1 win"  # TODO: translate
       legend_two_three: "2–3"  # TODO: translate
       legend_four_plus: "4+"  # TODO: translate
+      more:
+        title: "More stats"  # TODO: translate
+        back: "‹ Stats"  # TODO: translate
+        link: "More stats"  # TODO: translate
+        picker_weekly: "Weekly"  # TODO: translate
+        picker_daily: "Daily"  # TODO: translate
+        battles_won: "Battles won"  # TODO: translate
+        camps_finished: "Camps finished"  # TODO: translate
+        weekday_section: "Wins by weekday"  # TODO: translate
+        basic_days:
+          one: "1 day"  # TODO: translate
+          other: "%{count} days"  # TODO: translate
+        basic_amount:
+          one: "1 %{unit}"  # TODO: translate
+          other: "%{count} %{unit}"  # TODO: translate
+        habit_label_days: "%{name} · days"  # TODO: translate
+        habit_label_amount: "%{name} · %{unit}"  # TODO: translate
     goal_label: "Your goal"  # TODO: translate
     hero_battle_strength: "Battle strength"  # TODO: translate
     hero_planning_power: "Planning power"  # TODO: translate
