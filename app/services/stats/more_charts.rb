@@ -3,8 +3,8 @@
 module Stats
   class MoreCharts
     WEEKS = 12
-    WEEKLY_CHART_LABEL_INDEXES = [0, 3, 7, 11].freeze
-    DAILY_CHART_LABEL_INDEXES = [0, 2, 4, 6].freeze
+    WEEKLY_CHART_LABEL_INDEXES = [ 0, 3, 7, 11 ].freeze
+    DAILY_CHART_LABEL_INDEXES = [ 0, 2, 4, 6 ].freeze
 
     def self.call(user:, journey: nil)
       new(user: user, journey: journey).call
