@@ -39,7 +39,7 @@ module Notifications
       WebPush.define_singleton_method(:payload_send, @original_payload_send)
     end
 
-    test "sends goal title and weekday body when incomplete todo exists on local day" do
+    test "sends battle body from strategy when ad-hoc todo exists on local day" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
         @user.daily_todos.delete_all
@@ -56,7 +56,7 @@ module Notifications
         assert_equal 1, @send_calls
         assert_equal "morning", @last_payload["kind"]
         assert_equal "Get my driving license", @last_payload["title"]
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal "Today: Warm up", @last_payload["body"]
         assert_equal "/dashboard", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
@@ -140,6 +140,8 @@ module Notifications
         )
 
         seed_climb!(@user, title: "Get my driving license")
+        battle = @user.strategy_goals.where(horizon: "day").order(:id).last
+        battle.update!(scheduled_on: Date.new(2026, 12, 1))
 
         result = MorningNudgeRun.call
         assert_equal 1, result.sent
