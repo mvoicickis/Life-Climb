@@ -251,6 +251,11 @@ en:
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
+      edit_basic: "Edit Basic"
+      done: "Done"
+      amount_today_unit: "%{unit} today"
+      step_add: "Add %{n}"
+      step_remove: "Remove %{n}"
     shield:
       ready_line: "Shield ready — blocks one missed window today."
       tip_title: "Your daily shield"

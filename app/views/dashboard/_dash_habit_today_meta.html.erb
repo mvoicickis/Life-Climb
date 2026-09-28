@@ -1,0 +1,26 @@
+<%# locals: habit %>
+<% ctx = habit_today_amount_context(habit) %>
+<%= tag.em(
+      id: dom_id(habit, :today_meta),
+      class: "lp-dash-tcard__meta",
+      data: { basic_row_state: habit_today_row_state(habit) }) do %>
+  <% if habit.quantity_checkin? && habit.stretch_goal? && ctx[:target].present? && ctx[:amount].to_d.positive? %>
+    <%= t("dash.anytime.amount_of_target",
+          amount: format_amount(ctx[:amount]),
+          target: format_amount(ctx[:target]),
+          unit: habit.unit) %>
+    <% if ctx[:over] %>
+      · <%= t("dash.anytime.over_by", amount: format_amount(ctx[:amount] - ctx[:target])) %>
+    <% end %>
+  <% elsif habit.quantity_checkin? && ctx[:amount].to_d.positive? %>
+    <%= format_amount(ctx[:amount]) %> <%= habit.unit %>
+    <% if habit.standard? && habit.range_summary.present? %>
+      · <%= habit.range_summary %>
+    <% end %>
+  <% elsif habit.binary_checkin? %>
+    <%= t("dash.anytime.binary_subtitle") %>
+  <% end %>
+  <% if ctx[:show_pct] %>
+    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>"><%= habit.binary_checkin? ? 100 : ctx[:progress] %>%</span>
+  <% end %>
+<% end %>

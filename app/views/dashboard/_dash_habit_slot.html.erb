@@ -1,16 +1,8 @@
 <%# locals: habit %>
-<% amount = habit.today_amount
-   target = habit.stretch_goal? ? habit.todays_goal_value : nil
-   progress = habit.goal_progress_percent
-   over = progress.is_a?(Numeric) && progress > 100
-   hit = progress.is_a?(Numeric) && progress >= 100
-   done = habit.completed_today?
-   undo = habit.quantity_checkin? ? habit_log_undo_for(habit) : nil
-   quick = habit.quantity_checkin? ? habit.quick_add_value : nil
-   show_pct = (progress.is_a?(Numeric) && habit.quantity_checkin? && habit.stretch_goal?) ||
-              (habit.binary_checkin? && done) %>
+<% ctx = habit_today_amount_context(habit)
+   quick = habit.quantity_checkin? ? habit.quick_add_value : nil %>
 <li id="<%= dom_id(habit, :today) %>"
-    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %> <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>"
+    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %> <%= habit_today_row_state(habit) %>"
     data-controller="tcard-menu"
     data-tcard-menu-portal-value="true">
   <div class="lp-dash-habit__r1">
@@ -20,32 +12,12 @@
         <p class="lp-habit-identity"><%= habit.identity_label %></p>
       <% end %>
       <b class="lp-dash-tcard__title"><%= habit.name %></b>
-      <em class="lp-dash-tcard__meta">
-        <% if habit.quantity_checkin? && habit.stretch_goal? && target.present? && amount.to_d.positive? %>
-          <%= t("dash.anytime.amount_of_target",
-                amount: format_amount(amount),
-                target: format_amount(target),
-                unit: habit.unit) %>
-          <% if over %>
-            · <%= t("dash.anytime.over_by", amount: format_amount(amount - target)) %>
-          <% end %>
-        <% elsif habit.quantity_checkin? && amount.to_d.positive? %>
-          <%= format_amount(amount) %> <%= habit.unit %>
-          <% if habit.standard? && habit.range_summary.present? %>
-            · <%= habit.range_summary %>
-          <% end %>
-        <% elsif habit.binary_checkin? %>
-          <%= t("dash.anytime.binary_subtitle") %>
-        <% end %>
-        <% if show_pct %>
-          · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && amount.to_d.zero? %>"><%= habit.binary_checkin? ? 100 : progress %>%</span>
-        <% end %>
-      </em>
+      <%= render "dashboard/dash_habit_today_meta", habit: habit %>
     </div>
 
     <div class="lp-dash-habit__act">
       <% if habit.binary_checkin? %>
-        <% if done %>
+        <% if ctx[:done] %>
           <% completion = habit.completion_for(Date.current) %>
           <%= button_to t("dash.timeline.undo"),
                 completion_path(completion),
@@ -93,21 +65,12 @@
                 aria-label="<%= t('dash.timeline.cancel') %>"></button>
         <%= render "dashboard/dash_habit_sheet",
               habit: habit,
-              amount: amount,
-              target: target,
-              progress: progress,
-              undo: undo,
+              amount: ctx[:amount],
               quick: quick,
               sheet_target: true %>
       </details>
     </div>
   </div>
 
-  <% if progress.is_a?(Numeric) && (habit.binary_checkin? || (habit.quantity_checkin? && habit.stretch_goal?)) %>
-    <div class="lp-dash-habit__segs" aria-hidden="true">
-      <% habit_progress_segments(progress, count: 16).each do |klass| %>
-        <i class="<%= klass %>"></i>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render "dashboard/dash_habit_today_segs", habit: habit %>
 </li>

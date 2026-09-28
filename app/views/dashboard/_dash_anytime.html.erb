@@ -10,7 +10,7 @@
     <div class="lp-today-group-card__head">
       <h2><%= t("dash.anytime.title") %></h2>
       <% if habits.any? %>
-        <em class="lp-dash-anytime__count"<%= " hidden" if done_n.zero? %>><%= done_n %>/<%= habits.size %></em>
+        <%= render "dashboard/dash_anytime_survived_count", habits: habits %>
       <% end %>
     </div>
 

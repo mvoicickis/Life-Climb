@@ -987,6 +987,11 @@ lv:
       amount_of_target: "%{amount} no %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "Šo pierakstu neizdevās saglabāt"
+      edit_basic: "Edit Basic"  # TODO: translate
+      done: "Done"  # TODO: translate
+      amount_today_unit: "%{unit} today"  # TODO: translate
+      step_add: "Add %{n}"  # TODO: translate
+      step_remove: "Remove %{n}"  # TODO: translate
     shield:
       ready_line: "Vairogs gatavs — šodien bloķē vienu izlaistu logu."
       tip_title: "Tavs dienas vairogs"

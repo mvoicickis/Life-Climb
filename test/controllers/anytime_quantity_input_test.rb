@@ -69,6 +69,7 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Add 10 reps"
     assert_includes response.body, "+10"
     assert_match(/lp-dash-habit__chip is-on/, response.body)
+    assert_includes response.body, "basic-sheet-log"
   end
 
   test "HTML chip PATCH still persists and redirects to Today" do

@@ -7,6 +7,8 @@ class DailyLogsController < ApplicationController
   MODES = %w[add set undo].freeze
   UNDO_SESSION_KEY = "habit_log_undo"
 
+  helper_method :mountain_return?, :today_return?
+
   def create
     mode = params[:mode].to_s
     unless MODES.include?(mode)
@@ -95,10 +97,13 @@ class DailyLogsController < ApplicationController
   end
 
   def respond_after_log!(flash_opts = {})
-    flash_opts = flash_opts.except(:notice) if mountain_return?
+    flash_opts = flash_opts.except(:notice) if mountain_return? || today_return?
     respond_to do |format|
       format.turbo_stream do
         if mountain_return?
+          render :create, status: :ok
+        elsif today_return?
+          prepare_today_stream_locals!
           render :create, status: :ok
         else
           redirect_to after_log_path, **flash_opts
@@ -115,12 +120,19 @@ class DailyLogsController < ApplicationController
         if mountain_return?
           flash.now[:alert] = alert
           render :create, status: :unprocessable_entity
+        elsif today_return?
+          head :unprocessable_entity
         else
           redirect_to after_log_path(fallback_habit: fallback_habit), alert: alert
         end
       end
       format.html { redirect_to after_log_path(fallback_habit: fallback_habit), alert: alert }
     end
+  end
+
+  def prepare_today_stream_locals!
+    @habit.reload
+    @home_habits = current_user.habits.active.on_home.ordered
   end
 
   # Optimistic +N pop may already have played client-side; failure must be unmistakable.
@@ -132,6 +144,10 @@ class DailyLogsController < ApplicationController
 
   def mountain_return?
     params[:return_to].to_s == "mountain"
+  end
+
+  def today_return?
+    params[:return_to].to_s == "today"
   end
 
   def verify_mountain_context!

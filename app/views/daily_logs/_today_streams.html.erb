@@ -1,0 +1,21 @@
+<% habit = local_assigns.fetch(:habit) { @habit }
+   home_habits = local_assigns.fetch(:home_habits) { @home_habits } %>
+<%= turbo_stream.replace dom_id(habit, :today_sheet) do %>
+  <%= render "dashboard/dash_habit_sheet", habit: habit, sheet_target: true %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(habit, :today_quick) do %>
+  <%= render "dashboard/dash_habit_quick", habit: habit %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(habit, :today_meta) do %>
+  <%= render "dashboard/dash_habit_today_meta", habit: habit %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(habit, :today_segs) do %>
+  <%= render "dashboard/dash_habit_today_segs", habit: habit %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(:basics, :survived_count) do %>
+  <%= render "dashboard/dash_anytime_survived_count", habits: home_habits %>
+<% end %>

@@ -1,0 +1,62 @@
+<%# locals: habit, amount, quick %>
+<% amount = local_assigns.fetch(:amount) { habit.today_amount }
+   quick = local_assigns.fetch(:quick) { habit.quick_add_value }
+   amount_num = amount.to_d
+   zero = amount_num.zero? %>
+<div class="lp-basic-sheet__inner"
+     data-controller="basic-sheet-log"
+     data-basic-sheet-log-amount-value="<%= format_amount(amount) %>"
+     data-basic-sheet-log-quick-value="<%= quick %>"
+     data-basic-sheet-log-set-url-value="<%= daily_logs_path(habit_id: habit.id) %>"
+     data-basic-sheet-log-habit-id-value="<%= habit.id %>"
+     data-basic-sheet-log-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
+     data-basic-sheet-log-today-id-value="<%= dom_id(habit, :today) %>"
+     data-basic-sheet-log-meta-id-value="<%= dom_id(habit, :today_meta) %>">
+  <div class="lp-basic-sheet__grab" aria-hidden="true"></div>
+  <h2 class="lp-basic-sheet__title"><%= habit.name %></h2>
+  <p class="lp-basic-sheet__total<%= ' is-zero' if zero %>" data-basic-sheet-log-target="totalLine">
+    <span data-basic-sheet-log-target="totalCount"><%= format_amount(amount) %></span>
+    <span class="lp-basic-sheet__unit" data-basic-sheet-log-target="totalUnit"<%= " hidden" if zero %>>
+      <%= t("dash.anytime.amount_today_unit", unit: habit.unit) %>
+    </span>
+  </p>
+  <div class="lp-basic-sheet__stepper">
+    <button type="button"
+            class="lp-basic-sheet__pill"
+            data-basic-sheet-log-target="minusBtn"
+            data-action="click->basic-sheet-log#stepMinus"
+            aria-label="<%= t('dash.anytime.step_remove', n: quick) %>">−</button>
+    <div class="lp-basic-sheet__num-wrap">
+      <button type="button"
+              class="lp-basic-sheet__num-btn"
+              data-basic-sheet-log-target="numDisplay"
+              data-action="click->basic-sheet-log#openExact"> <%= format_amount(amount) %></button>
+      <input type="number"
+             class="lp-basic-sheet__num-input"
+             data-basic-sheet-log-target="numInput"
+             min="0"
+             step="<%= habit.decimal_quantity_unit? ? '0.01' : '1' %>"
+             inputmode="<%= habit.quantity_inputmode %>"
+             hidden
+             aria-label="<%= t('dash.anytime.set_total') %>"
+             data-action="keydown->basic-sheet-log#openExactKeydown blur->basic-sheet-log#commitExactOnBlur">
+    </div>
+    <button type="button"
+            class="lp-basic-sheet__pill"
+            data-basic-sheet-log-target="plusBtn"
+            data-action="click->basic-sheet-log#stepPlus"
+            aria-label="<%= t('dash.anytime.step_add', n: quick) %>">+<%= number_with_delimiter(quick) %></button>
+  </div>
+  <button type="button"
+          class="lp-basic-sheet__save-notice"
+          data-basic-sheet-log-target="saveNotice"
+          data-action="click->basic-sheet-log#retrySave"
+          hidden> <%= t("dash.battlefield.win_not_saved") %></button>
+  <button type="button"
+          class="lp-basic-sheet__done"
+          data-action="click->basic-sheet-log#done"> <%= t("dash.anytime.done") %></button>
+  <%= link_to edit_habit_path(habit), class: "lp-basic-sheet__edit-row" do %>
+    <span><%= t("dash.anytime.edit_basic") %></span>
+    <span aria-hidden="true">›</span>
+  <% end %>
+</div>

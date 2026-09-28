@@ -209,6 +209,41 @@ module ApplicationHelper
   end
 
   # Server-side undo snapshot after additive habit log (not client-forgeable).
+  def habit_today_amount_context(habit)
+    amount = habit.today_amount
+    target = habit.stretch_goal? ? habit.todays_goal_value : nil
+    progress = habit.goal_progress_percent
+    over = progress.is_a?(Numeric) && progress > 100
+    hit = progress.is_a?(Numeric) && progress >= 100
+    done = habit.completed_today?
+    show_pct = (progress.is_a?(Numeric) && habit.quantity_checkin? && habit.stretch_goal?) ||
+               (habit.binary_checkin? && done)
+    {
+      amount: amount,
+      target: target,
+      progress: progress,
+      over: over,
+      hit: hit,
+      done: done,
+      show_pct: show_pct
+    }
+  end
+
+  def habit_today_row_state(habit)
+    ctx = habit_today_amount_context(habit)
+    tokens = []
+    tokens << "is-done" if ctx[:done] || habit.met_habit_goal?
+    tokens << "is-over" if ctx[:over]
+    tokens << "is-hit" if ctx[:hit] && !ctx[:over]
+    tokens.compact.join(" ")
+  end
+
+  def basics_survived_count(habits)
+    list = Array(habits)
+    done_n = list.count { |habit| habit.survived_today? }
+    { done_n: done_n, total: list.size }
+  end
+
   def habit_log_undo_for(habit)
     bag = session[DailyLogsController::UNDO_SESSION_KEY]
     return nil unless bag.is_a?(Hash)
