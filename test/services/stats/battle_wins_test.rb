@@ -132,21 +132,21 @@ module Stats
         one_shot = @user.strategy_goals.find_by!(horizon: "day", title: "One shot win")
         one_shot.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 5, 9, 0, 0))
 
+        range_from = Date.new(2026, 8, 1)
+        range_to = range_from + 59
         daily = project.children.create!(
           user: @user,
           life_area: journey.life_area,
           life_journey: journey,
           horizon: "day",
           title: "Daily win",
-          scheduled_on: Date.current,
+          scheduled_on: range_from,
           position: 1,
           repeat: "daily"
         )
-        range_from = Date.new(2026, 8, 1)
-        range_to = range_from + 59
         Strategy::CascadeToDaily.call(user: @user, life_area: daily.life_area, from: range_from, to: range_to)
-        daily_todo = @user.daily_todos.for_day(Date.new(2026, 8, 12)).find_by!(strategy_goal_id: daily.id)
-        daily_todo.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 12, 10, 0, 0))
+        daily_todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: daily.id)
+        daily_todo.update!(completed_at: Time.find_zone!(@zone).local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0))
 
         stats = BattleWins.call(user: @user)
         stats.time_zone
