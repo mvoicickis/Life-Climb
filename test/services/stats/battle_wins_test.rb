@@ -78,29 +78,34 @@ module Stats
     end
 
     test "best_weekday returns weekday name when last 28 days has enough wins" do
-      travel_to Time.find_zone!(@zone).local(2026, 8, 28, 12, 0, 0) do
+      travel_to Time.find_zone!(@zone).local(2026, 8, 31, 12, 0, 0) do
         seed_climb!(@user, today_mission: "Win one")
         journey = @user.primary_focused_journey
         area = journey.life_area
         project = @user.strategy_goals.find_by!(horizon: "project", title: "Auth")
-        battle = project.children.find_by!(horizon: "day", title: "Win one")
-        battle.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 3, 9, 0, 0))
+        monday = Date.new(2026, 8, 10)
 
-        [ 10, 17, 24, 31 ].each_with_index do |day, i|
-          extra = project.children.create!(
-            user: @user,
-            life_area: area,
-            life_journey: journey,
-            horizon: "day",
-            title: "Extra #{i}",
-            scheduled_on: Date.new(2026, 8, day),
-            position: i + 1
-          )
-          extra.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, day, 9, 0, 0))
+        5.times do |i|
+          title = i.zero? ? "Win one" : "Extra #{i}"
+          battle =
+            if i.zero?
+              project.children.find_by!(horizon: "day", title: title)
+            else
+              project.children.create!(
+                user: @user,
+                life_area: area,
+                life_journey: journey,
+                horizon: "day",
+                title: title,
+                scheduled_on: monday,
+                position: i
+              )
+            end
+          battle.update!(completed_at: Time.find_zone!(@zone).local(monday.year, monday.month, monday.day, 9 + i, 0, 0))
         end
 
         stats = BattleWins.call(user: @user, journey: journey)
-        assert_operator stats.counts_by_date(from: Date.new(2026, 8, 1), to: Date.new(2026, 8, 31)).values.sum, :>=, 5
+        assert_operator stats.counts_by_date(from: monday, to: Date.new(2026, 8, 31)).values.sum, :>=, 5
         assert_equal "Monday", stats.best_weekday
       end
     end
