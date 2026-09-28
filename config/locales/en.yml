@@ -3,6 +3,7 @@ en:
     formats:
       chart_day: "%a"
       long: "%b %-d"
+      stats_more_axis: "%b %-d"
       renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "Life Climb"
@@ -435,6 +436,23 @@ en:
       legend_one: "1 win"
       legend_two_three: "2–3"
       legend_four_plus: "4+"
+      more:
+        title: "More stats"
+        back: "‹ Stats"
+        link: "More stats"
+        picker_weekly: "Weekly"
+        picker_daily: "Daily"
+        battles_won: "Battles won"
+        camps_finished: "Camps finished"
+        weekday_section: "Wins by weekday"
+        basic_days:
+          one: "1 day"
+          other: "%{count} days"
+        basic_amount:
+          one: "1 %{unit}"
+          other: "%{count} %{unit}"
+        habit_label_days: "%{name} · days"
+        habit_label_amount: "%{name} · %{unit}"
     goal_label: "Your goal"
     hero_battle_strength: "Battle strength"
     hero_planning_power: "Planning power"

@@ -1,0 +1,20 @@
+<%# locals: weekday_wins, days %>
+<% counts = weekday_wins[:counts] %>
+<% heights = stats_more_weekday_bar_heights(counts, weekday_wins[:max]) %>
+<section class="lp-stats-block lp-stats-more__weekdays" aria-labelledby="stats-more-weekdays-heading">
+  <h2 class="lp-stats-block__title" id="stats-more-weekdays-heading"><%= t("progress.stats.more.weekday_section") %></h2>
+  <div class="lp-stats-more-week-bars" aria-hidden="true">
+    <% days.each_with_index do |day, index| %>
+      <div class="lp-stats-more-week-bars__col">
+        <% if counts[index].to_i.positive? %>
+          <span class="lp-stats-more-week-bars__count"><%= counts[index] %></span>
+        <% else %>
+          <span class="lp-stats-more-week-bars__count is-empty" aria-hidden="true"></span>
+        <% end %>
+        <div class="lp-stats-more-week-bars__bar <%= counts[index].to_i.positive? ? "is-filled" : "is-empty" %>"
+             style="<%= counts[index].to_i.positive? ? "height: #{heights[index]}%;" : "" %>"></div>
+        <span class="lp-stats-more-week-bars__label"><%= l(day, format: :chart_day) %></span>
+      </div>
+    <% end %>
+  </div>
+</section>

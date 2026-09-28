@@ -1,0 +1,11 @@
+<%# locals: period %>
+<nav class="lp-stats-more__picker" aria-label="<%= t("progress.stats.more.title") %>">
+  <%= link_to t("progress.stats.more.picker_weekly"),
+        more_life_points_path(period: "weekly"),
+        class: class_names("lp-stats-more__picker-btn", "is-active" => period == "weekly"),
+        aria: { current: period == "weekly" ? "page" : nil } %>
+  <%= link_to t("progress.stats.more.picker_daily"),
+        more_life_points_path(period: "daily"),
+        class: class_names("lp-stats-more__picker-btn", "is-active" => period == "daily"),
+        aria: { current: period == "daily" ? "page" : nil } %>
+</nav>

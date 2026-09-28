@@ -9,7 +9,23 @@ class LifePointsController < ApplicationController
     end
   end
 
+  def more
+    unless current_user.planning_v2?
+      redirect_to life_points_path
+      return
+    end
+
+    @journey = current_user.primary_focused_journey
+    @period = stats_more_period_param
+    @charts = Stats::MoreCharts.call(user: current_user, journey: @journey)
+    render "life_points/more"
+  end
+
   private
+
+  def stats_more_period_param
+    params[:period].to_s == "daily" ? "daily" : "weekly"
+  end
 
   def show_journey
     if turbo_frame_request? && request.headers["Turbo-Frame"] == "stats_calendar"

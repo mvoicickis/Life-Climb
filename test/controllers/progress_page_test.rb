@@ -47,7 +47,8 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_no_match(/\bLP\b/, response.body)
     assert_no_match(/What changed/i, response.body)
     assert_no_match(/See weekly activity/i, response.body)
-    assert_no_match(/More stats/i, response.body)
+
+    assert_select "a.lp-stats-more-link[href=?]", more_life_points_path
 
     assert_select ".lp-dash-nav__link.is-active", text: /Stats/i
   end
