@@ -203,6 +203,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
+    assert_equal "fox", user.reload.character
     assert_select ".lp-you__avatar-initial", text: "A"
   end
 
