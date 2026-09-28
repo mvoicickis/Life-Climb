@@ -4,7 +4,10 @@ require "test_helper"
 
 module Stats
   class MoreChartsTest < ActiveSupport::TestCase
+    include ClimbTestHelper
+
     setup do
+      enable_habits!
       @user = users(:one)
       @user.daily_todos.delete_all
       @zone = "Europe/Berlin"
@@ -56,7 +59,6 @@ module Stats
       travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
         journey = @user.primary_focused_journey || seed_climb!(@user, today_mission: "Basics")
         journey = @user.reload.primary_focused_journey
-        area = journey.life_area
         today = Date.new(2026, 8, 10)
 
         yes_habit = @user.habits.create!(
@@ -65,7 +67,6 @@ module Stats
           points: 5,
           frequency: "daily",
           life_journey_id: journey.id,
-          area_id: area.id,
           quantity_checkin: false
         )
         qty_habit = @user.habits.create!(
@@ -74,7 +75,6 @@ module Stats
           points: 5,
           frequency: "daily",
           life_journey_id: journey.id,
-          area_id: area.id,
           quantity_checkin: true
         )
         yes_habit.completions.create!(user: @user, completed_on: today)
@@ -99,8 +99,7 @@ module Stats
           unit: "times",
           points: 5,
           frequency: "daily",
-          life_journey_id: journey.id,
-          area_id: journey.life_area_id
+          life_journey_id: journey.id
         )
 
         queries = 0
