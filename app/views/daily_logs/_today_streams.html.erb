@@ -16,6 +16,6 @@
   <%= render "dashboard/dash_habit_today_segs", habit: habit %>
 <% end %>
 
-<%= turbo_stream.replace dom_id(:basics, :survived_count) do %>
+<%= turbo_stream.replace "basics_survived_count" do %>
   <%= render "dashboard/dash_anytime_survived_count", habits: home_habits %>
 <% end %>
