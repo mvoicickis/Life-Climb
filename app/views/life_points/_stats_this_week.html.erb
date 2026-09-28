@@ -1,0 +1,19 @@
+<%# locals: week, best_weekday %>
+<% if week[:total].to_i.positive? %>
+<section class="lp-stats-block" aria-labelledby="stats-week-heading">
+  <h2 class="lp-stats-block__title" id="stats-week-heading"><%= t("progress.stats.this_week") %></h2>
+  <p class="lp-stats-block__headline"><%= t("progress.stats.week_battles", count: week[:total]) %></p>
+  <% heights = stats_week_bar_heights(week[:counts]) %>
+  <div class="lp-stats-week-bars" aria-hidden="true">
+    <% week[:days].each_with_index do |day, index| %>
+      <div class="lp-stats-week-bars__col">
+        <div class="lp-stats-week-bars__bar" style="height: <%= heights[index] %>%;"></div>
+        <span class="lp-stats-week-bars__label"><%= l(day, format: "%a") %></span>
+      </div>
+    <% end %>
+  </div>
+  <% if best_weekday.present? %>
+    <p class="lp-stats-block__note"><%= t("progress.stats.best_day", weekday: best_weekday) %></p>
+  <% end %>
+</section>
+<% end %>

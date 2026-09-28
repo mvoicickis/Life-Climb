@@ -2,51 +2,28 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<%= tag.div class: "lp-progress is-calm",
-      data: {
-        controller: "progress-achievements"
-      } do %>
-
-  <header class="lp-progress__top">
-    <div>
-      <p class="lp-brand-kicker">
-        <%= render "shared/lp_brand_mark", size: 22, class_name: "lp-brand-kicker__mark" %>
-        <span><%= t("app_name") %></span>
-      </p>
-      <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
-      <h1 class="lp-progress__title" title="<%= goal_title %>"><%= goal_title %></h1>
-      <p class="lp-progress__subtitle"><%= t("progress.subtitle") %></p>
-    </div>
-  </header>
-
-  <%= render "life_points/stats_hero",
+<div class="lp-progress lp-stats is-calm">
+  <%= render "life_points/stats_simple_hero",
         journey: @journey,
         strategy_goal: @strategy_goal,
         closer: @closer,
-        action_points: @action_points,
-        strategy_points: @strategy_points,
-        summary: @mountain_summary %>
+        battle_wins: @battle_wins,
+        summary: @mountain_summary,
+        mountain_progress: @mountain_progress %>
 
-  <%= render "life_points/journey_trends", trends: @journey_trends %>
+  <%= render "life_points/stats_this_week",
+        week: @stats_week,
+        best_weekday: @stats_best_weekday %>
 
-  <%= render "life_points/progress_what_changed", insights: @what_changed %>
+  <%= render "life_points/stats_camps", camps: @stats_camps, journey: @journey %>
 
-  <div class="lp-progress__grid lp-progress__grid--single">
-    <%= render "life_points/progress_achievements", achievements: @progress[:achievements] %>
-  </div>
+  <%= render "life_points/stats_milestones", milestones: @stats_milestones %>
 
-  <%= render "life_points/patterns", findings: @pattern_findings, user: current_user %>
-
-  <%= render "life_points/progress_activity", progress: @progress %>
-
-  <details class="lp-journey-details">
-    <summary class="lp-journey-details__summary">
-      <span class="lp-journey-details__title"><%= t("progress.details_summary") %></span>
-      <span class="lp-journey-details__hint"><%= t("progress.details_hint") %></span>
-    </summary>
-
-    <%= render "life_points/progress_heatmap", heatmap: @progress[:heatmap] %>
-  </details>
-<% end %>
+  <%= render "life_points/stats_calendar",
+        battle_wins: @battle_wins,
+        calendar: @stats_calendar,
+        calendar_month: @stats_calendar_month,
+        journey: @journey %>
+</div>
 
 <%= render "shared/lp_dash_nav", active: :journey %>

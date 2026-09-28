@@ -28,18 +28,18 @@
             <div class="lp-areas__card-tools">
               <% if areas.size > 1 %>
                 <div class="lp-areas__reorder">
-                  <%= button_to t("progress.stats.move_up"),
+                  <%= button_to t("progress.trackers.move_up"),
                         move_area_path(area, direction: "up"),
                         method: :patch,
                         class: "lp-areas__move",
                         disabled: index.zero?,
-                        aria: { label: t("progress.stats.move_up") } %>
-                  <%= button_to t("progress.stats.move_down"),
+                        aria: { label: t("progress.trackers.move_up") } %>
+                  <%= button_to t("progress.trackers.move_down"),
                         move_area_path(area, direction: "down"),
                         method: :patch,
                         class: "lp-areas__move",
                         disabled: index >= areas.size - 1,
-                        aria: { label: t("progress.stats.move_down") } %>
+                        aria: { label: t("progress.trackers.move_down") } %>
                 </div>
               <% end %>
               <%= button_to t("areas.remove"), area_path(area), method: :delete,

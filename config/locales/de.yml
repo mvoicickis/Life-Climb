@@ -828,6 +828,38 @@ de:
   progress:
     title: "Statistik"
     subtitle: "How far you've come — and what's moving."  # TODO: translate
+    stats:
+      hero_aria: "Your battle wins"  # TODO: translate
+      battles_won_label: "Battles won"  # TODO: translate
+      battles_won:
+        one: "1 battle won"  # TODO: translate
+        other: "%{count} battles won"  # TODO: translate
+      camps_finished:
+        one: "1 camp finished"  # TODO: translate
+        other: "%{count} camps finished"  # TODO: translate
+      open_mountain: "Open Mountain ›"  # TODO: translate
+      this_week: "This week"  # TODO: translate
+      week_battles:
+        one: "1 battle won"  # TODO: translate
+        other: "%{count} battles won"  # TODO: translate
+      best_day: "Your best day: %{weekday}"  # TODO: translate
+      camps_title: "Camps"  # TODO: translate
+      camp_wins:
+        one: "1 won"  # TODO: translate
+        other: "%{count} won"  # TODO: translate
+      milestones_title: "Milestones"  # TODO: translate
+      days_won_title: "Days you won"  # TODO: translate
+      calendar_prev: "Previous month"  # TODO: translate
+      calendar_next: "Next month"  # TODO: translate
+      calendar_summary:
+        one: "You won on 1 day in %{month}"  # TODO: translate
+        other: "You won on %{count} days in %{month}"  # TODO: translate
+      calendar_day_wins:
+        one: "1 battle on %{date}"  # TODO: translate
+        other: "%{count} battles on %{date}"  # TODO: translate
+      legend_one: "1 win"  # TODO: translate
+      legend_two_three: "2–3"  # TODO: translate
+      legend_four_plus: "4+"  # TODO: translate
     goal_label: "Your goal"  # TODO: translate
     hero_battle_strength: "Battle strength"  # TODO: translate
     hero_planning_power: "Planning power"  # TODO: translate
@@ -866,6 +898,12 @@ de:
       adventure_guide_hint: "Du hast gelernt, wie Ziele, Pläne, Projekte und Kämpfe zusammenpassen."
       first_battle: "Erster Kampf"
       first_battle_hint: "Du hast deinen ersten Tageskampf abgeschlossen."
+      battles_10: "10 battles won"  # TODO: translate
+      battles_10_hint: "You won ten battles."  # TODO: translate
+      battles_10_locked_hint: "Win 10 battles."  # TODO: translate
+      first_camp: "First camp finished"  # TODO: translate
+      first_camp_hint: "You finished your first camp."  # TODO: translate
+      first_camp_locked_hint: "Finish your first camp."  # TODO: translate
       lp_100: "First 100 Battle strength"  # TODO: translate
       lp_100_hint: "You crossed 100 Battle strength."  # TODO: translate
       closer_25: "Ein Viertel des Berges"
@@ -914,7 +952,7 @@ de:
         open_mountain: "Open Mountain"
         open_today: "Open Today"
         plan_day: "Plan %{day}"
-    stats:
+    trackers:
       title: "Deine Stats"
       hint: "Tracker nach Bereich — letzte 14 Tage auf der Reise."
       chart_label: "%{name} — letzte 14 Tage"

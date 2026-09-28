@@ -54,8 +54,8 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     assert_selector ".lp-progress", wait: 5
     assert_no_selector ".lp-dash-hero__hint--secondary"
     assert_operator page.all(".lp-dash-hero__hint").size, :<=, 1
-    progress_title = computed(".lp-progress__title", "font-size")
-    assert progress_title <= 20.0, "Journey title should use display-sm, got #{progress_title}px"
+    progress_value = computed(".lp-stats-hero__value", "font-size")
+    assert progress_value >= 30.0, "Stats hero value should stay prominent, got #{progress_value}px"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-journey-mobile.png")
 
     visit settings_path

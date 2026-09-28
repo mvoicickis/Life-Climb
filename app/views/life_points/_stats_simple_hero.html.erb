@@ -1,0 +1,31 @@
+<%# locals: journey, strategy_goal, closer, battle_wins, summary, mountain_progress %>
+<% strategy_href = journey || current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first %>
+<% camps_done = summary&.dig(:projects_done).to_i %>
+<section class="lp-stats-hero" aria-label="<%= t('progress.stats.hero_aria') %>">
+  <p class="lp-stats-hero__label"><%= t("progress.stats.battles_won_label") %></p>
+  <p class="lp-stats-hero__value"><%= number_with_delimiter(battle_wins.all_time_total) %></p>
+  <% if camps_done.positive? %>
+    <p class="lp-stats-hero__subline"><%= t("progress.stats.camps_finished", count: camps_done) %></p>
+  <% end %>
+  <div class="lp-dash-bar lp-stats-hero__bar"
+       role="progressbar"
+       aria-valuemin="0"
+       aria-valuemax="100"
+       aria-valuenow="<%= closer %>"
+       aria-label="<%= t('progress.goal_label') %>">
+    <div class="lp-dash-bar__fill" style="width: <%= closer %>%"></div>
+  </div>
+  <div class="lp-stats-hero__foot">
+    <% camp_line = end_of_day_recap_camp_line(mountain_progress) %>
+    <% if camp_line.present? %>
+      <p class="lp-stats-hero__camp"><%= camp_line %></p>
+    <% else %>
+      <span class="lp-stats-hero__camp" aria-hidden="true"></span>
+    <% end %>
+    <% if strategy_href %>
+      <%= link_to t("progress.stats.open_mountain"), life_journey_path(strategy_href), class: "lp-stats-hero__link" %>
+    <% else %>
+      <%= link_to t("progress.stats.open_mountain"), new_life_journey_path, class: "lp-stats-hero__link" %>
+    <% end %>
+  </div>
+</section>

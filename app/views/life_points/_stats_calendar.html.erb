@@ -1,0 +1,67 @@
+<%# locals: battle_wins, calendar, calendar_month, journey %>
+<% today = battle_wins.local_today %>
+<% current_month = today.beginning_of_month %>
+<% prev_month = calendar_month.prev_month %>
+<% next_month = calendar_month.next_month %>
+<% can_go_prev = calendar_month > Date.new(2020, 1, 1) %>
+<% can_go_next = next_month <= current_month %>
+<% weeks = stats_calendar_weeks(calendar: calendar, today: today, battle_wins: battle_wins) %>
+<%= turbo_frame_tag "stats_calendar" do %>
+  <section class="lp-stats-block" aria-labelledby="stats-cal-title">
+    <div class="lp-stats-cal">
+      <div class="lp-stats-cal__head">
+        <% if can_go_prev %>
+          <%= link_to "‹",
+                stats_calendar_nav_url(prev_month),
+                class: "lp-stats-cal__nav",
+                data: { turbo_frame: "stats_calendar", turbo_action: "advance" },
+                aria: { label: t("progress.stats.calendar_prev") } %>
+        <% else %>
+          <span class="lp-stats-cal__nav is-disabled" aria-hidden="true">‹</span>
+        <% end %>
+        <h2 class="lp-stats-cal__month" id="stats-cal-title"><%= l(calendar_month, format: "%B") %></h2>
+        <% if can_go_next %>
+          <%= link_to "›",
+                stats_calendar_nav_url(next_month),
+                class: "lp-stats-cal__nav",
+                data: { turbo_frame: "stats_calendar", turbo_action: "advance" },
+                aria: { label: t("progress.stats.calendar_next") } %>
+        <% else %>
+          <span class="lp-stats-cal__nav is-disabled" aria-hidden="true">›</span>
+        <% end %>
+      </div>
+      <div class="lp-stats-cal__weekdays" aria-hidden="true">
+        <% 7.times do |i| %>
+          <span><%= l(Date.new(2024, 1, 1) + i, format: "%a").first(1) %></span>
+        <% end %>
+      </div>
+      <div class="lp-stats-cal__grid" role="grid" aria-labelledby="stats-cal-title">
+        <% weeks.each do |week| %>
+          <% week.each do |cell| %>
+            <% if cell.nil? %>
+              <span class="lp-stats-cal__cell is-empty" role="gridcell" aria-hidden="true"></span>
+            <% else %>
+              <%= tag.span class: [
+                    "lp-stats-cal__cell",
+                    ("is-tier-#{cell[:tier]}" if cell[:tier].to_i.positive?),
+                    ("is-today" if cell[:today])
+                  ].compact.join(" "),
+                  role: "gridcell",
+                  aria: { label: t("progress.stats.calendar_day_wins", count: cell[:wins], date: l(cell[:date], format: :long)) } do %>
+                <%= cell[:date].day %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="lp-stats-cal__legend" aria-hidden="true">
+        <span class="lp-stats-cal__legend-item"><span class="lp-stats-cal__swatch is-tier-1"></span><%= t("progress.stats.legend_one") %></span>
+        <span class="lp-stats-cal__legend-item"><span class="lp-stats-cal__swatch is-tier-2"></span><%= t("progress.stats.legend_two_three") %></span>
+        <span class="lp-stats-cal__legend-item"><span class="lp-stats-cal__swatch is-tier-3"></span><%= t("progress.stats.legend_four_plus") %></span>
+      </div>
+      <% if calendar[:days_with_wins].to_i.positive? %>
+        <p class="lp-stats-cal__summary"><%= t("progress.stats.calendar_summary", count: calendar[:days_with_wins], month: l(calendar_month, format: "%B")) %></p>
+      <% end %>
+    </div>
+  </section>
+<% end %>

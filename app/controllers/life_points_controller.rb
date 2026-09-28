@@ -12,16 +12,17 @@ class LifePointsController < ApplicationController
   private
 
   def show_journey
-    period = params[:period].presence || "7d"
-    @progress = Progress::Dashboard.call(user: current_user, period: period)
-
-    if turbo_frame_request?
-      render partial: "life_points/progress_activity", locals: { progress: @progress }
+    if turbo_frame_request? && request.headers["Turbo-Frame"] == "stats_calendar"
+      load_stats_page_data!
+      render partial: "life_points/stats_calendar", locals: stats_calendar_locals
       return
     end
 
-    @what_changed = Progress::Dashboard.call(user: current_user, period: "7d")[:insights]
+    load_stats_page_data!
+    render "life_points/progress"
+  end
 
+  def load_stats_page_data!
     @journey = current_user.primary_focused_journey
     @strategy_goal =
       if @journey
@@ -34,15 +35,45 @@ class LifePointsController < ApplicationController
         @journey&.closer_percent&.round || 0
       end
     @mountain = Strategy::Mountain.for(goal: @strategy_goal)
-    @action_points = current_user.action_points
-    @strategy_points = current_user.strategy_points
-    @mountain_summary = @progress[:mountain_summary]
-    @journey_trends =
-      if @journey
-        Progress::JourneyTrends.call(user: current_user, journey: @journey)
-      end
-    @pattern_findings = Patterns::Detector.call(user: current_user)
-    render "life_points/progress"
+    @mountain_summary = Progress::Dashboard.call(user: current_user, period: "7d")[:mountain_summary]
+    @mountain_progress = helpers.end_of_day_mountain_progress(@strategy_goal, @mountain)
+    @battle_wins = Stats::BattleWins.call(user: current_user, journey: @journey)
+    @stats_week = @battle_wins.this_week
+    @stats_best_weekday = @battle_wins.best_weekday
+    @stats_camps = @battle_wins.by_camp
+    @stats_milestones = Stats::Milestones.call(
+      user: current_user,
+      battle_wins: @battle_wins,
+      mountain_summary: @mountain_summary,
+      strategy_goal: @strategy_goal
+    )
+    @stats_calendar_month = stats_calendar_month_start
+    @stats_calendar = @battle_wins.calendar_month(
+      @stats_calendar_month.year,
+      @stats_calendar_month.month
+    )
+  end
+
+  def stats_calendar_locals
+    {
+      battle_wins: @battle_wins,
+      calendar: @stats_calendar,
+      calendar_month: @stats_calendar_month,
+      journey: @journey
+    }
+  end
+
+  def stats_calendar_month_start
+    today = Stats::BattleWins.call(user: current_user).local_today
+    cap = today.beginning_of_month
+    raw = params[:stats_month].presence
+    return cap if raw.blank?
+
+    year, month = raw.split("-", 2).map(&:to_i)
+    date = Date.new(year, month, 1)
+    date > cap ? cap : date
+  rescue ArgumentError, Date::Error
+    cap
   end
 
   def show_legacy

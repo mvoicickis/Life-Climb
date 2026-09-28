@@ -108,7 +108,7 @@ class LandingI18nTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__link", text: /Gewohnheiten/i, count: 0
     assert_select ".lp-dash-nav__link", text: /Statistik/i
     assert_match(/Statistik/, response.body)
-    assert_select ".stats-hero"
-    assert_match(/Aktionspunkte/, response.body)
+    assert_select ".lp-stats-hero"
+    assert_match(/Battles won/i, response.body)
   end
 end
