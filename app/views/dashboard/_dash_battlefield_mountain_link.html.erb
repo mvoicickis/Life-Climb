@@ -5,9 +5,9 @@
 
 <div id="today-battlefield-mountain-link">
   <% if !health.all_clear? %>
-    <%= link_to t("dash.battlefield.mountain_need"),
+    <%= link_to "#{t('dash.battlefield.add_on_mountain')} ›",
           mountain_href,
-          class: "lp-today-v2-mountain-link is-open",
+          class: "lp-today-v2-mountain-link is-add-on-mountain",
           data: { today_v2_target: "mountainLink" } %>
   <% end %>
 </div>

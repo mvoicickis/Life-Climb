@@ -10,7 +10,7 @@
    show_pct = (progress.is_a?(Numeric) && habit.quantity_checkin? && habit.stretch_goal?) ||
               (habit.binary_checkin? && done) %>
 <li id="<%= dom_id(habit, :today) %>"
-    class="lp-dash-tcard is-habit is-compact is-slot <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>"
+    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %> <%= 'is-done' if done || habit.met_habit_goal? %> <%= 'is-over' if over %> <%= 'is-hit' if hit && !over %>"
     data-controller="tcard-menu"
     data-tcard-menu-portal-value="true">
   <div class="lp-dash-habit__r1">
@@ -21,7 +21,7 @@
       <% end %>
       <b class="lp-dash-tcard__title"><%= habit.name %></b>
       <em class="lp-dash-tcard__meta">
-        <% if habit.quantity_checkin? && habit.stretch_goal? && target.present? %>
+        <% if habit.quantity_checkin? && habit.stretch_goal? && target.present? && amount.to_d.positive? %>
           <%= t("dash.anytime.amount_of_target",
                 amount: format_amount(amount),
                 target: format_amount(target),
@@ -29,12 +29,12 @@
           <% if over %>
             · <%= t("dash.anytime.over_by", amount: format_amount(amount - target)) %>
           <% end %>
-        <% elsif habit.quantity_checkin? %>
+        <% elsif habit.quantity_checkin? && amount.to_d.positive? %>
           <%= format_amount(amount) %> <%= habit.unit %>
           <% if habit.standard? && habit.range_summary.present? %>
             · <%= habit.range_summary %>
           <% end %>
-        <% else %>
+        <% elsif habit.binary_checkin? %>
           <%= t("dash.anytime.binary_subtitle") %>
         <% end %>
         <% if show_pct %>

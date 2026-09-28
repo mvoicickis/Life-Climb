@@ -62,9 +62,9 @@
             handoff[:href] || mountain_href,
             class: "lp-today-v2-mountain-link is-open" %>
     <% else %>
-      <%= link_to t("dash.battlefield.mountain_need"),
+      <%= link_to "#{t('dash.battlefield.add_on_mountain')} ›",
             mountain_href,
-            class: "lp-today-v2-mountain-link is-open" %>
+            class: "lp-today-v2-mountain-link is-add-on-mountain" %>
     <% end %>
   </div>
 </section>

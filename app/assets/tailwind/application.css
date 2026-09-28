@@ -17258,49 +17258,6 @@ button.lp-strategy-overflow {
   padding: 0.35rem 0.25rem;
 }
 
-/* RPG habit slots — compact enamel gem; 44px hit lives on the form, not the paint */
-.lp-dash-tcard.is-habit.is-compact.is-slot {
-  position: relative;
-  overflow: hidden; /* clips badge/glow; lifted while ⋯ menu is open */
-  margin-bottom: 0.45rem;
-  padding: 0.45rem 0.6rem 0.45rem 0.65rem;
-  min-height: 0;
-  border-radius: 11px;
-  background: linear-gradient(180deg, var(--lp-elev-slot), var(--lp-slot));
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  box-shadow: inset 0 1px 0 var(--lp-edge), 0 2px 8px rgba(0, 0, 0, 0.4);
-  /* Slots stay dark RPG chrome even on the light theme — force readable ink. */
-  color: #f3f6f8;
-  --lp-ink: #f3f6f8;
-  --lp-muted: #9aa6b2;
-}
-/* Absolute habit sheet opens past the card edge — without this it clips to a grey slab
-   that covers the title/segs and hides the menu items (#311 regression). */
-.lp-dash-tcard.is-habit.is-compact.is-slot:has(.lp-dash-habit__menu[open]) {
-  overflow: visible;
-  z-index: 8;
-}
-.lp-dash-tcard.is-habit.is-compact.is-slot::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--lp-steel);
-  opacity: 0.4;
-}
-.lp-dash-tcard.is-habit.is-compact.is-slot.is-hit::before {
-  background: linear-gradient(180deg, var(--lp-teal), var(--lp-green));
-  opacity: 1;
-  box-shadow: 0 0 10px rgba(87, 211, 91, 0.55);
-}
-.lp-dash-tcard.is-habit.is-compact.is-slot.is-over::before {
-  background: linear-gradient(180deg, var(--lp-amber), var(--lp-hot));
-  opacity: 1;
-  box-shadow: 0 0 10px rgba(255, 122, 69, 0.55);
-}
-
 .lp-dash-habit__r1 {
   display: flex;
   align-items: center;

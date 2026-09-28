@@ -639,6 +639,7 @@ es:
         one: "1 battle waiting"  # TODO: translate
         other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
+      add_on_mountain: "Add a battle on the Mountain" # TODO: translate
       win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       unwin_battle: "Undo win for %{title}"  # TODO: translate
       won_today: "Won today (%{count})"  # TODO: translate
