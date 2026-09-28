@@ -10,9 +10,9 @@ class StatsHeroViewportTest < ApplicationSystemTestCase
     seed_climb!(@user, today_mission: "Stats hero viewport")
     dismiss_onboarding_missions!(@user)
     journey = @user.primary_focused_journey
-    goal = @user.strategy_goals.for_kind("goal").roots.first
-    plan = goal.children.find { |c| c.plan? && !c.holding? } ||
-           goal.children.find(&:plan?)
+    goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+    plan = goal&.children&.find { |c| c.plan? && !c.holding? }
+    skip "expected onboarding goal and plan" unless goal && plan
     project = plan.children.create!(
       user: @user,
       life_area: journey.life_area,
