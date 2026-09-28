@@ -1111,6 +1111,9 @@ ru:
     install_offer:
       row_label: "Add to home screen"
       browser_menu: "Your browser will offer this from its own menu."
+    edit: "Edit" # TODO: translate
+    send_feedback: "Send feedback" # TODO: translate
+    two_step_login: "Two-step login" # TODO: translate
     language_title: "Язык"
     language_hint: "Выбери язык кнопок, подписей и сообщений."
     theme_title: "Оформление"

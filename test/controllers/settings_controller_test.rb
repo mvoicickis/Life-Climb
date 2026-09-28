@@ -20,9 +20,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-you-page-target=version]"
     assert_select "h1", text: "You"
     assert_select ".lp-you"
-    assert_select ".lp-you__hero"
-    assert_select ".lp-you__goal", text: I18n.t("dash.active_goal_fallback")
-    assert_select ".lp-you__meta-name", text: /One/
+    assert_select ".lp-you__profile"
+    assert_select ".lp-you__avatar-initial", text: "O"
+    assert_select ".lp-you__name-text", text: /One/
+    assert_select "button.lp-you__edit", text: I18n.t("settings.edit")
     assert_select ".lp-dash-nav.is-v4"
     assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
     assert_select "a.lp-dash-nav__link[href=?]", life_points_path
@@ -34,16 +35,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-nav__fab", count: 0
     assert_select "a[href=?]", edit_today_count_settings_path, count: 0
     assert_select "a#you-row-today-count", count: 0
-    assert_select "a[href=?]", edit_name_settings_path
     assert_select "a#you-row-life-area", count: 0
-    assert_select "#you-character"
-    assert_select "#you-character input[name='user[character]'][value=birdie]"
-    assert_select "#you-character input[name='user[character]'][value=bee]"
-    assert_select "#you-character input[name='user[character]'][value=bear]"
-    assert_select "#you-character input[name='user[character]'][value=fox]"
-    assert_select "#you-character input[name='user[character]'][value=horse]", count: 0
-    assert_select "#you-character input[name='user[character]'][value=raven]"
-    assert_select "#you-character img[src*='characters/fox']"
+    assert_select "#you-character", count: 0
     assert_select "#you-theme", count: 0
     assert_select "html[data-theme=light]"
     assert_select "#you-language"
@@ -51,45 +44,31 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-language form[action=?]", locale_path(locale: :ru)
     assert_select "#you-reminders[data-controller=?]", "push-reminders"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#enable"
-    assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest"
-    assert_select "a#you-row-notifications[href=?]", settings_notifications_path
-    assert_select "a[href=?]", support_path
+    assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest", count: 0
+    assert_select "a#you-row-notifications", count: 0
+    assert_select "a[href=?]", support_path, count: 0
+    assert_select "a[href=?]", pricing_path
+    assert_select "a#you-row-feedback[href=?]", new_feedback_path
     assert_select "a[href=?]", new_password_path
     assert_select "a[href=?]", about_path, count: 0
-    assert_select "a[href=?]", new_feedback_path
     assert_select "form[action=?]", session_path
-    assert_select ".lp-you-signout", text: /Sign out/i
+    assert_select "form[action=?][data-action=?]", session_path, "submit->offline-page-cache#clearBeforeSignOut"
+    assert_select ".lp-you-row--signout", text: /Sign out/i
+    assert_select ".lp-feedback-fab", count: 0
     assert_select "a[href=?]", admin_root_path, count: 0
     assert_select "form[action=?]", restart_new_player_experience_developer_tools_path, count: 0
+    assert_match(/data-controller="share"/, response.body)
   end
 
-  test "You hero shows active goal title when climb exists" do
+  test "You profile shows long name with ellipsis class" do
     user = users(:one)
+    user.update!(name: "Mareks Voicickis Extra Long Name")
     sign_in_as user
-    Onboarding::Run.call(
-      user: user,
-      area_key: "career",
-      title: "Ship",
-      ideal_scene: "Live",
-      current_reality: "Building",
-      next_win: "Launch",
-      today_mission: "Write tests",
-      closer_percent: 20
-    )
-    journey = user.reload.primary_focused_journey
-    area = journey.life_area
-    user.strategy_goals.create!(
-      life_area: area,
-      life_journey: journey,
-      horizon: "goal",
-      title: "Everest",
-      position: 0
-    )
 
     get settings_path
     assert_response :success
-    assert_select ".lp-you__goal", text: "Everest"
-    assert_select ".lp-you__meta-name", text: /One/
+    assert_select ".lp-you__name-text", text: "Mareks Voicickis Extra Long Name"
+    assert_select ".lp-you__avatar-initial", text: "M"
   end
 
   test "admin sees admin row on You" do
@@ -98,7 +77,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get settings_path
     assert_response :success
     assert_select "a[href=?]", admin_root_path
-    assert_select "section#you-two-factor"
+    assert_select "#you-two-factor"
   end
 
   test "developer sees restart NPE on You" do
@@ -197,5 +176,19 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal 1, b.reload.position
     assert_equal 2, a.reload.position
+  end
+
+  test "feedback FAB hidden on You and shown on Today" do
+    user = users(:one)
+    sign_in_as user
+    seed_climb!(user)
+
+    get settings_path
+    assert_response :success
+    assert_select ".lp-feedback-fab", count: 0
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-feedback-fab", count: 1
   end
 end

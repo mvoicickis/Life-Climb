@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// You v2: expand companion/language cards, inline name edit.
+// You: expand language card, inline name edit.
 export default class extends Controller {
   static targets = [
-    "companionCard",
     "languageCard",
     "nameButton",
     "nameForm",
@@ -13,9 +12,6 @@ export default class extends Controller {
 
   connect() {
     this.syncVersion()
-    if (this.element.dataset.youPageOpen === "character") {
-      this.companionCardTarget?.classList.add("is-open")
-    }
     if (this.element.dataset.youPageOpen === "language") {
       this.languageCardTarget?.classList.add("is-open")
     }
@@ -27,11 +23,6 @@ export default class extends Controller {
 
     const meta = document.querySelector('meta[name="app-version"]')
     this.versionTarget.textContent = meta?.content || "dev"
-  }
-
-  toggleCompanion(event) {
-    event.preventDefault()
-    this.companionCardTarget?.classList.toggle("is-open")
   }
 
   toggleLanguage(event) {

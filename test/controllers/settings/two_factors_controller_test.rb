@@ -22,7 +22,7 @@ class Settings::TwoFactorsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
-    assert_select "section#you-two-factor", count: 0
+    assert_select "#you-two-factor", count: 0
     assert_select "a[href=?]", settings_two_factor_path, count: 0
   end
 
@@ -31,7 +31,7 @@ class Settings::TwoFactorsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
-    assert_match(/Two-factor authentication/, response.body)
+    assert_match(/Two-step login/, response.body)
 
     get settings_two_factor_path
     assert_response :success

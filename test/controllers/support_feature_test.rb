@@ -36,11 +36,11 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", support_path
   end
 
-  test "settings links to support and offers invite share" do
+  test "settings offers invite share without support link" do
     sign_in_as @user
     get settings_path
     assert_response :success
-    assert_select "a[href=?]", support_path
+    assert_select "a[href=?]", support_path, count: 0
     assert_match(/Share Life Climb/, response.body)
     assert_match(/data-controller="share"/, response.body)
     assert_match(/share-sheet/, response.body)

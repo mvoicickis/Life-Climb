@@ -60,8 +60,8 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
 
     visit settings_path
     assert_selector ".lp-you", wait: 5
-    assert_selector ".lp-you__hero"
-    assert_selector ".lp-you-card__title"
+    assert_selector ".lp-you__profile"
+    assert_selector ".lp-you-row__label"
     assert_no_selector ".lp-glass--pad"
     assert_selector ".lp-dash-nav.is-v4"
     assert_no_selector ".lp-dash-nav__fab"
@@ -74,9 +74,9 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
         return b.top - a.bottom;
       })()
     JS
-    assert_in_delta 12.0, card_gap.to_f, 1.5, "You cards should stay compact (12px stack)"
-    you_title = computed(".lp-you-card__title", "font-size")
-    assert you_title <= 16.5, "You card titles should stay 16px, got #{you_title}px"
+    assert_in_delta 20.0, card_gap.to_f, 2.5, "You card groups should stay spaced (~20px)"
+    row_label = computed(".lp-you-row__label", "font-size")
+    assert row_label <= 17.0, "You row labels should stay readable, got #{row_label}px"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-settings-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
