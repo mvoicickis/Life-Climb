@@ -151,6 +151,7 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
     plan = bootstrap_plan(user)
     camp1, camp2 = plan.children.for_kind("project").not_holding.order(:position).to_a
     camp1.complete!
+    before_positions = [ camp1.position, camp2.position ]
 
     # Stale arrange DOM: finished list still has camp1 and active step still lists camp1 once.
     patch life_journey_camp_arrangement_path(journey),
@@ -161,7 +162,7 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
           as: :turbo_stream
 
     assert_response :unprocessable_entity
-    assert_equal 0, camp2.reload.position
+    assert_equal before_positions, [ camp1.reload.position, camp2.reload.position ]
   end
 
   test "open refreshes arrange overlay with all plan camps" do
