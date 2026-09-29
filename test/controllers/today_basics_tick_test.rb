@@ -31,10 +31,12 @@ class TodayBasicsTickTest < ActionDispatch::IntegrationTest
     assert_select "#{row} .lp-dash-habit__qb.is-big", count: 0
     assert_select "#{row} form[data-juicy-feedback-win-not-saved-value=?]",
                   I18n.t("dash.battlefield.win_not_saved")
-    assert_select "#{row} .lp-dash-habit__sig--trail", count: 1
+    assert_select "#{row} .lp-dash-habit__sig--trail", count: 0
+    assert_select "##{dom_id(@binary, :today_segs)}", count: 1
 
     assert_select "##{dom_id(@pages, :today)} .lp-dash-habit__qb.is-big", count: 1
     assert_select "##{dom_id(@pages, :today)} .lp-dash-habit__dots", count: 1
+    assert_select "##{dom_id(@pages, :today_segs)}.lp-dash-habit__segs i", minimum: 1
   end
 
   test "binary basic meta omits percent chip" do

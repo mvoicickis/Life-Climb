@@ -1,4 +1,5 @@
-<%# locals: habit %>
+<%# locals: habit, photo_today (optional) %>
+<% photo_today = local_assigns.fetch(:photo_today, false) %>
 <% ctx = habit_today_amount_context(habit)
    quick = habit.quantity_checkin? ? habit.quick_add_value : nil
    binary = habit.binary_checkin?
@@ -58,7 +59,9 @@
           <b class="lp-dash-tcard__title"><%= habit.name %></b>
           <%= render "dashboard/dash_habit_today_meta", habit: habit %>
         </div>
-        <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true"><%= habit_sigil(habit) %></span>
+        <% unless photo_today %>
+          <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true"><%= habit_sigil(habit) %></span>
+        <% end %>
       <% end %>
     </div>
   <% else %>

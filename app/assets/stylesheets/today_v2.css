@@ -1900,16 +1900,35 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-dash-habit__sig--trail {
-  flex: none;
-  border-color: var(--lp-border);
-  background: color-mix(in srgb, var(--lp-ink) 5%, var(--lp-surface));
-  box-shadow: none;
+  display: none;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-hit .lp-dash-habit__sig--trail,
-.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-over .lp-dash-habit__sig--trail {
+/* Basics progress strip — light tokens on photo Today */
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-dash-habit__segs {
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__segs {
+  background: transparent;
   border-color: var(--lp-border);
-  background: color-mix(in srgb, var(--lp-ink) 5%, var(--lp-surface));
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__segs i {
+  background: var(--lp-border);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__segs i.f {
+  background: var(--lp-green);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__segs i.o {
+  background: linear-gradient(180deg, var(--lp-amber), var(--lp-hot));
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-hit,
