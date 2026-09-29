@@ -30,10 +30,11 @@ class FixedViewportTodayTest < ActionDispatch::IntegrationTest
     assert_match(/overflow:\s*hidden/, shell)
     assert_match(/overscroll-behavior:\s*none/, shell)
 
-    game = css[/\.lp-game:has\(\.lp-dash\.is-today-v2\.is-today-photo\)\s*\{[^}]+\}/m]
-    assert game.present?
-    assert_match(/height:\s*100dvh/, game)
-    assert_match(/padding-bottom:\s*0/, game)
+    game_blocks = css.scan(/\.lp-game:has\(\.lp-dash\.is-today-v2\.is-today-photo\)\s*\{[^}]+\}/m)
+    assert_operator game_blocks.size, :>=, 2, "expected shared + dedicated .lp-game photo Today rules"
+    dedicated_game = game_blocks.find { |block| block.match?(/padding-bottom:\s*0/) }
+    assert dedicated_game.present?, "expected dedicated .lp-game block with padding-bottom: 0"
+    assert_match(/height:\s*100dvh/, dedicated_game)
 
     main = css[/\.lp-main:has\(\.lp-dash\.is-today-v2\.is-today-photo\)\s*\{[^}]+\}/m]
     assert main.present?
