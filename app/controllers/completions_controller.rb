@@ -26,7 +26,7 @@ class CompletionsController < ApplicationController
             flash.now[:alert] = @completion.errors.full_messages.to_sentence
             render :create, status: :unprocessable_entity
           else
-            redirect_to dashboard_path, alert: @completion.errors.full_messages.to_sentence
+            head :unprocessable_entity
           end
         end
         format.html { redirect_to after_completion_path, alert: @completion.errors.full_messages.to_sentence }
@@ -39,12 +39,16 @@ class CompletionsController < ApplicationController
     @habit = @completion.habit
     @completion.destroy!
     Today::OvershootBonus.sync!(user: current_user)
+    assign_today_habit_stream! unless mountain_return?
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to after_completion_path, notice: t("habits.undone"), status: :see_other }
     end
   rescue ActiveRecord::RecordNotFound
-    redirect_to dashboard_path, status: :see_other
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.html { redirect_to dashboard_path, status: :see_other }
+    end
   end
 
   private

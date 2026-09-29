@@ -1,76 +1,101 @@
 <%# locals: habit %>
 <% ctx = habit_today_amount_context(habit)
-   quick = habit.quantity_checkin? ? habit.quick_add_value : nil %>
+   quick = habit.quantity_checkin? ? habit.quick_add_value : nil
+   binary = habit.binary_checkin?
+   habit_win_form_data = {
+     turbo: true,
+     turbo_stream: true,
+     controller: "juicy-feedback",
+     action: "submit->juicy-feedback#play turbo:submit-end->juicy-feedback#winSubmitEnd",
+     juicy_feedback_suppress_reload_celebrate_value: true,
+     juicy_feedback_defer_reward_value: true,
+     juicy_feedback_strength_label_value: t("dash.action_points_hint"),
+     juicy_feedback_win_not_saved_value: t("dash.battlefield.win_not_saved")
+   } %>
 <li id="<%= dom_id(habit, :today) %>"
-    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %> <%= habit_today_row_state(habit) %>"
+    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %><%= ' is-binary-tick' if binary %> <%= habit_today_row_state(habit) %><%= ' is-struck' if binary && ctx[:done] %>"
     data-controller="tcard-menu"
-    data-tcard-menu-portal-value="true">
-  <div class="lp-dash-habit__r1">
-    <span class="lp-dash-habit__sig" aria-hidden="true"><%= habit_sigil(habit) %></span>
-    <div class="lp-dash-habit__nm">
-      <% if habit.identity_label.present? %>
-        <p class="lp-habit-identity"><%= habit.identity_label %></p>
-      <% end %>
-      <b class="lp-dash-tcard__title"><%= habit.name %></b>
-      <%= render "dashboard/dash_habit_today_meta", habit: habit %>
-    </div>
-
-    <div class="lp-dash-habit__act">
-      <% if habit.binary_checkin? %>
-        <% if ctx[:done] %>
-          <% completion = habit.completion_for(Date.current) %>
-          <%= button_to t("dash.timeline.undo"),
-                completion_path(completion),
-                method: :delete,
-                class: "lp-dash-habit__qb",
-                aria: { label: "#{t('dash.timeline.undo')} #{habit.name}" },
-                form: {
-                  data: {
-                    controller: "juicy-feedback",
-                    action: "submit->juicy-feedback#play"
-                  }
-                } %>
-        <% else %>
-          <%= button_to t("dash.timeline.did_it"),
-                completions_path(habit_id: habit.id),
-                method: :post,
-                class: "lp-dash-habit__qb is-big",
-                aria: { label: "#{t('dash.timeline.did_it')} #{habit.name}" },
-                data: {
-                  controller: "pressable",
-                  action: "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
-                },
-                form: {
-                  data: {
-                    controller: "juicy-feedback",
-                    action: "submit->juicy-feedback#play"
-                  }
-                } %>
-        <% end %>
+    data-tcard-menu-portal-value="true"
+    data-lp="<%= habit.points %>">
+  <% if binary %>
+    <div class="lp-dash-habit__r1 lp-dash-habit__r1--binary-tick">
+      <% if ctx[:done] %>
+        <% completion = habit.completion_for(Date.current) %>
+        <span class="lp-today-v2-row__check lp-today-v2-row__check--display" aria-hidden="true">
+          <span class="lp-today-v2-row__tick-slot"><span class="lp-today-v2-row__box is-won"></span></span>
+        </span>
+        <div class="lp-dash-habit__nm">
+          <% if habit.identity_label.present? %>
+            <p class="lp-habit-identity"><%= habit.identity_label %></p>
+          <% end %>
+          <b class="lp-dash-tcard__title"><%= habit.name %></b>
+          <%= render "dashboard/dash_habit_today_meta", habit: habit %>
+        </div>
+        <%= button_to t("dash.battlefield.undo"),
+              completion_path(completion),
+              method: :delete,
+              class: "lp-today-row__undo",
+              aria: { label: "#{t('dash.battlefield.undo')} #{habit.name}" },
+              form: {
+                class: "lp-today-v2-row__check-form",
+                data: { turbo: true, turbo_stream: true }
+              } %>
       <% else %>
-        <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
+        <%= button_to completions_path(habit_id: habit.id),
+              method: :post,
+              form: {
+                class: "lp-today-v2-row__check-form",
+                data: habit_win_form_data
+              },
+              class: "lp-today-v2-row__check",
+              aria: { label: t("dash.battlefield.win_battle", title: habit.name) } do %>
+          <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+        <% end %>
+        <div class="lp-dash-habit__nm">
+          <% if habit.identity_label.present? %>
+            <p class="lp-habit-identity"><%= habit.identity_label %></p>
+          <% end %>
+          <b class="lp-dash-tcard__title"><%= habit.name %></b>
+          <%= render "dashboard/dash_habit_today_meta", habit: habit %>
+        </div>
+        <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true"><%= habit_sigil(habit) %></span>
       <% end %>
-
-      <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
-               data-action="toggle->tcard-menu#toggled">
-        <summary class="lp-dash-habit__dots"
-                 data-controller="pressable"
-                 data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
-                 aria-label="<%= t('dash.timeline.more_actions') %>">⋯</summary>
-        <button type="button"
-                class="lp-dash-habit__scrim"
-                data-tcard-menu-target="scrim"
-                data-action="click->tcard-menu#close"
-                tabindex="-1"
-                aria-label="<%= t('dash.timeline.cancel') %>"></button>
-        <%= render "dashboard/dash_habit_sheet",
-              habit: habit,
-              amount: ctx[:amount],
-              quick: quick,
-              sheet_target: true %>
-      </details>
     </div>
-  </div>
+  <% else %>
+    <div class="lp-dash-habit__r1">
+      <span class="lp-dash-habit__sig" aria-hidden="true"><%= habit_sigil(habit) %></span>
+      <div class="lp-dash-habit__nm">
+        <% if habit.identity_label.present? %>
+          <p class="lp-habit-identity"><%= habit.identity_label %></p>
+        <% end %>
+        <b class="lp-dash-tcard__title"><%= habit.name %></b>
+        <%= render "dashboard/dash_habit_today_meta", habit: habit %>
+      </div>
+
+      <div class="lp-dash-habit__act">
+        <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
+
+        <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
+                 data-action="toggle->tcard-menu#toggled">
+          <summary class="lp-dash-habit__dots"
+                   data-controller="pressable"
+                   data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+                   aria-label="<%= t('dash.timeline.more_actions') %>">⋯</summary>
+          <button type="button"
+                  class="lp-dash-habit__scrim"
+                  data-tcard-menu-target="scrim"
+                  data-action="click->tcard-menu#close"
+                  tabindex="-1"
+                  aria-label="<%= t('dash.timeline.cancel') %>"></button>
+          <%= render "dashboard/dash_habit_sheet",
+                habit: habit,
+                amount: ctx[:amount],
+                quick: quick,
+                sheet_target: true %>
+        </details>
+      </div>
+    </div>
+  <% end %>
 
   <%= render "dashboard/dash_habit_today_segs", habit: habit %>
 </li>

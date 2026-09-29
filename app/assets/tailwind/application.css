@@ -17957,13 +17957,13 @@ button.lp-strategy-overflow {
   touch-action: manipulation;
 }
 .lp-dash-habit__qb.is-big {
-  background: linear-gradient(180deg, #4ec45a, #2a8a34);
-  border-color: rgba(87, 211, 91, 0.45);
-  color: #eafff0;
+  background: linear-gradient(180deg, var(--lp-green), var(--lp-green-deep));
+  border-color: color-mix(in srgb, var(--lp-green) 45%, transparent);
+  color: color-mix(in srgb, var(--lp-surface) 92%, var(--lp-green));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
-    0 1px 2px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 color-mix(in srgb, var(--lp-surface) 32%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--lp-ink) 22%, transparent),
+    0 1px 2px color-mix(in srgb, var(--lp-ink) 35%, transparent);
 }
 .lp-dash-habit__qb.is-pressed {
   transform: translateY(1px);

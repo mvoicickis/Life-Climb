@@ -201,7 +201,8 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
   gap: 0.5rem;
 }
 
-.lp-today-v2-row.has-win-save-notice {
+.lp-today-v2-row.has-win-save-notice,
+.lp-dash-tcard.is-habit.is-binary-tick.has-win-save-notice {
   flex-wrap: wrap;
 }
 
@@ -1606,11 +1607,11 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact .lp-today-v2-hp-bar {
   margin-top: 0.35rem;
-  background: color-mix(in srgb, var(--lp-ink) 12%, transparent);
+  background: var(--lp-border);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-hp-bar__fill.is-neutral {
-  background: var(--lp-green);
+  background: var(--lp-muted);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__hp-num.is-neutral {
@@ -1827,6 +1828,62 @@ body:has(.lp-dash.is-today-v2.is-today-photo) {
 .lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-quantity .lp-dash-habit__qb.is-big.is-pressed {
   box-shadow: none;
   filter: none;
+}
+
+/* Binary Basics — battle tick on photo Today */
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-compact.is-slot {
+  align-items: center;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__r1--binary-tick {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-today-v2-row__check {
+  margin-left: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-today-v2-row__check--display {
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-dash-habit__sig--trail {
+  flex: none;
+  border-color: var(--lp-border);
+  background: color-mix(in srgb, var(--lp-ink) 5%, var(--lp-surface));
+  box-shadow: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-hit .lp-dash-habit__sig--trail,
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-over .lp-dash-habit__sig--trail {
+  border-color: var(--lp-border);
+  background: color-mix(in srgb, var(--lp-ink) 5%, var(--lp-surface));
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-hit,
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-over {
+  border-color: transparent;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-struck .lp-dash-tcard__title,
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick.is-done .lp-dash-tcard__title {
+  text-decoration: line-through;
+  color: var(--lp-ink-soft);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-today-row__undo {
+  color: var(--lp-ink-soft);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-mountain-link.is-add-on-mountain {
