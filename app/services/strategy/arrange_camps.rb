@@ -30,7 +30,7 @@ module Strategy
     end
 
     def plan_camps
-      @plan_camps ||= @plan.children.select { |c| c.project? && !c.holding? }
+      @plan_camps ||= StrategyGoal.where(parent_id: @plan.id).for_kind("project").not_holding.order(:position, :id).to_a
     end
 
     def validate!

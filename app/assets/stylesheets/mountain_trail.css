@@ -7021,3 +7021,30 @@ body.is-arrange-open #trail-toast-host .lp-toast {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.lp-trail-arrange__save-notice {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.5rem 1rem;
+  min-height: var(--lp-tap, 2.75rem);
+  border: 0;
+  border-radius: var(--lp-radius-pill, 999px);
+  background: var(--lp-ink, #0f172a);
+  color: var(--lp-surface, #fff);
+  font-family: var(--lp-font-ui, inherit);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.lp-trail-arrange__save-notice[hidden] {
+  display: none;
+}
+
+.lp-trail-arrange.has-arrange-save-notice .lp-trail-arrange__toast.is-visible {
+  opacity: 0;
+}

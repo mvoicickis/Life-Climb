@@ -55,6 +55,7 @@ Rails.application.routes.draw do
     resource :first_camp_reveal, only: :update
     resources :first_camp_battles, only: :create
     resource :camp_arrangement, only: :update do
+      post :open
       post :reopen
     end
   end
