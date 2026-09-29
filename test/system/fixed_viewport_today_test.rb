@@ -41,5 +41,25 @@ class FixedViewportTodaySystemTest < ApplicationSystemTestCase
     assert_equal "auto", metrics["padOverflowY"]
     assert_equal false, metrics["docScrollable"],
                  "document should not be the scroll owner on photo Today: #{metrics.inspect}"
+
+    page.driver.browser.manage.window.resize_to(360, 640)
+
+    layout = page.evaluate_script(<<~JS)
+      (() => {
+        const pad = document.querySelector(".lp-today-scroll__pad");
+        const bg = document.querySelector(".lp-today-photo-bg");
+        if (!pad || !bg) return { ok: false };
+        const padTop = pad.getBoundingClientRect().top;
+        pad.scrollTop = Math.min(320, pad.scrollHeight);
+        const bgTopAfterScroll = bg.getBoundingClientRect().top;
+        return { ok: true, padTop, bgTopAfterScroll };
+      })()
+    JS
+
+    assert layout["ok"], "expected photo Today pad and background"
+    assert_operator layout["padTop"].to_f, :<, 40,
+                    "scroll pad should start near viewport top at 360×640 (got #{layout['padTop']})"
+    assert_operator layout["bgTopAfterScroll"].to_f, :<, 1,
+                    "photo bg should stay pinned to shell top after pad scroll (got #{layout['bgTopAfterScroll']})"
   end
 end

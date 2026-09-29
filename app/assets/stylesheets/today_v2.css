@@ -1558,8 +1558,9 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-photo-bg {
-  position: fixed;
+  position: absolute;
   inset: 0;
+  flex: none;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
