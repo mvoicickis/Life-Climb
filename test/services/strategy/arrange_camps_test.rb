@@ -91,6 +91,17 @@ class StrategyArrangeCampsTest < ActiveSupport::TestCase
     end
   end
 
+  test "rejects duplicate camp id in groups" do
+    error = assert_raises(Strategy::ArrangeCamps::Invalid) do
+      Strategy::ArrangeCamps.call(
+        user: @user,
+        plan: @plan,
+        groups: [ { camp_ids: [ @a.id, @b.id ] }, { camp_ids: [ @a.id, @c.id ] } ]
+      )
+    end
+    assert_equal "duplicate_camp_id", error.message
+  end
+
   test "rejects unauthorized user" do
     other = users(:two)
     assert_raises(Strategy::ArrangeCamps::Invalid) do
