@@ -68,6 +68,7 @@ export function lockWinSubmit(host, locked) {
 export function winSubmitHostFromForm(form) {
   return (
     form?.closest(".lp-today-v2-row") ||
+    form?.closest(".lp-dash-tcard.is-habit.is-binary-tick") ||
     form?.closest(".lp-trail-battles__row") ||
     form
   )

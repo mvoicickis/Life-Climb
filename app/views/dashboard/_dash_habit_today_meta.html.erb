@@ -20,7 +20,7 @@
   <% elsif habit.binary_checkin? %>
     <%= t("dash.anytime.binary_subtitle") %>
   <% end %>
-  <% if ctx[:show_pct] %>
-    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>"><%= habit.binary_checkin? ? 100 : ctx[:progress] %>%</span>
+  <% if ctx[:show_pct] && !habit.binary_checkin? %>
+    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>"><%= ctx[:progress] %>%</span>
   <% end %>
 <% end %>
