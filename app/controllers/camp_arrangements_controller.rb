@@ -6,7 +6,7 @@ class CampArrangementsController < ApplicationController
 
   before_action :require_planning_v2
   before_action :set_journey
-  before_action :set_plan, only: :update
+  before_action :set_plan, only: %i[update open]
 
   def update
     groups = parse_groups(params[:groups])
@@ -18,11 +18,36 @@ class CampArrangementsController < ApplicationController
       format.json { head :ok }
       format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
     end
-  rescue Strategy::ArrangeCamps::Invalid
+  rescue Strategy::ArrangeCamps::Invalid => e
+    # #region agent log
+    File.open("/home/mv/code/lifepoints/.cursor/debug-891651.log", "a") do |f|
+      f.puts({
+        sessionId: "891651",
+        hypothesisId: "H1",
+        location: "camp_arrangements_controller.rb:update",
+        message: "ArrangeCamps::Invalid",
+        data: { reason: e.message, plan_id: @plan&.id, journey_id: @journey&.id },
+        timestamp: (Time.now.to_f * 1000).to_i
+      }.to_json)
+    end
+    # #endregion
+    Rails.logger.warn(
+      "[CampArrangementsController#update] ArrangeCamps::Invalid #{e.message} " \
+      "plan_id=#{params[:plan_id]} journey_id=#{params[:life_journey_id]}"
+    )
     respond_to do |format|
       format.turbo_stream { head :unprocessable_entity }
       format.json { head :unprocessable_entity }
       format.html { head :unprocessable_entity }
+    end
+  end
+
+  def open
+    load_trail_context
+
+    respond_to do |format|
+      format.turbo_stream { render :reopen }
+      format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
     end
   end
 

@@ -3,13 +3,15 @@ import { createPointerReorder } from "lib/pointer_reorder"
 
 export default class extends Controller {
   static targets = [
-    "scroll", "list", "toast", "nextTag", "newStage",
+    "scroll", "list", "toast", "saveNotice", "nextTag", "newStage",
     "deleteSheet", "deleteTitle", "deleteDesc", "deleteQuantifiedLine", "deleteConfirm"
   ]
 
   static values = {
     url: String,
+    openUrl: String,
     reopenUrl: String,
+    winNotSaved: String,
     planId: Number,
     csrf: String,
     saved: String,
@@ -25,6 +27,7 @@ export default class extends Controller {
 
   connect() {
     this.pointerReorder = null
+    this.dragSnapshot = null
     this.deleting = false
     this.pendingDeleteUrl = null
     this._clearBodyArrangeOpen = this.clearBodyArrangeOpen.bind(this)
@@ -225,7 +228,10 @@ export default class extends Controller {
       placeholderClass: "lp-pointer-reorder__placeholder",
       draggingClass: "is-dragging",
       canDragRow: (row) => row.dataset.completed !== "true",
-      onDragStart: () => this.beginArranging(),
+      onDragStart: () => {
+        this.dragSnapshot = this.captureListsSnapshot()
+        this.beginArranging()
+      },
       onDragEnd: () => this.endArranging(),
       onReorder: () => this.saveOrder()
     })
@@ -257,10 +263,12 @@ export default class extends Controller {
   // Finished ids first (by data-position), then active ids — preserves Trail order.
   buildGroups() {
     const finishedByStage = new Map()
+    const finishedIdSet = new Set()
     this.element.querySelectorAll("[data-arrange-finished-list] [data-camp-id]").forEach((el) => {
       const stage = Number(el.dataset.stage)
       const id = el.dataset.campId
       if (!id) return
+      finishedIdSet.add(id)
       if (!finishedByStage.has(stage)) finishedByStage.set(stage, [])
       finishedByStage.get(stage).push({
         id,
@@ -281,7 +289,9 @@ export default class extends Controller {
       const stage = Number(section.dataset.stage)
       const list = section.querySelector("[data-arrange-list]")
       const campIds = list
-        ? [...list.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId).filter(Boolean)
+        ? [...list.querySelectorAll(".lp-pointer-reorder__row")]
+            .map((row) => row.dataset.campId)
+            .filter((id) => id && !finishedIdSet.has(id))
         : []
       activeByStage.set(stage, campIds)
     })
@@ -295,11 +305,73 @@ export default class extends Controller {
 
     const newStageList = this.element.querySelector("[data-arrange-new-stage-list]")
     if (newStageList) {
-      const campIds = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")].map((row) => row.dataset.campId).filter(Boolean)
+      const campIds = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")]
+        .map((row) => row.dataset.campId)
+        .filter((id) => id && !finishedIdSet.has(id))
       if (campIds.length) groups.push({ camp_ids: campIds })
     }
 
     return groups
+  }
+
+  captureListsSnapshot() {
+    const lists = []
+    this.element.querySelectorAll("[data-arrange-list], [data-arrange-new-stage-list]").forEach((list) => {
+      const rows = [...list.querySelectorAll(".lp-pointer-reorder__row")]
+      lists.push({
+        list,
+        rowIds: rows.map((row) => row.dataset.campId).filter(Boolean)
+      })
+    })
+    const finished = [...this.element.querySelectorAll("[data-arrange-finished-list] [data-camp-id]")]
+      .map((el) => el.dataset.campId)
+      .filter(Boolean)
+    return { lists, finished }
+  }
+
+  restoreListsSnapshot(snapshot) {
+    if (!snapshot?.lists) return
+
+    const rowsById = new Map()
+    this.element.querySelectorAll(".lp-pointer-reorder__row").forEach((row) => {
+      const id = row.dataset.campId
+      if (id) rowsById.set(id, row)
+    })
+
+    snapshot.lists.forEach(({ list, rowIds }) => {
+      rowIds.forEach((id) => {
+        const row = rowsById.get(id)
+        if (row && row.parentElement !== list) list.appendChild(row)
+      })
+    })
+    this.bindDrag()
+  }
+
+  clearSaveNotice() {
+    if (!this.hasSaveNoticeTarget) return
+    this.saveNoticeTarget.textContent = ""
+    this.saveNoticeTarget.hidden = true
+    this.saveNoticeTarget.setAttribute("hidden", "")
+    this.element.classList.remove("has-arrange-save-notice")
+  }
+
+  showSaveFailed() {
+    const message = this.winNotSavedValue || "Not saved. Tap to try again."
+    if (this.hasSaveNoticeTarget) {
+      this.saveNoticeTarget.textContent = message
+      this.saveNoticeTarget.hidden = false
+      this.saveNoticeTarget.removeAttribute("hidden")
+      this.element.classList.add("has-arrange-save-notice")
+    } else {
+      this.showToast(message)
+    }
+  }
+
+  retrySave(event) {
+    event?.preventDefault()
+    if (!this.hasSaveNoticeTarget || this.saveNoticeTarget.hidden) return
+    this.clearSaveNotice()
+    this.saveOrder()
   }
 
   async saveOrder() {
@@ -326,6 +398,8 @@ export default class extends Controller {
     })
 
     if (response.ok) {
+      this.clearSaveNotice()
+      this.dragSnapshot = null
       const html = await response.text()
       if (html.includes("turbo-stream")) {
         window.Turbo?.renderStreamMessage?.(html)
@@ -334,7 +408,25 @@ export default class extends Controller {
       return
     }
 
-    window.location.reload()
+    // #region agent log
+    fetch("http://127.0.0.1:7492/ingest/974e48fd-716c-47fa-a3fb-3664893cfcb4", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "891651" },
+      body: JSON.stringify({
+        sessionId: "891651",
+        hypothesisId: "H1",
+        location: "arrange_camps_controller.js:saveOrder",
+        message: "camp_arrangement save failed",
+        data: { status: response.status, groupCount: groups.length, campIds: groups.flatMap((g) => g.camp_ids) },
+        timestamp: Date.now()
+      })
+    }).catch(() => {})
+    // #endregion
+
+    if (this.dragSnapshot) {
+      this.restoreListsSnapshot(this.dragSnapshot)
+    }
+    this.showSaveFailed()
   }
 
   async openAgain(event) {

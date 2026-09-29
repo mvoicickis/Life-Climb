@@ -15,7 +15,9 @@
      data-controller="arrange-camps"
      data-action="keydown@window->arrange-camps#closeOnEscape"
      data-arrange-camps-url-value="<%= life_journey_camp_arrangement_path(journey) %>"
+     data-arrange-camps-open-url-value="<%= open_life_journey_camp_arrangement_path(journey) %>"
      data-arrange-camps-reopen-url-value="<%= reopen_life_journey_camp_arrangement_path(journey) %>"
+     data-arrange-camps-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
      data-arrange-camps-plan-id-value="<%= plan.id %>"
      data-arrange-camps-csrf-value="<%= form_authenticity_token %>"
      data-arrange-camps-saved-value="<%= t('strategy.rpg.trail.arrange.saved') %>"
@@ -102,4 +104,9 @@
      aria-live="polite"
      data-arrange-camps-target="toast"
      hidden></p>
+  <button type="button"
+          class="lp-trail-arrange__save-notice"
+          data-arrange-camps-target="saveNotice"
+          data-action="click->arrange-camps#retrySave"
+          hidden></button>
 </div>

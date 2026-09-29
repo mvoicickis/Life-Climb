@@ -928,7 +928,7 @@ export default class extends Controller {
       ""
   }
 
-  openArrangeCamps(event) {
+  async openArrangeCamps(event) {
     event?.preventDefault()
     event?.stopPropagation()
     if (this.element.classList.contains("is-first-camp-reveal")) return
@@ -937,10 +937,37 @@ export default class extends Controller {
     const overlay = document.getElementById("trail-arrange-camps")
     if (!overlay) return
 
+    const openUrl = overlay.dataset.arrangeCampsOpenUrlValue
+    const planId = overlay.dataset.arrangeCampsPlanIdValue
+    if (openUrl && planId) {
+      const token = this.csrfToken()
+      const body = new FormData()
+      body.set("plan_id", planId)
+      body.set("authenticity_token", token || "")
+      const response = await fetch(openUrl, {
+        method: "POST",
+        headers: {
+          Accept: "text/vnd.turbo-stream.html",
+          "X-CSRF-Token": token || ""
+        },
+        body,
+        credentials: "same-origin"
+      })
+      if (response.ok) {
+        const html = await response.text()
+        if (html.includes("turbo-stream") && window.Turbo?.renderStreamMessage) {
+          window.Turbo.renderStreamMessage(html)
+        }
+      }
+    }
+
+    const freshOverlay = document.getElementById("trail-arrange-camps")
+    if (!freshOverlay) return
+
     this.setArrangeOpen(true)
-    overlay.hidden = false
-    overlay.setAttribute("aria-hidden", "false")
-    overlay.querySelector(".lp-trail-arrange__back")?.focus()
+    freshOverlay.hidden = false
+    freshOverlay.setAttribute("aria-hidden", "false")
+    freshOverlay.querySelector(".lp-trail-arrange__back")?.focus()
   }
 
   closeArrangeCamps(event) {
