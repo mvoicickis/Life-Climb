@@ -7,8 +7,10 @@
   camps = Array(local_assigns.fetch(:camps) { @end_of_day_camps })
   flow_active = Today::EodFlow.flow_active?(step)
   closed_active = step == :closed
+  takeover_active = Today::EodFlow.takeover_active?(step)
 %>
 
+<% if takeover_active %>
 <section class="lp-today-v2-eod-takeover<%= ' is-flow' if flow_active %><%= ' is-closed' if closed_active %>"
          id="today-end-of-day"
          aria-label="<%= t('dash.end_of_day.title') %>">
@@ -25,3 +27,4 @@
           strategy_goal: @strategy_goal %>
   <% end %>
 </section>
+<% end %>
