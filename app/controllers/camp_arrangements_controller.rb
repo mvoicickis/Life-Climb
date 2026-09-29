@@ -19,18 +19,6 @@ class CampArrangementsController < ApplicationController
       format.html { redirect_to life_journey_path(@journey, goal_id: @goal&.id, plan_id: @plan.id), status: :see_other }
     end
   rescue Strategy::ArrangeCamps::Invalid => e
-    # #region agent log
-    File.open("/home/mv/code/lifepoints/.cursor/debug-891651.log", "a") do |f|
-      f.puts({
-        sessionId: "891651",
-        hypothesisId: "H1",
-        location: "camp_arrangements_controller.rb:update",
-        message: "ArrangeCamps::Invalid",
-        data: { reason: e.message, plan_id: @plan&.id, journey_id: @journey&.id },
-        timestamp: (Time.now.to_f * 1000).to_i
-      }.to_json)
-    end
-    # #endregion
     Rails.logger.warn(
       "[CampArrangementsController#update] ArrangeCamps::Invalid #{e.message} " \
       "plan_id=#{params[:plan_id]} journey_id=#{params[:life_journey_id]}"

@@ -67,9 +67,10 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
           as: :turbo_stream
 
     assert_response :success
-    assert_equal 0, camp1.reload.stage
-    assert_equal 1, camp3.reload.stage
-    assert_equal 1, camp2.reload.stage
+    [ camp1, camp2, camp3 ].each(&:reload)
+    assert_equal 0, camp1.stage
+    assert_equal 1, camp3.stage
+    assert_equal 1, camp2.stage
     assert_equal [ 0, 1, 2 ], [ camp1, camp3, camp2 ].map(&:position)
   end
 
@@ -90,8 +91,10 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
           as: :turbo_stream
 
     assert_response :success
-    assert_equal 0, camp2.reload.stage
-    assert_equal 0, camp1.reload.stage
+    camp1.reload
+    camp2.reload
+    assert_equal 0, camp2.stage
+    assert_equal 0, camp1.stage
     assert_equal 0, camp2.position
     assert_equal 1, camp1.position
   end
@@ -116,7 +119,10 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
           as: :turbo_stream
 
     assert_response :success
-    assert camp1.reload.completed?
+    camp1.reload
+    camp2.reload
+    camp3.reload
+    assert camp1.completed?
     assert_equal 0, camp1.stage
     assert_equal 1, camp3.stage
     assert_equal 1, camp2.stage
