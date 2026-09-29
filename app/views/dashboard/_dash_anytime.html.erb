@@ -21,7 +21,9 @@
     <% else %>
       <ul class="lp-dash-anytime__list lp-today-group-list">
         <% habits.each do |habit| %>
-          <%= render "dashboard/dash_habit_slot", habit: habit %>
+          <%= render "dashboard/dash_habit_slot",
+                habit: habit,
+                photo_today: @today_photo_basics %>
         <% end %>
       </ul>
     <% end %>
