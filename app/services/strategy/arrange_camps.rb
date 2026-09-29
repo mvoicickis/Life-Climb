@@ -37,9 +37,11 @@ module Strategy
       raise Invalid, "plan_missing" if @plan.blank? || !@plan.plan?
       raise Invalid, "not_authorized" unless @plan.user_id == @user.id
 
+      payload_ids = @groups.flat_map { |g| g[:camp_ids] }
+      raise Invalid, "duplicate_camp_id" if payload_ids.uniq.size != payload_ids.size
+
       expected_ids = plan_camps.map(&:id).sort
-      payload_ids = @groups.flat_map { |g| g[:camp_ids] }.sort
-      raise Invalid, "camp_mismatch" unless expected_ids == payload_ids
+      raise Invalid, "camp_mismatch" unless expected_ids == payload_ids.sort
     end
 
     def apply!

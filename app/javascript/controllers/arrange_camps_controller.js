@@ -260,7 +260,15 @@ export default class extends Controller {
     }
   }
 
-  // Finished ids first (by data-position), then active ids — preserves Trail order.
+  activeRowCampId(row) {
+    const id = row.dataset.campId
+    if (!id) return null
+    if (row.dataset.completed === "true") return null
+    return id
+  }
+
+  // Finished camps: finished list only (not draggable). Active steps: step lists only.
+  // Each camp id appears once in the payload (global dedupe); finished wins over stale active rows.
   buildGroups() {
     const finishedByStage = new Map()
     const finishedIdSet = new Set()
@@ -290,24 +298,40 @@ export default class extends Controller {
       const list = section.querySelector("[data-arrange-list]")
       const campIds = list
         ? [...list.querySelectorAll(".lp-pointer-reorder__row")]
-            .map((row) => row.dataset.campId)
+            .map((row) => this.activeRowCampId(row))
             .filter((id) => id && !finishedIdSet.has(id))
         : []
       activeByStage.set(stage, campIds)
     })
 
+    const assigned = new Set()
     const stageKeys = [...new Set([...finishedByStage.keys(), ...activeByStage.keys()])].sort((a, b) => a - b)
     const groups = stageKeys.map((stage) => {
+      const campIds = []
+      const pushUnique = (id) => {
+        if (!id || assigned.has(id)) return
+        campIds.push(id)
+        assigned.add(id)
+      }
+
       const finishedIds = finishedByStage.get(stage) || []
+      finishedIds.forEach((id) => pushUnique(id))
+
       const activeIds = activeByStage.get(stage) || []
-      return { camp_ids: finishedIds.concat(activeIds) }
+      activeIds.forEach((id) => pushUnique(id))
+
+      return { camp_ids: campIds }
     }).filter((group) => group.camp_ids.length)
 
     const newStageList = this.element.querySelector("[data-arrange-new-stage-list]")
     if (newStageList) {
-      const campIds = [...newStageList.querySelectorAll(".lp-pointer-reorder__row")]
-        .map((row) => row.dataset.campId)
-        .filter((id) => id && !finishedIdSet.has(id))
+      const campIds = []
+      ;[...newStageList.querySelectorAll(".lp-pointer-reorder__row")].forEach((row) => {
+        const id = this.activeRowCampId(row)
+        if (!id || finishedIdSet.has(id) || assigned.has(id)) return
+        campIds.push(id)
+        assigned.add(id)
+      })
       if (campIds.length) groups.push({ camp_ids: campIds })
     }
 
@@ -407,21 +431,6 @@ export default class extends Controller {
       this.showSaved()
       return
     }
-
-    // #region agent log
-    fetch("http://127.0.0.1:7492/ingest/974e48fd-716c-47fa-a3fb-3664893cfcb4", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "891651" },
-      body: JSON.stringify({
-        sessionId: "891651",
-        hypothesisId: "H1",
-        location: "arrange_camps_controller.js:saveOrder",
-        message: "camp_arrangement save failed",
-        data: { status: response.status, groupCount: groups.length, campIds: groups.flatMap((g) => g.camp_ids) },
-        timestamp: Date.now()
-      })
-    }).catch(() => {})
-    // #endregion
 
     if (this.dragSnapshot) {
       this.restoreListsSnapshot(this.dragSnapshot)

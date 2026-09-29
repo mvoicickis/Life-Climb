@@ -14,7 +14,7 @@
           data-camp-id="<%= camp.id %>"
           data-camp-title="<%= camp.title %>"
           data-quantified="<%= camp.quantified? %>"
-          data-completed="false"
+          data-completed="<%= camp.completed? %>"
           data-update-url="<%= strategy_goal_path(camp) %>"
           data-delete-url="<%= strategy_goal_path(camp) %>">
         <div class="lp-trail-arrange-row__body">
