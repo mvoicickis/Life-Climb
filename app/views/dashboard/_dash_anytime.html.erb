@@ -17,7 +17,14 @@
     <% if basics_all_done && battles_all_clear %>
       <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
     <% elsif habits.blank? %>
-      <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
+      <% if @today_photo_basics %>
+        <% basics_add_href = @journey ? life_journey_path(@journey, open_base: 1) : new_life_journey_path %>
+        <%= link_to t("dash.anytime.add_basic"),
+              basics_add_href,
+              class: "lp-dash-anytime__add-basic" %>
+      <% else %>
+        <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
+      <% end %>
     <% else %>
       <ul class="lp-dash-anytime__list lp-today-group-list">
         <% habits.each do |habit| %>

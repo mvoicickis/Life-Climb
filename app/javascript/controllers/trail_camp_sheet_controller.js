@@ -734,6 +734,19 @@ export default class extends Controller {
     if (this.revealPendingValue) return
 
     const params = new URLSearchParams(window.location.search)
+
+    if (params.get("open_base") === "1") {
+      this.flagBaseFocusOnConnect()
+      requestAnimationFrame(() => {
+        this.openBase()
+        params.delete("open_base")
+        const query = params.toString()
+        const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
+        history.replaceState(history.state, "", next)
+      })
+      return
+    }
+
     const campId = params.get("open_camp")
     const openComposer = params.get("open_composer") === "1"
     if (!campId) return
@@ -757,5 +770,12 @@ export default class extends Controller {
     if (!battles) return
 
     battles.dataset.trailBattlesOpenComposerOnConnectValue = "true"
+  }
+
+  flagBaseFocusOnConnect() {
+    const battles = this.element.querySelector("#trail-base-sheet")
+    if (!battles) return
+
+    battles.dataset.trailBattlesFocusTitleOnConnectValue = "true"
   }
 }

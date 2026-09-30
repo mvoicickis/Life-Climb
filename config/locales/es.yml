@@ -756,6 +756,7 @@ es:
       title: "Basics"
       hint: "Log as many times as you like"
       empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
+      add_basic: "+ Add a Basic" # TODO: translate
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"

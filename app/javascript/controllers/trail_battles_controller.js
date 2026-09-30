@@ -30,6 +30,7 @@ export default class extends Controller {
     atMaxTemplate: { type: String, default: "%{count} of %{max} letters used" },
     needDays: String,
     openComposerOnConnect: { type: Boolean, default: false },
+    focusTitleOnConnect: { type: Boolean, default: false },
     winNotSaved: { type: String, default: "" }
   }
 
@@ -46,6 +47,23 @@ export default class extends Controller {
       delete this.element.dataset.trailBattlesOpenComposerOnConnectValue
       this.openComposer()
     }
+    this.consumeFocusTitleOnConnect()
+  }
+
+  focusTitleOnConnectValueChanged() {
+    this.consumeFocusTitleOnConnect()
+  }
+
+  consumeFocusTitleOnConnect() {
+    if (!this.focusTitleOnConnectValue) return
+
+    this.focusTitleOnConnectValue = false
+    delete this.element.dataset.trailBattlesFocusTitleOnConnectValue
+    if (!this.hasTitleFieldTarget) return
+
+    requestAnimationFrame(() => {
+      this.titleFieldTarget.focus()
+    })
   }
 
   parseDraft(event) {
