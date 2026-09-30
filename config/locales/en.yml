@@ -65,6 +65,12 @@ en:
       title: "⚔ Today's battlefield"
       count: "%{done}/%{total}"
       empty_html: "No battles on Today's list yet.<br>Head to Mountain to open a camp and add a battle."
+      empty_cta:
+        start_climb: "Start your climb"
+        set_goal: "Set your goal"
+        open_mountain: "Open the Mountain"
+        add_next_camp: "Add your next camp"
+        add_todays_battle: "Add today's battle"
       mountain_need: "Need another battle? Open Mountain"
       add_on_mountain: "Add a battle on the Mountain"
       mountain_all_clear: "All clear — open Mountain for your next battle"

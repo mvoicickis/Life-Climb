@@ -1946,6 +1946,32 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   color: var(--lp-ink-soft);
 }
 
+.lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__wrap {
+  padding: 1rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  min-width: 0;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  font-family: var(--lp-font-ui);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: var(--lp-shadow-cta);
+  overflow-wrap: anywhere;
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-mountain-link.is-add-on-mountain {
   display: flex;
   align-items: center;

@@ -1,0 +1,5 @@
+<%# locals: cta — { label:, href: } %>
+<% cta = local_assigns.fetch(:cta) %>
+<div class="lp-today-empty-cta__wrap">
+  <%= link_to cta[:label], cta[:href], class: "lp-today-empty-cta__pill" %>
+</div>

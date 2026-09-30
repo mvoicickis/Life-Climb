@@ -640,6 +640,12 @@ ru:
         one: "1 battle waiting"  # TODO: translate
         other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
+      empty_cta:
+        start_climb: "Start your climb" # TODO: translate
+        set_goal: "Set your goal" # TODO: translate
+        open_mountain: "Open the Mountain" # TODO: translate
+        add_next_camp: "Add your next camp" # TODO: translate
+        add_todays_battle: "Add today's battle" # TODO: translate
       add_on_mountain: "Add a battle on the Mountain" # TODO: translate
       win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       unwin_battle: "Undo win for %{title}"  # TODO: translate

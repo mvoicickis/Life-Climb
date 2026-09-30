@@ -62,6 +62,7 @@ export default class extends Controller {
     this.syncAccentFromSwatch()
     this.bindGoalTitleInput()
     this.bindPlantEscape()
+    this.maybeOpenPlantFromQuery()
   }
 
   disconnect() {
@@ -820,6 +821,22 @@ export default class extends Controller {
       this.scrollTarget.removeEventListener("scroll", this._onScrollParallax)
     }
     if (this._parallaxRaf) cancelAnimationFrame(this._parallaxRaf)
+  }
+
+  maybeOpenPlantFromQuery() {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("open_plant") !== "1") return
+
+    params.delete("open_plant")
+    const query = params.toString()
+    const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
+    history.replaceState(history.state, "", next)
+
+    if (!this.planIdValue) return
+
+    requestAnimationFrame(() => {
+      this.openPlant()
+    })
   }
 
   openPlant({ syncFocus = false } = {}) {

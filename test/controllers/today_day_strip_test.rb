@@ -93,6 +93,8 @@ class TodayDayStripTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-daystrip", count: 0
     assert_select ".lp-today-v2-row", count: 0
-    assert_select ".lp-today-v2-empty", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 1
+    assert_select ".lp-today-v2-empty", count: 0
+    assert_select "a.is-open", count: 0
   end
 end
