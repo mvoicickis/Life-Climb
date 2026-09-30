@@ -857,6 +857,11 @@ lv:
       risk_cleared: "Viss padarīts."
       risk_empty: "Šodienas sarakstā vēl nav cīņu."
       risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
+      empty_cta:
+        start_climb: "Start your climb" # TODO: translate
+        set_goal: "Set your goal" # TODO: translate
+        add_next_camp: "Add your next camp" # TODO: translate
+        add_todays_battle: "Add today's battle" # TODO: translate
       mountain_need: "Vajag vēl vienu cīņu? Atver Kalnu"
       add_on_mountain: "Add a battle on the Mountain" # TODO: translate
       mountain_all_clear: "Atver Kalnu"

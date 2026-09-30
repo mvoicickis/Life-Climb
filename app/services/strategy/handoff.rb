@@ -21,6 +21,7 @@ module Strategy
 
       if goal.nil?
         return payload(
+          step: :lock_goal,
           label: I18n.t("dash.strategy_handoff.lock_goal"),
           href: helpers.life_journey_path(@journey)
         )
@@ -29,6 +30,7 @@ module Strategy
       plan = goal.children.for_kind("plan").not_holding.ordered.first
       if plan.nil?
         return payload(
+          step: :add_plan,
           label: I18n.t("dash.strategy_handoff.add_plan", goal: goal.title),
           href: helpers.life_journey_path(@journey, notebook: 1)
         )
@@ -37,6 +39,8 @@ module Strategy
       project = PathProject.resolve(user: @user, journey: @journey)
       if project.nil?
         return payload(
+          step: :add_project,
+          plan_id: plan.id,
           label: I18n.t("dash.strategy_handoff.add_project", plan: plan.title),
           href: helpers.life_journey_path(@journey, focus_id: plan.id)
         )
@@ -44,12 +48,16 @@ module Strategy
 
       if Strategy::Progress.battles_under(project).none?
         return payload(
+          step: :add_battle,
+          project_id: project.id,
           label: I18n.t("dash.strategy_handoff.add_battle", project: project.title),
           href: helpers.life_journey_path(@journey, focus_id: project.id)
         )
       end
 
       payload(
+        step: :open_strategy,
+        project_id: project.id,
         label: I18n.t("dash.strategy_handoff.open_strategy"),
         href: helpers.life_journey_path(@journey, focus_id: project.id)
       )
@@ -57,8 +65,8 @@ module Strategy
 
     private
 
-    def payload(label:, href:)
-      { label: label, href: href }
+    def payload(label:, href:, step:, project_id: nil, plan_id: nil)
+      { step: step, label: label, href: href, project_id: project_id, plan_id: plan_id }
     end
   end
 end

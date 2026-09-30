@@ -6,9 +6,8 @@
   journey = local_assigns.fetch(:journey) { @journey }
   include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
   mission = local_assigns[:mission] || @mission
-  handoff = @strategy_handoff
-  mountain_href = journey ? life_journey_path(journey) : new_life_journey_path
   all_clear = health.all_clear?
+  empty_cta = @empty_battle_cta
 %>
 
 <section class="lp-today-v2-field" id="today-battlefield-field" aria-label="<%= t('dash.battlefield.title') %>">
@@ -20,9 +19,7 @@
 
     <div id="today-battlefield-body">
       <% if health.empty? %>
-        <div class="lp-today-v2-empty">
-          <%= t("dash.battlefield.empty_html").html_safe %>
-        </div>
+        <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_cta %>
       <% else %>
         <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
           <% if include_mission && mission %>
@@ -62,14 +59,6 @@
 
     <% if !health.empty? %>
       <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
-    <% elsif !all_clear && handoff %>
-      <%= link_to handoff[:label] || t("dash.battle_empty_cta"),
-            handoff[:href] || mountain_href,
-            class: "lp-today-v2-mountain-link is-open" %>
-    <% else %>
-      <%= link_to "#{t('dash.battlefield.add_on_mountain')} ›",
-            mountain_href,
-            class: "lp-today-v2-mountain-link is-add-on-mountain" %>
     <% end %>
   </div>
 </section>

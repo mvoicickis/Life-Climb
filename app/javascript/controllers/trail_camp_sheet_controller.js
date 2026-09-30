@@ -735,14 +735,27 @@ export default class extends Controller {
 
     const params = new URLSearchParams(window.location.search)
     const campId = params.get("open_camp")
+    const openComposer = params.get("open_composer") === "1"
     if (!campId) return
+
+    if (openComposer) {
+      this.flagComposerOnConnect(campId)
+    }
 
     requestAnimationFrame(() => {
       this.openCampById(campId)
       params.delete("open_camp")
+      params.delete("open_composer")
       const query = params.toString()
       const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
       history.replaceState(history.state, "", next)
     })
+  }
+
+  flagComposerOnConnect(campId) {
+    const battles = this.element.querySelector(`#trail-battles-${campId}`)
+    if (!battles) return
+
+    battles.dataset.trailBattlesOpenComposerOnConnectValue = "true"
   }
 }

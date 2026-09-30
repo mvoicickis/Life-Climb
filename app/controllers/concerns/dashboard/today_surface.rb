@@ -43,6 +43,7 @@ module Dashboard
         end
       @mountain = Strategy::Mountain.for(goal: @strategy_goal)
       @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
+      @empty_battle_cta = Today::EmptyBattleCta.for(journey: @journey, handoff: @strategy_handoff)
       @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
       @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
       @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
