@@ -480,7 +480,14 @@ export default class extends Controller {
   }
 
   openComposer() {
-    if (!this.hasComposerTarget) return
+    if (!this.hasComposerTarget) {
+      if (!this.hasTitleFieldTarget) return
+
+      requestAnimationFrame(() => {
+        this.titleFieldTarget.focus()
+      })
+      return
+    }
     this.composerTarget.classList.add("is-open")
     if (this.hasComposerTriggerTarget) this.composerTriggerTarget.hidden = true
     if (this.hasComposerFormTarget) {

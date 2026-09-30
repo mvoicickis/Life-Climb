@@ -241,6 +241,7 @@ en:
       hint: "Log as many times as you like"
       binary_subtitle: "Every day"
       empty: "No daily trackers on Today yet."
+      add_basic: "+ Add a Basic"
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"

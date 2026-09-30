@@ -1782,6 +1782,22 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-empty,
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__add-basic {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  min-height: var(--lp-tap);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--lp-muted);
+  font: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__empty {
   color: var(--lp-ink-soft);
 }

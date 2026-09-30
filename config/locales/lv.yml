@@ -977,6 +977,7 @@ lv:
       title: "Ikdienas soļi"
       hint: "Pieraksti tik reižu, cik vēlies"
       empty: "Šodien vēl nav ikdienas soļu — pievieno Bāzes nometnē."
+      add_basic: "+ Add a Basic" # TODO: translate
       add: "Pievienot"
       add_placeholder: "Pievienot"
       add_aria: "Pievienot %{unit}"
