@@ -26,9 +26,20 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "empty battlefield shows set goal when strategy goal is missing" do
-    @journey = seed_climb!(@user, today_mission: "Ship")
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Ship one thing",
+      closer_percent: 20,
+      route_mission: false
+    )
+    @journey = @user.reload.primary_focused_journey
+    @user.update!(character: @user.character.presence || "fox")
     dismiss_onboarding_missions!(@user)
-    @user.strategy_goals.where(life_journey_id: @journey.id).destroy_all
     clear_today_battles!(@journey)
 
     assert_empty_battle_pill!(
@@ -40,9 +51,8 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
   test "empty battlefield shows open mountain when plan is missing" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)
-    goal = @user.strategy_goals.for_kind("goal").roots.first
-    @user.strategy_goals.where(life_journey_id: @journey.id).where.not(id: goal.id).destroy_all
-    goal.children.destroy_all
+    goal = @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: @journey.id)
+    goal.children.for_kind("plan").not_holding.destroy_all
     clear_today_battles!(@journey)
 
     assert_empty_battle_pill!(
