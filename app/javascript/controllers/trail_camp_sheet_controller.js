@@ -736,9 +736,10 @@ export default class extends Controller {
     const params = new URLSearchParams(window.location.search)
 
     if (params.get("open_base") === "1") {
-      this.flagBaseFocusOnConnect()
+      this.flagComposerOnConnectFor(this.element.querySelector("#trail-base-sheet"))
       requestAnimationFrame(() => {
         this.openBase()
+        this.activeTrailBattlesController()?.openComposer()
         params.delete("open_base")
         const query = params.toString()
         const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
@@ -766,16 +767,12 @@ export default class extends Controller {
   }
 
   flagComposerOnConnect(campId) {
-    const battles = this.element.querySelector(`#trail-battles-${campId}`)
+    this.flagComposerOnConnectFor(this.element.querySelector(`#trail-battles-${campId}`))
+  }
+
+  flagComposerOnConnectFor(battles) {
     if (!battles) return
 
     battles.dataset.trailBattlesOpenComposerOnConnectValue = "true"
-  }
-
-  flagBaseFocusOnConnect() {
-    const battles = this.element.querySelector("#trail-base-sheet")
-    if (!battles) return
-
-    battles.dataset.trailBattlesFocusTitleOnConnectValue = "true"
   }
 }
