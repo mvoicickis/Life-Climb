@@ -21,9 +21,11 @@ class TodayEmptyBattleCtaTest < ActiveSupport::TestCase
     assert_equal I18n.t("dash.battlefield.empty_cta.set_goal"), lock[:label]
     assert_includes lock[:href], journey.id.to_s
 
-    plan = Today::EmptyBattleCta.for(journey:, handoff: { step: :add_plan, plan_id: })
-    assert_equal I18n.t("dash.battlefield.empty_cta.open_mountain"), plan[:label]
-    assert_includes plan[:href], "notebook=1"
+    handoff_label = "Add a plan under “Ship LifePoints”"
+    plan = Today::EmptyBattleCta.for(journey:, handoff: { step: :add_plan, plan_id:, label: handoff_label })
+    assert_equal handoff_label, plan[:label]
+    assert_includes plan[:href], "/life_journeys/#{journey.id}"
+    refute_includes plan[:href], "notebook=1"
 
     camp = Today::EmptyBattleCta.for(journey:, handoff: { step: :add_project, plan_id: })
     assert_equal I18n.t("dash.battlefield.empty_cta.add_next_camp"), camp[:label]

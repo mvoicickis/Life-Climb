@@ -48,19 +48,6 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty battlefield shows open mountain when plan is missing" do
-    @journey = seed_climb!(@user, today_mission: "Ship")
-    dismiss_onboarding_missions!(@user)
-    goal = @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: @journey.id)
-    goal.children.for_kind("plan").not_holding.destroy_all
-    clear_today_battles!(@journey)
-
-    assert_empty_battle_pill!(
-      label: I18n.t("dash.battlefield.empty_cta.open_mountain"),
-      href_includes: "notebook=1"
-    )
-  end
-
   test "empty battlefield shows add next camp when project is missing" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)

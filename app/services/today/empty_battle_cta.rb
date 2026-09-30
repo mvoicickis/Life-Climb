@@ -2,6 +2,7 @@
 
 module Today
   # Photo Today — single green pill when the battlefield list is empty.
+  # No plan → Today shows the first-climb coach, not the battlefield.
   class EmptyBattleCta
     def self.for(journey:, handoff:)
       new(journey:, handoff:).call
@@ -33,8 +34,8 @@ module Today
         }
       when :add_plan
         {
-          label: I18n.t("dash.battlefield.empty_cta.open_mountain"),
-          href: helpers.life_journey_path(@journey, notebook: 1)
+          label: @handoff&.dig(:label).presence || I18n.t("dash.battlefield.empty_cta.set_goal"),
+          href: helpers.life_journey_path(@journey)
         }
       when :add_project
         {

@@ -68,7 +68,6 @@ en:
       empty_cta:
         start_climb: "Start your climb"
         set_goal: "Set your goal"
-        open_mountain: "Open the Mountain"
         add_next_camp: "Add your next camp"
         add_todays_battle: "Add today's battle"
       mountain_need: "Need another battle? Open Mountain"

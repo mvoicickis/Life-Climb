@@ -860,7 +860,6 @@ lv:
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
         set_goal: "Set your goal" # TODO: translate
-        open_mountain: "Open the Mountain" # TODO: translate
         add_next_camp: "Add your next camp" # TODO: translate
         add_todays_battle: "Add today's battle" # TODO: translate
       mountain_need: "Vajag vēl vienu cīņu? Atver Kalnu"
