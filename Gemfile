@@ -80,4 +80,4 @@ gem "ruby-vips", "~> 2.2"
 
 gem "web-push", "~> 3.1"
 
-gem "stripe", "~> 15.0"
+gem "stripe", "~> 19.6"
