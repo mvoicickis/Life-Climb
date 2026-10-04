@@ -25,6 +25,8 @@ class MapTentFirstDayFitTest < ApplicationSystemTestCase
     @first_camp = @result.projects.first
     @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ])
     @journey.clear_first_camp_reveal!
+    @journey.reload
+    assert_not @journey.first_camp_reveal_pending?
     page.driver.browser.manage.window.resize_to(360, 800)
   end
 
@@ -33,9 +35,12 @@ class MapTentFirstDayFitTest < ApplicationSystemTestCase
     fill_in "Email", with: @user.email_address
     fill_in "Password", with: "password12345"
     click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
-    assert_selector "#trail-map-camps .lp-trail-camp.is-current", wait: 10
+    assert_selector "#mountain-trail.lp-trail.is-v4", wait: 10
+    assert_no_selector ".lp-trail.is-first-camp-reveal", wait: 10
+    assert_selector "#trail-map-camps #trail-camp-#{@first_camp.id}.is-current", wait: 10
 
     metrics = page.evaluate_script(<<~JS)
       (() => {
