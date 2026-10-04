@@ -335,11 +335,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__body .lp-trail-battles__repeat-tag .lp-trail-battles__repeat-icon"
     assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__repeat-label", text: chip[:label]
-    assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__daily-chip", text: chip[:label]
+    assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
                   count: 0
-    assert_select "#trail-base-battle-#{weekly.id} .lp-trail-battles__kebab-menu form input[name='repeat'][value='daily']",
-                  count: 0
+    assert_select "#trail-base-sheet [id^='trail-base-battle-']", count: 0
   end
 
   test "camp sheet daily battle stacks repeat tag below title with icon" do
@@ -380,7 +379,11 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select "#trail-battles-#{@project.id} form button.is-danger", text: /Delete battle/
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__composer-trigger"
-    assert_select "#trail-base-sheet .lp-trail-battles__kebab[data-controller='tcard-menu']"
+    daily = @project.children.find_by!(repeat: "daily")
+    assert_select "#trail-battle-#{daily.id} .lp-trail-battles__repeat-label",
+                  text: I18n.t("strategy.rpg.trail.every_day")
+    assert_select "#trail-battle-#{daily.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
+    assert_select "#trail-base-sheet [id^='trail-base-battle-']", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__dock-spacer"
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
     assert_select "#trail-battles-#{@project.id} textarea.lp-trail-battles__input[enterkeyhint='done']"
@@ -930,7 +933,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
     assert_select "#trail-base-habit-#{habit.id}", text: /12 pages/
     assert_select "#trail-base-habit-#{habit.id} form[action*='daily_logs']"
@@ -963,7 +965,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}.is-check"
     assert_select "#trail-base-habit-#{habit.id}", text: /Meditate/
     assert_select "#trail-base-habit-#{habit.id} form[action=?]", completions_path(habit_id: habit.id)
@@ -991,7 +992,6 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-sheet .lp-trail-base-sheet__section-label", text: I18n.t("strategy.rpg.trail.base_camp.basics.kind")
     assert_select "#trail-base-habit-#{habit.id}", text: /Pages read/
     assert_select "#trail-base-sheet .lp-trail-battles__kind.is-daily", count: 0
     assert_select "#trail-base-sheet .lp-trail-battles__empty", count: 0
@@ -1055,6 +1055,33 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet .lp-trail-battles__composer.is-dock"
   end
 
+  test "base camp sheet lists basics only when camp has a daily battle" do
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "One German lesson",
+      unit: "times",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      quantity_checkin: false,
+      life_journey_id: @journey.id
+    )
+    battle = @project.children.create!(
+      user: @user, life_area: @area, life_journey: @journey,
+      horizon: "day", title: "Read daily", scheduled_on: Date.current,
+      position: 0, repeat: "daily"
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-habit-#{habit.id}", text: /One German lesson/
+    assert_select "#trail-base-sheet [id^='trail-base-battle-']", count: 0
+    assert_no_match(/From your camps/i, response.body)
+    assert_select "#trail-battle-#{battle.id}"
+  end
+
   test "base camp card opens sheet when daily is due from past scheduled_on" do
     battle = @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
@@ -1064,7 +1091,10 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-base-battle-#{battle.id}"
+    assert_select "#trail-base-sheet [id^='trail-base-battle-']", count: 0
+    assert_select "#trail-battle-#{battle.id} .lp-trail-battles__repeat-label",
+                  text: I18n.t("strategy.rpg.trail.every_day")
+    assert_select "#trail-battle-#{battle.id} .lp-trail-battles__kebab[data-controller='tcard-menu']"
     assert_select ".lp-trail-base-card.is-battle"
     assert_select ".lp-trail-base-card__main[data-action*='openFromDock']"
     assert_select ".lp-trail-base-card__base-row[data-action*='openBase']"

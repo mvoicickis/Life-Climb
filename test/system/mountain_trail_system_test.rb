@@ -135,7 +135,6 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     end
 
     assert_selector "#trail-base-sheet", text: /Read/, visible: :all, wait: 5
-    assert_selector "#trail-base-sheet .lp-trail-base-sheet__section-label", visible: :all, wait: 5
     assert_selector "#trail-base-sheet .lp-trail-battles__basics-add", visible: :all, wait: 5
     assert_no_selector "#trail-base-sheet", text: /0 pages/i, visible: :all
   end
@@ -181,7 +180,17 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
   end
 
   test "base camp kebab closes when tapping outside" do
-    @battle.update!(repeat: "daily")
+    @user.habits.create!(
+      name: "One German lesson",
+      unit: "times",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      quantity_checkin: false,
+      life_journey_id: @journey.id
+    )
 
     visit new_session_path
     fill_in "Email", with: @user.email_address

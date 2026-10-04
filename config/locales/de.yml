@@ -319,10 +319,8 @@ de:
           title: "Where you return every day"  # TODO: translate
           header_tagline: "Things you do every day."  # TODO: translate
           basics:
-            kind: "Basics"  # TODO: translate
             amount: "%{amount} %{unit}"  # TODO: translate
             undo: "Undo"  # TODO: translate
-          from_camps: "From your camps"  # TODO: translate
           add_placeholder: "What will you do every day?"  # TODO: translate
           dock_add_pill: "Add a Basic"  # TODO: translate
           add_habit: "Add Basic"  # TODO: translate

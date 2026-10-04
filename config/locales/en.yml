@@ -1159,10 +1159,8 @@ en:
           title: "Where you return every day"
           header_tagline: "Things you do every day."
           basics:
-            kind: "Basics"
             amount: "%{amount} %{unit}"
             undo: "Undo"
-          from_camps: "From your camps"
           kind: "Every day · no finish line"
           sub:
             one: "1 daily tracker. Missing a day takes nothing away."
