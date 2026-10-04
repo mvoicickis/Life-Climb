@@ -510,13 +510,13 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal other, current
   end
 
-  test "sort projects orders by position then id" do
-    second = Struct.new(:id, :position).new(2, 1)
-    first = Struct.new(:id, :position).new(1, 0)
+  test "sort projects orders by stage position then id" do
+    second = Struct.new(:id, :stage, :position).new(2, 0, 1)
+    first = Struct.new(:id, :stage, :position).new(1, 0, 0)
     assert_equal [ first, second ], mountain_trail_sort_projects([ second, first ])
   end
 
-  test "open camps returns position-sorted incomplete projects" do
+  test "open camps returns trail-order incomplete projects" do
     @user = users(:one)
     Onboarding::Run.call(
       user: @user, area_key: "career", title: "Ship", ideal_scene: "Live",
@@ -532,14 +532,14 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
     lower = plan.children.create!(
       user: @user, life_area: area, life_journey: journey,
-      horizon: "project", title: "Lower", position: 1, trail_x: 0.5, trail_y: 0.8
+      horizon: "project", title: "Lower", position: 1, stage: 0, trail_x: 0.5, trail_y: 0.8
     )
     summit = plan.children.create!(
       user: @user, life_area: area, life_journey: journey,
-      horizon: "project", title: "Summit", position: 0, trail_x: 0.5, trail_y: 0.4
+      horizon: "project", title: "Summit", position: 0, stage: 1, trail_x: 0.5, trail_y: 0.4
     )
 
-    assert_equal [ summit, lower ], mountain_trail_open_camps(plan.reload)
+    assert_equal [ lower, summit ], mountain_trail_open_camps(plan.reload)
   end
 
   test "base camp add parent is nil when no projects" do

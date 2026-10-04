@@ -34,11 +34,9 @@ module Strategy
       projects = ordered_projects
       nodes = build_nodes(projects)
       current = nodes.find { |n| n.state == :current } || nodes.reverse.find { |n| n.state == :done }
-      nxt = nodes.find { |n| n.state == :locked && current && n.position > current.position } ||
-            nodes.find { |n| n.state == :current && n != current }
+      nxt = next_node_after(nodes, current)
 
-      visible = focused_sequence(nodes, current, ensure_visible_id: @ensure_visible_id)
-        .reject { |node| node.state == :done }
+      visible = visible_nodes_from(nodes, current, ensure_visible_id: @ensure_visible_id)
 
       Result.new(
         progress: @plan.progress_percent.to_i,
@@ -73,7 +71,7 @@ module Strategy
         else
           Array(kids).select { |c| c.respond_to?(:project?) ? (c.project? && !c.holding?) : c.horizon.to_s == "project" }
         end
-      projects.sort_by { |p| [ p.position.to_i, p.id ] }
+      CampOrder.sort(projects)
     end
 
     def build_nodes(projects)
@@ -121,32 +119,39 @@ module Strategy
       false
     end
 
-    def focused_sequence(nodes, current, ensure_visible_id: nil)
-      slice = default_focused_slice(nodes, current)
-      return slice if ensure_visible_id.blank?
-      return slice if slice.any? { |node| node.id == ensure_visible_id }
-
-      pinned_idx = nodes.index { |node| node.id == ensure_visible_id }
-      return slice if pinned_idx.nil?
-
-      to = pinned_idx
-      from = [ to - VISIBLE_MAX + 1, 0 ].max
-      nodes[from..to]
-    end
-
-    def default_focused_slice(nodes, current)
+    def visible_nodes_from(nodes, current, ensure_visible_id: nil)
       return [] if nodes.present? && nodes.all? { |node| node.state == :done }
 
-      return nodes if nodes.size <= VISIBLE_MAX
+      current_idx =
+        if current
+          nodes.index { |node| node.id == current.id } || 0
+        else
+          0
+        end
 
-      unless current
-        return nodes.last(VISIBLE_MAX)
+      forward = Array(nodes[current_idx..]).reject { |node| node.state == :done }
+      visible = forward.take(VISIBLE_MAX)
+
+      if ensure_visible_id.present? && visible.none? { |node| node.id == ensure_visible_id }
+        pinned_idx = nodes.index { |node| node.id == ensure_visible_id }
+        if pinned_idx
+          from = [ pinned_idx - VISIBLE_MAX + 1, 0 ].max
+          pinned_slice = Array(nodes[from..pinned_idx]).reject { |node| node.state == :done }
+          visible = pinned_slice.take(VISIBLE_MAX)
+        end
       end
 
-      idx = nodes.index { |node| node.id == current.id } || 0
-      from = idx - VISIBLE_BEHIND
-      from = 0 if from.negative?
-      nodes[from, VISIBLE_MAX] || []
+      visible
+    end
+
+    def next_node_after(nodes, current)
+      return nil if current.blank?
+
+      current_idx = nodes.index { |node| node.id == current.id }
+      return nil if current_idx.nil?
+
+      Array(nodes[(current_idx + 1)..]).find { |node| node.state != :done } ||
+        nodes.find { |node| node.state == :current && node.id != current.id }
     end
 
     def narrative_label(nodes, progress)
