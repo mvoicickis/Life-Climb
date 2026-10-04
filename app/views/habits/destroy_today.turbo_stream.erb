@@ -1,0 +1,13 @@
+<% if @home_habits.blank? %>
+  <%= turbo_stream.replace "today-anytime-host" do %>
+    <div id="today-anytime-host">
+      <%= render "dashboard/dash_anytime", habits: @home_habits %>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove dom_id(@habit, :today) %>
+
+  <%= turbo_stream.replace "basics_survived_count" do %>
+    <%= render "dashboard/dash_anytime_survived_count", habits: @home_habits %>
+  <% end %>
+<% end %>

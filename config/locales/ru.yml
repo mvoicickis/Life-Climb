@@ -1086,6 +1086,14 @@ ru:
     edit: "Изменить"
     delete: "Удалить"
     delete_confirm: "Точно удалить?"
+    basic_edit:
+      name_label: "Name" # TODO: translate
+      one_tap_adds: "One tap adds" # TODO: translate
+      unit_aria: "Unit" # TODO: translate
+      delete_basic: "Delete Basic" # TODO: translate
+      delete_confirm: "Delete this Basic. All its days go away too." # TODO: translate
+      keep: "Keep" # TODO: translate
+      delete: "Delete" # TODO: translate
     share: "Поделиться"
     false: "Выкл"
     on_today: "На Сегодня"

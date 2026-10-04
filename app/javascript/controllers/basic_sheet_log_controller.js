@@ -202,4 +202,19 @@ export default class extends Controller {
     const ctrl = this.application.getControllerForElementAndIdentifier(menu, "tcard-menu")
     ctrl?.close()
   }
+
+  openEdit(event) {
+    event.preventDefault()
+    const row = document.getElementById(this.todayIdValue)
+    if (!row) return
+    const editHost = row.querySelector(".lp-dash-habit__edit-host")
+    const editDetails = editHost?.querySelector("details")
+    const logCtrl = this.application.getControllerForElementAndIdentifier(row, "tcard-menu")
+    logCtrl?.close()
+
+    requestAnimationFrame(() => {
+      if (!editDetails || !editHost) return
+      editDetails.open = true
+    })
+  }
 }

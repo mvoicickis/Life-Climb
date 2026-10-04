@@ -50,7 +50,7 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       find("#today_habit_#{@habit.id} summary").click
       assert_no_text "Enter exact amount"
       assert_selector ".lp-basic-sheet__done"
-      assert_link "Edit Basic"
+      assert_button I18n.t("dash.anytime.edit_basic")
 
       page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-on-today-#{width}.png")
     end

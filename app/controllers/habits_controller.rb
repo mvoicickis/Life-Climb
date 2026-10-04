@@ -6,7 +6,7 @@ class HabitsController < ApplicationController
   before_action :verify_mountain_context!, if: :mountain_return?
   before_action :load_journeys, only: %i[ new create edit update ]
   before_action :load_areas, only: %i[ index new create edit update show ]
-  skip_before_action :load_journeys, :load_areas, if: -> { today_quick_add_sheet? || mountain_return? }
+  skip_before_action :load_journeys, :load_areas, if: -> { today_quick_add_sheet? || basic_edit_sheet? || mountain_return? }
 
   def index
     @habits = current_user.habits.ordered.includes(:life_journey, :area)
@@ -97,12 +97,19 @@ class HabitsController < ApplicationController
 
   def update
     sheet = today_quick_add_sheet?
+    edit_sheet = basic_edit_sheet?
     @habit.assign_attributes(habit_params)
-    clear_targets_unless_configured! unless sheet
+    clear_targets_unless_configured! unless sheet || edit_sheet
     return_to = params[:return_to].to_s
 
     if @habit.save
-      if sheet
+      if edit_sheet
+        assign_today_edit_context! if return_to == "today"
+        respond_to do |format|
+          format.turbo_stream { render :basic_edit_update, status: :ok }
+          format.html { redirect_to return_to == "today" ? dashboard_path : mountain_after_mountain_path, status: :see_other }
+        end
+      elsif sheet
         respond_to do |format|
           format.turbo_stream { render :quick_add }
           format.html { redirect_to dashboard_path }
@@ -111,6 +118,15 @@ class HabitsController < ApplicationController
         redirect_to habit_path(@habit), notice: "Saved."
       else
         redirect_to habits_path, notice: "Saved."
+      end
+    elsif edit_sheet
+      Rails.logger.tagged("BasicEdit") do
+        Rails.logger.warn("update failed habit=#{@habit.id} errors=#{@habit.errors.full_messages.join(', ')}")
+      end
+      @habit.reload
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html { redirect_to dashboard_path, alert: @habit.errors.full_messages.to_sentence, status: :see_other }
       end
     elsif sheet
       @habit.reload
@@ -129,11 +145,17 @@ class HabitsController < ApplicationController
 
   def destroy
     mountain = mountain_return?
+    today_stream = today_basic_edit_destroy?
     @habit.destroy!
     if mountain
       respond_to do |format|
         format.turbo_stream { render :destroy, status: :ok }
         format.html { redirect_to mountain_after_mountain_path, status: :see_other }
+      end
+    elsif today_stream
+      assign_today_edit_context!
+      respond_to do |format|
+        format.turbo_stream { render :destroy_today, status: :ok }
       end
     else
       flash[:turbo_clear_cache] = true
@@ -162,6 +184,21 @@ class HabitsController < ApplicationController
 
   def today_quick_add_sheet?
     params[:return_to].to_s == "today" && params[:quick_add_sheet].present?
+  end
+
+  def basic_edit_sheet?
+    params[:basic_edit_sheet].present?
+  end
+
+  def today_basic_edit_destroy?
+    params[:return_to].to_s == "today" && request.format.turbo_stream?
+  end
+
+  def assign_today_edit_context!
+    @home_habits = current_user.habits.active.on_home.ordered
+    @journey = current_user.primary_focused_journey
+    @show_plan_route = false
+    @today_photo_basics = true
   end
 
   def mountain_create?

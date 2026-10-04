@@ -1,0 +1,109 @@
+<%# locals: habit, return_to, journey (mountain), goal, plan, sheet_target (optional) %>
+<% journey = local_assigns[:journey]
+   goal = local_assigns[:goal]
+   plan = local_assigns[:plan]
+   return_to = local_assigns.fetch(:return_to)
+   countable = habit.quantity_checkin?
+   quick_n = countable ? habit.quick_add_amount.presence || habit.quick_add_value : nil
+   sheet_attrs = local_assigns[:sheet_target] ? { data: { tcard_menu_target: "sheet" } } : {}
+   update_params = { return_to: return_to, basic_edit_sheet: "1" }
+   destroy_params = { return_to: return_to }
+   if return_to == "mountain" && journey && goal && plan
+     update_params.merge!(life_journey_id: journey.id, goal_id: goal.id, plan_id: plan.id)
+     destroy_params.merge!(life_journey_id: journey.id, goal_id: goal.id, plan_id: plan.id)
+   end %>
+<%= tag.div(
+      id: dom_id(habit, :edit_sheet),
+      class: "lp-dash-habit__sheet lp-dash-habit__sheet--basic-log lp-dash-habit__sheet--basic-edit",
+      data: {
+        controller: "basic-edit-sheet",
+        basic_edit_sheet_update_url_value: habit_path(habit),
+        basic_edit_sheet_destroy_url_value: habit_path(habit),
+        basic_edit_sheet_return_to_value: return_to,
+        basic_edit_sheet_habit_id_value: habit.id,
+        basic_edit_sheet_countable_value: countable,
+        basic_edit_sheet_win_not_saved_value: t("dash.battlefield.win_not_saved"),
+        basic_edit_sheet_initial_name_value: habit.name,
+        basic_edit_sheet_initial_unit_value: habit.unit,
+        basic_edit_sheet_initial_quick_value: quick_n.to_s,
+        basic_edit_sheet_today_row_id_value: dom_id(habit, :today),
+        basic_edit_sheet_trail_row_id_value: "trail-base-habit-#{habit.id}",
+        basic_edit_sheet_delete_basic_value: t("habits.basic_edit.delete_basic"),
+        basic_edit_sheet_life_journey_id_value: journey&.id,
+        basic_edit_sheet_goal_id_value: goal&.id,
+        basic_edit_sheet_plan_id_value: plan&.id
+      },
+      **sheet_attrs) do %>
+  <div class="lp-basic-edit__inner">
+    <div class="lp-basic-sheet__grab" aria-hidden="true"></div>
+    <h2 class="lp-basic-edit__heading"><%= t("dash.anytime.edit_basic") %></h2>
+
+    <div class="lp-basic-edit__group">
+      <div class="lp-basic-edit__row">
+        <label class="lp-basic-edit__row-label" for="<%= dom_id(habit, :edit_name) %>"><%= t("habits.basic_edit.name_label") %></label>
+        <textarea id="<%= dom_id(habit, :edit_name) %>"
+                  class="lp-basic-edit__name-area"
+                  rows="1"
+                  autocomplete="off"
+                  enterkeyhint="done"
+                  data-basic-edit-sheet-target="nameInput"
+                  data-action="input->basic-edit-sheet#resizeName keydown->basic-edit-sheet#fieldKeydown"><%= habit.name %></textarea>
+      </div>
+      <% if countable %>
+        <div class="lp-basic-edit__row">
+          <div class="lp-basic-edit__tap-line">
+            <span class="lp-basic-edit__tap-hint"><%= t("habits.basic_edit.one_tap_adds") %></span>
+            <input type="number"
+                   class="lp-basic-edit__mini-num"
+                   value="<%= quick_n %>"
+                   min="1"
+                   max="100000"
+                   inputmode="numeric"
+                   aria-label="<%= t("habits.basic_edit.one_tap_adds") %>"
+                   data-basic-edit-sheet-target="quickInput"
+                   data-action="keydown->basic-edit-sheet#fieldKeydown">
+            <input type="text"
+                   class="lp-basic-edit__mini-unit"
+                   value="<%= habit.unit %>"
+                   autocomplete="off"
+                   maxlength="40"
+                   aria-label="<%= t("habits.basic_edit.unit_aria") %>"
+                   data-basic-edit-sheet-target="unitInput"
+                   data-action="keydown->basic-edit-sheet#fieldKeydown">
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <button type="button"
+            class="lp-basic-sheet__save-notice"
+            data-basic-edit-sheet-target="saveNotice"
+            data-action="click->basic-edit-sheet#retry"
+            hidden><%= t("dash.battlefield.win_not_saved") %></button>
+
+    <button type="button"
+            class="lp-basic-sheet__done"
+            data-basic-edit-sheet-target="doneBtn"
+            data-action="click->basic-edit-sheet#done"><%= t("dash.anytime.done") %></button>
+
+    <div class="lp-basic-edit__delete-slot" data-basic-edit-sheet-target="deleteSlot">
+      <button type="button"
+              class="lp-basic-edit__delete-text"
+              data-basic-edit-sheet-target="deleteLink"
+              data-action="click->basic-edit-sheet#openDeleteConfirm"><%= t("habits.basic_edit.delete_basic") %></button>
+    </div>
+
+    <template data-basic-edit-sheet-target="confirmTemplate">
+      <div class="lp-basic-edit__confirm">
+        <p><%= t("habits.basic_edit.delete_confirm") %></p>
+        <div class="lp-basic-edit__confirm-actions">
+          <button type="button"
+                  data-action="click->basic-edit-sheet#keepDelete"><%= t("habits.basic_edit.keep") %></button>
+          <button type="button"
+                  class="is-danger"
+                  data-action="click->basic-edit-sheet#confirmDelete"><%= t("habits.basic_edit.delete") %></button>
+        </div>
+      </div>
+    </template>
+  </div>
+<% end %>

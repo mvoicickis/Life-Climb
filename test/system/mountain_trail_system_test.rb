@@ -179,8 +179,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert @battle.repeat_daily?
   end
 
-  test "base camp kebab closes when tapping outside" do
-    @user.habits.create!(
+  test "base camp kebab opens edit sheet and scrim tap closes without saving" do
+    habit = @user.habits.create!(
       name: "One German lesson",
       unit: "times",
       points: 5,
@@ -202,11 +202,45 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
-    find("#trail-base-sheet .lp-trail-battles__kebab-btn").click
-    assert_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    assert_selector "##{ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)}", visible: :all, wait: 5
 
-    find(".lp-trail-sheet__title", visible: :all).click
-    assert_no_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+    find("body > .lp-dash-habit__scrim", visible: :all).click
+    assert_no_selector "##{ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)}", visible: :all, wait: 3
+    assert_selector "#trail-base-habit-#{habit.id}", text: "One German lesson", visible: :all
+  end
+
+  test "base camp edit basic saves name and leaves no portaled scrim in body" do
+    page.driver.browser.manage.window.resize_to(360, 800)
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      quantity_checkin: true,
+      quick_add_amount: 10,
+      life_journey_id: @journey.id
+    )
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    find(".lp-trail-base-card__base-row").click
+    assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
+
+    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    find("textarea.lp-basic-edit__name-area", visible: :all).fill_in with: "Deep read"
+    find(".lp-basic-sheet__done", visible: :all).click
+
+    assert_selector "#trail-base-habit-#{habit.id}", text: "Deep read", visible: :all, wait: 5
+    assert_equal 0, page.evaluate_script("document.body.querySelectorAll('.lp-dash-habit__scrim').length")
+    assert_equal 0, page.evaluate_script("document.body.querySelectorAll('.lp-dash-habit__sheet--basic-edit').length")
   end
 
   test "camp sheet composer sits close to battle list at 360px with one battle" do

@@ -18454,6 +18454,187 @@ button.lp-strategy-overflow {
   text-decoration: none;
   box-sizing: border-box;
 }
+button.lp-basic-sheet__edit-row {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: left;
+}
+.lp-dash-habit__sheet--basic-edit {
+  bottom: var(--lp-basic-edit-keyboard-inset, 0px);
+  max-height: min(85dvh, calc(36rem - var(--lp-basic-edit-keyboard-inset, 0px)));
+}
+.lp-basic-edit__inner {
+  min-width: 0;
+}
+.lp-basic-edit__heading {
+  margin: 0 0 0.85rem;
+  font-family: var(--lp-font-ui);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--lp-ink);
+  text-align: center;
+}
+.lp-basic-edit__group {
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper);
+  overflow: hidden;
+}
+.lp-basic-edit__row {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--lp-border);
+}
+.lp-basic-edit__row:last-child {
+  border-bottom: 0;
+}
+.lp-basic-edit__row-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--lp-font-ui);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+.lp-basic-edit__name-area {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--lp-tap);
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+  font-family: var(--lp-font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  resize: none;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+.lp-basic-edit__name-area.is-needed {
+  border-color: var(--rpg-red);
+}
+.lp-basic-edit__name-area:focus {
+  outline: 2px solid color-mix(in srgb, var(--lp-ink) 22%, transparent);
+  outline-offset: 1px;
+}
+.lp-basic-edit__tap-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.lp-basic-edit__tap-hint {
+  flex: 1 1 100%;
+  font-family: var(--lp-font-ui);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+.lp-basic-edit__mini-num,
+.lp-basic-edit__mini-unit {
+  min-height: var(--lp-tap);
+  padding: 0 0.65rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+  font-family: var(--lp-font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--lp-ink);
+  box-sizing: border-box;
+}
+.lp-basic-edit__mini-num {
+  width: 5.5rem;
+  flex: 0 0 auto;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.lp-basic-edit__mini-num::-webkit-outer-spin-button,
+.lp-basic-edit__mini-num::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.lp-basic-edit__mini-num.is-needed,
+.lp-basic-edit__mini-unit.is-needed {
+  border-color: var(--rpg-red);
+}
+.lp-basic-edit__mini-unit {
+  flex: 1 1 6rem;
+  min-width: 0;
+}
+.lp-basic-edit__mini-num:focus,
+.lp-basic-edit__mini-unit:focus {
+  outline: 2px solid color-mix(in srgb, var(--lp-ink) 22%, transparent);
+  outline-offset: 1px;
+}
+.lp-basic-edit__delete-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  margin: 0.35rem 0 0;
+  padding: 0 0.5rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--lp-font-ui);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  cursor: pointer;
+  text-align: center;
+}
+.lp-basic-edit__delete-slot .lp-basic-edit__confirm {
+  margin-top: 0.35rem;
+}
+.lp-basic-edit__confirm {
+  padding: 0.85rem;
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper);
+}
+.lp-basic-edit__confirm p {
+  margin: 0 0 0.65rem;
+  font-family: var(--lp-font-ui);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+}
+.lp-basic-edit__confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.lp-basic-edit__confirm-actions button {
+  min-height: var(--lp-tap);
+  border-radius: var(--lp-radius-pill);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  font-family: var(--lp-font-ui);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--lp-ink);
+}
+.lp-basic-edit__confirm-actions .is-danger {
+  border-color: var(--rpg-red);
+  background: var(--rpg-red);
+  color: var(--lp-surface);
+}
+.lp-dash-habit__edit-host {
+  display: contents;
+}
 .lp-dash-anytime__head {
   display: flex;
   flex-wrap: wrap;
