@@ -124,6 +124,7 @@ module Onboarding
         @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
 
         Strategy::Celebrate.call(user: @user, goal: first_battle) if first_battle
+        Goals::Current.clear_cache!(user: @user)
       end
 
       Result.new(journey: journey, goal: goal, plan: plan, projects: projects, first_battle: first_battle)

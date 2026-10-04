@@ -112,8 +112,7 @@ module Strategy
       private
 
       def resolve_goal
-        area = @journey.life_area
-        @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+        Goals::Current.goal_for(user: @user, journey: @journey)
       end
 
       def sanitize_cursor!(data)

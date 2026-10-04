@@ -49,6 +49,7 @@ module Journeys
         )
         Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
         Missions::EnsureDaily.call(user: @user, mission_title: @today_mission)
+        Goals::Current.clear_cache!(user: @user)
         journey
       end
     end

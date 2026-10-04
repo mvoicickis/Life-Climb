@@ -34,7 +34,7 @@ module Strategy
       journey = @journey || @user.primary_focused_journey || @user.life_journeys.active.order(:id).first
       return nil if journey.blank?
 
-      @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      Goals::Current.goal_for(user: @user, journey: journey)
     end
   end
 end

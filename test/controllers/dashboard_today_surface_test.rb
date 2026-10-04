@@ -71,7 +71,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
   test "dashboard sync surfaces overdue one-shot battles on today" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
     dismiss_onboarding_missions!(@user)
-    goal = @user.strategy_goals.for_kind("goal").roots.first
+    goal = Goals::Current.goal_for(user: @user, journey: journey)
     plan = goal.children.find(&:plan?)
     camp = plan.children.find(&:project?)
     past = 11.days.ago.to_date
@@ -92,7 +92,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
 
   test "dashboard sync does not surface future one-shot battles on today" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
-    goal = @user.strategy_goals.for_kind("goal").roots.first
+    goal = Goals::Current.goal_for(user: @user, journey: journey)
     plan = goal.children.find(&:plan?)
     camp = plan.children.find(&:project?)
     future = 1.month.from_now.to_date
@@ -110,7 +110,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
 
   test "dashboard shows waiting indicator when cap hides battles" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
-    goal = @user.strategy_goals.for_kind("goal").roots.first
+    goal = Goals::Current.goal_for(user: @user, journey: journey)
     plan = goal.children.find(&:plan?)
     camp = plan.children.find(&:project?)
     24.times do |i|
@@ -128,7 +128,7 @@ class DashboardTodaySurfaceTest < ActionDispatch::IntegrationTest
 
   test "completing at open cap surfaces next waiting battle on dashboard sync" do
     journey = seed_climb!(@user, today_mission: "Existing fight")
-    goal = @user.strategy_goals.for_kind("goal").roots.first
+    goal = Goals::Current.goal_for(user: @user, journey: journey)
     plan = goal.children.find(&:plan?)
     camp = plan.children.find(&:project?)
     24.times do |i|

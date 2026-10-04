@@ -35,6 +35,6 @@ class BattleCompletionsController < ApplicationController
     journey = current_user.primary_focused_journey
     return unless journey
 
-    current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+    Goals::Current.goal_for(user: current_user, journey: journey)
   end
 end

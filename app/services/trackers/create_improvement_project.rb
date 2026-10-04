@@ -24,7 +24,7 @@ module Trackers
       journey = resolve_journey
       raise Error, I18n.t("areas.improve.need_journey") if journey.blank?
 
-      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: @user, journey: journey)
       raise Error, I18n.t("areas.improve.need_goal") if goal.blank?
 
       plan = resolve_plan(goal, journey)

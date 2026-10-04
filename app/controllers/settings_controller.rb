@@ -5,7 +5,7 @@ class SettingsController < ApplicationController
     @commitment_journey = current_user.primary_focused_journey
     @strategy_goal =
       if @commitment_journey
-        current_user.strategy_goals.for_area(@commitment_journey.life_area_id).for_kind("goal").roots.first
+        Goals::Current.goal_for(user: current_user, journey: @commitment_journey)
       end
   end
 

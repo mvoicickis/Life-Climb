@@ -28,29 +28,39 @@ module Today
     private
 
     def eligible_battle_ids
-      one_shots = @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
-        .incomplete
-        .not_holding
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
-        .pluck(:id)
+      one_shots = journey_filtered(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
+          .incomplete
+          .not_holding
+          .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
+      ).pluck(:id)
 
-      dailies = @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
-        .incomplete
-        .not_holding
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
-        .pluck(:id)
+      dailies = journey_filtered(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
+          .incomplete
+          .not_holding
+          .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
+      ).pluck(:id)
 
-      weeklies = @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
-        .incomplete
-        .not_holding
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
-        .select { |goal| goal.repeats_on?(@on) }
+      weeklies = journey_filtered(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
+          .incomplete
+          .not_holding
+          .where("scheduled_on IS NULL OR scheduled_on <= ?", @on)
+      ).select { |goal| goal.repeats_on?(@on) }
         .map(&:id)
 
       one_shots + dailies + weeklies
+    end
+
+    def journey_filtered(scope)
+      excluded = Goals::Current.excluded_journey_ids_for(user: @user)
+      return scope if excluded.empty?
+
+      scope.where(life_journey_id: nil).or(scope.where.not(life_journey_id: excluded))
     end
   end
 end

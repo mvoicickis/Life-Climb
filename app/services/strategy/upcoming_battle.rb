@@ -17,7 +17,7 @@ module Strategy
       return nil if @journey.blank?
 
       area_id = @journey.life_area_id
-      goal = @user.strategy_goals.for_area(area_id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: @user, journey: @journey)
       return nil if goal.blank?
 
       battles = Progress.battles_under(goal)

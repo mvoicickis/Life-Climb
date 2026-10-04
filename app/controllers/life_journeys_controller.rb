@@ -467,7 +467,7 @@ class LifeJourneysController < ApplicationController
       return root if root&.goal?
     end
 
-    @root_goals.first
+    Goals::Current.goal_for(user: current_user, journey: @journey, goal_id: params[:goal_id])
   end
 
   def select_strategy_plan

@@ -69,6 +69,7 @@ module Strategy
       # One celebration for the day they just named — not on idempotent retries.
       Strategy::Celebrate.call(user: @user, goal: result.battle) if result.created? && result.battle
 
+      Goals::Current.clear_cache!(user: @user)
       result
     end
 

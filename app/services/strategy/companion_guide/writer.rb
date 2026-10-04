@@ -85,7 +85,7 @@ module Strategy
 
       def find_goal!
         goal = @user.strategy_goals.for_kind("goal").find_by(id: @cursor["goal_id"])
-        goal ||= @user.strategy_goals.for_area(@area.id).for_kind("goal").roots.first
+        goal ||= Goals::Current.goal_for(user: @user, journey: @journey)
         raise ArgumentError, I18n.t("strategy.need_goal") if goal.blank?
 
         goal

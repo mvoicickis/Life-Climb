@@ -30,7 +30,8 @@ module ClimbTestHelper
       character: user.character.presence || "fox"
     )
     journey = user.reload.primary_focused_journey
-    goal = user.strategy_goals.for_kind("goal").roots.first
+    goal = user.strategy_goals.for_kind("goal").roots.where(life_journey_id: journey.id).ordered.first ||
+           user.strategy_goals.for_kind("goal").roots.ordered.first
     plan = goal.children.create!(
       user: user, life_area: journey.life_area, life_journey: journey,
       horizon: "plan", title: "Build", position: 0

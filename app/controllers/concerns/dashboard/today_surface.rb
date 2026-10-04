@@ -24,7 +24,7 @@ module Dashboard
         .ordered
       @open_todos = @daily_todos.reject(&:completed?)
       @done_todos = @daily_todos.select(&:completed?)
-      @strategy_goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+      @strategy_goal = Goals::Current.goal_for(user: current_user, journey: @journey)
       retire_plan_route_if_needed!
       @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").not_holding.none?
       @show_plan_route = @first_climb_needed || plan_route_pending?
