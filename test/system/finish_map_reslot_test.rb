@@ -32,7 +32,16 @@ class FinishMapReslotTest < ApplicationSystemTestCase
     end
     @camp1, @camp2, @camp3, @camp4 = @camps
     win_all_battles!(@camp1)
+    attach_custom_mountain_photo!
     dismiss_onboarding_missions!(@user)
+  end
+
+  def attach_custom_mountain_photo!
+    @journey.mountain_photo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/mountain_trail_default.jpg")),
+      filename: "mountain_trail_default.jpg",
+      content_type: "image/jpeg"
+    )
   end
 
   def win_all_battles!(project)
@@ -50,6 +59,21 @@ class FinishMapReslotTest < ApplicationSystemTestCase
     assert_today_v2_shell!
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_selector "#trail-map-camps", wait: 10
+    assert_selector "#mountain-trail.lp-trail.is-custom-mountain-photo", wait: 5
+  end
+
+  def fresh_get_camp_trail_y(camp_id)
+    y = nil
+    open_new_window
+    within_window(windows.last) do
+      visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+      assert_selector "#trail-camp-#{camp_id}", wait: 10
+      camp = find("#trail-camp-#{camp_id}", visible: :all)
+      style = camp[:style] || camp["style"]
+      match = style.to_s.match(/--lp-trail-y:\s*([^;]+)/)
+      y = match ? match[1].strip.to_f : nil
+    end
+    y
   end
 
   def builtin_map?
@@ -97,7 +121,7 @@ class FinishMapReslotTest < ApplicationSystemTestCase
     page.evaluate_script("window.__streamActions || []")
   end
 
-  test "finish camp reslots map tents without reload at 360px" do
+  test "custom photo finish camp reslots map tents without reload at 360px" do
     page.driver.browser.manage.window.resize_to(360, 700)
     sign_in_and_visit_mountain!
 
@@ -121,17 +145,19 @@ class FinishMapReslotTest < ApplicationSystemTestCase
     assert_selector "#trail-map-camps #trail-camp-#{@camp3.id}"
     assert_selector "#trail-map-camps #trail-camp-#{@camp4.id}"
 
-    expected_bottom_y = expected_trail_y_for(@camp2.id)
-    assert_in_delta expected_bottom_y, camp_trail_y(@camp2.id), 0.0001,
-                    "camp 2 should sit in bottom slot after finish (expected y=#{expected_bottom_y})"
+    live_camp2_y = camp_trail_y(@camp2.id)
+    fresh_camp2_y = fresh_get_camp_trail_y(@camp2.id)
+    assert_in_delta fresh_camp2_y, live_camp2_y, 0.0001,
+                    "camp 2 live y should match fresh GET (live=#{live_camp2_y}, fresh=#{fresh_camp2_y})"
 
+    assert_in_delta expected_trail_y_for(@camp2.id), live_camp2_y, 0.0001
     assert_in_delta expected_trail_y_for(@camp3.id), camp_trail_y(@camp3.id), 0.0001
     assert_in_delta expected_trail_y_for(@camp4.id), camp_trail_y(@camp4.id), 0.0001
 
     assert_selector ".lp-trail-map-sign__pill--finished", text: /1 camp finished/i
   end
 
-  test "undo finish puts camp 1 back in bottom slot and shifts camp 2 up" do
+  test "custom photo undo finish puts camp 1 back in bottom slot and shifts camp 2 up" do
     page.driver.browser.manage.window.resize_to(360, 700)
     sign_in_and_visit_mountain!
 
