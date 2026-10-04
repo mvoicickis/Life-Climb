@@ -16,7 +16,7 @@ module Strategy
       return nil if @journey.blank?
 
       area = @journey.life_area
-      goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: @user, journey: @journey)
       helpers = Rails.application.routes.url_helpers
 
       if goal.nil?

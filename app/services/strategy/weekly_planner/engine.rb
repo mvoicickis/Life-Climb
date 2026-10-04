@@ -165,7 +165,7 @@ module Strategy
 
       def resolve_plan
         area = @journey.life_area
-        goal = @user.strategy_goals.for_area(area.id).for_kind("goal").roots.first
+        goal = Goals::Current.goal_for(user: @user, journey: @journey)
         return nil if goal.blank?
 
         plans = goal.children.select { |p| p.plan? && !p.holding? }.sort_by { |p| [ p.position.to_i, p.id ] }

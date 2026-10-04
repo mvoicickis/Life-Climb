@@ -43,11 +43,7 @@ module Strategy
     private
 
     def root_goal
-      @root_goal ||= @user.strategy_goals
-        .for_area(@journey.life_area_id)
-        .for_kind("goal")
-        .roots
-        .first
+      @root_goal ||= Goals::Current.goal_for(user: @user, journey: @journey)
     end
 
     def incomplete_path_projects(goal)

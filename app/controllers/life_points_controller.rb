@@ -39,11 +39,8 @@ class LifePointsController < ApplicationController
   end
 
   def load_stats_page_data!
-    @journey = current_user.primary_focused_journey
-    @strategy_goal =
-      if @journey
-        current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
-      end
+    @journey = Goals::Current.journey_for(user: current_user)
+    @strategy_goal = Goals::Current.goal_for(user: current_user, journey: @journey)
     @closer =
       if @strategy_goal
         @strategy_goal.progress_percent.to_i

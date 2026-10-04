@@ -21,7 +21,7 @@ class MissionCompletionsController < ApplicationController
     if pb.new_record || streak.earned_freeze
       flash[:climb_boss] = true
       journey = current_user.primary_focused_journey
-      goal = journey && current_user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      goal = journey && Goals::Current.goal_for(user: current_user, journey: journey)
       flash[:climb_reward] = Climb::Reward.for_battle(
         user: current_user,
         awarded: mission.lp_reward.to_i,

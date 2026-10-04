@@ -349,10 +349,10 @@ module Progress
     end
 
     def mountain_summary
-      journey = @user.primary_focused_journey
+      journey = Goals::Current.journey_for(user: @user)
       return empty_mountain_summary(journey) unless journey
 
-      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: @user, journey: journey)
       return empty_mountain_summary(journey) unless goal
 
       plans = goal.children.select { |c| c.plan? && !c.holding? }
@@ -395,10 +395,10 @@ module Progress
     end
 
     def strategy_mountain_percent
-      journey = @user.primary_focused_journey
+      journey = Goals::Current.journey_for(user: @user)
       return 0 unless journey
 
-      goal = @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: @user, journey: journey)
       return 0 unless goal
 
       Strategy::Progress.percent(goal)

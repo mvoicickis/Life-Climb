@@ -156,6 +156,7 @@ class StrategyGoalsController < ApplicationController
     begin
       if goal.goal?
         StrategyGoal.with_holding_destroy { goal.destroy! }
+        Goals::Current.clear_cache!(user: current_user)
       else
         goal.destroy!
       end
@@ -766,7 +767,7 @@ class StrategyGoalsController < ApplicationController
     return if @journey.blank?
 
     @goals = current_user.strategy_goals.for_area(area_id).ordered.includes(:parent, children: { children: :children })
-    @goal = @goals.for_kind("goal").roots.first
+    @goal = Goals::Current.goal_for(user: current_user, journey: @journey)
     @focus = focus_id.present? ? @goals.find { |g| g.id == focus_id.to_i } : @goal
     @focus ||= @goal
     if @focus&.month? || @focus&.week?

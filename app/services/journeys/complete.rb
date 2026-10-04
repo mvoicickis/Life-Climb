@@ -35,6 +35,7 @@ module Journeys
           reason: I18n.t("journeys.completion_lp_reason", title: @journey.title),
           source: @journey
         )
+        Goals::Current.clear_cache!(user: @user)
         @journey
       end
     end

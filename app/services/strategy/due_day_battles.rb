@@ -63,27 +63,40 @@ module Strategy
     private
 
     def one_time_goals
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
-        .incomplete
-        .not_holding
-        .ordered
+      filter_by_journey_status(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "none")
+          .incomplete
+          .not_holding
+          .ordered
+      )
     end
 
     def daily_templates
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
-        .incomplete
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
-        .ordered
+      filter_by_journey_status(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "daily")
+          .incomplete
+          .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
+          .ordered
+      )
     end
 
     def weekly_templates
-      @user.strategy_goals
-        .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
-        .incomplete
-        .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
-        .ordered
+      filter_by_journey_status(
+        @user.strategy_goals
+          .where(life_area_id: @life_area.id, horizon: "day", repeat: "weekly")
+          .incomplete
+          .where("scheduled_on IS NULL OR scheduled_on <= ?", @to)
+          .ordered
+      )
+    end
+
+    def filter_by_journey_status(scope)
+      excluded = Goals::Current.excluded_journey_ids_for(user: @user)
+      return scope if excluded.empty?
+
+      scope.where(life_journey_id: nil).or(scope.where.not(life_journey_id: excluded))
     end
   end
 end

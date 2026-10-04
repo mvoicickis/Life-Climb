@@ -56,7 +56,7 @@ class CompanionGuidesController < ApplicationController
     return false if params[:new_plan].blank?
     return false if current_user.extra_plans_allowed?
 
-    goal = current_user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+    goal = Goals::Current.goal_for(user: current_user, journey: @journey)
     return false if goal.blank?
     return false unless goal.children.for_kind("plan").not_holding.exists?
 

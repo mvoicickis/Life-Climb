@@ -86,7 +86,7 @@ module Battles
       flash_data[:battle_celebrate] = true
       if awarded.positive? && (pb.new_record || streak.earned_freeze)
         flash_data[:climb_boss] = true
-        goal = journey && @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+        goal = journey && Goals::Current.goal_for(user: @user, journey: journey)
         flash_data[:climb_reward] = Climb::Reward.for_battle(
           user: @user,
           awarded: awarded,

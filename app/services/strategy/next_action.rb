@@ -85,7 +85,7 @@ module Strategy
     def resolve_goal
       return nil if @user.blank? || @journey.blank?
 
-      @user.strategy_goals.for_area(@journey.life_area_id).for_kind("goal").roots.first
+      Goals::Current.goal_for(user: @user, journey: @journey)
     end
 
     def helpers

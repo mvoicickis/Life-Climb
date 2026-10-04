@@ -30,6 +30,7 @@ module Focus
         end
       end
 
+      Goals::Current.clear_cache!(user: @user)
       @user.life_journeys.focused.reload
     end
   end

@@ -189,7 +189,7 @@ module Today
       return 0 if journey.blank?
 
       user = journey.user
-      goal = user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      goal = Goals::Current.goal_for(user: user, journey: journey)
       return 0 if goal.blank?
 
       capacity = 0

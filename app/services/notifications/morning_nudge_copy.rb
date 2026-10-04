@@ -41,11 +41,11 @@ module Notifications
     end
 
     def focused_goal_name
-      journey = @user.primary_focused_journey
+      pair = Goals::Current.call(user: @user)
+      journey = pair.journey
       return nil if journey.blank?
 
-      strategy_goal =
-        @user.strategy_goals.for_area(journey.life_area_id).for_kind("goal").roots.first
+      strategy_goal = pair.goal
       raw = strategy_goal&.title.presence || journey.title.presence
       return nil if raw.blank?
 
