@@ -52,7 +52,7 @@ class TrailCampSettledSheetTest < ActionDispatch::IntegrationTest
   test "completed camp sheet shows settled card without idle or add pill" do
     complete_camp!(@project)
 
-    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, open_camp: @project.id)
     assert_response :success
 
     assert_select "#trail-camp-finish-#{@project.id}[data-trail-camp-finish-finished-settled-value='true']"
@@ -79,6 +79,16 @@ class TrailCampSettledSheetTest < ActionDispatch::IntegrationTest
     refute @project.completed?
     assert_match I18n.t("strategy.rpg.trail.camp_idle.won_pill"), response.body
     refute_match I18n.t("strategy.rpg.trail.finish_camp_card.finished"), response.body
+  end
+
+  test "completed camp sheet not rendered without open_camp or focus_id" do
+    complete_camp!(@project)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+
+    assert_select "#trail-sheet-camp-#{@project.id}", count: 0
+    assert_select "#trail-camp-finish-#{@project.id}", count: 0
   end
 
   test "open camp unchanged when not completed" do

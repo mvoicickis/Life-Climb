@@ -506,8 +506,57 @@
 }
 
 #trail-map-camps .lp-trail-map-sign,
+#trail-map-camps .lp-trail-map-sign-stack,
+#trail-map-camps .lp-trail-map-sign__pill-btn,
 #trail-map-camps .lp-trail-camp {
   pointer-events: auto;
+}
+
+.lp-trail-map-sign-stack {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 48px);
+  left: max(0.4rem, env(safe-area-inset-left, 0px));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: min(11rem, calc(100% - 0.8rem));
+}
+
+.lp-trail-map-sign-stack .lp-trail-map-sign {
+  position: static;
+  top: auto;
+  left: auto;
+}
+
+.lp-trail-map-sign__pill-btn {
+  min-height: var(--lp-tap, 2.75rem);
+  min-width: var(--lp-tap, 2.75rem);
+  padding: 0.28rem 0.5rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-border, color-mix(in srgb, var(--lp-ink) 10%, transparent));
+  background: var(--lp-surface, #ffffff);
+  color: var(--lp-ink, #0f172a);
+  font-family: var(--lp-font-ui, var(--lp-trail-display));
+  font-size: 0.56rem;
+  font-weight: 800;
+  line-height: 1.2;
+  box-shadow: var(--lp-shadow-card, 0 14px 36px color-mix(in srgb, var(--lp-ink) 8%, transparent));
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-trail-map-sign__pill--finished .lp-trail-map-sign__check {
+  color: var(--lp-muted, #475569);
+  font-weight: 800;
+}
+
+.lp-trail-map-sign.is-map-only .lp-trail-map-sign__pill {
+  display: none;
 }
 
 .lp-trail-map-sign {
@@ -5452,42 +5501,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transform: translateX(5px) rotate(14deg);
 }
 
-.lp-trail__companion {
-  position: absolute;
-  z-index: 5;
-  width: 36px;
-  height: 36px;
-  margin: -34px 0 0 -18px;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 4px rgba(12, 22, 14, 0.45));
-  transition: left 0.8s ease, top 0.8s ease;
-}
-
-.lp-trail__companion-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  display: block;
-}
-
-.lp-trail__companion.is-walk {
-  animation: lp-trail-companion-bob 1.8s ease-in-out infinite;
-}
-
-.lp-trail__companion.is-wind {
-  animation: lp-trail-companion-bob 1.1s ease-in-out infinite;
-}
-
-@keyframes lp-trail-companion-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .lp-trail__companion.is-walk,
-  .lp-trail__companion.is-wind,
   .lp-trail__lightning.is-flash {
     animation: none !important;
   }

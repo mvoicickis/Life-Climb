@@ -131,6 +131,12 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-stats-row__name", text: long_title
     assert_select ".lp-stats-row", count: 1
     assert_no_match(/Quiet camp/, response.body)
+    href = assert_select("a.lp-stats-row").first["href"]
+    query = URI.parse(href).query
+    params = Rack::Utils.parse_query(query)
+    assert_equal project.id.to_s, params["open_camp"]
+    assert_equal goal.id.to_s, params["goal_id"]
+    assert_equal plan.id.to_s, params["plan_id"]
   end
 
   test "this week section hidden with zero wins" do

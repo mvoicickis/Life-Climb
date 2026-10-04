@@ -165,6 +165,7 @@ class LifeJourneysController < ApplicationController
     @branch_plan, @branch_project = strategy_branch_for(@focus, @today_battle)
     @plan = select_strategy_plan
     @trail = Strategy::Trail.for(plan: @plan)
+    @sheet_extra_camp = sheet_extra_camp_for_trail(@trail)
     preload_mountain_trail_done_today!
     # Mountain = planning. Allow focusing any camp on this Path (even battle-locked)
     # so newly created checkpoints stay visible after save. Today still owns fighting.
@@ -214,6 +215,23 @@ class LifeJourneysController < ApplicationController
       else
         :fight_today
       end
+  end
+
+  # One deep-linked camp sheet (open_camp, then focus_id) without putting finished camps on the map.
+  def sheet_extra_camp_for_trail(trail)
+    return nil if trail.blank? || @plan.blank?
+
+    existing_ids = helpers.mountain_trail_sheet_camp_ids(trail)
+    candidate_param = params[:open_camp].presence || params[:focus_id].presence
+    return nil if candidate_param.blank?
+
+    camp = @goals.find { |g| g.id == candidate_param.to_i }
+    return nil unless camp&.project?
+    return nil if camp.holding?
+    return nil unless camp.parent_id == @plan.id
+    return nil if existing_ids.include?(camp.id)
+
+    camp
   end
 
   def preload_mountain_trail_done_today!

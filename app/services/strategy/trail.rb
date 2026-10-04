@@ -7,7 +7,7 @@ module Strategy
   class Trail
     # Map window: up to three camps along trail order (array index, not position column).
     VISIBLE_MAX = 3
-    VISIBLE_BEHIND = 1
+    VISIBLE_BEHIND = 0
 
     Node = Struct.new(
       :id, :title, :state, :pct, :position, :record, :y,
@@ -38,6 +38,7 @@ module Strategy
             nodes.find { |n| n.state == :current && n != current }
 
       visible = focused_sequence(nodes, current, ensure_visible_id: @ensure_visible_id)
+        .reject { |node| node.state == :done }
 
       Result.new(
         progress: @plan.progress_percent.to_i,
@@ -134,6 +135,8 @@ module Strategy
     end
 
     def default_focused_slice(nodes, current)
+      return [] if nodes.present? && nodes.all? { |node| node.state == :done }
+
       return nodes if nodes.size <= VISIBLE_MAX
 
       unless current
@@ -141,15 +144,9 @@ module Strategy
       end
 
       idx = nodes.index { |node| node.id == current.id } || 0
-      from = idx.zero? ? 0 : idx - VISIBLE_BEHIND
-      to = from + VISIBLE_MAX - 1
-
-      if to >= nodes.length
-        to = nodes.length - 1
-        from = [ to - VISIBLE_MAX + 1, 0 ].max
-      end
-
-      nodes[from..to]
+      from = idx - VISIBLE_BEHIND
+      from = 0 if from.negative?
+      nodes[from, VISIBLE_MAX] || []
     end
 
     def narrative_label(nodes, progress)

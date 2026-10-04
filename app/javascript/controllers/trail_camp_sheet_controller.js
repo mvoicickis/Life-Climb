@@ -74,7 +74,20 @@ export default class extends Controller {
     }
 
     const row = campId && this.element.querySelector(`.lp-trail-terrace-sheet__row[data-camp-id="${campId}"]`)
-    if (row) this.openCampFromTerraceSheet({ currentTarget: row, preventDefault() {}, stopPropagation() {} })
+    if (row) {
+      this.openCampFromTerraceSheet({ currentTarget: row, preventDefault() {}, stopPropagation() {} })
+      return
+    }
+
+    const panel = campId && document.getElementById(`trail-sheet-camp-${campId}`)
+    if (panel?.dataset?.campId) {
+      this.open({
+        currentTarget: panel,
+        preventDefault() {},
+        stopPropagation() {},
+        defaultPrevented: false
+      })
+    }
   }
 
   openTerraceSheet(event) {

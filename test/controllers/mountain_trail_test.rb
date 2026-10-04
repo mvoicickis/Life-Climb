@@ -262,15 +262,16 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
-    assert_select "#trail-map-camps #trail-camp-#{camps[0].id}.is-done"
+    assert_select "#trail-map-camps #trail-camp-#{camps[0].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[1].id}.is-current"
     assert_select "#trail-map-camps #trail-camp-#{camps[2].id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps #trail-camp-#{camps[2].id}[data-action*='trail-camp-sheet#open']"
-    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{camps[3].id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps #trail-camp-#{camps[4].id}", count: 0
     assert_select "#trail-map-camps #trail-camp-#{camps[5].id}", count: 0
     assert_select "#trail-map-camps .lp-trail-camp", count: 3
     assert_select ".lp-trail-map-sign__pill", text: "4 camps ahead"
+    assert_select ".lp-trail-map-sign__pill--finished", text: /1 camp finished/
     assert_select ".lp-trail-more", count: 0
     assert_select ".lp-trail__summit"
     assert_select ".trail-terrace", count: 0
@@ -816,7 +817,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_equal @project.stage, created.stage
   end
 
-  test "older finished camps leave the photo; latest cleared stays visible" do
+  test "finished camps leave the photo; only current and upcoming tents show" do
     older = @project
     older.update!(completed_at: Time.current, manually_completed_at: Time.current)
     cleared = @plan.children.create!(
@@ -849,14 +850,40 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
-    assert_select "#trail-map-camps #trail-camp-#{cleared.id}.is-done"
-    assert_select "#trail-map-camps #trail-camp-#{still_open.id}[aria-label=?]", "Ridge camp"
+    assert_select "#trail-map-camps #trail-camp-#{cleared.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}.is-current[aria-label=?]", "Ridge camp"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select ".lp-trail-map-sign__pill", text: "3 camps ahead"
+    assert_select ".lp-trail-map-sign__pill--finished", text: /2 camps finished/
     assert_select ".lp-trail-more", count: 0
     assert_select "#trail-sheet-camp-#{still_open.id}"
     assert_select ".lp-trail-hud__pill", count: 0
+  end
+
+  test "all camps finished shows no tents but summit dock and finished pill" do
+    @plan.children.for_kind("project").destroy_all
+    camps = 3.times.map do |index|
+      @plan.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "project", title: "Done #{index}", position: index, stage: index
+      )
+    end
+    camps.each do |camp|
+      camp.children.create!(
+        user: @user, life_area: @area, life_journey: @journey,
+        horizon: "day", title: "Battle", scheduled_on: Date.current, position: 0
+      ).tap { |b| b.update!(completed_at: Time.current) }
+      camp.complete!
+    end
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-camps .lp-trail-camp", count: 0
+    assert_select ".lp-trail-map-sign__pill--finished", text: /3 camps finished/
+    assert_select ".lp-trail__summit-banner"
+    assert_select "#trail-dock"
+    assert_select "button[data-action*='openArrangeCampsFinished']"
   end
 
   test "upload and reset mountain photo" do

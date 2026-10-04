@@ -26,7 +26,8 @@
 <% current_project = mountain_trail_current_project(projects) %>
 <% trail_energy = mountain_trail_energy(projects) %>
 <% map_nodes = mountain_trail_map_nodes(trail) %>
-<% sheet_camps = (map_nodes.filter_map(&:record) + projects).uniq(&:id) %>
+<% sheet_extra_camps = Array(local_assigns[:sheet_extra_camps]).compact %>
+<% sheet_camps = (map_nodes.filter_map(&:record) + projects + sheet_extra_camps).uniq(&:id) %>
 <% open_battle_count = projects.sum { |p| p.children.count { |c| c.day? && !c.holding? && !c.completed? } } %>
 <% any_battles = projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? } } %>
 <% any_wins = all_projects.any? { |p| p.children.any? { |c| c.day? && !c.holding? && c.completed? } } %>
@@ -485,6 +486,11 @@
           <div class="lp-trail-sheet__camp"
                id="trail-sheet-camp-<%= project.id %>"
                data-camp-panel="<%= project.id %>"
+               data-camp-id="<%= project.id %>"
+               data-camp-title="<%= project.title %>"
+               data-camp-sheet-title="<%= mountain_trail_camp_sheet_title(project) %>"
+               data-camp-description="<%= project.description.to_s %>"
+               data-accent="<%= mountain_trail_picker_fill(project) %>"
                hidden>
             <%= if first_camp_reveal && project.id == first_camp.id
                   render "life_journeys/first_camp_battle_setup",

@@ -126,10 +126,16 @@ module Stats
         wins = wins_by_project[project.id].to_i
         next if wins <= 0
 
+        ancestors = project.ancestor_chain.reverse
+        plan = ancestors.find { |node| node.plan? && !node.holding? }
+        goal = ancestors.find { |node| node.goal? && !node.holding? }
+
         {
           project_id: project.id,
           title: project.title,
-          wins: wins
+          wins: wins,
+          plan_id: plan&.id,
+          goal_id: goal&.id
         }
       end.sort_by { |row| [ -row[:wins], row[:title].to_s.downcase ] }
     end

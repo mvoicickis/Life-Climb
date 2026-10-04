@@ -4,7 +4,12 @@
   <h2 class="lp-stats-block__title" id="stats-camps-heading"><%= t("progress.stats.camps_title") %></h2>
   <div class="lp-stats-card">
     <% camps.each do |camp| %>
-      <%= link_to life_journey_path(journey, node_id: camp[:project_id]), class: "lp-stats-row" do %>
+      <%= link_to life_journey_path(
+            journey,
+            goal_id: camp[:goal_id],
+            plan_id: camp[:plan_id],
+            open_camp: camp[:project_id]
+          ), class: "lp-stats-row" do %>
         <span class="lp-stats-row__name"><%= camp[:title] %></span>
         <span class="lp-stats-row__stat"><%= t("progress.stats.camp_wins", count: camp[:wins]) %></span>
         <span class="lp-stats-row__chev" aria-hidden="true">›</span>

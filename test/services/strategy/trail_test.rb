@@ -80,7 +80,8 @@ class StrategyTrailTest < ActiveSupport::TestCase
     assert_equal 3, trail.visible_nodes.size
     assert_includes trail.visible_nodes.map(&:state), :current
     assert_equal 5, trail.nodes.size
-    assert_equal trail.nodes[1].id, trail.visible_nodes.first.id
+    assert_equal trail.nodes[2].id, trail.visible_nodes.first.id
+    assert trail.visible_nodes.none? { |node| node.state == :done }
   end
 
   test "visible window uses array index when position column has gaps" do
@@ -99,7 +100,8 @@ class StrategyTrailTest < ActiveSupport::TestCase
     first.complete!
 
     trail = Strategy::Trail.for(plan: @plan.reload)
-    assert_equal [ first.id, second.id, third.id ], trail.visible_nodes.map(&:id)
+    assert_equal [ second.id, third.id ], trail.visible_nodes.map(&:id)
+    assert_equal 2, trail.visible_nodes.size
   end
 
   test "visible window shows last three when current is last camp" do
@@ -112,8 +114,8 @@ class StrategyTrailTest < ActiveSupport::TestCase
     camps.first(5).each(&:complete!)
 
     trail = Strategy::Trail.for(plan: @plan.reload)
-    assert_equal camps.last(3).map(&:id), trail.visible_nodes.map(&:id)
-    assert_equal :current, trail.visible_nodes.last.state
+    assert_equal [ camps[5].id ], trail.visible_nodes.map(&:id)
+    assert_equal :current, trail.visible_nodes.first.state
   end
 
   test "visible window shows last three when every camp is done" do
@@ -126,7 +128,7 @@ class StrategyTrailTest < ActiveSupport::TestCase
     camps.each(&:complete!)
 
     trail = Strategy::Trail.for(plan: @plan.reload)
-    assert_equal camps.last(3).map(&:id), trail.visible_nodes.map(&:id)
+    assert_empty trail.visible_nodes
   end
 
   test "ensure_visible_id slides window to include newly planted camp" do
