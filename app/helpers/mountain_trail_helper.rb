@@ -867,14 +867,14 @@ module MountainTrailHelper
   end
 
   def mountain_trail_sort_projects(projects)
-    Array(projects).sort_by { |project| [ project.position.to_i, project.id ] }
+    Strategy::CampOrder.sort(projects)
   end
 
-  # Next camp on the open ledge: lowest stage, then position.
+  # Next open camp in trail order (stage, position) — matches map bottom slot after finish.
   def mountain_trail_next_camp(projects)
-    mountain_trail_pick_by_stage(
+    Strategy::CampOrder.sort(
       Array(projects).reject(&:completed?).reject(&:pages_mode?).reject(&:holding?)
-    )
+    ).first
   end
 
   def mountain_trail_open_camps(plan)

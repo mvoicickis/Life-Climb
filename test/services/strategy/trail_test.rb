@@ -150,6 +150,37 @@ class StrategyTrailTest < ActiveSupport::TestCase
     assert_equal [ camps[1].id, camps[2].id, fourth.id ], trail.visible_nodes.map(&:id)
   end
 
+  test "arranged two steps trail order and map window advance on finish" do
+    titles = %w[A B C D E]
+    camps = titles.index_with do |title|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+        title: title, position: titles.index(title), stage: titles.index(title)
+      )
+    end
+
+    Strategy::ArrangeCamps.call(
+      user: @user,
+      plan: @plan,
+      groups: [
+        { camp_ids: [ camps["A"].id, camps["B"].id ] },
+        { camp_ids: [ camps["C"].id, camps["D"].id, camps["E"].id ] }
+      ]
+    )
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal titles, trail.nodes.map(&:title)
+    assert_equal %w[A B C], trail.visible_nodes.map(&:title)
+
+    camps["A"].manually_complete!
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal %w[B C D], trail.visible_nodes.map(&:title)
+
+    camps["B"].manually_complete!
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    assert_equal %w[C D E], trail.visible_nodes.map(&:title)
+  end
+
   test "habit-linked improvement project skips sequential lock" do
     habit = habits(:one)
     first = @user.strategy_goals.create!(

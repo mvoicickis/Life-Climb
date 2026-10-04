@@ -298,7 +298,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     [ "Beta", "Gamma" ].each_with_index do |title, index|
       @plan.children.create!(
         user: @user, life_area: @area, life_journey: @journey,
-        horizon: "project", title: title, position: index + 1, stage: index + 1
+        horizon: "project", title: title, position: index + 1, stage: 0
       )
     end
 

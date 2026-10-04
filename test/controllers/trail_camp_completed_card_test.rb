@@ -124,6 +124,37 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     assert_match 'id="trail-sheet-finish-undo-bar"', response.body
   end
 
+  test "after finish next camp is trail current and bottom map slot in camp order" do
+    titles = %w[A B C D E]
+    camps = titles.map.with_index do |title, index|
+      @user.strategy_goals.create!(
+        life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+        title: title, position: index, stage: index
+      )
+    end
+    Strategy::ArrangeCamps.call(
+      user: @user,
+      plan: @plan,
+      groups: [
+        { camp_ids: [ camps[0].id, camps[1].id ] },
+        { camp_ids: [ camps[2].id, camps[3].id, camps[4].id ] }
+      ]
+    )
+    win_all_battles!(camps[0])
+
+    post strategy_goal_manual_completion_path(camps[0]), as: :turbo_stream
+    assert_response :success
+
+    trail = Strategy::Trail.for(plan: @plan.reload)
+    helper = Object.new.extend(MountainTrailHelper)
+    next_camp = helper.mountain_trail_next_camp(helper.mountain_trail_open_camps(@plan))
+
+    assert_equal camps[1].id, next_camp.id
+    assert_equal trail.current_node.id, next_camp.id
+    assert_equal trail.visible_nodes.first.id, next_camp.id
+    assert_match %(data-trail-camp-finish-next-camp-id-value="#{next_camp.id}"), response.body
+  end
+
   test "next open camp after finish is not the finished camp and map stream targets it" do
     camps = 4.times.map do |i|
       @user.strategy_goals.create!(
