@@ -890,67 +890,6 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal "Learn guitar", mountain_trail_camp_sheet_title(project)
   end
 
-  test "climber display ratio applies minimum leg step for large camps" do
-    progress = { kind: :battles, won: 1, total: 10, ratio: 0.1, open: 9 }
-    assert_in_delta MountainTrailHelper::CLIMBER_MIN_LEG_STEP,
-                  mountain_trail_climber_display_ratio(progress), 0.001
-  end
-
-  test "climber display ratio caps at the camp" do
-    progress = { kind: :battles, won: 10, total: 10, ratio: 1.0, open: 0 }
-    assert_in_delta 1.0, mountain_trail_climber_display_ratio(progress), 0.001
-  end
-
-  test "climber display ratio keeps pages camps on raw ratio" do
-    progress = { kind: :pages, won: 0, total: 0, ratio: 0.2, open: 0 }
-    assert_in_delta 0.2, mountain_trail_climber_display_ratio(progress), 0.001
-  end
-
-  test "climber marker starts at base with zero wins" do
-    battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
-      true, false, false, nil, false
-    )
-    camp = Struct.new(
-      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
-    ).new(id: 1, stage: 0, position: 0, completed?: false, pages_mode?: false, quantified?: false, children: [ battle ], trail_x: nil, trail_y: nil, holding?: false)
-    marker = mountain_trail_climber_marker([ camp ])
-    assert marker[:visible]
-    assert_in_delta MountainTrailHelper::BASE_YFRAC, marker[:y], 0.02
-  end
-
-  test "climber marker advances between cleared camp and current camp" do
-    done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
-      true, false, true, Time.current, false
-    )
-    won_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
-      true, false, true, Time.current, false
-    )
-    open_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
-      true, false, false, nil, false
-    )
-    cleared = Struct.new(
-      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
-    ).new(id: 1, stage: 1, position: 1, completed?: true, pages_mode?: false, quantified?: false, children: [ done_battle ], trail_x: 0.48, trail_y: 0.72, holding?: false)
-    current = Struct.new(
-      :id, :stage, :position, :completed?, :pages_mode?, :quantified?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
-    ).new(id: 2, stage: 0, position: 0, completed?: false, pages_mode?: false, quantified?: false, children: [ won_battle, open_battle ], trail_x: 0.5, trail_y: 0.55, holding?: false)
-    marker = mountain_trail_climber_marker([ cleared, current ])
-    assert marker[:visible]
-    assert marker[:y] < cleared.trail_y
-    assert marker[:y] > current.trail_y
-  end
-
-  test "climber marker hidden when all camps are complete" do
-    done_battle = Struct.new(:day?, :holding?, :completed?, :completed_at, :repeat_daily?).new(
-      true, false, true, Time.current, false
-    )
-    camp = Struct.new(
-      :id, :stage, :position, :completed?, :pages_mode?, :children, :trail_x, :trail_y, :holding?, keyword_init: true
-    ).new(id: 1, stage: 0, position: 0, completed?: true, pages_mode?: false, children: [ done_battle ], trail_x: 0.5, trail_y: 0.7, holding?: false)
-    marker = mountain_trail_climber_marker([ camp ])
-    assert_not marker[:visible]
-  end
-
   test "stage ordering wins over trail_y for current idle and focus helpers" do
     battle = Struct.new(:day?, :holding?, :completed?).new(true, false, false)
     summit = Struct.new(
@@ -1052,7 +991,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal [ "delay_ms", "id", "slot_index" ], parsed.first.keys.sort
   end
 
-  test "map nodes follow Strategy::Trail visible window including cleared camp" do
+  test "map nodes follow Strategy::Trail visible window without finished camps" do
     user = users(:one)
     Onboarding::Run.call(
       user: user,
@@ -1083,9 +1022,51 @@ class MountainTrailHelperTest < ActionView::TestCase
     trail = Strategy::Trail.for(plan: plan.reload)
     nodes = mountain_trail_map_nodes(trail)
     assert_operator nodes.size, :<=, 3
-    assert_includes nodes.map(&:state), :done
     assert_includes nodes.map(&:state), :current
-    assert_includes nodes.map(&:id), camps[0].id
+    refute_includes nodes.map(&:state), :done
+    refute_includes nodes.map(&:id), camps[0].id
+  end
+
+  test "map camps finished count matches completed plan camps" do
+    user = users(:one)
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "Ship",
+      ideal_scene: "Live",
+      current_reality: "Build",
+      next_win: "Launch",
+      today_mission: "Test",
+      closer_percent: 20
+    )
+    journey = user.reload.primary_focused_journey
+    area = journey.life_area
+    goal = user.strategy_goals.for_kind("goal").roots.first || user.strategy_goals.create!(
+      life_area: area, life_journey: journey, horizon: "goal", title: "Goal", position: 0
+    )
+    plan = user.strategy_goals.create!(
+      life_area: area, life_journey: journey, parent: goal, horizon: "plan", title: "Path", position: 0
+    )
+    2.times do |index|
+      plan.children.create!(
+        user: user, life_area: area, life_journey: journey,
+        horizon: "project", title: "Camp #{index}", position: index
+      ).tap(&:complete!)
+    end
+    plan.children.create!(
+      user: user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Open", position: 2
+    )
+    trail = Strategy::Trail.for(plan: plan.reload)
+    assert_equal 2, mountain_trail_map_camps_finished_count(trail)
+  end
+
+  test "camps_finished pluralizes in ru and lv without missing translation" do
+    %i[ru lv].each do |locale|
+      text = I18n.t("strategy.rpg.trail.camps_finished", count: 5, locale: locale)
+      assert_includes text, "5"
+      refute_match(/translation_missing/, text)
+    end
   end
 
   test "builtin map layout uses fixed tent slots bottom-up" do

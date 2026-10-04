@@ -1059,6 +1059,9 @@ en:
         camps_ahead:
           one: "%{count} camp ahead"
           other: "%{count} camps ahead"
+        camps_finished:
+          one: "1 camp finished"
+          other: "%{count} camps finished"
         map_sign_aria: "Camp map"
         arrange:
           title: "Change camp order"

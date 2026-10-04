@@ -548,7 +548,7 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#rpg-add-checkpoint", count: 0
   end
 
-  test "latest cleared camp stays on the mountain photo" do
+  test "finished camps are not drawn on the mountain photo" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
     )
@@ -588,8 +588,8 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
     assert_select "#trail-map-camps #trail-camp-#{older.id}", count: 0
-    assert_select "#trail-map-camps #trail-camp-#{project.id}"
-    assert_select "#trail-map-camps #trail-camp-#{still_open.id}"
+    assert_select "#trail-map-camps #trail-camp-#{project.id}", count: 0
+    assert_select "#trail-map-camps #trail-camp-#{still_open.id}.is-current"
     assert_select "#trail-map-camps #trail-camp-#{fogged.id}.is-locked:not(.is-fogged)"
     assert_select "#trail-map-camps [id^=trail-camp-]", count: 3
     assert_select ".lp-trail-map-sign__pill", text: /camps ahead/

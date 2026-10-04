@@ -294,6 +294,9 @@ de:
         camps_ahead: # TODO: translate
           one: "%{count} camp ahead"
           other: "%{count} camps ahead"
+        camps_finished: # TODO: translate
+          one: "1 camp finished"
+          other: "%{count} camps finished"
         map_sign_aria: "Camp map" # TODO: translate
         arrange: # TODO: translate
           title: "Change camp order"

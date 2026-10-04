@@ -37,6 +37,31 @@ class TrailCampCompletedCardTest < ActionDispatch::IntegrationTest
     ).tap { |battle| battle.update!(completed_at: Time.current) }
   end
 
+  test "finish camp keeps sheet panel in page and undo stream still works" do
+    camp_a = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp Alpha", position: 0, stage: 0
+    )
+    camp_b = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp Beta", position: 1, stage: 1
+    )
+    win_all_battles!(camp_a)
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_select "#trail-sheet-camp-#{camp_a.id}"
+
+    post strategy_goal_manual_completion_path(camp_a), as: :turbo_stream
+    assert_response :success
+    refute_match %(action="remove" target="trail-sheet-camp-#{camp_a.id}"), response.body
+    refute_match %(action="replace" target="trail-sheet-camp-#{camp_a.id}"), response.body
+    assert_match %(action="replace" target="trail-camp-finish-#{camp_a.id}"), response.body
+    assert_match strategy_goal_manual_completion_path(camp_a), response.body
+
+    delete strategy_goal_manual_completion_path(camp_a), as: :turbo_stream
+    assert_response :success
+    assert_match I18n.t("strategy.rpg.trail.finish_camp_card.title"), response.body
+    refute camp_a.reload.manually_completed?
+  end
+
   test "finish camp turbo stream shows completed card and refreshes map without replacing battles" do
     camp_a = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Camp Alpha", position: 0, stage: 0

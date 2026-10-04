@@ -948,6 +948,16 @@ export default class extends Controller {
   async openArrangeCamps(event) {
     event?.preventDefault()
     event?.stopPropagation()
+    await this.openArrangeOverlay({ expandFinished: false })
+  }
+
+  async openArrangeCampsFinished(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    await this.openArrangeOverlay({ expandFinished: true })
+  }
+
+  async openArrangeOverlay({ expandFinished = false } = {}) {
     if (this.element.classList.contains("is-first-camp-reveal")) return
     this.closePeakMenu()
 
@@ -980,6 +990,11 @@ export default class extends Controller {
 
     const freshOverlay = document.getElementById("trail-arrange-camps")
     if (!freshOverlay) return
+
+    if (expandFinished) {
+      const finished = freshOverlay.querySelector(".lp-trail-arrange-finished")
+      if (finished) finished.setAttribute("open", "")
+    }
 
     this.setArrangeOpen(true)
     freshOverlay.hidden = false

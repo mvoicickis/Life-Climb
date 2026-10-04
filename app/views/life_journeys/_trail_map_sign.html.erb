@@ -12,19 +12,32 @@
     ) %>
 <% if show_sign %>
   <% camps_ahead = mountain_trail_map_camps_ahead_count(trail) %>
-  <button type="button"
-          class="lp-trail-map-sign<%= " is-no-label" if camps_ahead.zero? %>"
-          data-trail-ignore
-          data-action="click->trail-canvas#openArrangeCamps"
-          aria-label="<%= camps_ahead.positive? ? t("strategy.rpg.trail.camps_ahead", count: camps_ahead) : t("strategy.rpg.trail.map_sign_aria") %>">
-    <% if camps_ahead.positive? %>
-      <span class="lp-trail-map-sign__pill"><%= t("strategy.rpg.trail.camps_ahead", count: camps_ahead) %></span>
+  <% camps_finished = mountain_trail_map_camps_finished_count(trail) %>
+  <div class="lp-trail-map-sign-stack">
+    <button type="button"
+            class="lp-trail-map-sign<%= " is-no-label" if camps_ahead.zero? %><%= " is-map-only" if camps_ahead.zero? %>"
+            data-trail-ignore
+            data-action="click->trail-canvas#openArrangeCamps"
+            aria-label="<%= camps_ahead.positive? ? t("strategy.rpg.trail.camps_ahead", count: camps_ahead) : t("strategy.rpg.trail.map_sign_aria") %>">
+      <% if camps_ahead.positive? %>
+        <span class="lp-trail-map-sign__pill"><%= t("strategy.rpg.trail.camps_ahead", count: camps_ahead) %></span>
+      <% end %>
+      <%= image_tag "mountain_map.webp",
+            class: "lp-trail-map-sign__map",
+            width: 72,
+            height: 70,
+            alt: "",
+            decoding: "async" %>
+    </button>
+    <% if camps_finished.positive? %>
+      <button type="button"
+              class="lp-trail-map-sign__pill-btn lp-trail-map-sign__pill--finished"
+              data-trail-ignore
+              data-action="click->trail-canvas#openArrangeCampsFinished"
+              aria-label="<%= t("strategy.rpg.trail.camps_finished", count: camps_finished) %>">
+        <span class="lp-trail-map-sign__check" aria-hidden="true">✓</span>
+        <%= t("strategy.rpg.trail.camps_finished", count: camps_finished) %>
+      </button>
     <% end %>
-    <%= image_tag "mountain_map.webp",
-          class: "lp-trail-map-sign__map",
-          width: 72,
-          height: 70,
-          alt: "",
-          decoding: "async" %>
-  </button>
+  </div>
 <% end %>
