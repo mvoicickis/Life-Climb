@@ -940,13 +940,12 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-habit-#{habit.id} input[name='life_journey_id'][value='#{@journey.id}']"
     assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add"
     assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__kebab"
-    assert_select "#trail-base-habit-#{habit.id} a[href=?]", habit_path(habit)
+    assert_select "#trail-base-habit-#{habit.id} [data-controller~='tcard-menu'][data-tcard-menu-portal-value='true']"
+    assert_select "#trail-base-habit-#{habit.id} ##{dom_id(habit, :edit_sheet)}"
+    assert_select "#trail-base-habit-#{habit.id} a[href=?]", habit_path(habit), count: 0
     assert_select "#trail-base-habit-#{habit.id} form[action=?][method='post']",
           habit_path(habit),
-          count: 1 do
-      assert_select "input[name='_method'][value=delete]"
-      assert_select "input[name='return_to'][value=mountain]"
-    end
+          count: 0
   end
 
   test "basics block shows tick checkbox for binary journey habits" do

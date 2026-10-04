@@ -1076,6 +1076,14 @@ de:
     edit: "Bearbeiten"
     delete: "Löschen"
     delete_confirm: "Wirklich entfernen?"
+    basic_edit:
+      name_label: "Name" # TODO: translate
+      one_tap_adds: "One tap adds" # TODO: translate
+      unit_aria: "Unit" # TODO: translate
+      delete_basic: "Delete Basic" # TODO: translate
+      delete_confirm: "Delete this Basic. All its days go away too." # TODO: translate
+      keep: "Keep" # TODO: translate
+      delete: "Delete" # TODO: translate
     share: "Teilen"
     false: "Aus"
     on_today: "Auf Heute"

@@ -54,9 +54,11 @@
           hidden> <%= t("dash.battlefield.win_not_saved") %></button>
   <button type="button"
           class="lp-basic-sheet__done"
-          data-action="click->basic-sheet-log#done"> <%= t("dash.anytime.done") %></button>
-  <%= link_to edit_habit_path(habit), class: "lp-basic-sheet__edit-row" do %>
+          data-action="click->basic-sheet-log#done"><%= t("dash.anytime.done") %></button>
+  <button type="button"
+          class="lp-basic-sheet__edit-row"
+          data-action="click->basic-sheet-log#openEdit">
     <span><%= t("dash.anytime.edit_basic") %></span>
     <span aria-hidden="true">›</span>
-  <% end %>
+  </button>
 </div>

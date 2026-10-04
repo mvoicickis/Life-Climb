@@ -3,5 +3,5 @@
 <% end %>
 
 <%= turbo_stream.replace dom_id(@habit, :today_sheet) do %>
-  <%= render "dashboard/dash_habit_sheet", habit: @habit %>
+  <%= render "dashboard/dash_habit_sheet", habit: @habit, sheet_target: true %>
 <% end %>

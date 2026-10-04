@@ -1298,6 +1298,16 @@
   flex: 0 0 auto;
 }
 
+.lp-trail-battles__kebab-host {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.lp-trail-battles__kebab-host:not(:has(.lp-trail-battles__kebab[open])) .lp-dash-habit__scrim,
+.lp-trail-battles__kebab-host:not(:has(.lp-trail-battles__kebab[open])) .lp-dash-habit__sheet {
+  display: none !important;
+}
+
 .lp-trail-battles__kebab-btn {
   list-style: none;
   width: 34px;

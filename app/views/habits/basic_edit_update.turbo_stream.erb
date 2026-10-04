@@ -1,0 +1,5 @@
+<% if params[:return_to].to_s == "mountain" %>
+  <%= render "life_journeys/mountain_battle_streams" %>
+<% else %>
+  <%= render "daily_logs/today_streams", habit: @habit, home_habits: @home_habits %>
+<% end %>

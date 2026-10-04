@@ -78,8 +78,7 @@
       <div class="lp-dash-habit__act">
         <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
 
-        <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
-                 data-action="toggle->tcard-menu#toggled">
+        <details class="lp-dash-habit__menu" data-tcard-menu-target="details">
           <summary class="lp-dash-habit__dots"
                    data-controller="pressable"
                    data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
@@ -96,6 +95,25 @@
                 quick: quick,
                 sheet_target: true %>
         </details>
+
+        <div data-controller="tcard-menu"
+             data-tcard-menu-portal-value="true"
+             class="lp-dash-habit__edit-host">
+          <details class="lp-dash-habit__menu lp-dash-habit__menu--edit"
+                   data-tcard-menu-target="details">
+            <summary class="sr-only"><%= t("dash.anytime.edit_basic") %></summary>
+            <button type="button"
+                    class="lp-dash-habit__scrim"
+                    data-tcard-menu-target="scrim"
+                    data-action="click->tcard-menu#close"
+                    tabindex="-1"
+                    aria-label="<%= t('dash.timeline.cancel') %>"></button>
+            <%= render "habits/edit_sheet",
+                  habit: habit,
+                  return_to: "today",
+                  sheet_target: true %>
+          </details>
+        </div>
       </div>
     </div>
   <% end %>

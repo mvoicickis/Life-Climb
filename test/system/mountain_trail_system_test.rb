@@ -179,8 +179,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert @battle.repeat_daily?
   end
 
-  test "base camp kebab closes when tapping outside" do
-    @user.habits.create!(
+  test "base camp kebab opens edit sheet and scrim tap closes without saving" do
+    habit = @user.habits.create!(
       name: "One German lesson",
       unit: "times",
       points: 5,
@@ -191,6 +191,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       quantity_checkin: false,
       life_journey_id: @journey.id
     )
+    edit_sheet_id = ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)
 
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -202,11 +203,53 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
-    find("#trail-base-sheet .lp-trail-battles__kebab-btn").click
-    assert_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
-    find(".lp-trail-sheet__title", visible: :all).click
-    assert_no_selector "#trail-base-sheet .lp-trail-battles__kebab[open]", wait: 3
+    scrim = find("body > .lp-dash-habit__scrim", visible: :all)
+    page.driver.browser.action.move_to(scrim.native, 20, 20).click.perform
+    assert_no_selector "body > ##{edit_sheet_id}", visible: :all, wait: 3
+    assert_selector "#trail-base-habit-#{habit.id}", text: "One German lesson", visible: :all
+    assert_equal "One German lesson", habit.reload.name
+  end
+
+  test "base camp edit basic saves name and leaves no portaled scrim in body" do
+    page.driver.browser.manage.window.resize_to(360, 800)
+    habit = @user.habits.create!(
+      name: "Pages read",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      quantity_checkin: true,
+      quick_add_amount: 10,
+      life_journey_id: @journey.id
+    )
+    edit_sheet_id = ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)
+
+    visit new_session_path
+    fill_in "Email", with: @user.email_address
+    fill_in "Password", with: "password12345"
+    click_button "Sign in"
+    assert_selector ".lp-dash-nav", wait: 5
+    within(".lp-dash-nav") { click_link "Mountain" }
+    find(".lp-trail-base-card__base-row").click
+    assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
+
+    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
+
+    within("##{edit_sheet_id}") do
+      find("textarea.lp-basic-edit__name-area").fill_in with: "Deep read", fill_options: { clear: :backspace }
+      find(".lp-basic-sheet__done").click
+    end
+
+    assert_selector "#trail-base-habit-#{habit.id} .lp-trail-battles__name", text: "Deep read", visible: :all, wait: 10
+    assert_equal 0, page.evaluate_script("document.querySelectorAll('body > .lp-dash-habit__scrim').length")
+    assert_equal 0, page.evaluate_script("document.querySelectorAll('body > .lp-dash-habit__sheet--basic-edit').length")
+    assert_equal "Deep read", habit.reload.name
   end
 
   test "camp sheet composer sits close to battle list at 360px with one battle" do
