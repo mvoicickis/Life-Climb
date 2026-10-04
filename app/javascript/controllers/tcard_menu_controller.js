@@ -96,8 +96,34 @@ export default class extends Controller {
   onPointerDown(event) {
     if (!this.hasDetailsTarget || !this.detailsTarget.open) return
     if (this.detailsTarget.contains(event.target)) return
+    if (this.pointerOnScrim(event.target)) {
+      this.close()
+      return
+    }
     if (this.layerContains(event.target)) return
     this.close()
+  }
+
+  pointerOnScrim(target) {
+    const scrim = this.scrimLayer()
+    const sheet = this.sheetLayer()
+    if (!scrim || !target) return false
+    if (sheet?.contains(target)) return false
+    return target === scrim || scrim.contains(target)
+  }
+
+  scrimLayer() {
+    for (const element of this._portaled || []) {
+      if (element.getAttribute("data-tcard-menu-target") === "scrim") return element
+    }
+    return this.element.querySelector('[data-tcard-menu-target="scrim"]')
+  }
+
+  sheetLayer() {
+    for (const element of this._portaled || []) {
+      if (element.getAttribute("data-tcard-menu-target") === "sheet") return element
+    }
+    return this.element.querySelector('[data-tcard-menu-target="sheet"]')
   }
 
   layerContains(target) {

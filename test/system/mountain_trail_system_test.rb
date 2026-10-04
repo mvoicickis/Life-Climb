@@ -206,9 +206,11 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
     assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
-    find("body > .lp-dash-habit__scrim", visible: :all).click
+    scrim = find("body > .lp-dash-habit__scrim", visible: :all)
+    page.driver.browser.action.move_to(scrim.native, 20, 20).click.perform
     assert_no_selector "body > ##{edit_sheet_id}", visible: :all, wait: 3
     assert_selector "#trail-base-habit-#{habit.id}", text: "One German lesson", visible: :all
+    assert_equal "One German lesson", habit.reload.name
   end
 
   test "base camp edit basic saves name and leaves no portaled scrim in body" do
