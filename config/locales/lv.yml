@@ -328,10 +328,8 @@ lv:
           title: "Vieta, kur atgriezies katru dienu"
           header_tagline: "Things you do every day." # TODO: translate
           basics:
-            kind: "Basics" # TODO: translate
             amount: "%{amount} %{unit}"
             undo: "Atsaukt"
-          from_camps: "From your camps" # TODO: translate
           kind: "Katru dienu · bez finiša līnijas"
           sub:
             one: "1 ikdienas solis. Izlaidīta diena neko neatņem."

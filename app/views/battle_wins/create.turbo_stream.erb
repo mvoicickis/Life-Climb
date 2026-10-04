@@ -29,14 +29,12 @@
           visible: @show_finish_camp_card,
           first_win: @first_win_celebration %>
   <% end %>
-  <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <%= render "life_journeys/trail_climber_stream" %>
   <%= render "life_journeys/trail_dock_stream" %>
 <% else %>
   <%= turbo_stream.replace "trail-battle-#{@battle.id}" do %>
     <%= render "life_journeys/trail_battle_row", battle: @battle %>
   <% end %>
-  <%= turbo_stream.remove "trail-base-battle-#{@battle.id}" %>
   <% unless @quiet_win %>
     <%= render "life_journeys/trail_climber_stream" %>
     <% if @battle %>

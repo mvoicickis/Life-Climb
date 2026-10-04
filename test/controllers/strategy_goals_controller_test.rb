@@ -444,7 +444,6 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal Mime[:turbo_stream].to_s, response.media_type
     assert_match %(action="remove" target="trail-battle-#{battle.id}"), response.body
-    assert_match %(action="remove" target="trail-base-battle-#{battle.id}"), response.body
     assert_match "trail-toast-host", response.body
     assert_match I18n.t("strategy.rpg.trail.deleted_toast", title: battle.title), response.body
     assert_not @user.strategy_goals.exists?(id: battle.id)

@@ -1,11 +1,8 @@
 <%# Daily / repeating work for Base camp. locals: projects, area, plan, goal, journey %>
-<% projects = mountain_trail_sort_projects(local_assigns.fetch(:projects)) %>
 <% area = local_assigns[:area] %>
 <% plan = local_assigns[:plan] %>
 <% goal = local_assigns[:goal] %>
 <% journey = local_assigns[:journey] %>
-<% groups = mountain_trail_daily_battles(projects) %>
-<% daily_count = groups.sum { |group| group[:battles].size } %>
 <% basics = journey.present? ?
      mountain_trail_base_habits(journey: journey, user: current_user) : [] %>
 <% submitted_name = local_assigns[:submitted_name].presence || @submitted_habit_name %>
@@ -21,7 +18,6 @@
   <div class="lp-trail-base-sheet__groups">
     <% if basics.any? %>
       <section class="lp-trail-base-sheet__group">
-        <p class="lp-trail-base-sheet__section-label"><%= t("strategy.rpg.trail.base_camp.basics.kind") %></p>
         <ul class="lp-trail-battles__list lp-trail-base-sheet__basics">
           <% basics.each do |habit| %>
             <%= render "life_journeys/trail_base_habit_row",
@@ -35,52 +31,6 @@
     <% elsif journey && goal && plan %>
       <section class="lp-trail-base-sheet__group">
         <%= render "life_journeys/trail_base_starter" %>
-      </section>
-    <% end %>
-
-    <% if daily_count.positive? %>
-      <section class="lp-trail-base-sheet__group">
-        <p class="lp-trail-base-sheet__section-label"><%= t("strategy.rpg.trail.base_camp.from_camps") %></p>
-        <ul class="lp-trail-battles__list">
-          <% groups.each do |group| %>
-            <% group[:battles].each do |battle| %>
-              <li class="lp-trail-battles__row is-check" id="trail-base-battle-<%= battle.id %>"
-                  data-controller="inline-title-edit"
-                  data-battle-id="<%= battle.id %>"
-                  data-inline-title-edit-update-url-value="<%= strategy_goal_path(battle) %>"
-                  data-inline-title-edit-mode-value="camp"
-                  data-inline-title-edit-battle-id-value="<%= battle.id %>"
-                  data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>">
-                <div class="lp-trail-base-sheet__battle-main">
-                  <%= render "life_journeys/trail_battle_check", battle: battle %>
-                  <p class="lp-trail-base-sheet__battle-camp"><%= group[:project].title %></p>
-                </div>
-                <details class="lp-trail-battles__kebab"
-                         data-controller="tcard-menu"
-                         data-tcard-menu-target="details"
-                         data-action="toggle->tcard-menu#toggled">
-                  <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
-                  <div class="lp-trail-battles__kebab-menu">
-                    <button type="button"
-                            data-action="click->inline-title-edit#openFromMenu"><%= t("strategy.rpg.trail.battle_rename") %></button>
-                    <%= render "life_journeys/trail_battle_repeat_menu", battle: battle %>
-                    <%= button_to t("strategy.rpg.trail.delete_battle"),
-                          strategy_goal_path(battle),
-                          method: :delete,
-                          class: "is-danger",
-                          form: {
-                            data: {
-                              turbo: true,
-                              turbo_confirm: t("strategy.rpg.trail.delete_battle_body", title: battle.title),
-                              action: "submit->trail-battles#stashBattleDelete"
-                            }
-                          } %>
-                  </div>
-                </details>
-              </li>
-            <% end %>
-          <% end %>
-        </ul>
       </section>
     <% end %>
   </div>

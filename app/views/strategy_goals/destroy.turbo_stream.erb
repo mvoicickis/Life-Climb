@@ -1,6 +1,5 @@
 <% if @removed_was_day %>
   <%= turbo_stream.remove "trail-battle-#{@removed_id}" %>
-  <%= turbo_stream.remove "trail-base-battle-#{@removed_id}" %>
 <% end %>
 
 <% if @removed_was_project %>

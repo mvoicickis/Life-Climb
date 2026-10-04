@@ -228,7 +228,6 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_match "trail-battle-#{@battle.id}", response.body
-    assert_match "action=\"remove\" target=\"trail-base-battle-#{@battle.id}\"", response.body
     assert_match "is-won", response.body
     @battle.reload
     assert @battle.repeat_daily?
