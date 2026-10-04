@@ -3,17 +3,19 @@
 <% journey = local_assigns.fetch(:journey) %>
 <% goal = local_assigns.fetch(:goal) %>
 <% plan = local_assigns.fetch(:plan) %>
-<details class="lp-trail-battles__kebab"
-         data-controller="tcard-menu"
-         data-tcard-menu-portal-value="true"
-         data-tcard-menu-target="details"
-         data-action="toggle->tcard-menu#toggled">
-  <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+<div class="lp-trail-battles__kebab-host"
+     data-controller="tcard-menu"
+     data-tcard-menu-portal-value="true">
+  <details class="lp-trail-battles__kebab"
+           data-tcard-menu-target="details">
+    <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
+  </details>
   <button type="button"
           class="lp-dash-habit__scrim"
           data-tcard-menu-target="scrim"
           data-action="click->tcard-menu#close"
           tabindex="-1"
+          hidden
           aria-label="<%= t('dash.timeline.cancel') %>"></button>
   <%= render "habits/edit_sheet",
         habit: habit,
@@ -22,4 +24,4 @@
         goal: goal,
         plan: plan,
         sheet_target: true %>
-</details>
+</div>

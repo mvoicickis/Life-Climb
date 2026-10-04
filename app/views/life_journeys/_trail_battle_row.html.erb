@@ -37,8 +37,7 @@
     <%= render "life_journeys/trail_battle_check", battle: battle, camp_sheet: true, first_camp_win_hint: local_assigns[:first_camp_win_hint] %>
     <details class="lp-trail-battles__kebab"
              data-controller="tcard-menu"
-             data-tcard-menu-target="details"
-             data-action="toggle->tcard-menu#toggled">
+             data-tcard-menu-target="details">
       <summary class="lp-trail-battles__kebab-btn" aria-label="<%= t('strategy.rpg.trail.battle_menu') %>">⋯</summary>
       <div class="lp-trail-battles__kebab-menu">
         <button type="button"

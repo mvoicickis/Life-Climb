@@ -27,7 +27,7 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
   end
 
   test "Today V2 shows habit slots; habits page lists the habit at 375 and 320" do
-    FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
+    FileUtils.mkdir_p(Rails.root.join("tmp/screenshots"))
 
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -47,12 +47,12 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       visit dashboard_path
       assert_selector "#today_habit_#{@habit.id}"
       assert_selector ".lp-dash-habit__menu"
-      find("#today_habit_#{@habit.id} summary").click
+      find("#today_habit_#{@habit.id} .lp-dash-habit__menu:not(.lp-dash-habit__menu--edit) > summary").click
       assert_no_text "Enter exact amount"
       assert_selector ".lp-basic-sheet__done"
       assert_button I18n.t("dash.anytime.edit_basic")
 
-      page.save_screenshot("/opt/cursor/artifacts/screenshots/habit-on-today-#{width}.png")
+      page.save_screenshot(Rails.root.join("tmp/screenshots/habit-on-today-#{width}.png"))
     end
   end
 end

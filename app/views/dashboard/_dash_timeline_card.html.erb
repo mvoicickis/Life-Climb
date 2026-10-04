@@ -149,8 +149,7 @@
     <div class="lp-dash-tcard__actions">
       <% unless todo.completed? %>
         <details class="lp-dash-tcard__menu"
-                 data-tcard-menu-target="details"
-                 data-action="toggle->tcard-menu#toggled">
+                 data-tcard-menu-target="details">
           <summary class="lp-dash-tcard__menu-summary" aria-label="<%= t('dash.timeline.more_actions') %>">
             <%= render "shared/lp_icon", name: "dots", class_name: "lp-icon is-inline" %>
           </summary>

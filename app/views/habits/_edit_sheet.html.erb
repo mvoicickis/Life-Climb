@@ -6,35 +6,30 @@
    countable = habit.quantity_checkin?
    quick_n = countable ? habit.quick_add_amount.presence || habit.quick_add_value : nil
    sheet_attrs = local_assigns[:sheet_target] ? { data: { tcard_menu_target: "sheet" } } : {}
-   update_params = { return_to: return_to, basic_edit_sheet: "1" }
-   destroy_params = { return_to: return_to }
-   if return_to == "mountain" && journey && goal && plan
-     update_params.merge!(life_journey_id: journey.id, goal_id: goal.id, plan_id: plan.id)
-     destroy_params.merge!(life_journey_id: journey.id, goal_id: goal.id, plan_id: plan.id)
-   end %>
+   inner_data = {
+     controller: "basic-edit-sheet",
+     basic_edit_sheet_update_url_value: habit_path(habit),
+     basic_edit_sheet_destroy_url_value: habit_path(habit),
+     basic_edit_sheet_return_to_value: return_to,
+     basic_edit_sheet_habit_id_value: habit.id,
+     basic_edit_sheet_countable_value: countable,
+     basic_edit_sheet_win_not_saved_value: t("dash.battlefield.win_not_saved"),
+     basic_edit_sheet_initial_name_value: habit.name,
+     basic_edit_sheet_initial_unit_value: habit.unit,
+     basic_edit_sheet_initial_quick_value: quick_n.to_s,
+     basic_edit_sheet_today_row_id_value: dom_id(habit, :today),
+     basic_edit_sheet_trail_row_id_value: "trail-base-habit-#{habit.id}",
+     basic_edit_sheet_delete_basic_value: t("habits.basic_edit.delete_basic")
+   }
+   inner_data[:basic_edit_sheet_life_journey_id_value] = journey.id if journey.present?
+   inner_data[:basic_edit_sheet_goal_id_value] = goal.id if goal.present?
+   inner_data[:basic_edit_sheet_plan_id_value] = plan.id if plan.present? %>
 <%= tag.div(
       id: dom_id(habit, :edit_sheet),
       class: "lp-dash-habit__sheet lp-dash-habit__sheet--basic-log lp-dash-habit__sheet--basic-edit",
-      data: {
-        controller: "basic-edit-sheet",
-        basic_edit_sheet_update_url_value: habit_path(habit),
-        basic_edit_sheet_destroy_url_value: habit_path(habit),
-        basic_edit_sheet_return_to_value: return_to,
-        basic_edit_sheet_habit_id_value: habit.id,
-        basic_edit_sheet_countable_value: countable,
-        basic_edit_sheet_win_not_saved_value: t("dash.battlefield.win_not_saved"),
-        basic_edit_sheet_initial_name_value: habit.name,
-        basic_edit_sheet_initial_unit_value: habit.unit,
-        basic_edit_sheet_initial_quick_value: quick_n.to_s,
-        basic_edit_sheet_today_row_id_value: dom_id(habit, :today),
-        basic_edit_sheet_trail_row_id_value: "trail-base-habit-#{habit.id}",
-        basic_edit_sheet_delete_basic_value: t("habits.basic_edit.delete_basic"),
-        basic_edit_sheet_life_journey_id_value: journey&.id,
-        basic_edit_sheet_goal_id_value: goal&.id,
-        basic_edit_sheet_plan_id_value: plan&.id
-      },
+      hidden: local_assigns[:sheet_target].present?,
       **sheet_attrs) do %>
-  <div class="lp-basic-edit__inner">
+  <%= tag.div(class: "lp-basic-edit__inner", data: inner_data) do %>
     <div class="lp-basic-sheet__grab" aria-hidden="true"></div>
     <h2 class="lp-basic-edit__heading"><%= t("dash.anytime.edit_basic") %></h2>
 
@@ -105,5 +100,5 @@
         </div>
       </div>
     </template>
-  </div>
+  <% end %>
 <% end %>

@@ -78,8 +78,7 @@
       <div class="lp-dash-habit__act">
         <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
 
-        <details class="lp-dash-habit__menu" data-tcard-menu-target="details"
-                 data-action="toggle->tcard-menu#toggled">
+        <details class="lp-dash-habit__menu" data-tcard-menu-target="details">
           <summary class="lp-dash-habit__dots"
                    data-controller="pressable"
                    data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
@@ -101,8 +100,7 @@
              data-tcard-menu-portal-value="true"
              class="lp-dash-habit__edit-host">
           <details class="lp-dash-habit__menu lp-dash-habit__menu--edit"
-                   data-tcard-menu-target="details"
-                   data-action="toggle->tcard-menu#toggled">
+                   data-tcard-menu-target="details">
             <summary class="sr-only"><%= t("dash.anytime.edit_basic") %></summary>
             <button type="button"
                     class="lp-dash-habit__scrim"

@@ -13,9 +13,17 @@ export default class extends Controller {
     this._onOpenElsewhere = (event) => this.onOpenElsewhere(event)
     this._onReposition = () => this.positionMenu()
     window.addEventListener(OPEN_EVENT, this._onOpenElsewhere)
+    if (this.hasDetailsTarget) {
+      this._onDetailsToggle = () => this.toggled()
+      this.detailsTarget.addEventListener("toggle", this._onDetailsToggle)
+      this.syncPortalLayerVisibility()
+    }
   }
 
   disconnect() {
+    if (this.hasDetailsTarget && this._onDetailsToggle) {
+      this.detailsTarget.removeEventListener("toggle", this._onDetailsToggle)
+    }
     this.restoreFromPortal()
     this.unbindDocument()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
@@ -25,14 +33,15 @@ export default class extends Controller {
     if (!this.hasDetailsTarget) return
     if (this.detailsTarget.open) {
       window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
+      this.setPortalLayersVisible(true)
       this.portalToBody()
-      // Defer so the opening tap is not treated as an outside dismiss (capture listeners).
       requestAnimationFrame(() => this.bindDocument())
       this.positionMenu()
       window.addEventListener("resize", this._onReposition)
       window.visualViewport?.addEventListener("resize", this._onReposition)
       window.visualViewport?.addEventListener("scroll", this._onReposition)
     } else {
+      this.setPortalLayersVisible(false)
       this.restoreFromPortal()
       this.unbindDocument()
       window.removeEventListener("resize", this._onReposition)
@@ -45,6 +54,7 @@ export default class extends Controller {
     event?.preventDefault?.()
     if (!this.hasDetailsTarget) return
     this.detailsTarget.open = false
+    this.setPortalLayersVisible(false)
     this.restoreFromPortal()
     this.unbindDocument()
     window.removeEventListener("resize", this._onReposition)
@@ -86,7 +96,20 @@ export default class extends Controller {
   onPointerDown(event) {
     if (!this.hasDetailsTarget || !this.detailsTarget.open) return
     if (this.detailsTarget.contains(event.target)) return
+    if (this.layerContains(event.target)) return
     this.close()
+  }
+
+  layerContains(target) {
+    if (!target) return false
+    for (const element of this._portaled || []) {
+      if (element.contains(target)) return true
+    }
+    for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
+      const element = this.element.querySelector(selector)
+      if (element?.contains(target)) return true
+    }
+    return false
   }
 
   onKeydown(event) {
@@ -107,34 +130,48 @@ export default class extends Controller {
 
   portalToBody() {
     if (!this.portalValue) return
+    if (!this._portaled) this._portaled = []
 
-    for (const target of ["scrim", "sheet"]) {
-      if (!this.hasNamedTarget(target)) continue
+    for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
+      const element = this.element.querySelector(selector)
+      if (!element) continue
 
-      const element = this[`${target}Target`]
       if (!element._portalHome) {
         element._portalHome = { parent: element.parentNode, next: element.nextSibling }
       }
       document.body.appendChild(element)
+      if (!this._portaled.includes(element)) this._portaled.push(element)
     }
   }
 
   restoreFromPortal() {
     if (!this.portalValue) return
 
-    for (const target of ["sheet", "scrim"]) {
-      if (!this.hasNamedTarget(target)) continue
-
-      const element = this[`${target}Target`]
+    for (const element of this._portaled || []) {
       const home = element._portalHome
       if (!home?.parent) continue
-
       home.parent.insertBefore(element, home.next)
     }
+    this._portaled = []
   }
 
   hasNamedTarget(name) {
     const method = `has${name.charAt(0).toUpperCase()}${name.slice(1)}Target`
     return typeof this[method] === "function" && this[method]()
+  }
+
+  setPortalLayersVisible(visible) {
+    const elements = [
+      ...this.element.querySelectorAll('[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'),
+      ...(this._portaled || [])
+    ]
+    for (const element of elements) {
+      element.hidden = !visible
+    }
+  }
+
+  syncPortalLayerVisibility() {
+    if (!this.hasDetailsTarget) return
+    this.setPortalLayersVisible(this.detailsTarget.open)
   }
 }

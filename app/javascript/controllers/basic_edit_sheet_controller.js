@@ -321,11 +321,24 @@ export default class extends Controller {
   }
 
   closeMenu() {
-    const details = this.element.closest("details")
-    if (!details) return
-    const menu = details.closest("[data-controller~='tcard-menu']")
-    const ctrl = menu && this.application.getControllerForElementAndIdentifier(menu, "tcard-menu")
+    const menu = this.menuHost()
+    if (!menu) return
+    const ctrl = this.application.getControllerForElementAndIdentifier(menu, "tcard-menu")
     if (ctrl) ctrl.close()
-    else details.open = false
+    else {
+      const details = menu.querySelector("details")
+      if (details) details.open = false
+    }
+  }
+
+  menuHost() {
+    const fromDetails = this.element.closest("details")?.closest("[data-controller~='tcard-menu']")
+    if (fromDetails) return fromDetails
+
+    const sheetRoot = this.element.closest(".lp-dash-habit__sheet")
+    const portalParent = sheetRoot?._portalHome?.parent
+    if (portalParent?.matches?.("[data-controller~='tcard-menu']")) return portalParent
+
+    return this.element.closest("[data-controller~='tcard-menu']")
   }
 }

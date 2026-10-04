@@ -191,6 +191,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       quantity_checkin: false,
       life_journey_id: @journey.id
     )
+    edit_sheet_id = ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)
 
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -203,10 +204,10 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
     within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
-    assert_selector "##{ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)}", visible: :all, wait: 5
+    assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
     find("body > .lp-dash-habit__scrim", visible: :all).click
-    assert_no_selector "##{ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)}", visible: :all, wait: 3
+    assert_no_selector "body > ##{edit_sheet_id}", visible: :all, wait: 3
     assert_selector "#trail-base-habit-#{habit.id}", text: "One German lesson", visible: :all
   end
 
@@ -224,6 +225,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       quick_add_amount: 10,
       life_journey_id: @journey.id
     )
+    edit_sheet_id = ActionView::RecordIdentifier.dom_id(habit, :edit_sheet)
 
     visit new_session_path
     fill_in "Email", with: @user.email_address
@@ -235,12 +237,17 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
 
     within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
-    find("textarea.lp-basic-edit__name-area", visible: :all).fill_in with: "Deep read"
-    find(".lp-basic-sheet__done", visible: :all).click
+    assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
-    assert_selector "#trail-base-habit-#{habit.id}", text: "Deep read", visible: :all, wait: 5
-    assert_equal 0, page.evaluate_script("document.body.querySelectorAll('.lp-dash-habit__scrim').length")
-    assert_equal 0, page.evaluate_script("document.body.querySelectorAll('.lp-dash-habit__sheet--basic-edit').length")
+    within("##{edit_sheet_id}") do
+      find("textarea.lp-basic-edit__name-area").fill_in with: "Deep read", fill_options: { clear: :backspace }
+      find(".lp-basic-sheet__done").click
+    end
+
+    assert_selector "#trail-base-habit-#{habit.id} .lp-trail-battles__name", text: "Deep read", visible: :all, wait: 10
+    assert_equal 0, page.evaluate_script("document.querySelectorAll('body > .lp-dash-habit__scrim').length")
+    assert_equal 0, page.evaluate_script("document.querySelectorAll('body > .lp-dash-habit__sheet--basic-edit').length")
+    assert_equal "Deep read", habit.reload.name
   end
 
   test "camp sheet composer sits close to battle list at 360px with one battle" do
