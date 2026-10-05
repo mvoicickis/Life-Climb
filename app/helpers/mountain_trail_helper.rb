@@ -890,6 +890,47 @@ module MountainTrailHelper
     Array(plan&.children).count { |child| child.project? && !child.holding? && child.completed? }
   end
 
+  # Locals for _trail_mountain_world and _trail_dock_anchor — matches _trail_canvas summit/map branch.
+  def trail_mountain_world_locals(trail:, goal:, plan:, journey:, destination_overlay:, plans: [])
+    all_projects = mountain_trail_all_projects(trail)
+    projects = mountain_trail_projects(trail)
+    first_camp_id = journey&.first_camp_reveal_camp_id
+    first_camp = first_camp_id.present? ? all_projects.find { |p| p.id == first_camp_id } : nil
+    first_camp_reveal = first_camp.present? && !destination_overlay && plan.present?
+    summit_reached =
+      plan.present? && !destination_overlay && !first_camp_reveal && mountain_trail_summit_reached?(plan: plan)
+    custom_mountain_photo = mountain_trail_custom_photo?(journey)
+    builtin_photos = !custom_mountain_photo
+    builtin_daytime = builtin_photos ? mountain_trail_daytime?(user: current_user) : nil
+    show_arrange_camps = mountain_trail_show_arrange_camps?(
+      trail: trail,
+      plan: plan,
+      destination_overlay: destination_overlay,
+      first_camp_reveal: first_camp_reveal
+    )
+
+    {
+      trail: trail,
+      goal: goal,
+      plan: plan,
+      plans: plans,
+      journey: journey,
+      destination_overlay: destination_overlay,
+      summit_reached: summit_reached,
+      first_camp_reveal: first_camp_reveal,
+      first_camp: first_camp,
+      projects: projects,
+      custom_mountain_photo: custom_mountain_photo,
+      builtin_photos: builtin_photos,
+      builtin_daytime: builtin_daytime,
+      photo_url: mountain_trail_photo_url(journey),
+      night_photo_url: mountain_trail_night_photo_url(journey),
+      current_project: mountain_trail_current_project(projects),
+      show_arrange_camps: show_arrange_camps,
+      peak_title: goal&.title.presence || journey.title
+    }
+  end
+
   def mountain_trail_open_camps(plan)
     mountain_trail_sort_projects(
       Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }

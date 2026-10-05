@@ -191,6 +191,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail__goal-plaque", count: 0
   end
 
+  test "map trail renders mountain world and dock anchor with dock" do
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-mountain-world"
+    assert_select "#trail-dock-anchor #trail-dock"
+    assert_select "#trail-map-camps"
+  end
+
   test "default mountain photo shows summit glass banner without top plaque" do
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
@@ -879,11 +887,14 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
 
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
+    assert_select "#trail-mountain-world"
+    assert_select "#trail-dock-anchor"
     assert_select "#trail-camps .lp-trail-camp", count: 0
     assert_select ".lp-trail-summit-scene"
     assert_select ".lp-trail-summit-scene__pill", text: /3 camps finished/
     assert_select ".lp-trail-summit-card__cta", text: I18n.t("summit_next_goal.choose_next_goal")
     assert_select "button.lp-trail-summit-card__link[data-action*='openPlant']"
+    assert_select "#trail-dock-anchor"
     assert_select "#trail-dock", count: 0
     assert_select "#trail-plant-home [data-trail-canvas-target='plantForm']"
     assert_select ".lp-trail__summit-banner", count: 0
