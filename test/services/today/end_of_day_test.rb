@@ -64,4 +64,29 @@ class Today::EndOfDayTest < ActiveSupport::TestCase
 
     assert_equal [ open ], camps
   end
+
+  test "planning_project delegates to PathProject resolve" do
+    user = users(:one)
+    journey = user.life_journeys.active.first || begin
+      Onboarding::Run.call(
+        user: user,
+        area_key: "money",
+        title: "Goal",
+        ideal_scene: "A",
+        current_reality: "B",
+        next_win: "C",
+        today_mission: "D",
+        closer_percent: 10
+      )
+      user.reload.primary_focused_journey
+    end
+    resolved = Strategy::PathProject.resolve(user: user, journey: journey)
+    planned = Today::EndOfDay.planning_project(user: user, journey: journey)
+    if resolved
+      assert_equal resolved, planned
+    else
+      assert_nil planned
+    end
+    assert_nil Today::EndOfDay.planning_project(user: user, journey: nil)
+  end
 end

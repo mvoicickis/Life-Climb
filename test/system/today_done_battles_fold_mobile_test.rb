@@ -39,6 +39,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     visit dashboard_path
 
     assert_today_v2_all_clear_shell!
+    assert_today_v2_day_won_takeover!
     assert_selector "#today-dash-nav .lp-dash-nav.is-v4", visible: true, wait: 5
     assert_no_legacy_today_shell!
     assert_no_selector "#today-battlefield-rows .lp-today-v2-row"
@@ -49,7 +50,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
       assert_won_battle_row!(title: "Win #{i + 1}")
     end
     assert_selector "#today-end-of-day", wait: 5
-    assert_selector ".lp-today-v2-eod-ack", visible: :all, wait: 5
+    assert_selector ".lp-today-v2-eod-step--day-won", visible: :all, wait: 5
     assert_selector ".lp-today-v2-eod-card__detail",
                     text: "5 battles won",
                     visible: :all,
@@ -66,10 +67,9 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
 
     page.driver.browser.manage.window.resize_to(320, 700)
     visit dashboard_path
-    assert_today_v2_all_clear_shell!
     assert_no_selector ".lp-today-v2-row"
     assert_selector "#today-end-of-day"
-    assert_selector ".lp-today-v2-eod-ack", visible: :all
+    assert_selector ".lp-today-v2-eod-step--day-won", visible: :all
     narrow_h = page.evaluate_script("document.querySelector('#today-end-of-day')?.getBoundingClientRect().height")
     assert_operator narrow_h.to_f, :>, 80
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-320.png")

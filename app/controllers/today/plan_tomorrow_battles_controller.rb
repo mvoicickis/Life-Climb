@@ -1,23 +1,39 @@
 # frozen_string_literal: true
 
 module Today
-  # Creates a tomorrow (or today) battle from the end-of-day planning step.
+  # Creates a tomorrow battle from the end-of-day Day won step.
   class PlanTomorrowBattlesController < ApplicationController
     def create
-      project = current_user.strategy_goals.find_by(id: params[:project_id])
+      journey = current_user.primary_focused_journey
+      project = Today::EndOfDay.planning_project(user: current_user, journey: journey)
       unless project&.project? && project.completed_at.blank? && !project.holding?
-        redirect_to dashboard_path, alert: t("dash.end_of_day.invalid_camp"), status: :see_other
+        log_plan_failure("invalid_camp", project_id: params[:project_id])
+        respond_to do |format|
+          format.html do
+            redirect_to dashboard_path, alert: t("dash.end_of_day.invalid_camp"), status: :see_other
+          end
+          format.json do
+            render json: { error: t("dash.battlefield.win_not_saved") }, status: :unprocessable_entity
+          end
+        end
         return
       end
 
-      title = params.require(:title).to_s.strip
+      title = params[:title].to_s.strip
       if title.blank?
-        redirect_to dashboard_path, alert: t("dash.end_of_day.need_title"), status: :see_other
+        log_plan_failure("blank_title")
+        respond_to do |format|
+          format.html do
+            redirect_to dashboard_path, alert: t("dash.end_of_day.need_title"), status: :see_other
+          end
+          format.json do
+            render json: { error: t("dash.battlefield.win_not_saved") }, status: :unprocessable_entity
+          end
+        end
         return
       end
 
-      for_today = params[:schedule].to_s == "today"
-      scheduled_on = for_today ? Date.current : Date.current + 1.day
+      scheduled_on = Date.current + 1.day
       battle = current_user.strategy_goals.new(
         life_area: project.life_area,
         life_journey_id: project.life_journey_id,
@@ -29,24 +45,24 @@ module Today
       )
 
       if battle.save
-        celebration = Strategy::Celebrate.call(user: current_user, goal: battle)
         Strategy::CascadeToDaily.call(user: current_user, life_area: project.life_area)
-        if for_today
-          Today::EodFlow.reset_acknowledge!(session)
-          redirect_to dashboard_path,
-                      notice: t("dash.end_of_day.saved_today", title: title),
-                      status: :see_other
-        else
-          redirect_to dashboard_path,
-                      notice: t("dash.end_of_day.saved",
-                        title: title,
-                        count: celebration[:amount].to_i),
-                      status: :see_other
+        Today::BattlefieldDay.end!(session)
+        respond_to do |format|
+          format.html { redirect_to dashboard_path, status: :see_other }
+          format.json { render json: { redirect_to: dashboard_path } }
         end
       else
-        redirect_to dashboard_path,
-                    alert: battle.errors.full_messages.to_sentence,
-                    status: :see_other
+        log_plan_failure("validation", errors: battle.errors.full_messages)
+        respond_to do |format|
+          format.html do
+            redirect_to dashboard_path,
+                        alert: battle.errors.full_messages.to_sentence,
+                        status: :see_other
+          end
+          format.json do
+            render json: { error: t("dash.battlefield.win_not_saved") }, status: :unprocessable_entity
+          end
+        end
       end
     end
 
@@ -56,6 +72,12 @@ module Today
       current_user.strategy_goals
         .where(parent_id: parent.id, horizon: "day", scheduled_on: scheduled_on)
         .maximum(:position).to_i + 1
+    end
+
+    def log_plan_failure(reason, **details)
+      Rails.logger.warn(
+        "[Today::PlanTomorrowBattles] #{reason} user=#{current_user.id} #{details.map { |k, v| "#{k}=#{v}" }.join(' ')}"
+      )
     end
   end
 end

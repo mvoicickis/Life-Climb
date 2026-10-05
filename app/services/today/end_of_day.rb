@@ -22,6 +22,12 @@ module Today
         .sort_by { |project| [ project.position.to_i, project.id ] }
     end
 
+    def self.planning_project(user:, journey:)
+      return nil if journey.blank?
+
+      Strategy::PathProject.resolve(user: user, journey: journey)
+    end
+
     def self.tomorrow_battles(user:, journey:)
       return [] if journey.blank?
 

@@ -1,0 +1,67 @@
+<%# Day won — merged recap + plan tomorrow. locals: health, handoff_only (optional) %>
+<%
+  health = local_assigns.fetch(:health)
+  goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey)
+  handoff_only = local_assigns.fetch(:handoff_only) { @eod_handoff_only }
+  handoff = @strategy_handoff
+%>
+
+<div class="lp-today-v2-eod-step lp-today-v2-eod-step--day-won"
+     data-controller="eod-day-won"
+     data-eod-day-won-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>">
+  <div class="lp-today-group-card">
+    <div class="lp-today-group-card__body lp-today-v2-eod-card__body">
+      <%= render "dashboard/dash_eod_goal_heading", goal_title: goal_title %>
+      <p class="lp-today-v2-eod-card__detail"><%= end_of_day_battles_won_line(health) %></p>
+
+      <% if handoff_only %>
+        <%= button_to (handoff&.dig(:label) || t("dash.battle_empty_cta")),
+              today_end_day_path,
+              method: :post,
+              params: { handoff: 1 },
+              form: { class: "lp-today-v2-eod-card__form", data: { turbo: false } },
+              class: "lp-today-v2-eod-card__primary" %>
+      <% else %>
+        <p class="lp-today-v2-eod-card__command"><%= t("dash.end_of_day.steps.plan.goal_command") %></p>
+
+        <%= form_with url: today_plan_tomorrow_battle_path,
+              method: :post,
+              class: "lp-today-v2-eod-plan__form",
+              data: {
+                eod_day_won_target: "form",
+                action: "submit->eod-day-won#submit"
+              } do %>
+          <%= render layout: "shared/title_limit_wrap" do %>
+            <%= text_field_tag :title, nil,
+                  class: "lp-today-v2-eod-plan__input",
+                  placeholder: t("dash.end_of_day.steps.plan.placeholder"),
+                  aria: { label: t("dash.end_of_day.steps.plan.placeholder") },
+                  required: true,
+                  maxlength: StrategyGoal::TITLE_MAX,
+                  autocomplete: "off" %>
+          <% end %>
+          <div class="lp-today-v2-eod-plan__actions">
+            <%= button_tag t("dash.end_of_day.steps.plan.save_tomorrow"),
+                  type: "submit",
+                  name: "schedule",
+                  value: "tomorrow",
+                  class: "lp-today-v2-eod-card__primary",
+                  data: { eod_day_won_target: "submit" } %>
+          </div>
+        <% end %>
+
+        <button type="button"
+                class="lp-today-v2-eod-day-won__save-notice"
+                data-eod-day-won-target="error"
+                hidden><%= t("dash.battlefield.win_not_saved") %></button>
+
+        <%= button_to t("dash.end_of_day.steps.day_won.plan_on_mountain"),
+              today_end_day_path,
+              method: :post,
+              params: { plan_on_mountain: 1 },
+              form: { class: "lp-today-v2-eod-card__form lp-today-v2-eod-card__form--link", data: { turbo: false } },
+              class: "lp-today-v2-mountain-link is-add-on-mountain lp-today-v2-eod-day-won__mountain-link" %>
+      <% end %>
+    </div>
+  </div>
+</div>

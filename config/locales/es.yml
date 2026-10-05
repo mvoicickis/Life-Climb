@@ -690,6 +690,8 @@ es:
           one: "All %{count} battle won today"
           other: "All %{count} battles won today"
       steps:
+        day_won:
+          plan_on_mountain: "Plan on the Mountain ›" # TODO: translate
         win:
           kicker: "You won today"
           battles_won:

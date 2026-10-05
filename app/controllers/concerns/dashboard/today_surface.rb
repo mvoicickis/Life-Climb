@@ -89,6 +89,8 @@ module Dashboard
       return unless @end_of_day_ready || day_closed
 
       @end_of_day_camps = Today::EndOfDay.open_camps(strategy_goal: @strategy_goal)
+      @eod_planning_project = Today::EndOfDay.planning_project(user: current_user, journey: @journey)
+      @eod_handoff_only = eod_handoff_only_step?(@strategy_handoff, @eod_planning_project)
       @tomorrow_battles = Today::EndOfDay.tomorrow_battles(user: current_user, journey: @journey)
       @eod_step = Today::EodFlow.step(
         session: session,
@@ -171,6 +173,14 @@ module Dashboard
         @mission.update!(status: "replaced")
         @mission = nil
       end
+    end
+
+    def eod_handoff_only_step?(handoff, planning_project)
+      step = handoff&.dig(:step)
+      handoff_steps = %i[summit_next_goal add_project add_plan lock_goal]
+      return true if step.in?(handoff_steps)
+
+      planning_project.blank?
     end
   end
 end

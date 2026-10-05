@@ -5,14 +5,14 @@ module Today
   class EodFlow
     ACK_SESSION_KEY = :today_eod_acknowledged
 
-    STEPS = %i[hidden win plan closed].freeze
+    STEPS = %i[hidden day_won closed].freeze
 
     def self.step(session:, end_of_day_ready:, day_closed:)
       return :closed if day_closed
       return :hidden unless end_of_day_ready
-      return :win unless acknowledged?(session)
+      return :day_won if acknowledged?(session)
 
-      :plan
+      :hidden
     end
 
     def self.acknowledged?(session)
@@ -28,11 +28,11 @@ module Today
     end
 
     def self.takeover_active?(step)
-      %i[win plan closed].include?(step)
+      %i[day_won closed].include?(step)
     end
 
     def self.flow_active?(step)
-      %i[win plan].include?(step)
+      step == :day_won
     end
   end
 end

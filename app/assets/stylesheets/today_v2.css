@@ -354,7 +354,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 }
 
 #today-battlefield-end-day-host {
-  margin: 0.5rem 0.75rem 0.85rem;
+  margin: 0.5rem 0 0.85rem;
 }
 
 .lp-today-battlefield-end-day__form {
@@ -999,7 +999,8 @@ body:has(.lp-today-v2-eod-takeover.is-flow) #today-battle-surface {
   animation: todayCardIn 0.3s ease both;
 }
 
-.lp-today-v2-eod-step--win {
+.lp-today-v2-eod-step--win,
+.lp-today-v2-eod-step--day-won {
   justify-content: flex-start;
 }
 
@@ -2244,6 +2245,32 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-plan__actions {
   margin-top: 0.65rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-day-won__save-notice {
+  display: block;
+  width: 100%;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--lp-muted);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-day-won__save-notice[hidden] {
+  display: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-day-won__mountain-link {
+  margin-top: 0.35rem;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-ack {

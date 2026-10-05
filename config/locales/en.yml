@@ -157,6 +157,8 @@ en:
       bridge:
         no_camps: "Open a camp on Mountain when you are ready to plan tomorrow."
       steps:
+        day_won:
+          plan_on_mountain: "Plan on the Mountain ›"
         win:
           kicker: "You won today"
           title: "You cleared the field"
