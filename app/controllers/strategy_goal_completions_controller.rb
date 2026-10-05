@@ -3,6 +3,7 @@
 # Mountain sticky mark-complete / reopen for Plans and Projects.
 class StrategyGoalCompletionsController < ApplicationController
   include MountainSheetRefresh
+  include TrailMountainSummitSwap
 
   before_action :require_planning_v2
   before_action :set_goal
@@ -13,9 +14,12 @@ class StrategyGoalCompletionsController < ApplicationController
       return respond_invalid
     end
 
+    plan = summit_swap_plan_for(@goal)
+    capture_trail_summit_was_summit!(plan)
     @goal.manually_complete!
     Strategy::SyncCompletion.resync!(node: @goal)
     assign_completion_stream_context!
+    prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal) if @plan.present?
     respond_to do |format|
       format.turbo_stream { render :create, status: :ok }
       format.html { redirect_to mountain_return_path, status: :see_other }
@@ -29,9 +33,12 @@ class StrategyGoalCompletionsController < ApplicationController
       return respond_invalid
     end
 
+    plan = summit_swap_plan_for(@goal)
+    capture_trail_summit_was_summit!(plan)
     @goal.manually_reopen!
     Strategy::SyncCompletion.resync!(node: @goal)
     assign_completion_stream_context!
+    prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal) if @plan.present?
     respond_to do |format|
       format.turbo_stream { render :destroy, status: :ok }
       format.html { redirect_to mountain_return_path, status: :see_other }
@@ -52,6 +59,13 @@ class StrategyGoalCompletionsController < ApplicationController
 
     redirect_to fallback_path, alert: t("strategy.rpg.manual_complete_invalid"), status: :see_other
     throw :abort
+  end
+
+  def summit_swap_plan_for(goal)
+    return goal if goal.plan?
+    return goal.parent if goal.project? && goal.parent&.plan?
+
+    nil
   end
 
   def assign_completion_stream_context!

@@ -64,10 +64,11 @@
             area: @next_camp.life_area %>
     <% end %>
   <% end %>
-  <% if @plan.present? && @journey.present? %>
+  <% if @plan.present? && @journey.present? && !@trail_summit_state_flipped %>
     <%= render "life_journeys/trail_map_camp_stream",
           plan: @plan,
           journey: @journey,
           ensure_visible_id: @next_camp&.id %>
   <% end %>
+  <%= render "life_journeys/trail_mountain_state_streams" if @trail_summit_state_flipped %>
 <% end %>

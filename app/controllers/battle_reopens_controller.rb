@@ -3,10 +3,14 @@
 # Undo a Mountain battle win (reopen day + daily todo).
 class BattleReopensController < ApplicationController
   include MountainSheetRefresh
+  include TrailMountainSummitSwap
 
   def create
     battle = current_user.strategy_goals.battles.find(params[:id])
     journey = battle.life_journey || current_user.primary_focused_journey
+    project = battle.parent
+    plan = project&.parent if project&.parent&.plan?
+    capture_trail_summit_was_summit!(plan)
 
     ActiveRecord::Base.transaction do
       battle.reopen!
@@ -26,6 +30,7 @@ class BattleReopensController < ApplicationController
     assign_mountain_sheet_for!(battle)
     @journey = journey || @journey
     @battle = battle.reload
+    prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal) if @plan.present?
     respond_to do |format|
       format.turbo_stream { render :create, status: :ok }
       format.html do

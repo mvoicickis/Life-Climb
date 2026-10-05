@@ -1,3 +1,4 @@
 <% if @plan.present? %>
   <%= render "life_journeys/camp_arrangement_trail_streams" %>
+  <%= render "life_journeys/trail_mountain_state_streams" if @trail_summit_state_flipped %>
 <% end %>

@@ -1,4 +1,5 @@
 <%= render "life_journeys/mountain_battle_streams" %>
+<%= render "life_journeys/trail_mountain_state_streams" if @trail_summit_state_flipped %>
 <% if @awarded.to_i.positive? && @battle %>
   <%= turbo_stream.update "trail-toast-host" do %>
     <%= render "life_journeys/trail_toast",

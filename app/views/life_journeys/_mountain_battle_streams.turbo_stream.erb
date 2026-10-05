@@ -20,4 +20,4 @@
         goal: @goal,
         journey: @journey %>
 <% end %>
-<%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? %>
+<%= render "life_journeys/trail_dock_stream" if @dock_today_card.present? && !@trail_summit_state_flipped %>
