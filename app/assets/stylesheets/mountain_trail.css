@@ -1572,6 +1572,11 @@
   background: linear-gradient(180deg, transparent 0%, rgba(28, 52, 32, 0.08) 70%, rgba(18, 36, 22, 0.18));
 }
 
+/* Turbo swap host — no box; dock stays scroll’s next block after the map surface. */
+#trail-dock-anchor {
+  display: contents;
+}
+
 /* Next-action chip sits after the photo in the trail scroll, above the nav. */
 .lp-trail.is-v4 .lp-trail__dock {
   position: relative;

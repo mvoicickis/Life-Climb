@@ -435,7 +435,8 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail.is-v4"
     assert_select ".lp-trail.is-terraced", count: 0
     assert_select ".lp-trail__mountain .lp-trail__dock", count: 0
-    assert_select ".lp-trail__scroll > .lp-trail__dock .lp-trail-base-card"
+    assert_select ".lp-trail__scroll #trail-dock-anchor #trail-dock .lp-trail-base-card"
+    assert_select ".lp-trail__scroll .lp-trail__dock .lp-trail-base-card"
     assert_select "#mountain-trail > .lp-trail__dock", count: 0
     assert_select ".lp-trail-base-card.is-battle.is-busy"
     assert_select ".lp-trail-base-card.has-battle-tick"
