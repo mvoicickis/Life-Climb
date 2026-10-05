@@ -56,7 +56,12 @@ module Stats
     end
 
     test "row title falls back to journey title when root goal missing" do
-      area = @user.life_areas.create!(key: "reach-#{SecureRandom.hex(3)}", number: 90)
+      bootstrap = Onboarding::Bootstrap.call(
+        user: @user,
+        goal_title: "Separate climb",
+        camp_titles: [ "Unused camp" ]
+      )
+      area = bootstrap.journey.life_area
       journey = @user.life_journeys.create!(
         life_area: area,
         title: "Journey title only",
