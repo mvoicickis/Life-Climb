@@ -16,6 +16,7 @@ export default class extends Controller {
     finishedSettled: { type: Boolean, default: false },
     projectId: String,
     nextCampId: String,
+    autoClose: { type: Boolean, default: false },
     winNotSaved: { type: String, default: "" },
     undoLabel: { type: String, default: "" },
     reopenLabel: { type: String, default: "" }
@@ -38,6 +39,13 @@ export default class extends Controller {
         this.campSheetController()?.startFinishCampAutoNext({
           finishedCampId: this.projectIdValue,
           nextCampId: this.nextCampIdValue
+        })
+      } else if (this.autoCloseValue) {
+        requestAnimationFrame(() => {
+          if (this.hasAutoProgressTarget) this.autoProgressTarget.classList.add("is-running")
+        })
+        this.campSheetController()?.startFinishCampAutoClose({
+          finishedCampId: this.projectIdValue
         })
       }
     } else if (this.finishedSettledValue) {
