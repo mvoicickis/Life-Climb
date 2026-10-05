@@ -883,7 +883,7 @@ module MountainTrailHelper
   end
 
   def mountain_trail_summit_reached?(plan:)
-    self.class.summit_reached_plan?(plan)
+    MountainTrailHelper.summit_reached_plan?(plan)
   end
 
   def mountain_trail_summit_finished_count(plan:)
