@@ -56,13 +56,19 @@ module Stats
     end
 
     test "row title falls back to journey title when root goal missing" do
-      bootstrap = Onboarding::Bootstrap.call(user: @user, goal_title: "Fallback", camp_titles: [ "A" ])
-      finish_all_camps!(bootstrap.plan)
-      Journeys::Complete.call(user: @user, journey: bootstrap.journey)
-      bootstrap.goal.destroy!
+      area = @user.life_areas.create!(key: "reach-#{SecureRandom.hex(3)}", number: 90)
+      journey = @user.life_journeys.create!(
+        life_area: area,
+        title: "Journey title only",
+        ideal_scene: "Summit done",
+        current_reality: "Trail walked"
+      )
+      Journeys::Complete.call(user: @user, journey: journey)
+
+      assert @user.strategy_goals.for_kind("goal").roots.where(life_journey_id: journey.id).none?
 
       row = GoalsReached.call(user: @user.reload).rows.first
-      assert_equal "Fallback", row.title
+      assert_equal "Journey title only", row.title
     end
 
     test "call uses same query count for one and ten completed journeys" do
