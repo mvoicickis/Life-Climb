@@ -46,14 +46,24 @@ class SummitNextGoalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "discards draft when journey id mismatches" do
-    patch summit_next_goal_path(step: "goal"), params: { onboarding: { goal: "Stale" } }
+    get summit_next_goal_path
     session[:summit_next_goal] = {
       "goal" => "Stale",
+      "camp_titles" => [ "Old camp" ],
       "life_journey_id" => 9_999_999
     }
 
     get summit_next_goal_path(step: "camps")
+    assert_nil session[:summit_next_goal], "stale draft should be cleared from session"
     assert_redirected_to summit_next_goal_path(step: "goal")
+
+    follow_redirect!
+    assert_response :success
+    assert_select "input#summit_onboarding_goal" do |inputs|
+      assert inputs.first["value"].to_s.blank?, "goal field should be empty after discard"
+    end
+    refute_match(/Old camp/, response.body)
+    refute_match(/Stale/, response.body)
   end
 
   private
