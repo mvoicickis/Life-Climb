@@ -183,8 +183,14 @@ en:
         closed:
           title: "See you tomorrow"
           tomorrow: "Tomorrow: %{title}"
+          tomorrow_label: "Tomorrow"
+          camp_of: "Camp %{current} of %{total}"
           streak: "%{count}-day streak"
           streak_days: "🔥 %{count} days in a row"
+          streak_line:
+            one: "1 day in a row"
+            other: "%{count} days in a row"
+          share_my_day: "Share my day"
           mountain_label: "Your mountain"
           mountain_meta: "Camp %{current} of %{total} · %{label}"
           share: "Share your day"

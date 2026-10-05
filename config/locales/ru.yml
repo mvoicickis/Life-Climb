@@ -710,9 +710,15 @@ ru:
           done_for_today: "Done for today"
           save_tomorrow: "Save for tomorrow"
         closed:
-          title: "See you tomorrow"
-          tomorrow: "Tomorrow: %{title}"
-          streak_days: "🔥 %{count} days in a row"
+          title: "See you tomorrow" # TODO: translate
+          tomorrow: "Tomorrow: %{title}" # TODO: translate
+          tomorrow_label: "Tomorrow" # TODO: translate
+          camp_of: "Camp %{current} of %{total}" # TODO: translate
+          streak_days: "🔥 %{count} days in a row" # TODO: translate
+          streak_line:
+            one: "1 day in a row" # TODO: translate
+            other: "%{count} days in a row" # TODO: translate
+          share_my_day: "Share my day" # TODO: translate
     project_check:
       kicker: "Проверка проекта"
       title: "«%{title}» уже закончен?"

@@ -1,4 +1,4 @@
-<%# Step 3 — day closed. locals: streak, tomorrow_battles, mountain, strategy_goal %>
+<%# Day closed — sign-off card. locals: streak, tomorrow_battles, mountain, strategy_goal %>
 <%
   streak = local_assigns[:streak]
   tomorrow_battles = Array(local_assigns.fetch(:tomorrow_battles))
@@ -6,38 +6,58 @@
   strategy_goal = local_assigns.fetch(:strategy_goal) { @strategy_goal }
   climb_days = streak.respond_to?(:days) ? streak.days.to_i : 0
   progress = end_of_day_mountain_progress(strategy_goal, mountain)
+  camp = end_of_day_signoff_camp(progress)
   goal_title = active_goal_title(strategy_goal: strategy_goal, journey: @journey)
+  tomorrow_battle = tomorrow_battles.first
 %>
 
 <div class="lp-today-v2-eod-step lp-today-v2-eod-step--closed">
   <div class="lp-today-group-card">
-    <div class="lp-today-group-card__body lp-today-v2-eod-card__body">
-      <p class="lp-today-v2-eod-card__kicker lp-today-v2-eod-card__kicker--moon">
-        <span class="lp-today-v2-eod-card__moon" aria-hidden="true">🌙</span>
-        <%= t("dash.end_of_day.steps.closed.title") %>
+    <div class="lp-today-group-card__body lp-today-v2-eod-card__body lp-today-v2-eod-signoff__body">
+      <p class="lp-today-v2-eod-signoff__kicker">
+        <%= render "shared/lp_icon", name: "moon", class_name: "lp-today-v2-eod-signoff__moon-icon lp-icon" %>
+        <span><%= t("dash.end_of_day.steps.closed.title") %></span>
       </p>
-      <h2 class="lp-today-v2-eod-card__goal-title"><%= goal_title %></h2>
-      <div class="lp-today-v2-eod-card__goal-bar"
-           role="progressbar"
-           aria-valuenow="<%= progress[:percent] %>"
-           aria-valuemin="0"
-           aria-valuemax="100"
-           aria-label="<%= goal_title %>">
-        <span class="lp-today-v2-eod-card__goal-bar-fill" style="width: <%= progress[:percent] %>%"></span>
-      </div>
+      <h2 class="lp-today-v2-eod-signoff__goal"><%= goal_title %></h2>
 
-      <% tomorrow_battles.each do |battle| %>
-        <p class="lp-today-v2-eod-card__detail"><%= t("dash.end_of_day.steps.closed.tomorrow", title: battle.title) %></p>
+      <% if camp.present? %>
+        <div class="lp-today-v2-eod-signoff__camp">
+          <div class="lp-today-v2-eod-signoff__bar"
+               role="progressbar"
+               aria-valuenow="<%= camp[:percent] %>"
+               aria-valuemin="0"
+               aria-valuemax="100"
+               aria-label="<%= camp[:label] %>">
+            <span class="lp-today-v2-eod-signoff__bar-fill" style="width: <%= camp[:percent] %>%"></span>
+          </div>
+          <p class="lp-today-v2-eod-signoff__camp-meta"><%= camp[:label] %></p>
+        </div>
+      <% end %>
+
+      <% if tomorrow_battle.present? %>
+        <div class="lp-today-v2-eod-signoff__tomorrow">
+          <span class="lp-today-v2-eod-signoff__tomorrow-label"><%= t("dash.end_of_day.steps.closed.tomorrow_label") %></span>
+          <p class="lp-today-v2-eod-signoff__tomorrow-title"><%= tomorrow_battle.title %></p>
+        </div>
       <% end %>
 
       <% if climb_days >= 2 %>
-        <p class="lp-today-v2-eod-card__detail"><%= t("dash.end_of_day.steps.closed.streak_days", count: climb_days) %></p>
+        <p class="lp-today-v2-eod-signoff__streak">
+          <%= render "shared/lp_icon", name: "fire", class_name: "lp-today-v2-eod-signoff__streak-icon lp-icon" %>
+          <span><%= t("dash.end_of_day.steps.closed.streak_line", count: climb_days) %></span>
+        </p>
       <% end %>
+
+      <button type="button"
+              class="lp-today-v2-eod-signoff__share lp-today-v2-eod-card__primary"
+              data-action="click->today-notch#shareRecap">
+        <%= t("dash.end_of_day.steps.closed.share_my_day") %>
+      </button>
 
       <%= link_to t("dash.end_of_day.reopen_day"),
             today_end_day_path,
             data: { turbo_method: :delete },
-            class: "lp-today-v2-eod-card__link lp-today-v2-eod-card__link--reopen" %>
+            class: "lp-today-v2-eod-signoff__reopen lp-today-v2-eod-card__link lp-today-v2-eod-card__link--reopen" %>
     </div>
   </div>
 </div>

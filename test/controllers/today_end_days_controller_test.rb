@@ -39,8 +39,9 @@ class TodayEndDaysControllerTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_select ".lp-today-v2-eod-takeover.is-closed", count: 1
-    assert_select ".lp-today-v2-eod-card__kicker", text: /See you tomorrow/
-    assert_select "a", text: "Reopen day"
+    assert_select ".lp-today-v2-eod-signoff__kicker", text: /See you tomorrow/
+    assert_select "button[data-action*='today-notch#shareRecap']", minimum: 1
+    assert_select "a.lp-today-v2-eod-signoff__reopen", text: "Reopen day"
     assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", minimum: 1
