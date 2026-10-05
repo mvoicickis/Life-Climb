@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
 module Stats
-  # Finished path-level camps (project under plan) across journeys.
+  # Finished path-level camps (project under plan) across journeys — matches StrategyGoal#path_level_camp?
   class FinishedPathCamps
+    PARENT_JOIN = <<~SQL.squish
+      INNER JOIN strategy_goals parents ON parents.id = strategy_goals.parent_id
+    SQL
+
     def self.finished_scope(user:)
       user.strategy_goals
         .where(horizon: "project")
         .not_holding
-        .joins(:parent)
-        .merge(StrategyGoal.where(horizon: "plan"))
+        .joins(PARENT_JOIN)
+        .where(parents: { horizon: "plan" })
         .where.not(completed_at: nil)
     end
 
