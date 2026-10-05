@@ -557,6 +557,21 @@ export default class extends Controller {
     }, AUTO_NEXT_MS)
   }
 
+  startFinishCampAutoClose({ finishedCampId }) {
+    if (!finishedCampId) return
+
+    this.cancelPendingAutoOpen()
+    this._pendingAutoClose = { finishedCampId: String(finishedCampId) }
+    this._autoNextTimer = window.setTimeout(() => {
+      this._autoNextTimer = null
+      const pending = this._pendingAutoClose
+      this._pendingAutoClose = null
+      if (!pending) return
+
+      this.close()
+    }, AUTO_NEXT_MS)
+  }
+
   openNextCampAfterFinish(nextCampId, finishedCampId) {
     if (!nextCampId || !finishedCampId) return
 
@@ -571,6 +586,7 @@ export default class extends Controller {
       this._autoNextTimer = null
     }
     this._pendingAutoNext = null
+    this._pendingAutoClose = null
   }
 
   clearFinishCampTimers() {
