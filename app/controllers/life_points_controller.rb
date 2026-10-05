@@ -49,6 +49,9 @@ class LifePointsController < ApplicationController
       end
     @mountain = Strategy::Mountain.for(goal: @strategy_goal)
     @mountain_summary = Progress::Dashboard.call(user: current_user, period: "7d")[:mountain_summary]
+    @goals_reached_result = Stats::GoalsReached.call(user: current_user)
+    @stats_goals_reached = @goals_reached_result.rows
+    @all_finished_path_camps = @goals_reached_result.all_finished_path_camps
     @mountain_progress = helpers.end_of_day_mountain_progress(@strategy_goal, @mountain)
     @battle_wins = Stats::BattleWins.call(user: current_user, journey: @journey)
     @stats_week = @battle_wins.this_week
@@ -58,7 +61,9 @@ class LifePointsController < ApplicationController
       user: current_user,
       battle_wins: @battle_wins,
       mountain_summary: @mountain_summary,
-      strategy_goal: @strategy_goal
+      strategy_goal: @strategy_goal,
+      any_finished_path_camp: @goals_reached_result.any_finished_path_camp,
+      any_completed_journey: @goals_reached_result.any_completed_journey
     )
     @stats_calendar_month = stats_calendar_month_start
     @stats_calendar = @battle_wins.calendar_month(

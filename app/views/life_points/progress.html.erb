@@ -9,7 +9,8 @@
         closer: @closer,
         battle_wins: @battle_wins,
         summary: @mountain_summary,
-        mountain_progress: @mountain_progress %>
+        mountain_progress: @mountain_progress,
+        all_finished_path_camps: @all_finished_path_camps %>
 
   <%= render "life_points/stats_this_week",
         week: @stats_week,
@@ -18,6 +19,8 @@
   <%= render "life_points/stats_camps", camps: @stats_camps, journey: @journey %>
 
   <%= render "life_points/stats_milestones", milestones: @stats_milestones %>
+
+  <%= render "life_points/stats_goals_reached", rows: @stats_goals_reached %>
 
   <%= render "life_points/stats_calendar",
         battle_wins: @battle_wins,

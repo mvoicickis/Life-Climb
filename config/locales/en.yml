@@ -4,6 +4,7 @@ en:
       chart_day: "%a"
       long: "%b %-d"
       stats_more_axis: "%b %-d"
+      stats_goal_reached: "%b %-d"
       renewal: "%B %-d, %Y"
       dash_weekday: "%A"
   app_name: "Life Climb"
@@ -436,6 +437,10 @@ en:
         one: "1 won"
         other: "%{count} won"
       milestones_title: "Milestones"
+      goals_reached_title: "Goals reached"
+      goals_reached_meta:
+        one: "%{date} · 1 camp"
+        other: "%{date} · %{count} camps"
       days_won_title: "Days you won"
       calendar_prev: "Previous month"
       calendar_next: "Next month"

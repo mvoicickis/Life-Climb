@@ -1,6 +1,6 @@
 <%# locals: journey, strategy_goal, closer, battle_wins, summary, mountain_progress %>
 <% strategy_href = journey || current_user&.primary_focused_journey || current_user&.life_journeys&.active&.order(:id)&.first %>
-<% camps_done = summary&.dig(:projects_done).to_i %>
+<% camps_done = local_assigns.fetch(:all_finished_path_camps) { summary&.dig(:projects_done).to_i }.to_i %>
 <section class="lp-stats-hero" aria-label="<%= t('progress.stats.hero_aria') %>">
   <p class="lp-stats-hero__label"><%= t("progress.stats.battles_won_label") %></p>
   <p class="lp-stats-hero__value"><%= number_with_delimiter(battle_wins.all_time_total) %></p>

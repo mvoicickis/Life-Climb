@@ -4,6 +4,7 @@ ru:
       chart_day: "%a"
       long: "%-d %b"
       stats_more_axis: "%-d %b"
+      stats_goal_reached: "%-d %b"  # TODO: translate
       renewal: "%-d %B %Y"
   app_name: "LifePoints"
   legacy_host_banner:
@@ -872,6 +873,10 @@ ru:
         one: "1 won"  # TODO: translate
         other: "%{count} won"  # TODO: translate
       milestones_title: "Milestones"  # TODO: translate
+      goals_reached_title: "Goals reached"  # TODO: translate
+      goals_reached_meta:
+        one: "%{date} · 1 camp"  # TODO: translate
+        other: "%{date} · %{count} camps"  # TODO: translate
       days_won_title: "Days you won"  # TODO: translate
       calendar_prev: "Previous month"  # TODO: translate
       calendar_next: "Next month"  # TODO: translate
