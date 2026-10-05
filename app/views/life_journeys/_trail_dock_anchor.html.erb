@@ -1,0 +1,10 @@
+<%# Stable host for trail dock turbo updates. locals: summit_reached, today_card, journey, projects %>
+<% summit_reached = local_assigns.fetch(:summit_reached) %>
+<div id="trail-dock-anchor">
+  <% unless summit_reached %>
+    <%= render "life_journeys/trail_dock",
+          today_card: local_assigns.fetch(:today_card),
+          journey: local_assigns.fetch(:journey),
+          projects: local_assigns.fetch(:projects) %>
+  <% end %>
+</div>
