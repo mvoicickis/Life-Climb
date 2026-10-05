@@ -159,4 +159,66 @@ class ProgressPageTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-journey-stats", count: 0
   end
+
+  test "goals reached section hidden without completed journeys" do
+    get life_points_path
+    assert_response :success
+    assert_select "#stats-goals-reached-heading", count: 0
+  end
+
+  test "goals reached rows are not links and show meta" do
+    Goals::Current.clear_cache!
+    bootstrap = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Summit goal",
+      camp_titles: [ "Only camp" ]
+    )
+    finish_all_camps!(bootstrap.plan)
+    Journeys::Complete.call(user: @user, journey: bootstrap.journey)
+
+    get life_points_path
+    assert_response :success
+    assert_select "#stats-goals-reached-heading", text: /Goals reached/i
+    assert_select ".lp-stats-row--goal-reached", count: 1
+    assert_select "a.lp-stats-row--goal-reached", count: 0
+    assert_select ".lp-stats-row--goal-reached .lp-stats-row__chev", count: 0
+    assert_match(/1 camp/, response.body)
+    assert_select ".lp-stats-row--goal-reached .lp-stats-row__name", text: "Summit goal"
+  end
+
+  test "hero camps finished and first camp milestone stay after start next goal" do
+    Goals::Current.clear_cache!
+    bootstrap = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "First climb",
+      camp_titles: %w[Alpha Beta]
+    )
+    old_journey = bootstrap.journey
+    finish_all_camps!(bootstrap.plan)
+
+    get life_points_path
+    assert_response :success
+    assert_match(/2 camps finished/i, response.body)
+    assert_match(/First camp finished/i, response.body)
+
+    Journeys::StartNextGoal.call(
+      user: @user,
+      old_journey: old_journey,
+      goal_title: "Second climb",
+      camp_titles: [ "Fresh" ]
+    )
+
+    get life_points_path
+    assert_response :success
+    assert_match(/2 camps finished/i, response.body)
+    assert_match(/First camp finished/i, response.body)
+    assert_match(/Summit/i, response.body)
+  end
+
+  def finish_all_camps!(plan)
+    plan.children.for_kind("project").not_holding.find_each do |camp|
+      camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
+      camp.complete!
+    end
+  end
 end

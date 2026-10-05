@@ -158,26 +158,7 @@ module Stats
     end
 
     def load_camp_completions
-      projects = camp_projects
-      return [] if projects.empty?
-
-      project_ids = projects.map(&:id)
-      @user.strategy_goals
-        .where(id: project_ids)
-        .where.not(completed_at: nil)
-        .pluck(:completed_at)
-        .map { |stamp| stamp.in_time_zone(@time_zone).to_date }
-    end
-
-    def camp_projects
-      return [] unless @journey
-
-      @user.strategy_goals
-        .where(life_journey_id: @journey.id, horizon: "project")
-        .not_holding
-        .includes(:parent, :children)
-        .order(:position, :id)
-        .select(&:path_level_camp?)
+      Stats::FinishedPathCamps.completion_dates(user: @user, time_zone: @time_zone)
     end
 
     def load_habit_series

@@ -1,0 +1,24 @@
+<%# locals: rows %>
+<% if rows.present? %>
+<section class="lp-stats-block" aria-labelledby="stats-goals-reached-heading">
+  <h2 class="lp-stats-block__title" id="stats-goals-reached-heading"><%= t("progress.stats.goals_reached_title") %></h2>
+  <div class="lp-stats-card">
+    <% rows.each do |row| %>
+      <div class="lp-stats-row lp-stats-row--goal-reached">
+        <span class="lp-stats-row__body">
+          <span class="lp-stats-row__name"><%= row.title %></span>
+          <% if row.completed_on.present? %>
+            <span class="lp-stats-row__meta">
+              <%= t(
+                    "progress.stats.goals_reached_meta",
+                    count: row.camps_count,
+                    date: l(row.completed_on, format: :stats_goal_reached)
+                  ) %>
+            </span>
+          <% end %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+</section>
+<% end %>

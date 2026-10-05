@@ -21,7 +21,9 @@ module Stats
         user: @user,
         battle_wins: battle_wins,
         mountain_summary: summary,
-        strategy_goal: goal
+        strategy_goal: goal,
+        any_finished_path_camp: false,
+        any_completed_journey: false
       )
 
       keys = badges.map { |badge| badge[:key] }
@@ -30,6 +32,29 @@ module Stats
       assert_not_includes keys, "lp_1000"
       assert_not_includes keys, "adventure_guide"
       assert_operator badges.count { |badge| !badge[:unlocked] }, :<=, 2
+    end
+
+    test "first camp and summit badges stay earned with completed journey and empty current camps" do
+      journey = seed_climb!(@user, today_mission: "Win")
+      battle_wins = Stats::BattleWins.call(user: @user, journey: journey)
+      summary = {
+        projects_done: 0,
+        projects_total: 1
+      }
+      goal = @user.strategy_goals.for_kind("goal").roots.first
+
+      badges = Stats::Milestones.call(
+        user: @user,
+        battle_wins: battle_wins,
+        mountain_summary: summary,
+        strategy_goal: goal,
+        any_finished_path_camp: true,
+        any_completed_journey: true
+      )
+
+      keys = badges.select { |b| b[:unlocked] }.map { |b| b[:key] }
+      assert_includes keys, "first_camp"
+      assert_includes keys, "closer_100"
     end
   end
 end

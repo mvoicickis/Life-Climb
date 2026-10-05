@@ -29,6 +29,31 @@ module Stats
       end
     end
 
+    test "completed camp counts include finished camps on completed journeys" do
+      travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
+        bootstrap = Onboarding::Bootstrap.call(
+          user: @user,
+          goal_title: "Old climb",
+          camp_titles: [ "Done camp" ]
+        )
+        old_journey = bootstrap.journey
+        camp = bootstrap.projects.first
+        camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
+        camp.complete!
+
+        Journeys::StartNextGoal.call(
+          user: @user,
+          old_journey: old_journey,
+          goal_title: "New climb",
+          camp_titles: [ "Fresh camp" ]
+        )
+        new_journey = @user.reload.primary_focused_journey
+
+        charts = MoreCharts.call(user: @user, journey: new_journey)
+        assert_equal 1, charts[:weekly][:camps][:points].last
+      end
+    end
+
     test "completed camp counts until reopened" do
       travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
         journey = @user.primary_focused_journey || seed_climb!(@user, today_mission: "Camp stat")

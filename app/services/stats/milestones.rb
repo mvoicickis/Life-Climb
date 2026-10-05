@@ -13,20 +13,26 @@ module Stats
     ].freeze
     LOCKED_SHOWN = 2
 
-    def self.call(user:, battle_wins:, mountain_summary:, strategy_goal:)
+    def self.call(user:, battle_wins:, mountain_summary:, strategy_goal:, any_finished_path_camp: false,
+                  any_completed_journey: false)
       new(
         user: user,
         battle_wins: battle_wins,
         mountain_summary: mountain_summary,
-        strategy_goal: strategy_goal
+        strategy_goal: strategy_goal,
+        any_finished_path_camp: any_finished_path_camp,
+        any_completed_journey: any_completed_journey
       ).display
     end
 
-    def initialize(user:, battle_wins:, mountain_summary:, strategy_goal:)
+    def initialize(user:, battle_wins:, mountain_summary:, strategy_goal:, any_finished_path_camp: false,
+                   any_completed_journey: false)
       @user = user
       @battle_wins = battle_wins
       @mountain_summary = mountain_summary || {}
       @strategy_goal = strategy_goal
+      @any_finished_path_camp = any_finished_path_camp
+      @any_completed_journey = any_completed_journey
     end
 
     def display
@@ -57,11 +63,11 @@ module Stats
       case key
       when "first_battle" then battles >= 1
       when "battles_10" then battles >= 10
-      when "first_camp" then camps_done >= 1
+      when "first_camp" then @any_finished_path_camp || camps_done >= 1
       when "battles_100" then battles >= 100
-      when "closer_25" then mountain >= 25
-      when "closer_50" then mountain >= 50
-      when "closer_100" then mountain >= 100
+      when "closer_25" then @any_completed_journey || mountain >= 25
+      when "closer_50" then @any_completed_journey || mountain >= 50
+      when "closer_100" then @any_completed_journey || mountain >= 100
       else false
       end
     end
@@ -95,7 +101,14 @@ module Stats
 
       current = case key
       when "first_battle", "battles_10", "battles_100" then battles
-      when "first_camp" then @mountain_summary[:projects_done].to_i
+      when "first_camp"
+        if @any_finished_path_camp
+          1
+        else
+          @mountain_summary[:projects_done].to_i
+        end
+      when "closer_25", "closer_50", "closer_100"
+        @any_completed_journey ? 100 : mountain
       else mountain
       end
 
