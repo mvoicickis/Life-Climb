@@ -37,12 +37,6 @@
   </div>
 <% end %>
 
-<%= turbo_stream.update "today-eod-ack-host" do %>
-  <% if @battlefield_health.all_clear? %>
-    <%= render "dashboard/dash_eod_ack", health: @battlefield_health, journey: @journey %>
-  <% end %>
-<% end %>
-
 <%= turbo_stream.replace "today-battlefield-won-shell" do %>
   <%= render "dashboard/dash_battlefield_won_shell",
         done_todos: @done_todos,

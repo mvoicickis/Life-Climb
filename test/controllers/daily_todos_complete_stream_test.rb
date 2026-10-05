@@ -174,11 +174,11 @@ class DailyTodosCompleteStreamTest < ActionDispatch::IntegrationTest
                   complete_daily_todo_path(@todo)
   end
 
-  test "turbo stream eod recap matches cleared battlefield health" do
+  test "turbo stream end of day host stays empty until end day" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok
-    assert_match "All 1 battle won today", response.body
-    assert_no_match "All 0 battles won today", response.body
+    assert_match "today-end-of-day-host", response.body
+    assert_no_match "lp-today-v2-eod-step--day-won", response.body
   end
 end

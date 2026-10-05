@@ -49,5 +49,9 @@ class FixedViewportTodayTest < ActionDispatch::IntegrationTest
       /padding:\s*0 var\(--lp-gutter\) calc\(5\.5rem \+ env\(safe-area-inset-bottom\)\)/,
       pad
     )
+
+    end_day_host = css[/\#today-battlefield-end-day-host\s*\{[^}]+\}/m]
+    assert end_day_host.present?
+    refute_match(/0\.75rem/, end_day_host, "end day host should not add horizontal gutter margin")
   end
 end
