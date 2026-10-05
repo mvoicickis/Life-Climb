@@ -85,6 +85,31 @@ class StrategyHandoffTest < ActiveSupport::TestCase
     assert_includes handoff[:href], "focus_id=#{project.id}"
   end
 
+  test "summit reached points at choose next goal" do
+    user = User.create!(
+      name: "Summit handoff",
+      email_address: "summit-handoff-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      planning_version: 2,
+      onboarding_completed_at: Time.current
+    )
+    bootstrap = Onboarding::Bootstrap.call(
+      user: user,
+      goal_title: "Peak goal",
+      camp_titles: [ "Camp one" ]
+    )
+    journey = bootstrap.journey
+    camp = bootstrap.projects.first
+    camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
+    camp.complete!
+
+    handoff = Strategy::Handoff.for(user: user, journey: journey)
+    assert_equal :summit_next_goal, handoff[:step]
+    assert_equal I18n.t("dash.battlefield.empty_cta.summit_next_goal"), handoff[:label]
+    assert_includes handoff[:href], "/summit_next_goal"
+  end
+
   test "open_strategy when nested battles exist under path Project" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Become debt-free", position: 0

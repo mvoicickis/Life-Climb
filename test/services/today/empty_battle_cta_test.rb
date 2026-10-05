@@ -39,5 +39,12 @@ class TodayEmptyBattleCtaTest < ActiveSupport::TestCase
     open = Today::EmptyBattleCta.for(journey:, handoff: { step: :open_strategy, project_id: })
     assert_equal battle[:label], open[:label]
     assert_includes open[:href], "open_camp=#{project_id}"
+
+    summit = Today::EmptyBattleCta.for(
+      journey:,
+      handoff: { step: :summit_next_goal, label: "Choose your next goal", href: "/summit_next_goal" }
+    )
+    assert_equal "Choose your next goal", summit[:label]
+    assert_equal "/summit_next_goal", summit[:href]
   end
 end

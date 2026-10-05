@@ -80,6 +80,25 @@ class OnboardingClimbSpineTest < ActiveSupport::TestCase
     assert_equal spine_snapshot, spine_structure_snapshot(bootstrap)
   end
 
+  test "seed_battle false skips battle and daily todos" do
+    area = LifeAreas::Select.call(user: @user, keys: [ Onboarding::Bootstrap::DEFAULT_AREA_KEY ]).first
+    result = Onboarding::ClimbSpine.call(
+      user: @user,
+      goal_title: "No seed",
+      camp_titles: [ "Camp" ],
+      life_area: area,
+      seed_battle: false,
+      celebrate_goal: false,
+      include_bootstrap_flag: false,
+      first_camp_reveal_status: "done"
+    )
+
+    assert_nil result.first_battle
+    assert_equal 0, result.projects.first.children.for_kind("day").count
+    assert_equal 0, @user.daily_todos.where(scheduled_on: Date.current).count
+    assert_equal "done", result.journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
+  end
+
   test "rejects empty camps" do
     error = assert_raises(Onboarding::ClimbSpine::Error) do
       Onboarding::ClimbSpine.call(user: @user, goal_title: "Ship it", camp_titles: [])

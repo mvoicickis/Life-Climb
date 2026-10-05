@@ -877,6 +877,19 @@ module MountainTrailHelper
     ).first
   end
 
+  def self.summit_reached_plan?(plan)
+    path_camps = Array(plan&.children).select { |child| child.project? && !child.holding? }
+    path_camps.any? && path_camps.all?(&:completed?)
+  end
+
+  def mountain_trail_summit_reached?(plan:)
+    MountainTrailHelper.summit_reached_plan?(plan)
+  end
+
+  def mountain_trail_summit_finished_count(plan:)
+    Array(plan&.children).count { |child| child.project? && !child.holding? && child.completed? }
+  end
+
   def mountain_trail_open_camps(plan)
     mountain_trail_sort_projects(
       Array(plan&.children).select { |child| child.project? && !child.holding? && !child.completed? }

@@ -861,7 +861,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-hud__pill", count: 0
   end
 
-  test "all camps finished shows no tents but summit dock and finished pill" do
+  test "all camps finished shows summit reached screen without dock" do
     @plan.children.for_kind("project").destroy_all
     camps = 3.times.map do |index|
       @plan.children.create!(
@@ -880,10 +880,13 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
     assert_response :success
     assert_select "#trail-camps .lp-trail-camp", count: 0
-    assert_select ".lp-trail-map-sign__pill--finished", text: /3 camps finished/
-    assert_select ".lp-trail__summit-banner"
-    assert_select "#trail-dock"
-    assert_select "button[data-action*='openArrangeCampsFinished']"
+    assert_select ".lp-trail-summit-scene"
+    assert_select ".lp-trail-summit-scene__pill", text: /3 camps finished/
+    assert_select ".lp-trail-summit-card__cta", text: I18n.t("summit_next_goal.choose_next_goal")
+    assert_select "button.lp-trail-summit-card__link[data-action*='openPlant']"
+    assert_select "#trail-dock", count: 0
+    assert_select "#trail-plant-home [data-trail-canvas-target='plantForm']"
+    assert_select ".lp-trail__summit-banner", count: 0
   end
 
   test "upload and reset mountain photo" do

@@ -37,6 +37,11 @@ module Today
           label: @handoff&.dig(:label).presence || I18n.t("dash.battlefield.empty_cta.set_goal"),
           href: helpers.life_journey_path(@journey)
         }
+      when :summit_next_goal
+        {
+          label: @handoff&.dig(:label).presence || I18n.t("dash.battlefield.empty_cta.summit_next_goal"),
+          href: @handoff&.dig(:href) || helpers.summit_next_goal_path
+        }
       when :add_project
         {
           label: I18n.t("dash.battlefield.empty_cta.add_next_camp"),

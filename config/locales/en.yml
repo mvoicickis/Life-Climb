@@ -70,6 +70,7 @@ en:
         set_goal: "Set your goal"
         add_next_camp: "Add your next camp"
         add_todays_battle: "Add today's battle"
+        summit_next_goal: "Choose your next goal"
       mountain_need: "Need another battle? Open Mountain"
       add_on_mountain: "Add a battle on the Mountain"
       mountain_all_clear: "All clear — open Mountain for your next battle"
@@ -2190,6 +2191,19 @@ en:
     one_area_soft: "One focus. Full attention."
     pick_one_area: "Pick one life area to begin."
     start: "Begin today"
+  summit_next_goal:
+    title: "Name your next mountain"
+    back: "‹ Back"
+    mountain_name_title: "Name your next mountain"
+    mountain_name_placeholder: "Run a half marathon"
+    start_climbing: "Start climbing"
+    your_goal: "Your goal"
+    reached_top: "You reached the top"
+    choose_next_goal: "Choose your next goal"
+    add_another_camp: "Add another camp"
+    reached_aria: "Goal reached"
+    not_at_summit: "Finish every camp on your Mountain first."
+    need_area: "Pick a life area for your next climb."
   area_interview:
     self:
       title: "Become who you want to be"

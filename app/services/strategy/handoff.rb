@@ -36,6 +36,14 @@ module Strategy
         )
       end
 
+      if Strategy::SummitReached.on_journey?(user: @user, journey: @journey)
+        return payload(
+          step: :summit_next_goal,
+          label: I18n.t("dash.battlefield.empty_cta.summit_next_goal"),
+          href: helpers.summit_next_goal_path
+        )
+      end
+
       project = PathProject.resolve(user: @user, journey: @journey)
       if project.nil?
         return payload(

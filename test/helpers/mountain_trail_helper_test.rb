@@ -1292,6 +1292,25 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 0, mountain_trail_next_arrange_stage([])
   end
 
+  test "summit reached when all path camps are completed" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Ship")
+    plan = user.strategy_goals.for_kind("goal").roots.first.children.for_kind("plan").not_holding.ordered.first
+    project = plan.children.for_kind("project").not_holding.first
+    project.complete!
+
+    assert mountain_trail_summit_reached?(plan: plan.reload)
+  end
+
+  test "summit not reached with zero camps" do
+    user = users(:one)
+    journey = seed_climb!(user, today_mission: "Ship")
+    plan = user.strategy_goals.for_kind("goal").roots.first.children.for_kind("plan").not_holding.ordered.first
+    plan.children.for_kind("project").destroy_all
+
+    refute mountain_trail_summit_reached?(plan: plan.reload)
+  end
+
   test "show arrange camps requires two path projects" do
     user = users(:one)
     journey = seed_climb!(user, today_mission: "Ship auth")

@@ -646,6 +646,7 @@ es:
         set_goal: "Set your goal" # TODO: translate
         add_next_camp: "Add your next camp" # TODO: translate
         add_todays_battle: "Add today's battle" # TODO: translate
+        summit_next_goal: "Choose your next goal" # TODO: translate
       add_on_mountain: "Add a battle on the Mountain" # TODO: translate
       win_not_saved: "Not saved. Tap to try again."  # TODO: translate
       unwin_battle: "Undo win for %{title}"  # TODO: translate
@@ -1508,3 +1509,16 @@ es:
     forge_wait: "Casi listo…"
     enter_how: "Empezar a subir"
     how_optional: "Cómo funciona la subida"
+  summit_next_goal:
+    title: "Name your next mountain" # TODO: translate
+    back: "‹ Back" # TODO: translate
+    mountain_name_title: "Name your next mountain" # TODO: translate
+    mountain_name_placeholder: "Run a half marathon" # TODO: translate
+    start_climbing: "Start climbing" # TODO: translate
+    your_goal: "Your goal" # TODO: translate
+    reached_top: "You reached the top" # TODO: translate
+    choose_next_goal: "Choose your next goal" # TODO: translate
+    add_another_camp: "Add another camp" # TODO: translate
+    reached_aria: "Goal reached" # TODO: translate
+    not_at_summit: "Finish every camp on your Mountain first." # TODO: translate
+    need_area: "Pick a life area for your next climb." # TODO: translate
