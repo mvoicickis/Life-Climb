@@ -3,6 +3,7 @@
 class CampArrangementsController < ApplicationController
   include MountainTrailHelper
   include StrategyHelper
+  include TrailMountainSummitSwap
 
   before_action :require_planning_v2
   before_action :set_journey
@@ -46,8 +47,10 @@ class CampArrangementsController < ApplicationController
     @plan = camp.parent
     return head :not_found if @plan.blank? || !@plan.plan?
 
+    capture_trail_summit_was_summit!(@plan)
     Strategy::ReopenPlanCamp.call(user: current_user, camp: camp)
     load_trail_context
+    prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal)
 
     respond_to do |format|
       format.turbo_stream { render :reopen }

@@ -3,6 +3,7 @@
 class StrategyGoalsController < ApplicationController
   include CampArrangementTrailRefresh
   include MountainQuietFlash
+  include TrailMountainSummitSwap
 
   before_action :require_planning_v2
   before_action :set_life_area, only: :create
@@ -52,6 +53,8 @@ class StrategyGoalsController < ApplicationController
       return fail_redirect(t("strategy.bad_parent"), focus_id: parent&.id)
     end
 
+    capture_trail_summit_was_summit!(parent) if kind == "project" && parent&.plan?
+
     if goal.save
       if new_terrace_stage
         Strategy::PlaceCampOnNewTerrace.call(plan: parent, camp: goal)
@@ -79,6 +82,7 @@ class StrategyGoalsController < ApplicationController
             @goal = goal.root_goal
             @journey = current_user.life_journeys.active.find_by(id: goal.life_journey_id) ||
                        current_user.primary_focused_journey
+            prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal)
             render :create
           end
           format.html do
@@ -152,6 +156,7 @@ class StrategyGoalsController < ApplicationController
     @removed_was_day = goal.day?
     @removed_was_project = false
     stash_destroyed_goal!(goal) if goal.day? || (goal.project? && !goal.quantified?)
+    capture_trail_summit_was_summit!(plan_for_project) if plan_for_project.present?
 
     begin
       if goal.goal?
@@ -178,6 +183,8 @@ class StrategyGoalsController < ApplicationController
         journey: @journey,
         arrange_overlay_open: params[:arrange_open].present?
       )
+      @goal = current_user.strategy_goals.find_by(id: root_id)
+      prepare_trail_mountain_summit_swap!(plan: plan_for_project, journey: @journey, goal: @goal)
     end
     @removed_id = removed_id
     respond_to do |format|

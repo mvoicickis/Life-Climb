@@ -1,0 +1,18 @@
+<%# Summit ↔ map world swap. Requires @trail_world, @trail_root_attrs, @today_card, @journey %>
+<% world = @trail_world %>
+<% world_render = world.except(:first_camp, :projects) %>
+<%= turbo_stream.replace "trail-mountain-world" do %>
+  <div id="trail-mountain-world" class="lp-trail__world">
+    <%= render "life_journeys/trail_mountain_world", **world_render %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "trail-dock-anchor" do %>
+  <%= render "life_journeys/trail_dock_anchor",
+        summit_reached: world[:summit_reached],
+        today_card: @today_card,
+        journey: @journey,
+        projects: world[:projects] %>
+<% end %>
+
+<%= turbo_stream.update_mountain_trail_root(**@trail_root_attrs) %>

@@ -4,6 +4,7 @@
 
 <% if @removed_was_project %>
   <%= render "life_journeys/camp_arrangement_trail_streams" %>
+  <%= render "life_journeys/trail_mountain_state_streams" if @trail_summit_state_flipped %>
 <% else %>
   <%= turbo_stream.append "strategy-world" do %>
     <meta data-rpg-refresh="1">

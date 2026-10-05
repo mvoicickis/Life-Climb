@@ -3,6 +3,8 @@
 # Mountain V4: log a quantity toward a quantified camp or day, optionally winning a battle.
 class StrategyQuantityLogsController < ApplicationController
   include MountainSheetRefresh
+  include TrailMountainSummitSwap
+
   def create
     project = current_user.strategy_goals.find(params.require(:project_id))
     raise ActiveRecord::RecordNotFound unless project.quantified?
@@ -22,6 +24,8 @@ class StrategyQuantityLogsController < ApplicationController
     journey = project.life_journey || battle&.life_journey ||
               current_user.life_journeys.active.find_by(id: params[:life_journey_id]) ||
               current_user.primary_focused_journey
+    plan = project.parent if project.parent&.plan?
+    capture_trail_summit_was_summit!(plan)
 
     Strategy::Quantity::Log.call(
       project: project,
@@ -33,6 +37,7 @@ class StrategyQuantityLogsController < ApplicationController
     awarded = finish_logged_battle!(battle, journey)
     @awarded = awarded
     assign_mountain_sheet_for!(battle.presence || project)
+    prepare_trail_mountain_summit_swap!(plan: @plan, journey: @journey, goal: @goal) if @plan.present?
 
     camp = @project
     plan = @plan

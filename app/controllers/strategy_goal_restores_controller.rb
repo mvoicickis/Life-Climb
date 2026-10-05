@@ -4,6 +4,7 @@
 # Limitation: restores one flat node snapshot only (no deep child tree). TTL 5 seconds.
 class StrategyGoalRestoresController < ApplicationController
   include CampArrangementTrailRefresh
+  include TrailMountainSummitSwap
 
   TTL_SECONDS = 5
 
@@ -22,6 +23,12 @@ class StrategyGoalRestoresController < ApplicationController
 
     attrs = stash.fetch("attrs")
     reparented_battle_ids = Array(stash["reparented_battle_ids"]).map(&:to_i)
+    restore_plan =
+      if attrs["horizon"] == "project" && attrs["parent_id"].present?
+        current_user.strategy_goals.for_kind("plan").find_by(id: attrs["parent_id"])
+      end
+    capture_trail_summit_was_summit!(restore_plan) if restore_plan.present?
+
     goal = current_user.strategy_goals.new(attrs)
     goal.stage_explicit = true if goal.project?
     goal.save!
@@ -42,6 +49,8 @@ class StrategyGoalRestoresController < ApplicationController
         journey: journey,
         arrange_overlay_open: params[:arrange_open].present?
       )
+      @goal = plan.root_goal
+      prepare_trail_mountain_summit_swap!(plan: plan, journey: journey, goal: @goal)
     end
 
     respond_to do |format|

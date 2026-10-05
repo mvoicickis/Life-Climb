@@ -53,13 +53,15 @@
     <% trail = Strategy::Trail.for(plan: @plan, ensure_visible_id: @created.id) %>
     <% trail_projects = mountain_trail_projects(trail) %>
     <% current_project = mountain_trail_current_project(trail_projects) %>
-    <%= turbo_stream.replace "trail-map-camps" do %>
-      <%= render "life_journeys/trail_map_camps",
-            trail: trail,
-            current_project: current_project,
-            plan: @plan,
-            journey: @journey,
-            builtin_photos: !mountain_trail_custom_photo?(@journey) %>
+    <% unless @trail_summit_state_flipped %>
+      <%= turbo_stream.replace "trail-map-camps" do %>
+        <%= render "life_journeys/trail_map_camps",
+              trail: trail,
+              current_project: current_project,
+              plan: @plan,
+              journey: @journey,
+              builtin_photos: !mountain_trail_custom_photo?(@journey) %>
+      <% end %>
     <% end %>
     <%= turbo_stream.append "trail-sheet-title-row" do %>
       <div id="trail-sheet-menu-<%= @created.id %>"
@@ -97,6 +99,7 @@
             plan: @plan,
             area: @created.life_area %>
     <% end %>
+    <%= render "life_journeys/trail_mountain_state_streams" if @trail_summit_state_flipped %>
     <%= turbo_stream.open_trail_camp(@created.id) %>
   <% end %>
 <% end %>
