@@ -46,8 +46,9 @@
 <% builtin_photos = !custom_mountain_photo %>
 <% builtin_daytime = builtin_photos ? mountain_trail_daytime?(user: current_user) : nil %>
 <% night_photo_url = mountain_trail_night_photo_url(journey) %>
+<% summit_reached = plan.present? && !destination_overlay && !first_camp_reveal && mountain_trail_summit_reached?(plan: plan) %>
 
-<section class="lp-trail is-bleed is-v4 <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %> <%= 'is-builtin-mountain-photos' if builtin_photos %> <%= 'is-day' if builtin_daytime == true %> <%= 'is-night' if builtin_daytime == false %>"
+<section class="lp-trail is-bleed is-v4 <%= 'is-summit-reached' if summit_reached %> <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %> <%= 'is-builtin-mountain-photos' if builtin_photos %> <%= 'is-day' if builtin_daytime == true %> <%= 'is-night' if builtin_daytime == false %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
          data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
@@ -203,6 +204,9 @@
       <div class="lp-trail__map"
            data-trail-canvas-target="mountain">
         <div class="lp-trail__world">
+          <% if summit_reached %>
+            <%= render "life_journeys/trail_summit_reached", plan: plan, goal: goal, journey: journey %>
+          <% else %>
           <div class="lp-trail__photo-wrap"
                aria-hidden="true">
             <% if custom_mountain_photo %>
@@ -292,6 +296,7 @@
                 builtin_photos: builtin_photos,
                 destination_overlay: destination_overlay,
                 first_camp_reveal: first_camp_reveal %>
+          <% end %>
         </div>
       </div>
 
@@ -419,7 +424,9 @@
         </div>
       </div>
     </div>
-    <%= render "life_journeys/trail_dock", today_card: today_card, journey: journey, projects: projects %>
+    <% unless summit_reached %>
+      <%= render "life_journeys/trail_dock", today_card: today_card, journey: journey, projects: projects %>
+    <% end %>
   </div>
 
   <div class="lp-trail__tab-fade" aria-hidden="true"></div>

@@ -1,21 +1,30 @@
 # frozen_string_literal: true
 
 module Onboarding
-  # Goal + ordered camps → journey spine (plan, projects, seed battle, setup flags).
-  # Used by Bootstrap; does not mark onboarding complete.
+  # Goal + ordered camps → journey spine (plan, projects, optional seed battle, setup flags).
+  # Used by Bootstrap and Journeys::StartNextGoal.
   class ClimbSpine
     class Error < StandardError; end
 
     Result = Bootstrap::Result
 
-    def self.call(user:, goal_title:, camp_titles:)
-      new(user:, goal_title:, camp_titles:).call
+    def self.call(user:, goal_title:, camp_titles:, **options)
+      new(user:, goal_title:, camp_titles:, **options).call
     end
 
-    def initialize(user:, goal_title:, camp_titles:)
+    def initialize(user:, goal_title:, camp_titles:, life_area: nil, area_key: nil,
+                   seed_battle: true, celebrate_goal: true, include_bootstrap_flag: true,
+                   first_camp_reveal_status: "pending", setup_category: nil)
       @user = user
       @goal_title = goal_title.to_s.strip
       @camp_titles = Array(camp_titles)
+      @life_area = life_area
+      @area_key = area_key
+      @seed_battle = seed_battle
+      @celebrate_goal = celebrate_goal
+      @include_bootstrap_flag = include_bootstrap_flag
+      @first_camp_reveal_status = first_camp_reveal_status.to_s
+      @setup_category = setup_category
     end
 
     def call
@@ -28,8 +37,7 @@ module Onboarding
       projects = []
       first_battle = nil
 
-      areas = LifeAreas::Select.call(user: @user, keys: [ Bootstrap::DEFAULT_AREA_KEY ])
-      primary_area = areas.find { |a| a.key == Bootstrap::DEFAULT_AREA_KEY } || areas.first
+      primary_area = resolve_life_area
 
       journey = Journeys::Create.call(
         user: @user,
@@ -60,7 +68,7 @@ module Onboarding
         position: 0,
         due_on: due_on
       )
-      Strategy::Celebrate.call(user: @user, goal: goal)
+      Strategy::Celebrate.call(user: @user, goal: goal) if @celebrate_goal
 
       plan = create_child!(
         parent: goal,
@@ -89,24 +97,21 @@ module Onboarding
       end
 
       first_project = projects.first
-      first_battle = create_child!(
-        parent: first_project,
-        horizon: "day",
-        title: default_seed_battle_title,
-        life_area: primary_area,
-        life_journey: journey,
-        scheduled_on: Date.current,
-        position: 0
-      )
+      if @seed_battle
+        first_battle = create_child!(
+          parent: first_project,
+          horizon: "day",
+          title: default_seed_battle_title,
+          life_area: primary_area,
+          life_journey: journey,
+          scheduled_on: Date.current,
+          position: 0
+        )
 
-      Strategy::CascadeToDaily.call(user: @user, life_area: primary_area)
+        Strategy::CascadeToDaily.call(user: @user, life_area: primary_area)
+      end
 
-      flags = (journey.setup_flags.presence || {}).stringify_keys.merge(
-        Onboarding::Categories::CATEGORY_FLAG => Bootstrap::DEFAULT_CATEGORY,
-        Bootstrap::BOOTSTRAP_FLAG => "true",
-        Bootstrap::FIRST_CAMP_REVEAL_FLAG => "pending",
-        Bootstrap::FIRST_CAMP_ID_FLAG => first_project.id
-      )
+      flags = build_setup_flags(journey:, first_project_id: first_project.id)
       journey.update_columns(setup_flags: flags, updated_at: Time.current)
       journey.setup_flags = flags
 
@@ -117,6 +122,27 @@ module Onboarding
     end
 
     private
+
+    def resolve_life_area
+      return @life_area if @life_area.present?
+
+      key = @area_key.presence || Bootstrap::DEFAULT_AREA_KEY
+      areas = LifeAreas::Select.call(user: @user, keys: [ key ])
+      area = areas.find { |a| a.key == key } || areas.first
+      raise Error, I18n.t("v2_onboarding.need_goal") if area.blank?
+
+      area
+    end
+
+    def build_setup_flags(journey:, first_project_id:)
+      category = @setup_category.presence || Bootstrap::DEFAULT_CATEGORY
+      flags = (journey.setup_flags.presence || {}).stringify_keys
+      flags[Onboarding::Categories::CATEGORY_FLAG] = category
+      flags[Bootstrap::BOOTSTRAP_FLAG] = "true" if @include_bootstrap_flag
+      flags[Bootstrap::FIRST_CAMP_REVEAL_FLAG] = @first_camp_reveal_status
+      flags[Bootstrap::FIRST_CAMP_ID_FLAG] = first_project_id
+      flags
+    end
 
     def default_seed_battle_title
       Array(I18n.t("strategy.rpg.trail.battle_suggestions")).first.to_s.strip.presence ||

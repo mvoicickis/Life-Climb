@@ -1,0 +1,127 @@
+<% content_for :title, t("summit_next_goal.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<% if @step == "goal" %>
+  <div class="lp-ob lp-ob--goal">
+    <div class="lp-ob__mountain-bg" aria-hidden="true">
+      <%= image_tag MountainTrailHelper::BUILTIN_DAY_PHOTO, class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+    </div>
+
+    <div class="lp-ob__body">
+      <section class="lp-ob__card lp-ob__card--goal" aria-labelledby="summit-goal-title">
+        <div class="lp-ob__step-head">
+          <%= link_to t("summit_next_goal.back"), life_journey_path(@journey), class: "lp-ob__back" %>
+          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+        </div>
+        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
+          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+        </div>
+
+        <h1 id="summit-goal-title" class="lp-ob__title"><%= t("summit_next_goal.mountain_name_title") %></h1>
+
+        <%= form_with url: summit_next_goal_path(step: "goal"), method: :patch, class: "lp-ob__form", data: { turbo: false } do %>
+          <label class="sr-only" for="summit_onboarding_goal"><%= t("summit_next_goal.mountain_name_title") %></label>
+          <%= text_field_tag "onboarding[goal]", @draft["goal"],
+                id: "summit_onboarding_goal",
+                required: true,
+                maxlength: 120,
+                class: "lp-input w-full",
+                autocomplete: "off",
+                autofocus: true,
+                placeholder: t("summit_next_goal.mountain_name_placeholder") %>
+          <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+        <% end %>
+      </section>
+    </div>
+  </div>
+
+<% elsif @step == "camps" %>
+  <% camp_rows = Array(@draft["camp_titles"]).presence || [] %>
+  <div class="lp-ob lp-ob--camps"
+       data-controller="onboarding-camps summit-next-goal-submit"
+       data-onboarding-camps-reorder-hint-value="<%= t("v2_onboarding.camps_reorder_hint") %>"
+       data-onboarding-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
+       data-summit-next-goal-submit-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>">
+    <div class="lp-ob__mountain-bg lp-ob__mountain-bg--steps" aria-hidden="true">
+      <%= image_tag "onboarding_path.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+    </div>
+
+    <div class="lp-ob__body lp-ob__body--camps">
+      <header class="lp-ob-steps__head">
+        <div class="lp-ob__step-head">
+          <%= link_to t("summit_next_goal.back"), summit_next_goal_path(step: "goal"), class: "lp-ob__back" %>
+          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+        </div>
+        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
+          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+        </div>
+
+        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title") %></h1>
+        <% if @draft["goal"].present? %>
+          <p class="lp-ob__goal-echo"><%= @draft["goal"] %></p>
+        <% end %>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead") %></p>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead_order") %></p>
+      </header>
+
+      <%= form_with url: summit_next_goal_path(step: "camps"),
+            method: :patch,
+            class: "lp-ob-steps",
+            data: {
+              turbo: false,
+              onboarding_camps_target: "form",
+              summit_next_goal_submit_target: "form",
+              action: "submit->onboarding-camps#beforeSubmit submit->summit-next-goal-submit#submit"
+            } do %>
+        <p class="lp-ob-steps__error"
+           role="alert"
+           hidden
+           data-summit-next-goal-submit-target="error"></p>
+
+        <div class="lp-ob-steps__add">
+          <label class="sr-only" for="summit_onboarding_camp_add"><%= t("v2_onboarding.camps_add_label") %></label>
+          <input type="text"
+                 id="summit_onboarding_camp_add"
+                 class="lp-input lp-ob-steps__add-input"
+                 autocomplete="off"
+                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                 enterkeyhint="go"
+                 placeholder="<%= t("v2_onboarding.camps_add_placeholder") %>"
+                 data-onboarding-camps-target="addInput"
+                 data-action="keydown->onboarding-camps#addFromEnter">
+          <button type="button"
+                  class="lp-ob-steps__add-btn"
+                  aria-label="<%= t("v2_onboarding.camps_add_button") %>"
+                  data-action="click->onboarding-camps#addFromButton">+</button>
+        </div>
+
+        <div class="lp-ob-steps__scroll">
+          <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
+            <% t("v2_onboarding.camps_ghost_examples").each do |example| %>
+              <div class="lp-ob-steps__ghost">
+                <span class="lp-ob-steps__ghost-handle" aria-hidden="true"></span>
+                <%= example %>
+              </div>
+            <% end %>
+          </div>
+          <ul class="lp-ob-steps__list" data-onboarding-camps-target="list" aria-label="<%= t("v2_onboarding.camps_list_label") %>"></ul>
+          <p class="lp-ob-steps__hint" data-onboarding-camps-target="hint" hidden></p>
+        </div>
+
+        <div data-onboarding-camps-target="hiddenFields">
+          <% camp_rows.each do |title| %>
+            <%= hidden_field_tag "onboarding[camp_titles][]", title %>
+          <% end %>
+        </div>
+
+        <footer class="lp-ob-steps__dock">
+          <%= submit_tag t("summit_next_goal.start_climbing"),
+                class: "lp-cta w-full",
+                disabled: camp_rows.empty?,
+                data: { onboarding_camps_target: "submit", summit_next_goal_submit_target: "submit" } %>
+        </footer>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,32 @@
+<%# Summit reached — full photo, finished pill, bottom card. locals: plan, goal, journey %>
+<% plan = local_assigns.fetch(:plan) %>
+<% goal = local_assigns.fetch(:goal) %>
+<% journey = local_assigns[:journey] %>
+<% camps_finished = mountain_trail_summit_finished_count(plan: plan) %>
+<% goal_title = goal&.title.presence || journey.title %>
+
+<div class="lp-trail-summit-scene" data-trail-ignore>
+  <%= image_tag "summit_background.webp",
+        class: "lp-trail-summit-scene__photo",
+        alt: "",
+        decoding: "async" %>
+  <p class="lp-trail-summit-scene__pill">
+    <span class="lp-trail-summit-scene__check" aria-hidden="true">✓</span>
+    <%= t("strategy.rpg.trail.camps_finished", count: camps_finished) %>
+  </p>
+  <div class="lp-trail-summit-scene__chrome">
+    <section class="lp-trail-summit-card" aria-label="<%= t("summit_next_goal.reached_aria") %>">
+      <p class="lp-trail-summit-card__kicker"><%= t("summit_next_goal.your_goal") %></p>
+      <h2 class="lp-trail-summit-card__title"><%= goal_title %></h2>
+      <p class="lp-trail-summit-card__status"><%= t("summit_next_goal.reached_top") %></p>
+      <%= link_to t("summit_next_goal.choose_next_goal"),
+            summit_next_goal_path,
+            class: "lp-trail-summit-card__cta" %>
+      <button type="button"
+              class="lp-trail-summit-card__link"
+              data-action="click->trail-canvas#openPlant">
+        <%= t("summit_next_goal.add_another_camp") %>
+      </button>
+    </section>
+  </div>
+</div>

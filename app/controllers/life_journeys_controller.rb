@@ -40,6 +40,9 @@ class LifeJourneysController < ApplicationController
   end
 
   def show
+    redirect_path = LifeJourneys::MountainShowRedirect.path_for(user: current_user, journey: @journey)
+    return redirect_to redirect_path, status: :see_other if redirect_path
+
     prepare_strategy!
   end
 

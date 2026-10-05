@@ -7072,3 +7072,154 @@ body.is-arrange-open #trail-toast-host .lp-toast {
 .lp-trail-arrange.has-arrange-save-notice .lp-trail-arrange__toast.is-visible {
   opacity: 0;
 }
+
+/* Summit reached — full photo + bottom card (slice 3b) */
+.lp-trail.is-summit-reached .lp-trail__map {
+  min-height: 0;
+}
+
+.lp-trail-summit-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lp-trail-summit-scene__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.lp-trail-summit-scene__pill {
+  position: absolute;
+  top: calc(0.5rem + env(safe-area-inset-top, 0px));
+  left: max(1rem, env(safe-area-inset-left, 0px));
+  z-index: 3;
+  margin: 0;
+  padding: 0.28rem 0.55rem;
+  border-radius: var(--lp-radius-pill, 999px);
+  border: 1px solid var(--lp-border, color-mix(in srgb, var(--lp-ink) 10%, transparent));
+  background: var(--lp-surface, #fff);
+  color: var(--lp-ink, #0f172a);
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1.25;
+  box-shadow: var(--lp-shadow-card);
+  max-width: calc(100% - 2rem);
+  overflow-wrap: anywhere;
+}
+
+.lp-trail-summit-scene__check {
+  margin-right: 0.15rem;
+}
+
+.lp-trail-summit-scene__chrome {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.65rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+.lp-trail-summit-card {
+  pointer-events: auto;
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--lp-radius-card, 1.25rem);
+  background: var(--lp-surface, #fff);
+  box-shadow: var(--lp-shadow-card);
+  border: 1px solid var(--lp-border, color-mix(in srgb, var(--lp-ink) 10%, transparent));
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lp-trail-summit-card__kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted, #475569);
+}
+
+.lp-trail-summit-card__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--lp-ink, #0f172a);
+  overflow-wrap: anywhere;
+}
+
+.lp-trail-summit-card__status {
+  margin: 0.1rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--lp-muted, #475569);
+  line-height: 1.35;
+}
+
+.lp-trail-summit-card__cta {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: var(--lp-radius-pill, 999px);
+  background: var(--lp-green, #57d35b);
+  color: var(--lp-ink, #0f172a);
+  font-family: var(--lp-font-ui, inherit);
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: var(--lp-shadow-cta);
+  text-align: center;
+}
+
+.lp-trail-summit-card__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
+  margin: 0.15rem 0 0;
+  padding: 0.35rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted, #475569);
+  font-family: var(--lp-font-ui, inherit);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.lp-ob-steps__error {
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--lp-radius-field, 0.85rem);
+  background: color-mix(in srgb, var(--lp-ink) 6%, transparent);
+  color: var(--lp-ink, #0f172a);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.lp-ob-steps__error[hidden] {
+  display: none;
+}
