@@ -2015,9 +2015,11 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   inset: auto;
   z-index: 1;
   flex: none;
-  margin-top: auto;
-  padding: 0;
+  align-self: stretch;
+  width: 100%;
   max-width: none;
+  margin: 0;
+  padding: 0;
   background: none;
   overflow: visible;
 }
@@ -2271,6 +2273,153 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-day-won__mountain-link {
   margin-top: 0.35rem;
+}
+
+/* Sign-off (closed) — frosted card stack, mock eod-calm New column */
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0.85rem 0.75rem 0.75rem;
+  min-width: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__moon-icon {
+  flex-shrink: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  color: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__moon-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__goal {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__camp {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__bar {
+  height: 0.35rem;
+  border-radius: 99px;
+  background: var(--lp-border);
+  overflow: hidden;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__camp-meta {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__tomorrow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+  box-sizing: border-box;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__tomorrow-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__tomorrow-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__streak {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__streak-icon {
+  flex-shrink: 0;
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--lp-ink);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__streak-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__share {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-signoff__reopen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--lp-tap);
+  margin: 0;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-ack {

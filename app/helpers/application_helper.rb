@@ -412,6 +412,21 @@ module ApplicationHelper
     end
   end
 
+  def end_of_day_signoff_camp(progress)
+    progress ||= {}
+    total = progress[:camps_total].to_i
+    return nil if total <= 0
+
+    current = [ progress[:camps_completed].to_i + 1, total ].min
+    percent = ((current.to_f / total) * 100).round.clamp(0, 100)
+    {
+      current: current,
+      total: total,
+      percent: percent,
+      label: t("dash.end_of_day.steps.closed.camp_of", current: current, total: total)
+    }
+  end
+
   def active_goal_title(strategy_goal: nil, journey: nil)
     strategy_goal&.title.presence || journey&.title || t("dash.active_goal_fallback")
   end

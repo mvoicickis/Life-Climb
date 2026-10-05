@@ -39,4 +39,16 @@ class EndOfDayHelperTest < ActionView::TestCase
 
     assert_equal "1 battle won", end_of_day_battles_won_line(health)
   end
+
+  test "end_of_day_signoff_camp returns nil when no camps" do
+    assert_nil end_of_day_signoff_camp(camps_total: 0, camps_completed: 0)
+  end
+
+  test "end_of_day_signoff_camp labels current camp" do
+    camp = end_of_day_signoff_camp(camps_total: 6, camps_completed: 1)
+
+    assert_equal 2, camp[:current]
+    assert_equal 6, camp[:total]
+    assert_includes camp[:label], "Camp 2 of 6"
+  end
 end
