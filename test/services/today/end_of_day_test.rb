@@ -81,6 +81,12 @@ class Today::EndOfDayTest < ActiveSupport::TestCase
       user.reload.primary_focused_journey
     end
     resolved = Strategy::PathProject.resolve(user: user, journey: journey)
-    assert_equal resolved, Today::EndOfDay.planning_project(user: user, journey: journey)
+    planned = Today::EndOfDay.planning_project(user: user, journey: journey)
+    if resolved
+      assert_equal resolved, planned
+    else
+      assert_nil planned
+    end
+    assert_nil Today::EndOfDay.planning_project(user: user, journey: nil)
   end
 end

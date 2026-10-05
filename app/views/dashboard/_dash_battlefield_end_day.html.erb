@@ -1,7 +1,8 @@
 <%# locals: health, day_ended: false %>
 <% health = local_assigns.fetch(:health) %>
 <% day_ended = local_assigns.fetch(:day_ended, false) %>
-<% if health.all_clear? && !day_ended %>
+<% flow_started = Today::EodFlow.acknowledged?(session) %>
+<% if health.all_clear? && !day_ended && !flow_started %>
   <%= button_to t("dash.battlefield.notch_end_day"),
         today_end_day_path,
         method: :post,

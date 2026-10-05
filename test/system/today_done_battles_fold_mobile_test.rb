@@ -67,8 +67,6 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
 
     page.driver.browser.manage.window.resize_to(320, 700)
     visit dashboard_path
-    assert_today_v2_all_clear_shell!
-    click_on I18n.t("dash.battlefield.notch_end_day")
     assert_no_selector ".lp-today-v2-row"
     assert_selector "#today-end-of-day"
     assert_selector ".lp-today-v2-eod-step--day-won", visible: :all

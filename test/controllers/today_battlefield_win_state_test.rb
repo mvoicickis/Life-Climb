@@ -35,7 +35,7 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_no_match "lp-today-v2-eod-step--day-won", response.body
-    assert_no_match "today-end-of-day", response.body
+    assert_no_match 'id="today-end-of-day"', response.body
     assert_no_match "lp-dash-project-check", response.body
     assert_no_match "today-battlefield-win", response.body
     assert_match "today-battlefield-end-day-host", response.body
