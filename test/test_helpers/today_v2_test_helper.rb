@@ -5,28 +5,14 @@ module TodayV2TestHelper
   def assert_today_v2_all_clear_shell!
     if integration_test?
       assert_select ".lp-dash.is-today-v2", count: 1
-      assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 1
+      assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+      assert_select "#today-end-of-day", count: 0
     else
       assert_selector ".lp-dash.is-today-v2", count: 1
-      assert_selector "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn",
+      assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
                       visible: :all,
                       wait: 5
-    end
-  end
-
-  def assert_today_v2_day_won_takeover!
-    if integration_test?
-      post today_end_day_path
-      follow_redirect!
-      assert_select "#today-end-of-day", count: 1
-      assert_select ".lp-today-v2-eod-card__goal-title", minimum: 1
-      assert_select ".lp-today-v2-eod-step--day-won", count: 1
-    else
-      click_on I18n.t("dash.battlefield.notch_end_day")
-      assert_selector ".lp-today-v2-eod-step--day-won",
-                      visible: :all,
-                      wait: 5
-      assert_selector "#today-end-of-day", visible: :all
+      assert_no_selector "#today-end-of-day", visible: :all
     end
   end
 

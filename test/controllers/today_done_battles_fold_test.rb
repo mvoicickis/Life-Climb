@@ -35,7 +35,7 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_select ".lp-dash-timeline", count: 0
   end
 
-  test "all battles done clears open rows and shows end day in battles card" do
+  test "all battles done clears open rows and shows all clear pill in battles card" do
     @todo.update!(completed_at: Time.current)
 
     get dashboard_path
@@ -45,7 +45,7 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_won_battle_row!(title: @todo.title, todo: @todo)
     assert_select ".lp-dash-timeline", count: 0
     assert_select ".lp-dash-done-fold", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
   end
 
   test "completed timed battle does not keep a timeline rail segment" do

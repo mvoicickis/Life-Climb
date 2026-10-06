@@ -52,20 +52,8 @@
   <% end %>
 <% end %>
 
-<% if @end_of_day_ready || @battlefield_day_ended %>
-  <%= turbo_stream.replace "today-end-of-day-host" do %>
-    <div id="today-end-of-day-host">
-      <%= render "dashboard/dash_end_of_day",
-            health: @battlefield_health,
-            streak: @climb_streak,
-            step: @eod_step,
-            recap_share: @recap_share %>
-    </div>
-  <% end %>
-<% else %>
-  <%= turbo_stream.replace "today-end-of-day-host" do %>
-    <div id="today-end-of-day-host"></div>
-  <% end %>
+<%= turbo_stream.replace "today-end-of-day-host" do %>
+  <div id="today-end-of-day-host"></div>
 <% end %>
 
 <% unless @battlefield_health.empty? %>
@@ -77,9 +65,7 @@
 <% end %>
 
 <%= turbo_stream.update "today-battlefield-end-day-host" do %>
-  <%= render "dashboard/dash_battlefield_end_day",
-        health: @battlefield_health,
-        day_ended: @battlefield_day_ended %>
+  <%= render "dashboard/dash_battlefield_all_clear_actions", health: @battlefield_health %>
 <% end %>
 
 <% unless @uncompleted %>

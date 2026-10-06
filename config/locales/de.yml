@@ -642,6 +642,7 @@ de:
         one: "1 battle waiting"  # TODO: translate
         other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
+      add_another_battle: "Add another battle"  # TODO: translate
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
         set_goal: "Set your goal" # TODO: translate

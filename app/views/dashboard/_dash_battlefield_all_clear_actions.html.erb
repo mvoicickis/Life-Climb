@@ -1,0 +1,22 @@
+<%# locals: health — all battles won CTAs (not End day). %>
+<% health = local_assigns.fetch(:health) %>
+<% if health.all_clear? %>
+  <%
+    cta = @empty_battle_cta
+    step = @strategy_handoff&.dig(:step)
+    primary_label =
+      if step.in?(%i[add_battle open_strategy])
+        t("dash.battlefield.add_another_battle")
+      else
+        cta[:label]
+      end
+  %>
+  <div class="lp-today-empty-cta__wrap">
+    <%= link_to primary_label, cta[:href], class: "lp-today-empty-cta__pill" %>
+    <% if step == :summit_next_goal && @journey.present? %>
+      <%= link_to t("summit_next_goal.add_another_camp"),
+            life_journey_path(@journey, open_plant: 1),
+            class: "lp-today-all-clear__secondary" %>
+    <% end %>
+  </div>
+<% end %>

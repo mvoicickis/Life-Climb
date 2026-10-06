@@ -831,6 +831,7 @@ lv:
         one: "1 cīņa gaida"
         other: "%{count} cīņas gaida"
       mountain_tertiary: "Atvērt Kalnu →"
+      add_another_battle: "Add another battle"  # TODO: translate
       win_state:
         day_won:
           kicker: "Diena uzvarēta"
