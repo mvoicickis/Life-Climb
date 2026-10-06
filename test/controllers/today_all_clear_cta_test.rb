@@ -27,6 +27,45 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
   end
 
+  test "all clear camp cleared today includes open_camp for path project" do
+    user = User.create!(
+      name: "Camp cleared handoff",
+      email_address: "camp-cleared-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      planning_version: 2,
+      onboarding_completed_at: Time.current
+    )
+    sign_in_as user
+
+    bootstrap = Onboarding::Bootstrap.call(
+      user: user,
+      goal_title: "Bal climb",
+      camp_titles: [ "Bal" ]
+    )
+    journey = bootstrap.journey
+    camp = bootstrap.projects.first
+    battle = camp.children.for_kind("day").first
+    battle.update!(completed_at: Time.current, scheduled_on: Date.current)
+    Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
+    todo = user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)
+    todo.update!(completed_at: Time.current)
+    dismiss_onboarding_missions!(user)
+
+    path_camp = Strategy::PathProject.resolve(user: user, journey: journey)
+    assert_equal camp, path_camp
+    refute camp.completed?
+    assert journey.first_camp_reveal_pending?
+
+    get dashboard_path
+    assert_response :success
+
+    href = assert_select("#today-battlefield-end-day-host a.lp-today-empty-cta__pill").first["href"]
+    query = Rack::Utils.parse_query(URI.parse(href).query)
+    assert_equal path_camp.id.to_s, query["open_camp"]
+    assert_equal "1", query["open_composer"]
+  end
+
   test "summit handoff shows summit pill and grey add another camp link" do
     user = User.create!(
       name: "Summit all clear",

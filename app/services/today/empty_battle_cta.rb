@@ -48,11 +48,14 @@ module Today
           href: helpers.life_journey_path(@journey, open_plant: 1)
         }
       when :add_battle, :open_strategy
+        camp_id =
+          project_id.presence ||
+          Strategy::PathProject.resolve(user: @journey.user, journey: @journey)&.id
         {
           label: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
           href: helpers.life_journey_path(
             @journey,
-            open_camp: project_id,
+            open_camp: camp_id,
             open_composer: 1
           )
         }
