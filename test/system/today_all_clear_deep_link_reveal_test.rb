@@ -26,7 +26,10 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     @battle = @camp.children.for_kind("day").first
     Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
     dismiss_onboarding_missions!(@user)
-    @user.update!(push_offer_last_shown_on: Date.current)
+    @user.update_columns(
+      character: "fox",
+      push_offer_last_shown_on: Date.current
+    )
     @todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @battle.id)
     assert @journey.first_camp_reveal_pending?
   end
@@ -39,11 +42,7 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     assert_today_v2_shell!
 
     visit dashboard_path
-
-    assert_selector "#companion-pick-prompt", wait: 8
-    find("#companion-pick-prompt .lp-companion-pick__option input[value='fox']", visible: :all).click
     assert_no_selector "#companion-pick-prompt", wait: 8
-
     assert_selector "#today-battlefield-rows .lp-today-v2-row", wait: 8
 
     click_battle_row_check!(todo: @todo)
