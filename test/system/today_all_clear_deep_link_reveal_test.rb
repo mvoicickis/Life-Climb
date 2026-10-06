@@ -39,11 +39,14 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     assert_today_v2_shell!
 
     visit dashboard_path
+
+    assert_selector "#companion-pick-prompt", wait: 8
+    find("#companion-pick-prompt .lp-companion-pick__option input[value='fox']", visible: :all).click
+    assert_no_selector "#companion-pick-prompt", wait: 8
+
     assert_selector "#today-battlefield-rows .lp-today-v2-row", wait: 8
 
-    check = find(".lp-today-v2-row[data-todo-id='#{@todo.id}'] .lp-today-v2-row__check")
-    page.execute_script("arguments[0].scrollIntoView({ block: 'center' })", check.native)
-    check.click
+    click_battle_row_check!(todo: @todo)
     assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
                       text: I18n.t("dash.battlefield.add_another_battle"),
                       wait: 8
