@@ -39,6 +39,13 @@ class TodayEmptyBattleCtaTest < ActiveSupport::TestCase
     open = Today::EmptyBattleCta.for(journey:, handoff: { step: :open_strategy, project_id: })
     assert_equal battle[:label], open[:label]
     assert_includes open[:href], "open_camp=#{project_id}"
+    assert_includes open[:href], "open_composer=1"
+
+    resolved = Today::EmptyBattleCta.for(
+      journey:,
+      handoff: { step: :open_strategy, project_id: nil }
+    )
+    assert_includes resolved[:href], "open_camp=#{Strategy::PathProject.resolve(user:, journey:).id}"
 
     summit = Today::EmptyBattleCta.for(
       journey:,
