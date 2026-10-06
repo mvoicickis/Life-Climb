@@ -44,3 +44,7 @@
 vendor/
 !vendor/javascript/
 !vendor/javascript/**
+
+# Local agent plans and design mockups (not shipped).
+/.cursor/plans/
+/docs/mockups/
