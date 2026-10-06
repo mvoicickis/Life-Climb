@@ -39,7 +39,6 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     visit dashboard_path
 
     assert_today_v2_all_clear_shell!
-    assert_today_v2_day_won_takeover!
     assert_selector "#today-dash-nav .lp-dash-nav.is-v4", visible: true, wait: 5
     assert_no_legacy_today_shell!
     assert_no_selector "#today-battlefield-rows .lp-today-v2-row"
@@ -49,29 +48,16 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
       assert_battle_row_absent!(title: "Win #{i + 1}")
       assert_won_battle_row!(title: "Win #{i + 1}")
     end
-    assert_selector "#today-end-of-day", wait: 5
-    assert_selector ".lp-today-v2-eod-step--day-won", visible: :all, wait: 5
-    assert_selector ".lp-today-v2-eod-card__detail",
-                    text: "5 battles won",
-                    visible: :all,
-                    wait: 5
-
-    takeover_h = page.evaluate_script(<<~JS)
-      document.querySelector('#today-end-of-day')?.getBoundingClientRect().height
-    JS
-    puts "MEASURED_V2_EOD_HEIGHT_375=#{takeover_h.round}"
-    assert_operator takeover_h.to_f, :>, 80, "end-of-day card should be visible on mobile"
+    assert_no_selector "#today-end-of-day", visible: :all
 
     FileUtils.mkdir_p("/opt/cursor/artifacts/screenshots")
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-375.png")
 
     page.driver.browser.manage.window.resize_to(320, 700)
     visit dashboard_path
-    assert_no_selector ".lp-today-v2-row"
-    assert_selector "#today-end-of-day"
-    assert_selector ".lp-today-v2-eod-step--day-won", visible: :all
-    narrow_h = page.evaluate_script("document.querySelector('#today-end-of-day')?.getBoundingClientRect().height")
-    assert_operator narrow_h.to_f, :>, 80
+    assert_no_selector ".lp-today-v2-row", visible: :all
+    assert_no_selector "#today-end-of-day", visible: :all
+    assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill", visible: :all
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-320.png")
   end
 end

@@ -16,7 +16,7 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
   end
 
-  test "all clear shows end day without ack or takeover" do
+  test "all clear shows add another battle without ack or takeover" do
     @todo.update!(completed_at: Time.current)
 
     get dashboard_path
@@ -25,12 +25,14 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-win", count: 0
     assert_select ".lp-today-v2-eod-ack", count: 0
     assert_select "#today-end-of-day", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-battlefield-end-day__btn", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
+                  text: I18n.t("dash.battlefield.add_another_battle")
+    assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", count: 1
   end
 
-  test "completing last battle does not show takeover until end day" do
+  test "completing last battle does not show end of day takeover" do
     post complete_daily_todo_path(@todo), as: :turbo_stream
 
     assert_response :ok

@@ -3366,6 +3366,8 @@
   --lp-elevated: #ffffff;
   --lp-glass: rgba(255, 255, 255, 0.92);
   --lp-border: rgba(15, 23, 42, 0.1);
+  --lp-flame: #e8652a;
+  --lp-flame-glow: color-mix(in srgb, var(--lp-flame) 25%, transparent);
   --lp-stats-cal-win-1-bg: color-mix(in srgb, var(--lp-green) 30%, var(--lp-mist));
   --lp-stats-cal-win-2-bg: color-mix(in srgb, var(--lp-green) 62%, var(--lp-mist));
   --lp-stats-cal-win-3-bg: var(--lp-green);

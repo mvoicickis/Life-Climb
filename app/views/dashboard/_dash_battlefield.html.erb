@@ -42,9 +42,7 @@
               done_todos: done_todos,
               journey: journey %>
         <div id="today-battlefield-end-day-host">
-          <%= render "dashboard/dash_battlefield_end_day",
-                health: health,
-                day_ended: local_assigns.fetch(:day_ended, @battlefield_day_ended) %>
+          <%= render "dashboard/dash_battlefield_all_clear_actions", health: health %>
         </div>
       <% end %>
     </div>

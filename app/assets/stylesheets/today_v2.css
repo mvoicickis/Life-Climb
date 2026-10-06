@@ -355,6 +355,7 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 
 #today-battlefield-end-day-host {
   margin: 0.5rem 0 0.85rem;
+  padding: 0 16px;
 }
 
 .lp-today-battlefield-end-day__form {
@@ -1985,8 +1986,41 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
-  box-shadow: var(--lp-shadow-cta);
+  box-shadow: 0 4px 0 var(--lp-green-deep);
   overflow-wrap: anywhere;
+  transform: translateY(0);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill:active {
+  box-shadow: 0 2px 0 var(--lp-green-deep);
+  transform: translateY(2px);
+}
+
+#today-battlefield-end-day-host .lp-today-empty-cta__wrap {
+  padding: 0;
+}
+
+.lp-today-all-clear__secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  min-width: 0;
+  margin: 0.5rem 0 0;
+  padding: 0 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-family: var(--lp-font-ui);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-mountain-link.is-add-on-mountain {

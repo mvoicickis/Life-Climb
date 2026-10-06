@@ -76,6 +76,7 @@ en:
       add_on_mountain: "Add a battle on the Mountain"
       mountain_all_clear: "All clear — open Mountain for your next battle"
       mountain_tertiary: "Open Mountain →"
+      add_another_battle: "Add another battle"
       win_state:
         day_won:
           kicker: "Day won"

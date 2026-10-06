@@ -52,7 +52,7 @@ class FixedViewportTodayTest < ActionDispatch::IntegrationTest
 
     end_day_host = css[/\#today-battlefield-end-day-host\s*\{[^}]+\}/m]
     assert end_day_host.present?
-    refute_match(/0\.75rem/, end_day_host, "end day host should not add horizontal gutter margin")
+    assert_match(/padding:\s*0 16px/, end_day_host)
 
     photo_eod_host = css[/\.lp-dash\.is-today-v2\.is-today-photo \#today-end-of-day-host:has\(\.lp-today-v2-eod-takeover\)\s*\{[^}]+\}/m]
     assert photo_eod_host.present?
