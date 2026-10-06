@@ -26,6 +26,7 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     @battle = @camp.children.for_kind("day").first
     Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
     dismiss_onboarding_missions!(@user)
+    @user.update!(push_offer_last_shown_on: Date.current)
     @todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @battle.id)
     assert @journey.first_camp_reveal_pending?
   end
@@ -40,7 +41,9 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     visit dashboard_path
     assert_selector "#today-battlefield-rows .lp-today-v2-row", wait: 8
 
-    click_battle_row_check!(todo: @todo)
+    check = find(".lp-today-v2-row[data-todo-id='#{@todo.id}'] .lp-today-v2-row__check")
+    page.execute_script("arguments[0].scrollIntoView({ block: 'center' })", check.native)
+    check.click
     assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
                       text: I18n.t("dash.battlefield.add_another_battle"),
                       wait: 8
