@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import { parseTrailDeepLink } from "lib/trail_deep_link"
+import { consumeDeepLinkOpenOnSheet, setPendingDeepLinkOpen } from "lib/trail_deep_link_open"
 
 // First landing after v2 onboarding — goal plaque, curve camps land, tap tent to open sheet.
 export default class extends Controller {
@@ -21,6 +23,13 @@ export default class extends Controller {
     this._token = 0
     this._finished = false
     this._tapReady = false
+    this._deepLinkDismissStarted = false
+
+    const deepLink = parseTrailDeepLink()
+    if (deepLink.campId) {
+      void this.enterFromDeepLink(deepLink)
+      return
+    }
 
     this.element.dataset.trailSuppressOpen = "1"
     this.bindFirstCampTap()
@@ -30,6 +39,44 @@ export default class extends Controller {
   disconnect() {
     this._token += 1
     this.unbindFirstCampTap()
+  }
+
+  async enterFromDeepLink({ campId, openComposer }) {
+    if (this._deepLinkDismissStarted) return
+    this._deepLinkDismissStarted = true
+
+    try {
+      if (this.hasDismissUrlValue) {
+        const response = await fetch(this.dismissUrlValue, {
+          method: "PATCH",
+          headers: {
+            Accept: "text/vnd.turbo-stream.html",
+            "X-CSRF-Token": this.csrfToken()
+          },
+          credentials: "same-origin"
+        })
+
+        if (response.ok) {
+          const html = await response.text()
+          if (html.includes("turbo-stream")) {
+            window.Turbo?.renderStreamMessage?.(html)
+          }
+        }
+      }
+    } catch (_error) {
+      // Local finish + open below — reveal may return on next visit.
+    } finally {
+      this.finish()
+      this.element.setAttribute("data-trail-camp-sheet-reveal-pending-value", "false")
+
+      setPendingDeepLinkOpen(this.element, { campId, openComposer })
+      const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
+      consumeDeepLinkOpenOnSheet(sheet)
+    }
+  }
+
+  csrfToken() {
+    return document.querySelector("meta[name='csrf-token']")?.content || ""
   }
 
   finish() {
