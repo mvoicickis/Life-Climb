@@ -224,6 +224,10 @@ class User < ApplicationRecord
     active_dream&.goals&.active&.ordered&.first || goals.active.ordered.first
   end
 
+  def local_today
+    Battles::WinsOnLocalDate.local_today_for(self)
+  end
+
   def points_today
     completions.where(completed_on: Date.current).sum(:points_awarded)
   end

@@ -51,8 +51,8 @@ module Today
       keyword_init: true
     )
 
-    def self.progress(user:, journey:, date: Date.current)
-      new(user:, journey:, date:).progress
+    def self.progress(user:, journey:, date: Date.current, habits_on: Date.current)
+      new(user:, journey:, date:, habits_on:).progress
     end
 
     # One next setup step so #progress can become met on this tier. Priority:
@@ -110,12 +110,12 @@ module Today
       nil
     end
 
-    def self.touch_met_streak!(user:, journey:, date: Date.current)
-      new(user:, journey:, date:).touch_met_streak!
+    def self.touch_met_streak!(user:, journey:, date: Date.current, habits_on: Date.current)
+      new(user:, journey:, date:, habits_on:).touch_met_streak!
     end
 
-    def self.suggest_level_up?(journey:, date: Date.current)
-      new(user: journey.user, journey:, date:).suggest_level_up?
+    def self.suggest_level_up?(journey:, date: Date.current, habits_on: Date.current)
+      new(user: journey.user, journey:, date:, habits_on:).suggest_level_up?
     end
 
     def self.eligibility(user:, key:, journey: nil)
@@ -268,17 +268,18 @@ module Today
       end
     end
 
-    def initialize(user:, journey:, date: Date.current)
+    def initialize(user:, journey:, date: Date.current, habits_on: Date.current)
       @user = user
       @journey = journey
       @date = date
+      @habits_on = habits_on
     end
 
     def progress
       return empty_progress if @journey.blank?
 
       habits = @user.habits.active.on_home.to_a
-      green = habits.select { |habit| habit.survived_today?(@date) }
+      green = habits.select { |habit| habit.survived_today?(@habits_on) }
 
       todos = @user.daily_todos.for_day(@date).to_a
       timed_done = todos.select { |todo| todo.timed? && todo.completed? }

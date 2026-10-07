@@ -1,6 +1,7 @@
 <%# locals: habit, photo_today (optional) %>
 <% photo_today = local_assigns.fetch(:photo_today, false) %>
-<% ctx = habit_today_amount_context(habit)
+<% local_day = current_user.local_today %>
+<% ctx = habit_today_amount_context(habit, on: local_day)
    quick = habit.quantity_checkin? ? habit.quick_add_value : nil
    binary = habit.binary_checkin?
    habit_win_form_data = {
@@ -21,7 +22,7 @@
   <% if binary %>
     <div class="lp-dash-habit__r1 lp-dash-habit__r1--binary-tick">
       <% if ctx[:done] %>
-        <% completion = habit.completion_for(Date.current) %>
+        <% completion = habit.completion_for(local_day) %>
         <span class="lp-today-v2-row__check lp-today-v2-row__check--display" aria-hidden="true">
           <span class="lp-today-v2-row__tick-slot"><span class="lp-today-v2-row__box is-won"></span></span>
         </span>

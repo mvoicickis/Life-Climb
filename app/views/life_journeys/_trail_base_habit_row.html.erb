@@ -1,13 +1,14 @@
 <%# locals: habit, journey, goal, plan %>
+<% local_day = current_user.local_today %>
 <% if habit.quantity_checkin? %>
-  <% undo = habit_log_undo_for(habit) %>
+  <% undo = habit_log_undo_for(habit, on: local_day) %>
   <li class="lp-trail-battles__row is-basics" id="trail-base-habit-<%= habit.id %>">
     <div class="lp-trail-base-sheet__basic-row">
       <span class="lp-trail-battles__name"><%= habit.name %></span>
       <span class="lp-trail-battles__basics-amt">
-        <% if habit.logged_on?(Date.current) %>
+        <% if habit.logged_on?(local_day) %>
           <%= t("strategy.rpg.trail.base_camp.basics.amount",
-                amount: format_amount(habit.today_amount),
+                amount: format_amount(habit.today_amount(on: local_day)),
                 unit: habit.unit) %>
         <% end %>
       </span>

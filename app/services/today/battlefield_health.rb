@@ -39,14 +39,15 @@ module Today
       end
     end
 
-    def self.call(open_count:, total_count:, habits: [])
-      new(open_count:, total_count:, habits:).call
+    def self.call(open_count:, total_count:, habits: [], habits_on: Date.current)
+      new(open_count:, total_count:, habits:, habits_on:).call
     end
 
-    def initialize(open_count:, total_count:, habits: [])
+    def initialize(open_count:, total_count:, habits:, habits_on: Date.current)
       @open_count = open_count.to_i
       @total_count = total_count.to_i
       @habits = Array(habits)
+      @habits_on = habits_on
       @done_count = [ @total_count - @open_count, 0 ].max
     end
 
@@ -86,7 +87,7 @@ module Today
       if open_count.positive?
         I18n.t("dash.battlefield.risk_open", count: open_count)
       elsif basics_remaining?
-        remaining = @habits.count { |habit| !habit.survived_today? }
+        remaining = @habits.count { |habit| !habit.survived_today?(@habits_on) }
         I18n.t("dash.battlefield.risk_basics_left", count: remaining)
       else
         I18n.t("dash.battlefield.risk_cleared")
@@ -94,7 +95,7 @@ module Today
     end
 
     def basics_remaining?
-      @habits.present? && @habits.any? { |habit| !habit.survived_today? }
+      @habits.present? && @habits.any? { |habit| !habit.survived_today?(@habits_on) }
     end
 
     def result_title_for(hp)

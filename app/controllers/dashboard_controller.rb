@@ -35,13 +35,14 @@ class DashboardController < ApplicationController
     @life_points = current_user.reload.life_points
     @climb_streak = Climb::Streak.status(user: current_user)
     @day_shield = Today::DayShield.status(user: current_user)
+    habits_on = current_user.local_today
     @commitment =
       if read_only_impersonation?
-        Today::Commitment.progress(user: current_user, journey: @journey)
+        Today::Commitment.progress(user: current_user, journey: @journey, habits_on: habits_on)
       else
-        Today::Commitment.touch_met_streak!(user: current_user, journey: @journey)
+        Today::Commitment.touch_met_streak!(user: current_user, journey: @journey, habits_on: habits_on)
       end
-    @commitment_level_up = Today::Commitment.suggest_level_up?(journey: @journey)
+    @commitment_level_up = Today::Commitment.suggest_level_up?(journey: @journey, habits_on: habits_on)
     @next_action = Strategy::NextAction.for(
       user: current_user,
       session: session,
@@ -51,7 +52,8 @@ class DashboardController < ApplicationController
     @battlefield_health = Today::BattlefieldHealth.call(
       open_count: @battle_open_count,
       total_count: @battle_total_count,
-      habits: @habits
+      habits: @habits,
+      habits_on: habits_on
     )
     assign_battlefield_prompt!
     assign_end_of_day!
@@ -59,7 +61,8 @@ class DashboardController < ApplicationController
     day_pct = Today::DayPercent.call(
       user: current_user,
       habits: @habits,
-      todos: @daily_todos
+      todos: @daily_todos,
+      habits_on: habits_on
     )
     @day_percent = day_pct.percent
     @overshoot_bonus = current_user.day_overshoot_bonuses.find_by(on_date: Date.current)

@@ -166,7 +166,8 @@ class DailyTodosController < ApplicationController
     @battlefield_health = Today::BattlefieldHealth.call(
       open_count: @battle_open_count,
       total_count: @battle_total_count,
-      habits: @habits
+      habits: @habits,
+      habits_on: habits_local_day
     )
     assign_battlefield_prompt!
     assign_end_of_day!

@@ -32,7 +32,7 @@ class DailyLogsController < ApplicationController
       return
     end
 
-    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: Date.current)
+    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: habits_local_day)
     previous = @daily_log.persisted? ? @daily_log.amount : BigDecimal("0")
     @daily_log.amount = previous + delta
     @daily_log.goal = goal_for_log
@@ -40,7 +40,7 @@ class DailyLogsController < ApplicationController
     if @daily_log.save
       store_undo!(previous_amount: previous, delta: delta)
       award_rhythm_points_if_won!
-      Today::OvershootBonus.sync!(user: current_user)
+      Today::OvershootBonus.sync!(user: current_user, habits_on: habits_local_day)
       respond_after_log!(redirect_flash_for_add(delta: delta, log: @daily_log))
     else
       respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
@@ -54,14 +54,14 @@ class DailyLogsController < ApplicationController
       return
     end
 
-    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: Date.current)
+    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: habits_local_day)
     @daily_log.amount = amount
     @daily_log.goal = goal_for_log
 
     if @daily_log.save
       clear_undo!
       award_rhythm_points_if_won!
-      Today::OvershootBonus.sync!(user: current_user)
+      Today::OvershootBonus.sync!(user: current_user, habits_on: habits_local_day)
       respond_after_log!(notice: notice_for_set(@daily_log))
     else
       respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
@@ -82,14 +82,14 @@ class DailyLogsController < ApplicationController
       return
     end
 
-    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: Date.current)
+    @daily_log = current_user.daily_logs.find_or_initialize_by(habit: @habit, logged_on: habits_local_day)
     @daily_log.amount = previous
     @daily_log.goal = goal_for_log
 
     if @daily_log.save
       clear_undo!
       award_rhythm_points_if_won!
-      Today::OvershootBonus.sync!(user: current_user)
+      Today::OvershootBonus.sync!(user: current_user, habits_on: habits_local_day)
       respond_after_log!(notice: notice_for_undo(@daily_log))
     else
       respond_log_failure!(@daily_log.errors.full_messages.to_sentence, fallback_habit: true)
@@ -178,10 +178,22 @@ class DailyLogsController < ApplicationController
 
   def award_rhythm_points_if_won!
     return unless won?
-    already = current_user.life_point_ledgers.where(source: @habit).where("date(created_at) = ?", Date.current).exists?
+    range = local_day_time_range(habits_local_day)
+    already = current_user.life_point_ledgers.where(source: @habit).where(created_at: range).exists?
     return if already
 
     LifePointsAward.new(current_user).for_rhythm!(@habit)
+  end
+
+  def habits_local_day
+    current_user.local_today
+  end
+
+  def local_day_time_range(day)
+    zone_name = Battles::WinsOnLocalDate.time_zone_for(current_user)
+    zone = Time.find_zone!(zone_name)
+    start = zone.local(day.year, day.month, day.day).beginning_of_day
+    start..start.end_of_day
   end
 
   def set_habit
@@ -196,11 +208,12 @@ class DailyLogsController < ApplicationController
     return @habit.goal if @habit.growth? && @habit.goal.present?
     return nil if @habit.standard?
 
-    daily_log_params[:goal].presence || @habit.suggested_goal_for_today
+    daily_log_params[:goal].presence || @habit.suggested_goal_for_today(on: habits_local_day)
   end
 
   def won?
-    @habit.met_habit_goal? || (@daily_log.goal.present? && @daily_log.met_goal?)
+    on = habits_local_day
+    @habit.met_habit_goal?(on: on) || (@daily_log.goal.present? && @daily_log.met_goal?)
   end
 
   def parse_amount(raw)
@@ -218,7 +231,7 @@ class DailyLogsController < ApplicationController
     bag[@habit.id.to_s] = {
       "previous" => previous_amount.to_s("F"),
       "delta" => delta.to_s("F"),
-      "on" => Date.current.iso8601
+      "on" => habits_local_day.iso8601
     }
     session[UNDO_SESSION_KEY] = bag
   end
@@ -238,7 +251,7 @@ class DailyLogsController < ApplicationController
 
     entry = bag.stringify_keys[@habit.id.to_s]
     return nil unless entry.is_a?(Hash)
-    return nil unless entry["on"] == Date.current.iso8601
+    return nil unless entry["on"] == habits_local_day.iso8601
 
     entry
   end
@@ -255,7 +268,7 @@ class DailyLogsController < ApplicationController
   def redirect_flash_for_add(delta:, log:)
     if params[:return_to].to_s == "today"
       habit = log.habit
-      progress = habit.goal_progress_percent
+      progress = habit.goal_progress_percent(on: habits_local_day)
       body =
         if progress.is_a?(Numeric) && progress >= 100
           I18n.t("dash.hero.toast_hit", name: habit.name, percent: progress.to_i)
@@ -280,8 +293,9 @@ class DailyLogsController < ApplicationController
   def notice_for_set(log)
     habit = log.habit
     parts = [ t("habits.log_set", total: format_num(log.amount), unit: habit.unit) ]
-    parts << habit.status_label
-    parts << t("habits.goal_hit") if habit.met_habit_goal?
+    on = habits_local_day
+    parts << habit.status_label(on: on)
+    parts << t("habits.goal_hit") if habit.met_habit_goal?(on: on)
     parts.join(" ")
   end
 

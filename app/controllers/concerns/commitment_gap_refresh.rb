@@ -11,7 +11,11 @@ module CommitmentGapRefresh
   def refresh_commitment_gap_context!(open_reveal: nil, gap_notice: nil)
     @journey = current_user.primary_focused_journey
     assign_today_battle_surface!(reconcile: false) if @journey.present?
-    @commitment = Today::Commitment.progress(user: current_user, journey: @journey)
+    @commitment = Today::Commitment.progress(
+      user: current_user,
+      journey: @journey,
+      habits_on: current_user.local_today
+    )
     @next_action = Strategy::NextAction.for(
       user: current_user,
       session: session,

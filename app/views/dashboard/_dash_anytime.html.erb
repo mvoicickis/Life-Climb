@@ -1,10 +1,11 @@
 <%# RPG habit slots — one quick-add + ⋯ sheet.
     locals: habits %>
 <% habits = Array(local_assigns.fetch(:habits) { @habits || [] }) %>
-<% basics_all_done = habits.present? && habits.all?(&:survived_today?) %>
+<% local_day = current_user.local_today %>
+<% basics_all_done = habits.present? && habits.all? { |h| h.survived_today?(local_day) } %>
 <% battles_all_clear = @battlefield_health&.all_clear? %>
 <% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
-<% done_n = habits.count(&:survived_today?) %>
+<% done_n = habits.count { |h| h.survived_today?(local_day) } %>
 <section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>" aria-label="<%= t('dash.anytime.title') %>">
   <div class="lp-today-group-card">
     <div class="lp-today-group-card__head">
