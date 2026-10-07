@@ -2,8 +2,8 @@
 
 module Strategy
   # Shared spine resolver for QuickAdd / EnsureDayForTodo / Handoff.
-  # Picks an incomplete visible path-level Project (last-touched day ancestry
-  # when ambiguous), or the hidden holding camp when none exist.
+  # Picks the trail-current path-level Project on the first plan that still
+  # has one, or the hidden holding camp when none exist (ensure!).
   class PathProject
     def self.resolve(user:, journey:)
       new(user:, journey:).resolve
@@ -22,15 +22,12 @@ module Strategy
       goal = root_goal
       return nil if goal.blank?
 
-      candidates = incomplete_path_projects(goal)
-      return nil if candidates.empty?
-      return candidates.first if candidates.size == 1
+      goal.children.for_kind("plan").not_holding.ordered.each do |plan|
+        camp = Trail.current_camp_for(plan: plan)
+        return camp if camp
+      end
 
-      candidate_ids = candidates.map(&:id).to_set
-      camp = path_camp_ancestor(most_recent_day)
-      return camp if camp && candidate_ids.include?(camp.id)
-
-      candidates.first
+      nil
     end
 
     def ensure!(_title)
@@ -44,33 +41,6 @@ module Strategy
 
     def root_goal
       @root_goal ||= Goals::Current.goal_for(user: @user, journey: @journey)
-    end
-
-    def incomplete_path_projects(goal)
-      goal.children.for_kind("plan").not_holding.ordered.flat_map do |plan|
-        plan.children.for_kind("project").not_holding.ordered.select do |project|
-          project.path_level_camp? && project.completed_at.blank?
-        end
-      end
-    end
-
-    def most_recent_day
-      scope = @user.strategy_goals.where(
-        life_area_id: @journey.life_area_id,
-        horizon: "day"
-      )
-      scope = scope.where(life_journey_id: @journey.id) if @journey.id.present?
-      scope.order(updated_at: :desc, id: :desc).first
-    end
-
-    def path_camp_ancestor(node)
-      current = node
-      while current
-        return current if current.path_level_camp? && !current.holding?
-
-        current = current.parent
-      end
-      nil
     end
   end
 end

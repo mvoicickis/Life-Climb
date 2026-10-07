@@ -23,6 +23,11 @@ module Strategy
       new(plan:, ensure_visible_id:).call
     end
 
+    # Path spine: first sequential open camp in CampOrder (not tracker-linked).
+    def self.current_camp_for(plan:)
+      new(plan: plan).current_camp_for
+    end
+
     def initialize(plan:, ensure_visible_id: nil)
       @plan = plan
       @ensure_visible_id = ensure_visible_id
@@ -47,6 +52,33 @@ module Strategy
         plan: @plan,
         label: narrative_label(nodes, @plan.progress_percent.to_i)
       )
+    end
+
+    def current_camp_for
+      return nil if @plan.blank?
+
+      projects = ordered_projects
+      return nil if projects.empty?
+
+      index = self.class.current_index_for(projects)
+      return nil if index >= projects.length
+
+      camp = projects[index]
+      return nil unless camp.path_level_camp?
+
+      camp
+    end
+
+    def self.current_index_for(projects)
+      list = Array(projects)
+      list.index { |p| !p.completed? && !tracker_linked?(p) } || list.length
+    end
+
+    def self.tracker_linked?(project)
+      return false if project.blank?
+      return project.tracker_linked? if project.respond_to?(:tracker_linked?)
+
+      false
     end
 
     private
@@ -79,8 +111,7 @@ module Strategy
 
       # Sequential lock ignores Tracker-linked Projects (habit_project_links) so they
       # never block the Path queue — and so they never sit as :locked themselves.
-      current_index =
-        projects.index { |p| !p.completed? && !tracker_linked?(p) } || projects.length
+      current_index = self.class.current_index_for(projects)
       count = projects.length
 
       projects.each_with_index.map do |project, index|
@@ -113,10 +144,7 @@ module Strategy
     end
 
     def tracker_linked?(project)
-      return false if project.blank?
-      return project.tracker_linked? if project.respond_to?(:tracker_linked?)
-
-      false
+      self.class.tracker_linked?(project)
     end
 
     def visible_nodes_from(nodes, current, ensure_visible_id: nil)

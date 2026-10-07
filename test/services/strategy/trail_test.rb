@@ -51,6 +51,22 @@ class StrategyTrailTest < ActiveSupport::TestCase
     assert_equal second.id, trail.current_node.id
   end
 
+  test "current_camp_for skips tracker-linked camp and returns sequential current" do
+    tracker_camp = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Tracker", position: 0
+    )
+    real_current = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project",
+      title: "Real", position: 1
+    )
+    HabitProjectLink.create!(habit: habits(:one), strategy_goal: tracker_camp)
+
+    assert tracker_camp.tracker_linked?
+    assert_equal real_current, Strategy::Trail.current_camp_for(plan: @plan.reload)
+    assert_equal :current, Strategy::Trail.for(plan: @plan.reload).nodes[1].state
+  end
+
   test "progress mirrors plan percent" do
     a = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "A", position: 0

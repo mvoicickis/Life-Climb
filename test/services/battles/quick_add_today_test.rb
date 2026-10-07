@@ -66,7 +66,7 @@ module Battles
       assert_equal journey.life_area_id, result.battle.life_area_id
     end
 
-    test "attaches under last-touched open path Project not first by position" do
+    test "attaches under trail current path Project not later camp by touch" do
       journey = @user.primary_focused_journey
       goal = @user.strategy_goals.for_kind("goal").roots.first
       plan = goal.children.for_kind("plan").ordered.first
@@ -95,8 +95,8 @@ module Battles
 
       path = result.battle.parent
       path = path.parent while path && !path.path_level_camp?
-      assert_equal second.id, path.id
-      refute_equal first.id, path.id
+      assert_equal first.id, path.id
+      refute_equal second.id, path.id
     end
   end
 end
