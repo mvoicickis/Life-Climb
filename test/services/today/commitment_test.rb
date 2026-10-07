@@ -172,7 +172,9 @@ class Today::CommitmentTest < ActiveSupport::TestCase
         completed_at: Time.zone.parse("#{date} 10:00"),
         start_time: "09:00", end_time: "10:00", position: 200 + offset
       )
-      Today::Commitment.touch_met_streak!(user: @user, journey: @journey.reload, date: date)
+      Today::Commitment.touch_met_streak!(
+        user: @user, journey: @journey.reload, date: date, habits_on: date
+      )
     end
 
     @journey.reload

@@ -3,9 +3,15 @@
 require "test_helper"
 
 class Today::EndOfDayTest < ActiveSupport::TestCase
+  HabitSurvivalStub = Struct.new(:survived) do
+    def survived_today?(_date = Date.current)
+      survived
+    end
+  end
+
   test "ready when battles clear and habits gate disabled" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 2)
-    habits = [ Struct.new(:survived_today?).new(false) ]
+    habits = [ HabitSurvivalStub.new(false) ]
 
     assert Today::EndOfDay.ready?(health: health, habits: habits, habits_gate_enabled: false)
   end
@@ -18,14 +24,14 @@ class Today::EndOfDayTest < ActiveSupport::TestCase
 
   test "not ready when habits gate on and basics incomplete" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
-    habits = [ Struct.new(:survived_today?).new(false) ]
+    habits = [ HabitSurvivalStub.new(false) ]
 
     refute Today::EndOfDay.ready?(health: health, habits: habits, habits_gate_enabled: true)
   end
 
   test "ready when habits gate on and all basics survived" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
-    habits = [ Struct.new(:survived_today?).new(true) ]
+    habits = [ HabitSurvivalStub.new(true) ]
 
     assert Today::EndOfDay.ready?(health: health, habits: habits, habits_gate_enabled: true)
   end

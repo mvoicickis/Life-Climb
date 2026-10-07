@@ -3,6 +3,12 @@
 require "test_helper"
 
 class Today::BattlefieldHealthTest < ActiveSupport::TestCase
+  HabitSurvivalStub = Struct.new(:survived) do
+    def survived_today?(_date = Date.current)
+      survived
+    end
+  end
+
   test "hp reflects won share of today's battles" do
     result = Today::BattlefieldHealth.call(open_count: 3, total_count: 4)
     assert_equal 25, result.hp
@@ -26,8 +32,8 @@ class Today::BattlefieldHealthTest < ActiveSupport::TestCase
 
   test "battles clear with incomplete basics shows basics note" do
     habits = [
-      Struct.new(:survived_today?).new(true),
-      Struct.new(:survived_today?).new(false)
+      HabitSurvivalStub.new(true),
+      HabitSurvivalStub.new(false)
     ]
     result = Today::BattlefieldHealth.call(open_count: 0, total_count: 2, habits: habits)
 
@@ -37,8 +43,8 @@ class Today::BattlefieldHealthTest < ActiveSupport::TestCase
 
   test "battles clear with multiple incomplete basics pluralizes note" do
     habits = [
-      Struct.new(:survived_today?).new(false),
-      Struct.new(:survived_today?).new(false)
+      HabitSurvivalStub.new(false),
+      HabitSurvivalStub.new(false)
     ]
     result = Today::BattlefieldHealth.call(open_count: 0, total_count: 1, habits: habits)
 
@@ -46,7 +52,7 @@ class Today::BattlefieldHealthTest < ActiveSupport::TestCase
   end
 
   test "battles clear with all basics survived shows cleared note" do
-    habits = [ Struct.new(:survived_today?).new(true) ]
+    habits = [ HabitSurvivalStub.new(true) ]
     result = Today::BattlefieldHealth.call(open_count: 0, total_count: 1, habits: habits)
 
     assert_equal "Nothing left today.", result.risk_note
