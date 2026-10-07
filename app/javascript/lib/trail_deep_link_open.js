@@ -31,23 +31,24 @@ export function consumeDeepLinkOpenOnSheet(sheetController) {
   const pending = readPendingDeepLinkOpen(sheetController.element)
   if (!pending) return false
 
-  clearPendingDeepLinkOpen(sheetController.element)
-
   sheetController.openCampById(pending.campId)
 
-  if (pending.openComposer) {
-    const battlesEl = sheetController.element.querySelector(`#trail-battles-${pending.campId}`)
-    const battlesController =
-      (typeof sheetController.activeTrailBattlesController === "function" &&
-        sheetController.activeTrailBattlesController()) ||
-      (battlesEl &&
-        sheetController.application.getControllerForElementAndIdentifier(battlesEl, "trail-battles"))
+  if (!pending.openComposer) {
+    clearPendingDeepLinkOpen(sheetController.element)
+    stripTrailDeepLinkParams()
+    return true
+  }
 
-    if (battlesController) {
-      battlesController.openComposer()
-    } else {
-      sheetController.flagComposerOnConnect(pending.campId)
-    }
+  const battlesEl = sheetController.element.querySelector(`#trail-battles-${pending.campId}`)
+  const battlesController =
+    battlesEl &&
+    sheetController.application.getControllerForElementAndIdentifier(battlesEl, "trail-battles")
+
+  if (battlesController) {
+    battlesController.openComposer()
+    clearPendingDeepLinkOpen(sheetController.element)
+  } else {
+    sheetController.flagComposerOnConnect(pending.campId)
   }
 
   stripTrailDeepLinkParams()

@@ -45,6 +45,8 @@ export default class extends Controller {
     if (this._deepLinkDismissStarted) return
     this._deepLinkDismissStarted = true
 
+    setPendingDeepLinkOpen(this.element, { campId, openComposer })
+
     try {
       if (this.hasDismissUrlValue) {
         const response = await fetch(this.dismissUrlValue, {
@@ -69,7 +71,6 @@ export default class extends Controller {
       this.finish()
       this.element.setAttribute("data-trail-camp-sheet-reveal-pending-value", "false")
 
-      setPendingDeepLinkOpen(this.element, { campId, openComposer })
       const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
       consumeDeepLinkOpenOnSheet(sheet)
     }
