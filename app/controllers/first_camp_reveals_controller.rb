@@ -12,6 +12,7 @@ class FirstCampRevealsController < ApplicationController
     @plan = @project&.parent if @project&.parent&.plan?
     @goal = @project&.root_goal
     @area = @project&.life_area || @journey.life_area
+    @open_composer = params[:open_composer] == "1"
 
     respond_to do |format|
       format.turbo_stream

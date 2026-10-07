@@ -21,6 +21,19 @@ class FirstCampRevealsControllerTest < ActionDispatch::IntegrationTest
     @seed = @result.first_battle
   end
 
+  test "update with open_composer renders composer form visible in stream" do
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: @seed.id)
+    todo.update!(completed_at: Time.current)
+
+    patch life_journey_first_camp_reveal_path(@journey),
+          params: { open_composer: "1" },
+          as: :turbo_stream
+
+    assert_response :success
+    assert_includes response.body, "data-trail-battles-target=\"composerForm\""
+    refute_match(/data-trail-battles-target="composerForm"[^>]*\shidden/, response.body)
+  end
+
   test "update clears reveal flag and keeps seed battle" do
     assert @journey.first_camp_reveal_pending?
 

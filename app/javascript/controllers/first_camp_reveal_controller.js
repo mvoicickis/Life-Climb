@@ -53,7 +53,10 @@ export default class extends Controller {
 
     try {
       if (this.hasDismissUrlValue) {
-        const response = await fetch(this.dismissUrlValue, {
+        const dismissUrl = new URL(this.dismissUrlValue, window.location.origin)
+        if (openComposer) dismissUrl.searchParams.set("open_composer", "1")
+
+        const response = await fetch(dismissUrl.toString(), {
           method: "PATCH",
           headers: {
             Accept: "text/vnd.turbo-stream.html",
