@@ -27,6 +27,64 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
   end
 
+  test "all clear opens trail current camp when stage order differs from position" do
+    user = User.create!(
+      name: "Multi camp all clear",
+      email_address: "multi-camp-clear-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      planning_version: 2,
+      onboarding_completed_at: Time.current
+    )
+    sign_in_as user
+
+    bootstrap = Onboarding::Bootstrap.call(
+      user: user,
+      goal_title: "Climb",
+      camp_titles: [ "Camp A" ]
+    )
+    journey = bootstrap.journey
+    area = journey.life_area
+    goal = bootstrap.goal
+    plan = goal.children.for_kind("plan").not_holding.first
+    camp_a = bootstrap.projects.first
+    camp_a.update_columns(position: 3, stage: 0)
+    camp_a.complete!
+
+    camp_b = plan.children.create!(
+      user: user, life_area: area, life_journey: journey, horizon: "project",
+      title: "Camp B", position: 0, stage: 1
+    )
+    plan.children.create!(
+      user: user, life_area: area, life_journey: journey, horizon: "project",
+      title: "Camp C", position: 1, stage: 2
+    )
+    plan.children.create!(
+      user: user, life_area: area, life_journey: journey, horizon: "project",
+      title: "Camp D", position: 2, stage: 3
+    )
+
+    battle = camp_b.children.create!(
+      user: user, life_area: area, life_journey: journey, horizon: "day",
+      title: "B today", scheduled_on: Date.current, position: 0
+    )
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
+    todo = user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)
+    todo.update!(completed_at: Time.current)
+    battle.complete!
+    dismiss_onboarding_missions!(user)
+
+    assert_equal camp_b, Strategy::PathProject.resolve(user: user, journey: journey)
+
+    get dashboard_path
+    assert_response :success
+
+    href = assert_select("#today-battlefield-end-day-host a.lp-today-empty-cta__pill").first["href"]
+    query = Rack::Utils.parse_query(URI.parse(href).query)
+    assert_equal camp_b.id.to_s, query["open_camp"]
+    assert_equal "1", query["open_composer"]
+  end
+
   test "all clear camp cleared today includes open_camp for path project" do
     user = User.create!(
       name: "Camp cleared handoff",

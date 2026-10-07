@@ -43,7 +43,7 @@ class StrategyHandoffTest < ActiveSupport::TestCase
     plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: goal, horizon: "plan", title: "Find a job", position: 0
     )
-    @user.strategy_goals.create!(
+    first = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
       title: "First camp", position: 0
     )
@@ -51,20 +51,22 @@ class StrategyHandoffTest < ActiveSupport::TestCase
       life_area: @area, life_journey: @journey, parent: plan, horizon: "project",
       title: "Second camp", position: 1
     )
-    leaf = second
-    day = leaf.children.create!(
+    first.children.create!(
+      user: @user, life_area: @area, life_journey: @journey, horizon: "day",
+      title: "First camp battle", scheduled_on: Date.current, position: 0
+    )
+    day = second.children.create!(
       user: @user, life_area: @area, life_journey: @journey, horizon: "day",
       title: "Touch second", scheduled_on: Date.current, position: 0
     )
     day.update_columns(updated_at: 1.minute.from_now)
 
     resolved = Strategy::PathProject.resolve(user: @user, journey: @journey)
-    assert_equal second, resolved
+    assert_equal first, resolved
 
     handoff = Strategy::Handoff.for(user: @user, journey: @journey)
-    # Nested battle exists → open_strategy, still focused on the resolved camp
     assert_match(/Continue on Mountain/i, handoff[:label])
-    assert_includes handoff[:href], "focus_id=#{second.id}"
+    assert_includes handoff[:href], "focus_id=#{first.id}"
   end
 
   test "add_battle names the resolved empty path Project" do
