@@ -8,7 +8,6 @@ import {
   turboSubmitOk
 } from "lib/battle_win_feedback"
 import { RESTORE_EVENT } from "controllers/trail_camp_finish_controller"
-
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
   static targets = [

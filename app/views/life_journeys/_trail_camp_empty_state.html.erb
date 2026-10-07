@@ -2,6 +2,7 @@
 <% project = local_assigns.fetch(:project) %>
 <% variant = local_assigns.fetch(:variant) %>
 <% add_form = local_assigns.fetch(:add_form) %>
+<% open_composer = local_assigns[:open_composer].present? %>
 
 <div class="lp-trail-camp-idle lp-frost<%= " lp-trail-camp-idle--won" if variant == :won %>">
   <% if variant == :won %>
@@ -30,7 +31,8 @@
   <button type="button"
           class="lp-trail-battles__composer-trigger"
           data-trail-battles-target="composerTrigger"
-          data-action="click->trail-battles#openComposer">
+          data-action="click->trail-battles#openComposer"
+          <%= "hidden" if open_composer %>>
     <% case variant %>
     <% when :start %>
       <%= t("strategy.rpg.trail.camp_idle.start_button") %>
@@ -63,11 +65,11 @@
        role="status"
        hidden></p>
   <% end %>
-  <div class="lp-trail-battles__composer"
+  <div class="lp-trail-battles__composer<%= " is-open" if open_composer %>"
        data-trail-battles-target="composer">
     <div class="lp-trail-battles__composer-form"
          data-trail-battles-target="composerForm"
-         hidden>
+         <%= "hidden" unless open_composer %>>
       <%= add_form %>
     </div>
   </div>

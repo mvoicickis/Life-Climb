@@ -784,11 +784,7 @@ export default class extends Controller {
       return
     }
 
-    if (this.revealPendingValue && openComposer) {
-      await this.finishRevealForDeepLink()
-    } else if (this.revealPendingValue) {
-      return
-    }
+    if (this.revealPendingValue) return
 
     if (openComposer) {
       this.flagComposerOnConnect(campId)
@@ -802,30 +798,6 @@ export default class extends Controller {
       const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
       history.replaceState(history.state, "", next)
     })
-  }
-
-  async finishRevealForDeepLink() {
-    const reveal = this.application.getControllerForElementAndIdentifier(this.element, "first-camp-reveal")
-
-    if (this.revealPendingValue && this.hasDismissUrlValue) {
-      try {
-        const response = await fetch(this.dismissUrlValue, {
-          method: "PATCH",
-          headers: {
-            Accept: "text/vnd.turbo-stream.html",
-            "X-CSRF-Token": this.csrfToken()
-          },
-          credentials: "same-origin"
-        })
-        if (!response.ok) {
-          console.warn("trail-camp-sheet: first camp reveal dismiss failed", response.status)
-        }
-      } catch (error) {
-        console.warn("trail-camp-sheet: first camp reveal dismiss failed", error)
-      }
-    }
-
-    reveal?.finish()
   }
 
   flagComposerOnConnect(campId) {
