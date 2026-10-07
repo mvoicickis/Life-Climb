@@ -49,7 +49,7 @@ class Strategy::EnsureDayForTodoTest < ActiveSupport::TestCase
     assert_equal 1, @user.daily_todos.where(title: "Orphan MVP battle", scheduled_on: Date.current).count
   end
 
-  test "attaches orphan under last-touched incomplete path Project" do
+  test "attaches orphan under trail current path Project" do
     journey = @journey
     goal = @user.strategy_goals.for_kind("goal").roots.first
     plan = goal.children.for_kind("plan").ordered.first
@@ -76,7 +76,8 @@ class Strategy::EnsureDayForTodoTest < ActiveSupport::TestCase
     day = Strategy::EnsureDayForTodo.call(todo: orphan)
     path = day.parent
     path = path.parent while path && !path.path_level_camp?
-    assert_equal second.id, path.id
+    assert_equal first.id, path.id
+    refute_equal second.id, path.id
   end
 
   test "empty spine attaches orphan to the holding camp" do

@@ -49,6 +49,12 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     plan = goal.children.for_kind("plan").not_holding.first
     camp_a = bootstrap.projects.first
     camp_a.update_columns(position: 3, stage: 0)
+    battle_a = camp_a.children.for_kind("day").first
+    Strategy::CascadeToDaily.call(user: user, life_area: area)
+    user.daily_todos.for_day(Date.current).where(strategy_goal_id: battle_a.id).find_each do |todo|
+      todo.update!(completed_at: Time.current)
+    end
+    battle_a.complete!
     camp_a.complete!
 
     camp_b = plan.children.create!(

@@ -94,6 +94,8 @@ class Strategy::PathProjectTest < ActiveSupport::TestCase
   end
 
   test "resolve skips a finished plan and returns open camp on the next plan" do
+    allow_extra_climbs!(@user)
+
     plan_done = create_plan!("Done path")
     plan_done.update_columns(position: 0)
     done_camp = create_path_project!(plan_done, "Summit", position: 0)
