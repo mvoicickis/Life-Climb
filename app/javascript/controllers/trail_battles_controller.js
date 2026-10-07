@@ -8,7 +8,7 @@ import {
   turboSubmitOk
 } from "lib/battle_win_feedback"
 import { RESTORE_EVENT } from "controllers/trail_camp_finish_controller"
-import { clearPendingDeepLinkOpen, readPendingDeepLinkOpen } from "lib/trail_deep_link_open"
+import { readPendingDeepLinkOpen } from "lib/trail_deep_link_open"
 
 // Daily toggle + title parsing + camp rename + session win toasts inside trail battle sheet.
 export default class extends Controller {
@@ -57,12 +57,9 @@ export default class extends Controller {
 
     const pending = readPendingDeepLinkOpen(sheet.element)
     if (!pending?.openComposer) return
-
-    const campId = this.parentIdValue || this.element.id.replace(/^trail-battles-/, "")
-    if (!campId || String(pending.campId) !== String(campId)) return
+    if (this.element.id !== `trail-battles-${pending.campId}`) return
 
     this.openComposer()
-    clearPendingDeepLinkOpen(sheet.element)
   }
 
   parseDraft(event) {

@@ -1,6 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { parseTrailDeepLink } from "lib/trail_deep_link"
-import { consumeDeepLinkOpenOnSheet, setPendingDeepLinkOpen } from "lib/trail_deep_link_open"
+import {
+  clearPendingDeepLinkOpen,
+  consumeDeepLinkOpenOnSheet,
+  setPendingDeepLinkOpen
+} from "lib/trail_deep_link_open"
 
 // First landing after v2 onboarding — goal plaque, curve camps land, tap tent to open sheet.
 export default class extends Controller {
@@ -73,6 +77,7 @@ export default class extends Controller {
 
       const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
       consumeDeepLinkOpenOnSheet(sheet)
+      clearPendingDeepLinkOpen(this.element)
     }
   }
 

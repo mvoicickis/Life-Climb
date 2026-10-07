@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import { lockWinSubmit, turboSubmitOk } from "lib/battle_win_feedback"
-import { consumeDeepLinkOpenOnSheet } from "lib/trail_deep_link_open"
 
 const AUTO_NEXT_MS = 2000
 const FINISH_UNDO_BAR_MS = 5000
@@ -40,12 +39,7 @@ export default class extends Controller {
     this._finishUndoBarFinishedCampId = null
     this._barUndoInFlight = false
     window.addEventListener("popstate", this._onPopState)
-    this.consumeDeepLinkOpen()
     void this.maybeOpenFromQuery()
-  }
-
-  consumeDeepLinkOpen() {
-    consumeDeepLinkOpenOnSheet(this)
   }
 
   disconnect() {
