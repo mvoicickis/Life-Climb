@@ -69,7 +69,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn", count: 0
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__close", count: 0
     assert_select "input[type=submit][value=?]", I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
-    assert_select ".lp-first-camp-setup__hint", text: I18n.t("strategy.rpg.trail.first_camp_reveal.dock_note")
+    assert_select ".lp-first-camp-setup .lp-trail-camp-idle.lp-frost"
+    assert_select ".lp-first-camp-setup__hint", count: 0
     assert_select "[data-action*='first-camp-battle#titleKeydown']"
 
     get dashboard_path

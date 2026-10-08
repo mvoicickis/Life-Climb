@@ -31,7 +31,7 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_select "#trail-sheet-camp-#{@second_camp.id} .lp-trail-battles"
   end
 
-  test "setup sheet shows camp title submit button and enter hint" do
+  test "setup sheet shows camp title and save card" do
     get life_journey_path(@journey)
 
     assert_response :success
@@ -39,12 +39,12 @@ class FirstCampRevealPinTest < ActionDispatch::IntegrationTest
     assert_select ".lp-first-camp-setup__title", count: 0
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__menu-btn", count: 0
     assert_select ".lp-trail.is-first-camp-reveal .lp-trail-sheet__close", count: 0
-    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__dock-spacer"
-    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__composer.is-dock"
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-camp-idle.lp-frost"
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__dock-spacer", count: 0
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-trail-battles__composer.is-dock", count: 0
     assert_select "#trail-sheet-camp-#{@first_camp.id} input[type=submit][value=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
-    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__hint",
-                  text: I18n.t("strategy.rpg.trail.first_camp_reveal.dock_note")
+    assert_select "#trail-sheet-camp-#{@first_camp.id} .lp-first-camp-setup__hint", count: 0
     assert_select "#trail-sheet-camp-#{@first_camp.id} [data-action*='first-camp-battle#titleKeydown']"
     assert_select "#trail-sheet-camp-#{@first_camp.id} input[placeholder=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder")

@@ -9,20 +9,19 @@
      style="--lp-trail-accent: <%= accent %>"
      data-controller="first-camp-battle"
      data-first-camp-battle-need-title-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_title') %>">
-  <p class="lp-first-camp-setup__lead"><%= t("strategy.rpg.trail.first_camp_reveal.setup_lead") %></p>
+  <div class="lp-trail-camp-idle lp-frost">
+    <h3 class="lp-trail-camp-idle__title"><%= t("strategy.rpg.trail.first_camp_reveal.setup_lead") %></h3>
 
-  <%= form_with url: life_journey_first_camp_battles_path(journey),
-        method: :post,
-        class: "lp-first-camp-setup__form",
-        data: {
-          turbo: true,
-          first_camp_battle_target: "form",
-          action: "submit->first-camp-battle#submit turbo:submit-end->first-camp-battle#saved"
-        } do %>
-    <%= hidden_field_tag :repeat, "none", data: { first_camp_battle_target: "repeatField" } %>
+    <%= form_with url: life_journey_first_camp_battles_path(journey),
+          method: :post,
+          class: "lp-first-camp-setup__form",
+          data: {
+            turbo: true,
+            first_camp_battle_target: "form",
+            action: "submit->first-camp-battle#submit turbo:submit-end->first-camp-battle#saved"
+          } do %>
+      <%= hidden_field_tag :repeat, "none", data: { first_camp_battle_target: "repeatField" } %>
 
-    <div class="lp-trail-battles__dock-spacer" aria-hidden="true"></div>
-    <div class="lp-trail-battles__composer is-dock lp-first-camp-setup__dock">
       <label class="lp-first-camp-setup__field">
         <span class="sr-only"><%= t("strategy.rpg.trail.first_camp_reveal.title_placeholder") %></span>
         <%= render layout: "shared/title_limit_wrap" do %>
@@ -43,12 +42,10 @@
       <%= submit_tag t("strategy.rpg.trail.first_camp_reveal.submit"),
             class: "lp-first-camp-setup__submit" %>
 
-      <p class="lp-first-camp-setup__hint"><%= t("strategy.rpg.trail.first_camp_reveal.dock_note") %></p>
-
       <p class="lp-first-camp-setup__error"
          data-first-camp-battle-target="error"
          hidden
          role="alert"></p>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 </div>
