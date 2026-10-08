@@ -1,13 +1,14 @@
 <%# locals: habit %>
 <%
-  done = habit.completed_today?
-  amount = habit.today_amount
+  local_day = current_user.local_today
+  done = habit.completed_today?(on: local_day)
+  amount = habit.today_amount(on: local_day)
 %>
 <% if habit.binary_checkin? %>
   <li class="lp-dash-battle__item lp-dash-habit has-color is-amber <%= 'is-done' if done %>"
       id="<%= dom_id(habit, :today) %>">
     <% if done %>
-      <% completion = habit.completion_for(Date.current) %>
+      <% completion = habit.completion_for(local_day) %>
       <%= button_to completion_path(completion),
             method: :delete,
             class: "lp-dash-check is-on",

@@ -9,17 +9,18 @@ module Today
 
     Result = Struct.new(:granted, :awarded_ap, :peak_percent, :percent, keyword_init: true)
 
-    def self.sync!(user:, date: Date.current)
-      new(user: user, date: date).sync!
+    def self.sync!(user:, date: Date.current, habits_on: Date.current)
+      new(user: user, date: date, habits_on: habits_on).sync!
     end
 
-    def initialize(user:, date:)
+    def initialize(user:, date:, habits_on:)
       @user = user
       @date = date
+      @habits_on = habits_on
     end
 
     def sync!
-      percent = DayPercent.call(user: @user, date: @date).percent
+      percent = DayPercent.call(user: @user, date: @date, habits_on: @habits_on).percent
       existing = DayOvershootBonus.find_by(user: @user, on_date: @date)
 
       if percent.nil? || percent <= 100

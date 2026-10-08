@@ -8,7 +8,7 @@
   </div>
 
   <div>
-    <% if habit.completed_today? %>
+    <% if habit.completed_today?(on: current_user.local_today) %>
       <span class="inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-800">
         Done today
       </span>

@@ -3,12 +3,12 @@
 module Today
   # End-of-day gate: battles cleared plus optional Basics survival check.
   class EndOfDay
-    def self.ready?(health:, habits:, habits_gate_enabled:)
+    def self.ready?(health:, habits:, habits_gate_enabled:, habits_on: Date.current)
       return false unless health&.all_clear?
 
       return true unless habits_gate_enabled
 
-      habits.blank? || habits.all?(&:survived_today?)
+      habits.blank? || habits.all? { |habit| habit.survived_today?(habits_on) }
     end
 
     def self.open_camps(strategy_goal:)

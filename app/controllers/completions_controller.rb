@@ -6,14 +6,15 @@ class CompletionsController < ApplicationController
 
   def create
     @habit = current_user.habits.find(params[:habit_id])
-    if @habit.completed_today?
+    local_day = current_user.local_today
+    if @habit.completed_today?(on: local_day)
       return render_existing_completion
     end
 
-    @completion = current_user.completions.build(habit: @habit, completed_on: Date.current)
+    @completion = current_user.completions.build(habit: @habit, completed_on: local_day)
 
     if @completion.save
-      Today::OvershootBonus.sync!(user: current_user)
+      Today::OvershootBonus.sync!(user: current_user, habits_on: local_day)
       assign_today_habit_stream! unless mountain_return?
       respond_to do |format|
         format.turbo_stream
@@ -38,7 +39,7 @@ class CompletionsController < ApplicationController
     @completion = current_user.completions.find(params[:id])
     @habit = @completion.habit
     @completion.destroy!
-    Today::OvershootBonus.sync!(user: current_user)
+    Today::OvershootBonus.sync!(user: current_user, habits_on: current_user.local_today)
     assign_today_habit_stream! unless mountain_return?
     respond_to do |format|
       format.turbo_stream
@@ -54,7 +55,7 @@ class CompletionsController < ApplicationController
   private
 
   def render_existing_completion
-    Today::OvershootBonus.sync!(user: current_user)
+    Today::OvershootBonus.sync!(user: current_user, habits_on: current_user.local_today)
     assign_mountain_sheet_for_base_camp! if mountain_return?
     assign_today_habit_stream! unless mountain_return?
 

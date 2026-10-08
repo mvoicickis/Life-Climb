@@ -11,6 +11,10 @@ module Dashboard
     # Assumes @journey is already set. When reconcile: true, runs streak/shield/miss
     # settlement then reloads todos (full Today page). Stream refreshes pass false
     # for a lighter rebuild from current DB state after a local create.
+    def habits_local_day
+      current_user.local_today
+    end
+
     def assign_today_battle_surface!(reconcile: true)
       sync_today_battles! unless read_only_impersonation?
 
@@ -83,7 +87,8 @@ module Dashboard
       @end_of_day_ready = Today::EndOfDay.ready?(
         health: @battlefield_health,
         habits: @habits,
-        habits_gate_enabled: habits_gate
+        habits_gate_enabled: habits_gate,
+        habits_on: habits_local_day
       )
       day_closed = Today::BattlefieldDay.ended?(session)
       return unless @end_of_day_ready || day_closed
@@ -107,7 +112,8 @@ module Dashboard
       @battlefield_health = Today::BattlefieldHealth.call(
         open_count: @battle_open_count,
         total_count: @battle_total_count,
-        habits: @habits
+        habits: @habits,
+        habits_on: habits_local_day
       )
       @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
       @climb_streak = Climb::Streak.status(user: current_user)

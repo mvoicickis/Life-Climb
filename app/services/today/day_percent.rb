@@ -6,13 +6,14 @@ module Today
   class DayPercent
     Result = Struct.new(:percent, :parts_count, keyword_init: true)
 
-    def self.call(user:, date: Date.current, habits: nil, todos: nil)
-      new(user: user, date: date, habits: habits, todos: todos).call
+    def self.call(user:, date: Date.current, habits_on: Date.current, habits: nil, todos: nil)
+      new(user: user, date: date, habits_on: habits_on, habits: habits, todos: todos).call
     end
 
-    def initialize(user:, date:, habits:, todos:)
+    def initialize(user:, date:, habits_on:, habits:, todos:)
       @user = user
       @date = date
+      @habits_on = habits_on
       @habits = habits
       @todos = todos
     end
@@ -35,10 +36,10 @@ module Today
         next if habit.standard?
 
         if habit.binary_checkin?
-          habit.completed_today? ? 100 : 0
+          habit.completed_today?(on: @habits_on) ? 100 : 0
         else
           # Growth quantity — uncapped; nil would only appear for standard (skipped).
-          habit.goal_progress_percent.to_i
+          habit.goal_progress_percent(on: @habits_on).to_i
         end
       end.compact
     end

@@ -209,13 +209,13 @@ module ApplicationHelper
   end
 
   # Server-side undo snapshot after additive habit log (not client-forgeable).
-  def habit_today_amount_context(habit)
-    amount = habit.today_amount
-    target = habit.stretch_goal? ? habit.todays_goal_value : nil
-    progress = habit.goal_progress_percent
+  def habit_today_amount_context(habit, on: current_user.local_today)
+    amount = habit.today_amount(on: on)
+    target = habit.stretch_goal? ? habit.todays_goal_value(on: on) : nil
+    progress = habit.goal_progress_percent(on: on)
     over = progress.is_a?(Numeric) && progress > 100
     hit = progress.is_a?(Numeric) && progress >= 100
-    done = habit.completed_today?
+    done = habit.completed_today?(on: on)
     show_pct = (progress.is_a?(Numeric) && habit.quantity_checkin? && habit.stretch_goal?) ||
                (habit.binary_checkin? && done)
     {
@@ -238,19 +238,19 @@ module ApplicationHelper
     tokens.compact.join(" ")
   end
 
-  def basics_survived_count(habits)
+  def basics_survived_count(habits, on: current_user.local_today)
     list = Array(habits)
-    done_n = list.count { |habit| habit.survived_today? }
+    done_n = list.count { |habit| habit.survived_today?(on) }
     { done_n: done_n, total: list.size }
   end
 
-  def habit_log_undo_for(habit)
+  def habit_log_undo_for(habit, on: current_user.local_today)
     bag = session[DailyLogsController::UNDO_SESSION_KEY]
     return nil unless bag.is_a?(Hash)
 
     entry = bag.stringify_keys[habit.id.to_s]
     return nil unless entry.is_a?(Hash)
-    return nil unless entry["on"] == Date.current.iso8601
+    return nil unless entry["on"] == on.iso8601
 
     entry
   end

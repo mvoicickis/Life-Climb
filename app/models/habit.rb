@@ -162,8 +162,8 @@ class Habit < ApplicationRecord
     end
   end
 
-  def completed_today?
-    completions.exists?(completed_on: Date.current)
+  def completed_today?(on: Date.current)
+    completions.exists?(completed_on: on)
   end
 
   # Daily survival green for commitment tiers — not sticky tracker state.
@@ -195,12 +195,12 @@ class Habit < ApplicationRecord
     daily_logs.find_by(logged_on: date)
   end
 
-  def today_log
-    log_for(Date.current)
+  def today_log(on: Date.current)
+    log_for(on)
   end
 
-  def yesterday_log
-    log_for(Date.yesterday)
+  def yesterday_log(on: Date.current)
+    log_for(on - 1)
   end
 
   # Empty day slot counts as 0
@@ -208,31 +208,31 @@ class Habit < ApplicationRecord
     log_for(date)&.amount || BigDecimal("0")
   end
 
-  def today_amount
-    amount_or_zero(Date.current)
+  def today_amount(on: Date.current)
+    amount_or_zero(on)
   end
 
-  def yesterday_amount
-    amount_or_zero(Date.yesterday)
+  def yesterday_amount(on: Date.current)
+    amount_or_zero(on - 1)
   end
 
   def logged_on?(date)
     log_for(date).present?
   end
 
-  def suggested_goal_for_today
+  def suggested_goal_for_today(on: Date.current)
     return goal if growth? && goal.present?
 
-    self.class.goal_from_yesterday(yesterday_amount)
+    self.class.goal_from_yesterday(yesterday_amount(on: on - 1))
   end
 
-  def status
-    HabitStatusEvaluator.new(self).call
+  def status(on: Date.current)
+    HabitStatusEvaluator.new(self, on: on).call
   end
   alias vs_yesterday status
 
-  def status_label
-    HabitStatusEvaluator.new(self).label
+  def status_label(on: Date.current)
+    HabitStatusEvaluator.new(self, on: on).label
   end
   alias vs_yesterday_label status_label
 
@@ -248,30 +248,30 @@ class Habit < ApplicationRecord
     end
   end
 
-  def todays_goal_value
+  def todays_goal_value(on: Date.current)
     return goal if growth? && goal.present?
 
-    today_log&.goal || suggested_goal_for_today
+    today_log(on: on)&.goal || suggested_goal_for_today(on: on)
   end
 
   # Display-only progress vs today's target. Growth may exceed 100%.
   # Binary is 0/100. Standard/healthy-range returns nil (no percentage).
-  def goal_progress_percent
+  def goal_progress_percent(on: Date.current)
     if binary_checkin?
-      return completed_today? ? 100 : 0
+      return completed_today?(on: on) ? 100 : 0
     end
 
     return nil if standard?
     return nil if growth? && goal.blank?
 
-    target = todays_goal_value
+    target = todays_goal_value(on: on)
     return 0 if target.blank? || target <= 0
 
-    ((today_amount / target) * 100).round
+    ((today_amount(on: on) / target) * 100).round
   end
 
-  def met_habit_goal?
-    growth? && goal.present? && today_amount >= goal
+  def met_habit_goal?(on: Date.current)
+    growth? && goal.present? && today_amount(on: on) >= goal
   end
 
   # Target used to size the fallback quick-add and the four ⋯ chips.

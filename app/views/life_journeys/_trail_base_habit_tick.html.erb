@@ -3,7 +3,8 @@
 <% journey = local_assigns.fetch(:journey) %>
 <% goal = local_assigns.fetch(:goal) %>
 <% plan = local_assigns.fetch(:plan) %>
-<% done = habit.completed_today? %>
+<% local_day = current_user.local_today %>
+<% done = habit.completed_today?(on: local_day) %>
 <% mountain_params = {
      return_to: "mountain",
      life_journey_id: journey.id,
@@ -11,7 +12,7 @@
      plan_id: plan.id
    } %>
 <% if done %>
-  <% completion = habit.completion_for(Date.current) %>
+  <% completion = habit.completion_for(local_day) %>
   <%= button_to completion_path(completion),
         method: :delete,
         class: "lp-trail-battles__tick",

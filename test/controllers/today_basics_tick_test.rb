@@ -50,12 +50,12 @@ class TodayBasicsTickTest < ActionDispatch::IntegrationTest
 
   test "binary completion undo refreshes anytime host via turbo stream" do
     post completions_path(habit_id: @binary.id)
-    completion = @binary.completions.find_by!(completed_on: Date.current)
+    completion = @binary.completions.find_by!(completed_on: @user.local_today)
 
     delete completion_path(completion), as: :turbo_stream
     assert_response :success
     assert_match(/turbo-stream[^>]*action="replace"[^>]*target="today-anytime-host"/, response.body)
-    refute @binary.reload.completed_today?
+    refute @binary.reload.completed_today?(on: @user.local_today)
   end
 
   test "binary turbo create save failure returns 422" do
@@ -67,7 +67,7 @@ class TodayBasicsTickTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    refute @binary.reload.completed_today?
+    refute @binary.reload.completed_today?(on: @user.local_today)
   end
 
   private
