@@ -1110,7 +1110,6 @@ en:
           setup_lead: "What's one small thing you'll do today?" # TODO: translate for lv/de/es/ru.
           title_placeholder: "Read 10 pages" # TODO: translate for lv/de/es/ru.
           submit: "Save for today" # TODO: translate for lv/de/es/ru.
-          dock_note: "Or press Enter" # TODO: translate for lv/de/es/ru.
           need_title: "Write something first." # TODO: translate for lv/de/es/ru.
           pick_days: "Pick days of the week" # TODO: translate for lv/de/es/ru.
           weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.

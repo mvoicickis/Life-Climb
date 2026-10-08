@@ -6416,17 +6416,12 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-first-camp-setup {
-  display: grid;
-  gap: 0.85rem;
   min-width: 0;
+  max-width: 100%;
 }
 
-.lp-first-camp-setup__lead {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--lp-ink);
-  line-height: 1.45;
+.lp-first-camp-setup .lp-trail-camp-idle {
+  text-align: left;
 }
 
 .lp-first-camp-setup__field,
@@ -6435,13 +6430,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-first-camp-setup__form {
-  display: block;
-  min-width: 0;
-}
-
-.lp-first-camp-setup__dock {
   display: grid;
   gap: 0.55rem;
+  min-width: 0;
+  margin-top: var(--lp-space-3, 0.75rem);
 }
 
 .lp-first-camp-setup__input {
@@ -6486,19 +6478,11 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   transform: translateY(1px);
 }
 
-.lp-first-camp-setup__hint {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--lp-muted);
-  text-align: center;
-}
-
 .lp-first-camp-setup__error {
   margin: 0;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #b45309;
+  color: var(--lp-amber);
 }
 
 .lp-trail.is-v4 .lp-trail-battles__row.is-open:has(.lp-trail-battles__first-camp-hint) {
