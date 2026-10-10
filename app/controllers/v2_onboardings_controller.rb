@@ -105,16 +105,16 @@ class V2OnboardingsController < ApplicationController
 
   def normalized_draft
     raw = session[:v2_onboarding]
-    draft = raw.is_a?(Hash) ? raw.deep_dup.with_indifferent_access : ActiveSupport::HashWithIndifferentAccess.new
-    return draft.to_hash if current_user.onboarding_completed?
+    draft = (raw.is_a?(Hash) ? raw.deep_dup : {}).stringify_keys
+    return draft if current_user.onboarding_completed?
 
-    draft[:goal] = draft[:goal].presence || draft.delete(:title)
-    if draft[:camp].present? && camp_titles_blank?(draft)
-      draft[:camp_titles] = [ draft[:camp].to_s.strip ].reject(&:blank?)
+    draft["goal"] = draft["goal"].presence || draft.delete("title")
+    if draft["camp"].present? && camp_titles_blank?(draft)
+      draft["camp_titles"] = [ draft["camp"].to_s.strip ].reject(&:blank?)
     end
-    draft.delete(:camp)
-    %i[category area_key commitment_key due_on battle_titles basic_title].each { |key| draft.delete(key) }
-    draft.to_hash
+    draft.delete("camp")
+    %w[category area_key commitment_key due_on battle_titles basic_title].each { |key| draft.delete(key) }
+    draft
   end
 
   def redirect_completed_user!
