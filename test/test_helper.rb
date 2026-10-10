@@ -1,13 +1,15 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require_relative "../lib/middleware/integration_v2_onboarding_session_overlay"
 
-# Integration tests merge into session[:v2_onboarding]; round-trip through JSON so
-# nested camp_titles survive rack-test cookie serialization between requests.
+# Integration tests merge into session[:v2_onboarding]; stage the next request so
+# nested camp_titles reach the controller when rack-test skips cookie round-trip.
 module PlainV2OnboardingSessionWrite
   def []=(key, value)
     if key.to_s == "v2_onboarding" && value.is_a?(Hash)
       value = JSON.parse(JSON.generate(value.as_json))
+      IntegrationV2OnboardingSessionOverlay.stage!(value)
     end
     super
   end
