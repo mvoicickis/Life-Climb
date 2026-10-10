@@ -1533,6 +1533,16 @@ ru:
     forge_step_camp: "Готовим базовый лагерь"
     forge_step_ready: "Ты готов."
     forge_wait: "Почти готово…"
+    camps_goal_label: "Your goal" # TODO: translate
+    camps_subtitle: "Break it into small steps." # TODO: translate
+    camps_add_label: "Add a camp" # TODO: translate
+    camps_add_placeholder_first: "First step to get there" # TODO: translate
+    camps_add_placeholder_next: "Next step" # TODO: translate
+    camps_add_button: "Add camp" # TODO: translate
+    camps_list_label: "Camps on your climb" # TODO: translate
+    camps_ghost_examples:
+      - "Learn the basics" # TODO: translate
+      - "Practice every week" # TODO: translate
     enter_how: "Начать подъём"
     how_optional: "Как работает подъём"
   summit_next_goal:

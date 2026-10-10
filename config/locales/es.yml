@@ -1521,6 +1521,16 @@ es:
     forge_step_camp: "Preparando el campamento base"
     forge_step_ready: "Estás listo."
     forge_wait: "Casi listo…"
+    camps_goal_label: "Your goal" # TODO: translate
+    camps_subtitle: "Break it into small steps." # TODO: translate
+    camps_add_label: "Add a camp" # TODO: translate
+    camps_add_placeholder_first: "First step to get there" # TODO: translate
+    camps_add_placeholder_next: "Next step" # TODO: translate
+    camps_add_button: "Add camp" # TODO: translate
+    camps_list_label: "Camps on your climb" # TODO: translate
+    camps_ghost_examples:
+      - "Learn the basics" # TODO: translate
+      - "Practice every week" # TODO: translate
     enter_how: "Empezar a subir"
     how_optional: "Cómo funciona la subida"
   summit_next_goal:
