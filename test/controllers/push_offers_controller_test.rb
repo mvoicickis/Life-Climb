@@ -14,18 +14,26 @@ class PushOffersControllerTest < ActionDispatch::IntegrationTest
     seed_climb!(@user, today_mission: "Ship auth")
   end
 
-  test "destroy marks soft dismiss" do
-    assert_difference -> { @user.reload.push_offer_dismiss_count }, 1 do
-      delete push_offer_path
-      assert_response :no_content
+  test "destroy marks soft dismiss and shown" do
+    travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
+      assert_difference -> { @user.reload.push_offer_dismiss_count }, 1 do
+        delete push_offer_path
+        assert_response :no_content
+      end
+      @user.reload
+      assert @user.push_offer_dismissed_at.present?
+      assert_equal Date.new(2026, 8, 6), @user.push_offer_last_shown_on
     end
-    assert @user.reload.push_offer_dismissed_at.present?
   end
 
-  test "update marks permission denied" do
-    patch push_offer_path
-    assert_response :no_content
-    assert @user.reload.push_offer_permission_denied_at.present?
+  test "update marks permission denied and shown" do
+    travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
+      patch push_offer_path
+      assert_response :no_content
+      @user.reload
+      assert @user.push_offer_permission_denied_at.present?
+      assert_equal Date.new(2026, 8, 6), @user.push_offer_last_shown_on
+    end
   end
 
   test "shown records local day" do

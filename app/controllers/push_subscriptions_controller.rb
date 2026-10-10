@@ -13,9 +13,14 @@ class PushSubscriptionsController < ApplicationController
     )
 
     if subscription.save
+      Notifications::EnsureTimeZone.call(user: current_user, zone: params[:time_zone])
       status = subscription.previously_new_record? ? :created : :ok
       render json: { ok: true, id: subscription.id }, status: status
     else
+      Rails.logger.warn(
+        "[PushSubscriptionsController#create] save failed user=#{current_user.id} " \
+        "errors=#{subscription.errors.full_messages.join(', ')}"
+      )
       render json: { ok: false, errors: subscription.errors.full_messages }, status: :unprocessable_entity
     end
   end

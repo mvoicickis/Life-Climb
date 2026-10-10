@@ -77,6 +77,7 @@ module RequireOnboarding
       settings
       push_subscriptions
       push_configs
+      notification_time_zones
       two_factors
       two_factor_sessions
       locales

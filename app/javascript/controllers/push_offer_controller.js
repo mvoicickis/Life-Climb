@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { canPrompt, ensureCapture, isStandalonePwa, promptInstall } from "pwa_install_prompt"
+import { detectedBrowserTimeZone } from "browser_timezone"
 import {
   canEnablePushHere,
   enablePushSubscription,
   getPushSubscriptionState,
-  isAndroid,
   isIos
 } from "push_subscription"
 
@@ -14,7 +14,6 @@ export default class extends Controller {
     dismissUrl: String,
     deniedUrl: String,
     shownUrl: String,
-    installedUrl: String,
     vapidUrl: String,
     subscribeUrl: String,
     settingsUrl: String,
@@ -24,16 +23,14 @@ export default class extends Controller {
     iosHeadline: String,
     iosBody: String,
     iosInstallLabel: String,
-    androidHeadline: String,
-    androidBody: String,
-    androidInstallLabel: String,
     unsupportedMessage: String,
-    enabledMessage: String,
+    notSavedMessage: String,
     settingsLinkLabel: String
   }
 
   connect() {
     ensureCapture()
+    this._enabling = false
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
     this.syncPushEndpointFields()
@@ -68,11 +65,15 @@ export default class extends Controller {
     if (state.permission !== "granted") return
 
     try {
-      await enablePushSubscription({
+      const result = await enablePushSubscription({
         vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.subscribeUrlValue
+        subscribeUrl: this.subscribeUrlValue,
+        timeZone: detectedBrowserTimeZone()
       })
-      await this.syncPushEndpointFields()
+      if (result.ok) {
+        await this.syncPushEndpointFields()
+        await this.markShown()
+      }
     } catch (error) {
       console.error(error)
     }
@@ -82,19 +83,19 @@ export default class extends Controller {
     const state = await getPushSubscriptionState()
 
     if (state.subscribed) return
-    if (state.permission === "denied") return
+    if (state.permission === "denied") {
+      await this.markDenied()
+      return
+    }
 
     this.renderCard()
   }
 
   cardMode() {
     const iosInstallNeeded = isIos() && !isStandalonePwa() && !canEnablePushHere()
-    const androidInstallNeeded =
-      isAndroid() && !isStandalonePwa() && canPrompt() && canEnablePushHere()
     const unsupported = !canEnablePushHere() && !iosInstallNeeded
 
     if (iosInstallNeeded) return "ios_install"
-    if (androidInstallNeeded) return "android_install"
     if (unsupported) return "unsupported"
     return "remind"
   }
@@ -115,8 +116,6 @@ export default class extends Controller {
     headline.className = "lp-push-offer__headline"
     if (mode === "ios_install") {
       headline.textContent = this.iosHeadlineValue
-    } else if (mode === "android_install") {
-      headline.textContent = this.androidHeadlineValue
     } else if (mode === "unsupported") {
       headline.textContent = this.unsupportedMessageValue
     } else {
@@ -129,12 +128,14 @@ export default class extends Controller {
       body.className = "lp-push-offer__body"
       body.textContent = this.iosBodyValue
       card.appendChild(body)
-    } else if (mode === "android_install" && this.androidBodyValue) {
-      const body = document.createElement("p")
-      body.className = "lp-push-offer__body"
-      body.textContent = this.androidBodyValue
-      card.appendChild(body)
     }
+
+    const error = document.createElement("p")
+    error.className = "lp-push-offer__error"
+    error.hidden = true
+    error.setAttribute("role", "alert")
+    card.appendChild(error)
+    this.errorElement = error
 
     const actions = document.createElement("div")
     actions.className = "lp-push-offer__actions"
@@ -146,14 +147,12 @@ export default class extends Controller {
       if (mode === "ios_install") {
         yes.textContent = this.iosInstallLabelValue
         yes.addEventListener("click", (event) => this.install(event))
-      } else if (mode === "android_install") {
-        yes.textContent = this.androidInstallLabelValue
-        yes.addEventListener("click", (event) => this.installThenEnable(event))
       } else {
         yes.textContent = this.yesLabelValue
         yes.addEventListener("click", (event) => this.enable(event))
       }
       actions.appendChild(yes)
+      this.yesButton = yes
     } else if (this.settingsUrlValue) {
       const settings = document.createElement("a")
       settings.className = "lp-cta lp-push-offer__yes"
@@ -172,13 +171,31 @@ export default class extends Controller {
     card.appendChild(actions)
     host.appendChild(card)
     this.cardElement = card
-    this.markShown()
+  }
+
+  showNotSavedError() {
+    if (!this.errorElement) return
+    this.errorElement.textContent =
+      this.notSavedMessageValue || "Not saved. Tap to try again."
+    this.errorElement.hidden = false
+  }
+
+  clearNotSavedError() {
+    if (!this.errorElement) return
+    this.errorElement.hidden = true
+    this.errorElement.textContent = ""
+  }
+
+  setYesBusy(busy) {
+    if (!this.yesButton) return
+    this.yesButton.disabled = busy
+    this.yesButton.setAttribute("aria-busy", busy ? "true" : "false")
   }
 
   markShown() {
-    if (!this.shownUrlValue) return
+    if (!this.shownUrlValue) return Promise.resolve()
 
-    fetch(this.shownUrlValue, {
+    return fetch(this.shownUrlValue, {
       method: "PATCH",
       credentials: "same-origin",
       headers: {
@@ -186,71 +203,44 @@ export default class extends Controller {
         "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
       }
     }).catch(() => {
-      /* Network failure — leave card up. */
+      /* Network failure — offer may reappear. */
     })
   }
 
   async enable(event) {
     event.preventDefault()
+    if (this._enabling) return
+
+    this._enabling = true
+    this.setYesBusy(true)
+    this.clearNotSavedError()
 
     try {
       const result = await enablePushSubscription({
         vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.subscribeUrlValue
+        subscribeUrl: this.subscribeUrlValue,
+        timeZone: detectedBrowserTimeZone()
       })
 
       if (!result.ok) {
         if (result.permission === "denied") {
           await this.markDenied()
+          this.hideCard()
+          return
         }
-        this.hideCard()
+        this.showNotSavedError()
         return
       }
 
       await this.syncPushEndpointFields()
+      await this.markShown()
       this.hideCard()
     } catch (error) {
       console.error(error)
-      this.hideCard()
-    }
-  }
-
-  async installThenEnable(event) {
-    event.preventDefault()
-
-    if (isStandalonePwa()) {
-      await this.enable(event)
-      return
-    }
-
-    if (!canPrompt()) {
-      await this.enable(event)
-      return
-    }
-
-    const result = await promptInstall()
-    if (result.outcome !== "accepted") return
-
-    await this.markInstalled()
-
-    try {
-      const enableResult = await enablePushSubscription({
-        vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.subscribeUrlValue
-      })
-
-      if (!enableResult.ok) {
-        this.markShown()
-        this.hideCard()
-        return
-      }
-
-      await this.syncPushEndpointFields()
-      this.hideCard()
-    } catch (error) {
-      console.error(error)
-      this.markShown()
-      this.hideCard()
+      this.showNotSavedError()
+    } finally {
+      this._enabling = false
+      this.setYesBusy(false)
     }
   }
 
@@ -268,31 +258,13 @@ export default class extends Controller {
 
     const result = await promptInstall()
     if (result.outcome === "accepted") {
-      await this.markInstalled()
       this.hideCard()
-    }
-  }
-
-  async markInstalled() {
-    if (!this.installedUrlValue) return
-
-    try {
-      const response = await fetch(this.installedUrlValue, {
-        method: "PATCH",
-        credentials: "same-origin",
-        headers: {
-          Accept: "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
-        }
-      })
-      if (!response.ok) throw new Error("request failed")
-    } catch (_error) {
-      /* still hide card locally */
     }
   }
 
   async dismiss(event) {
     event.preventDefault()
+    if (this._enabling) return
 
     try {
       if (this.dismissUrlValue) {
@@ -332,5 +304,8 @@ export default class extends Controller {
   hideCard() {
     this.element.hidden = true
     this.element.innerHTML = ""
+    this.cardElement = null
+    this.yesButton = null
+    this.errorElement = null
   }
 }

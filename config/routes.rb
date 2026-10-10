@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   resource :push_subscription, only: %i[ create destroy ], controller: "push_subscriptions" do
     post :test
   end
+  resource :notification_time_zone, only: :update, controller: "notification_time_zones"
   namespace :notifications do
     resource :quick_add, only: :create, controller: "quick_adds"
     resource :mark_done, only: :create, controller: "mark_dones"
