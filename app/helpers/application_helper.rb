@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def onboarding_camp_step_titles(camp_rows = nil)
+    from_rows = Array(camp_rows).flatten.map { |title| title.to_s.strip }.reject(&:blank?)
+    return from_rows if from_rows.any?
+
+    draft = session[:v2_onboarding]
+    return [] unless draft.is_a?(Hash)
+
+    Array(draft.with_indifferent_access[:camp_titles]).map(&:to_s).map(&:strip).reject(&:blank?)
+  end
+
   # Global habits UI (settings, commitment copy, legacy Today surface).
   # Developers always see habits; everyone else follows GameRules.
   def habits_enabled?

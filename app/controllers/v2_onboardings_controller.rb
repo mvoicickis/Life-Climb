@@ -94,7 +94,9 @@ class V2OnboardingsController < ApplicationController
   end
 
   def camp_titles_from_draft(draft)
-    Array(draft["camp_titles"]).map(&:to_s).map(&:strip).reject(&:blank?)
+    return [] unless draft.is_a?(Hash)
+
+    Array(draft.with_indifferent_access[:camp_titles]).map(&:to_s).map(&:strip).reject(&:blank?)
   end
 
   def camp_titles_blank?(draft)
@@ -102,16 +104,17 @@ class V2OnboardingsController < ApplicationController
   end
 
   def normalized_draft
-    draft = (session[:v2_onboarding] || {}).stringify_keys
-    return draft if current_user.onboarding_completed?
+    raw = session[:v2_onboarding]
+    draft = raw.is_a?(Hash) ? raw.deep_dup.with_indifferent_access : ActiveSupport::HashWithIndifferentAccess.new
+    return draft.to_hash if current_user.onboarding_completed?
 
-    draft["goal"] = draft["goal"].presence || draft.delete("title")
-    if draft["camp"].present? && camp_titles_blank?(draft)
-      draft["camp_titles"] = [ draft["camp"].to_s.strip ].reject(&:blank?)
+    draft[:goal] = draft[:goal].presence || draft.delete(:title)
+    if draft[:camp].present? && camp_titles_blank?(draft)
+      draft[:camp_titles] = [ draft[:camp].to_s.strip ].reject(&:blank?)
     end
-    draft.delete("camp")
-    %w[category area_key commitment_key due_on battle_titles basic_title].each { |key| draft.delete(key) }
-    draft
+    draft.delete(:camp)
+    %i[category area_key commitment_key due_on battle_titles basic_title].each { |key| draft.delete(key) }
+    draft.to_hash
   end
 
   def redirect_completed_user!

@@ -1,5 +1,5 @@
 <%# locals: back_path, back_label, goal_title, camp_rows, form_url, form_data, add_input_id, submit_label, submit_data, setup_step_index, setup_step_total, data_controller, extra_data (hash), summit_error (optional) %>
-<% step_titles = Array(local_assigns[:camp_rows]).flatten.map { |title| title.to_s.strip }.reject(&:blank?) %>
+<% step_titles = onboarding_camp_step_titles(camp_rows) %>
 <% goal_title = goal_title.to_s %>
 <% goal_long = goal_title.length > 30 %>
 <% empty_steps = step_titles.empty? %>
