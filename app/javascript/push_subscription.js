@@ -65,7 +65,7 @@ export async function getPushSubscriptionState() {
   }
 }
 
-export async function enablePushSubscription({ vapidUrl, subscribeUrl }) {
+export async function enablePushSubscription({ vapidUrl, subscribeUrl, timeZone = "" }) {
   if (!canEnablePushHere()) {
     throw new Error("unsupported")
   }
@@ -85,15 +85,19 @@ export async function enablePushSubscription({ vapidUrl, subscribeUrl }) {
   })
 
   const keys = subscription.toJSON().keys || {}
+  const body = {
+    subscription: {
+      endpoint: subscription.endpoint,
+      p256dh: keys.p256dh,
+      auth: keys.auth
+    }
+  }
+  const zone = timeZone.toString().trim()
+  if (zone) body.time_zone = zone
+
   await fetchJson(subscribeUrl, {
     method: "POST",
-    body: JSON.stringify({
-      subscription: {
-        endpoint: subscription.endpoint,
-        p256dh: keys.p256dh,
-        auth: keys.auth
-      }
-    })
+    body: JSON.stringify(body)
   })
 
   return { ok: true, permission: "granted" }

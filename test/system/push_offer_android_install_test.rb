@@ -96,7 +96,7 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
     JS
   end
 
-  test "android with install prompt shows add to home screen after win" do
+  test "android with install prompt still shows remind me after win" do
     visit new_session_path
     block_install_prompt!
     fill_in "Email", with: @user.email_address
@@ -111,8 +111,8 @@ class PushOfferAndroidInstallTest < ApplicationSystemTestCase
 
     assert_no_selector ".lp-today-v2-row[data-todo-id='#{@todo.id}']", wait: 10
     assert_selector ".lp-push-offer", wait: 8
-    assert_selector ".lp-push-offer__headline", text: /home screen/i
-    assert_selector ".lp-push-offer__yes", text: /Add to home screen/i
+    assert_selector ".lp-push-offer__headline", text: /reminder tomorrow morning/i
+    assert_selector ".lp-push-offer__yes", text: /Remind me/i
   end
 
   test "android without install prompt falls back to remind me" do

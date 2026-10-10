@@ -11,12 +11,21 @@
   recap_share = if @battlefield_health
     end_of_day_share_text(@battlefield_health, strategy_goal: @strategy_goal, journey: @journey)
   end
+  today_controllers = [ "battle-day" ]
+  today_controllers << "today-notch" if battlefield_ui
+  if battlefield_ui && needs_browser_time_zone_capture?
+    today_controllers << "browser-timezone-capture"
+  end
 %>
 
 <div
   id="today-dash-root"
   class="lp-dash<%= ' is-today-v2 is-today-photo' if battlefield_ui %><%= ' is-battle-won' if battlefield_ui && @battlefield_health&.all_clear? %>"
-  data-controller="<%= ['battle-day', ('today-notch' if battlefield_ui)].compact.join(' ') %>"
+  data-controller="<%= today_controllers.join(' ') %>"
+  <% if battlefield_ui && needs_browser_time_zone_capture? %>
+  data-browser-timezone-capture-url-value="<%= notification_time_zone_path %>"
+  data-browser-timezone-capture-needed-value="true"
+  <% end %>
   data-battle-day-closer-value="<%= @closer %>"
   data-battle-day-celebrate-value="<%= @battle_celebrate ? 'true' : 'false' %>"
   data-battle-day-ap-gained-value="<%= flash[:ap_gained].to_i %>"

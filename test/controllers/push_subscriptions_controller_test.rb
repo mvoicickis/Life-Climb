@@ -8,6 +8,42 @@ class PushSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
   end
 
+  test "create saves time zone when preference missing" do
+    @user.notification_preference&.destroy
+
+    post push_subscription_path,
+         params: {
+           time_zone: "Europe/Berlin",
+           subscription: {
+             endpoint: "https://push.example/tz-device",
+             p256dh: "p256dh-key",
+             auth: "auth-key"
+           }
+         },
+         as: :json
+
+    assert_response :created
+    assert_equal "Europe/Berlin", @user.reload.notification_preference.time_zone
+  end
+
+  test "create does not overwrite existing time zone" do
+    @user.create_notification_preference!(time_zone: "America/New_York")
+
+    post push_subscription_path,
+         params: {
+           time_zone: "Europe/Berlin",
+           subscription: {
+             endpoint: "https://push.example/tz-keep",
+             p256dh: "p256dh-key",
+             auth: "auth-key"
+           }
+         },
+         as: :json
+
+    assert_response :created
+    assert_equal "America/New_York", @user.reload.notification_preference.time_zone
+  end
+
   test "create saves subscription for current user" do
     assert_difference -> { @user.push_subscriptions.count }, 1 do
       post push_subscription_path,

@@ -7,6 +7,13 @@ module ApplicationHelper
     GameRules.habits_enabled?
   end
 
+  def needs_browser_time_zone_capture?
+    return false unless current_user
+
+    pref = current_user.notification_preference
+    pref.nil? || pref.time_zone.blank?
+  end
+
   # Skip rendering when no companion is chosen yet (nil character_image).
   def companion_image_tag(user = current_user, **options)
     return if user.blank? || user.character_image.blank?

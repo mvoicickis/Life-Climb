@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { detectedBrowserTimeZone } from "browser_timezone"
 import {
   disablePushSubscription,
   enablePushSubscription,
@@ -26,7 +27,8 @@ export default class extends Controller {
     try {
       const result = await enablePushSubscription({
         vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.subscribeUrlValue
+        subscribeUrl: this.subscribeUrlValue,
+        timeZone: detectedBrowserTimeZone()
       })
 
       if (!result.ok) {

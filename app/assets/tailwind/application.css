@@ -19043,15 +19043,29 @@ button.lp-basic-sheet__edit-row {
   text-decoration: none;
 }
 
+.lp-push-offer__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--lp-muted, #475569);
+}
+
 .lp-push-offer__not-now {
   min-height: var(--lp-tap, 2.75rem);
   width: 100%;
-  border: 0;
-  background: transparent;
+  border: 1px solid var(--lp-border, #e2e8f0);
+  border-radius: var(--lp-radius-field, 0.75rem);
+  background: var(--lp-surface, #ffffff);
   color: var(--lp-muted, #475569);
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.lp-push-offer__yes:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 /* === elite product pass === */
