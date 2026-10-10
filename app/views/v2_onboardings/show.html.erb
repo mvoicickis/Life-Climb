@@ -36,81 +36,22 @@
   </div>
 
 <% elsif @step == "camps" %>
-  <% camp_rows = Array(@draft["camp_titles"]).presence || [] %>
-  <div class="lp-ob lp-ob--camps"
-       data-controller="onboarding-camps"
-       data-onboarding-camps-reorder-hint-value="<%= t("v2_onboarding.camps_reorder_hint") %>"
-       data-onboarding-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>">
-    <div class="lp-ob__mountain-bg lp-ob__mountain-bg--steps" aria-hidden="true">
-      <%= image_tag "onboarding_path.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
-    </div>
-
-    <div class="lp-ob__body lp-ob__body--camps">
-      <header class="lp-ob-steps__head">
-        <div class="lp-ob__step-head">
-          <%= link_to t("v2_onboarding.back"), v2_onboarding_path(step: "goal"), class: "lp-ob__back" %>
-          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
-        </div>
-        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
-          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
-        </div>
-
-        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title") %></h1>
-        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead") %></p>
-        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead_order") %></p>
-      </header>
-
-      <%= form_with url: v2_onboarding_path(step: "camps"),
-            method: :patch,
-            class: "lp-ob-steps",
-            data: {
-              turbo: false,
-              onboarding_camps_target: "form",
-              action: "submit->onboarding-camps#beforeSubmit"
-            } do %>
-        <div class="lp-ob-steps__add">
-          <label class="sr-only" for="onboarding_camp_add"><%= t("v2_onboarding.camps_add_label") %></label>
-          <input type="text"
-                 id="onboarding_camp_add"
-                 class="lp-input lp-ob-steps__add-input"
-                 autocomplete="off"
-                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
-                 enterkeyhint="go"
-                 placeholder="<%= t("v2_onboarding.camps_add_placeholder") %>"
-                 data-onboarding-camps-target="addInput"
-                 data-action="keydown->onboarding-camps#addFromEnter">
-          <button type="button"
-                  class="lp-ob-steps__add-btn"
-                  aria-label="<%= t("v2_onboarding.camps_add_button") %>"
-                  data-action="click->onboarding-camps#addFromButton">+</button>
-        </div>
-
-        <div class="lp-ob-steps__scroll">
-          <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
-            <% t("v2_onboarding.camps_ghost_examples").each do |example| %>
-              <div class="lp-ob-steps__ghost">
-                <span class="lp-ob-steps__ghost-handle" aria-hidden="true"></span>
-                <%= example %>
-              </div>
-            <% end %>
-          </div>
-          <ul class="lp-ob-steps__list" data-onboarding-camps-target="list" aria-label="<%= t("v2_onboarding.camps_list_label") %>"></ul>
-          <p class="lp-ob-steps__hint" data-onboarding-camps-target="hint" hidden></p>
-        </div>
-
-        <div data-onboarding-camps-target="hiddenFields">
-          <% camp_rows.each do |title| %>
-            <%= hidden_field_tag "onboarding[camp_titles][]", title %>
-          <% end %>
-        </div>
-
-        <footer class="lp-ob-steps__dock">
-          <%= submit_tag t("v2_onboarding.start_climbing"),
-                class: "lp-cta w-full",
-                disabled: camp_rows.empty?,
-                data: { onboarding_camps_target: "submit" } %>
-        </footer>
-      <% end %>
-    </div>
-  </div>
+  <%= render "shared/onboarding_camps_form",
+        back_path: v2_onboarding_path(step: "goal"),
+        back_label: t("v2_onboarding.back"),
+        goal_title: @draft["goal"],
+        camp_rows: @draft["camp_titles"],
+        form_url: v2_onboarding_path(step: "camps"),
+        form_data: {
+          turbo: false,
+          onboarding_camps_target: "form",
+          action: "submit->onboarding-camps#beforeSubmit"
+        },
+        add_input_id: "onboarding_camp_add",
+        submit_label: t("v2_onboarding.start_climbing"),
+        submit_data: { onboarding_camps_target: "submit" },
+        setup_step_index: @setup_step_index,
+        setup_step_total: @setup_step_total,
+        data_controller: "onboarding-camps",
+        extra_data: nil %>
 <% end %>

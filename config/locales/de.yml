@@ -1521,6 +1521,16 @@ de:
     forge_step_camp: "Basislager wird vorbereitet"
     forge_step_ready: "Du bist bereit."
     forge_wait: "Gleich soweit…"
+    camps_goal_label: "Your goal" # TODO: translate
+    camps_subtitle: "Break it into small steps." # TODO: translate
+    camps_add_label: "Add a camp" # TODO: translate
+    camps_add_placeholder_first: "First step to get there" # TODO: translate
+    camps_add_placeholder_next: "Next step" # TODO: translate
+    camps_add_button: "Add camp" # TODO: translate
+    camps_list_label: "Camps on your climb" # TODO: translate
+    camps_ghost_examples:
+      - "Learn the basics" # TODO: translate
+      - "Practice every week" # TODO: translate
     enter_how: "Aufstieg starten"
     how_optional: "So funktioniert der Aufstieg"
   summit_next_goal:
