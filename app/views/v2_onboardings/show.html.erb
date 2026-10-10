@@ -40,7 +40,7 @@
         back_path: v2_onboarding_path(step: "goal"),
         back_label: t("v2_onboarding.back"),
         goal_title: @draft["goal"],
-        camp_rows: onboarding_camp_step_titles(@draft["camp_titles"]),
+        camp_rows: Array(@draft["camp_titles"]).map { |title| title.to_s.strip }.reject(&:blank?),
         form_url: v2_onboarding_path(step: "camps"),
         form_data: {
           turbo: false,

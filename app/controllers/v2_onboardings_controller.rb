@@ -94,9 +94,7 @@ class V2OnboardingsController < ApplicationController
   end
 
   def camp_titles_from_draft(draft)
-    return [] unless draft.is_a?(Hash)
-
-    Array(draft.with_indifferent_access[:camp_titles]).map(&:to_s).map(&:strip).reject(&:blank?)
+    Array(draft["camp_titles"]).map(&:to_s).map(&:strip).reject(&:blank?)
   end
 
   def camp_titles_blank?(draft)
@@ -104,8 +102,7 @@ class V2OnboardingsController < ApplicationController
   end
 
   def normalized_draft
-    raw = session[:v2_onboarding]
-    draft = (raw.is_a?(Hash) ? raw.deep_dup : {}).stringify_keys
+    draft = (session[:v2_onboarding] || {}).stringify_keys
     return draft if current_user.onboarding_completed?
 
     draft["goal"] = draft["goal"].presence || draft.delete("title")
