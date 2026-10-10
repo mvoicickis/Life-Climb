@@ -1,8 +1,8 @@
 <%# locals: back_path, back_label, goal_title, camp_rows, form_url, form_data, add_input_id, submit_label, submit_data, setup_step_index, setup_step_total, data_controller, extra_data (hash), summit_error (optional) %>
-<% camp_rows = Array(camp_rows).presence || [] %>
+<% step_titles = Array(local_assigns[:camp_rows]).flatten.map { |title| title.to_s.strip }.reject(&:blank?) %>
 <% goal_title = goal_title.to_s %>
 <% goal_long = goal_title.length > 30 %>
-<% empty_steps = camp_rows.empty? %>
+<% empty_steps = step_titles.empty? %>
 <div class="lp-ob lp-ob--camps"
      data-controller="<%= data_controller %>"
      data-onboarding-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>"
@@ -59,7 +59,7 @@
           </div>
 
           <div class="lp-ob-steps__scroll" data-onboarding-camps-target="scrollBody">
-            <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
+            <div class="lp-ob-steps__ghosts<%= " is-hidden" unless empty_steps %>" data-onboarding-camps-target="ghosts" aria-hidden="true">
               <% t("v2_onboarding.camps_ghost_examples").each_with_index do |example, index| %>
                 <div class="lp-ob-trail__item lp-ob-trail__item--ghost">
                   <div class="lp-ob-trail__stem" aria-hidden="true">
@@ -99,7 +99,7 @@
       </div>
 
       <div data-onboarding-camps-target="hiddenFields">
-        <% camp_rows.each do |title| %>
+        <% step_titles.each do |title| %>
           <%= hidden_field_tag "onboarding[camp_titles][]", title %>
         <% end %>
       </div>
