@@ -7,35 +7,28 @@ export default class extends Controller {
     "list",
     "ghosts",
     "addInput",
-    "addButton",
-    "addRow",
-    "scrollBody",
     "submit",
     "hiddenFields",
+    "hint",
     "form"
   ]
 
   static values = {
-    maxLength: { type: Number, default: 120 },
-    firstPlaceholder: String,
-    nextPlaceholder: String
+    reorderHint: String,
+    maxLength: { type: Number, default: 120 }
   }
 
   connect() {
     this.items = []
     this.dragId = null
+    this.reorderHintShown = false
     this.pointerReorder = null
-    this._onViewportResize = () => this.syncKeyboardInset()
     this.loadInitialItems()
     this.syncUi()
-    window.visualViewport?.addEventListener("resize", this._onViewportResize)
-    window.visualViewport?.addEventListener("scroll", this._onViewportResize)
   }
 
   disconnect() {
     this.pointerReorder?.destroy()
-    window.visualViewport?.removeEventListener("resize", this._onViewportResize)
-    window.visualViewport?.removeEventListener("scroll", this._onViewportResize)
   }
 
   loadInitialItems() {
@@ -49,11 +42,6 @@ export default class extends Controller {
 
   uid() {
     return `camp-${Math.random().toString(36).slice(2, 10)}`
-  }
-
-  focusAddInput(event) {
-    if (!this.hasAddInputTarget) return
-    this.addInputTarget.focus()
   }
 
   addFromButton(event) {
@@ -86,54 +74,16 @@ export default class extends Controller {
   syncUi() {
     this.pointerReorder?.cancelActiveDrag()
 
-    const hasSteps = this.items.length > 0
-
     if (this.hasGhostsTarget) {
-      this.ghostsTarget.classList.toggle("is-hidden", hasSteps)
+      this.ghostsTarget.classList.toggle("is-hidden", this.items.length > 0)
     }
-
     if (this.hasSubmitTarget) {
-      this.submitTarget.disabled = !hasSteps
-      this.submitTarget.classList.toggle("lp-cta--ready", hasSteps)
+      this.submitTarget.disabled = this.items.length === 0
     }
-
-    if (this.hasAddButtonTarget) {
-      this.addButtonTarget.classList.toggle("lp-ob-steps__add-btn--primary", !hasSteps)
-    }
-
-    if (this.hasAddInputTarget) {
-      const placeholder = hasSteps ? this.nextPlaceholderValue : this.firstPlaceholderValue
-      if (placeholder) this.addInputTarget.placeholder = placeholder
-    }
-
     this.renderHiddenFields()
     this.renderList()
+    this.maybeShowReorderHint()
     this.bindDrag()
-    this.syncKeyboardInset()
-    this.scrollStepsToEnd()
-  }
-
-  syncKeyboardInset() {
-    const viewport = window.visualViewport
-    let keyboardInset = 0
-    let keyboardOpen = false
-
-    if (viewport) {
-      const gap = window.innerHeight - viewport.height
-      keyboardOpen = gap > 120
-      if (keyboardOpen) keyboardInset = Math.max(0, gap)
-    }
-
-    this.element.classList.toggle("lp-ob--camps-keyboard-open", keyboardOpen)
-    this.element.style.setProperty("--lp-ob-keyboard-inset", `${keyboardInset}px`)
-
-    if (keyboardOpen) this.scrollStepsToEnd()
-  }
-
-  scrollStepsToEnd() {
-    if (!this.hasScrollBodyTarget) return
-    const el = this.scrollBodyTarget
-    el.scrollTop = el.scrollHeight
   }
 
   bindDrag() {
@@ -152,8 +102,18 @@ export default class extends Controller {
           .map((row) => this.items.find((entry) => entry.id === row.dataset.id))
           .filter(Boolean)
         this.renderHiddenFields()
+        this.maybeShowReorderHint()
       }
     })
+  }
+
+  maybeShowReorderHint() {
+    if (this.reorderHintShown || this.items.length < 2 || !this.hasHintTarget) return
+
+    this.reorderHintShown = true
+    this.hintTarget.textContent = this.reorderHintValue
+    this.hintTarget.hidden = false
+    this.hintTarget.removeAttribute("hidden")
   }
 
   renderHiddenFields() {
@@ -180,29 +140,9 @@ export default class extends Controller {
 
   buildRow(item, index) {
     const li = document.createElement("li")
-    li.className = "lp-ob-trail__item lp-ob-steps__row"
+    li.className = "lp-ob-steps__row"
     li.dataset.id = item.id
     li.dataset.index = String(index)
-
-    const stem = document.createElement("div")
-    stem.className = "lp-ob-trail__stem"
-    stem.setAttribute("aria-hidden", "true")
-
-    const marker = document.createElement("span")
-    marker.className = "lp-ob-trail__marker"
-    marker.textContent = String(index + 1)
-
-    const line = document.createElement("span")
-    line.className = "lp-ob-trail__line"
-
-    stem.appendChild(marker)
-    stem.appendChild(line)
-
-    const textBtn = document.createElement("button")
-    textBtn.type = "button"
-    textBtn.className = "lp-ob-trail__label lp-ob-steps__text"
-    textBtn.textContent = item.text
-    textBtn.addEventListener("click", () => this.beginEdit(item.id, textBtn))
 
     const handle = document.createElement("button")
     handle.type = "button"
@@ -210,9 +150,14 @@ export default class extends Controller {
     handle.setAttribute("aria-label", "Drag to reorder")
     handle.innerHTML = this.handleSvg()
 
-    li.appendChild(stem)
-    li.appendChild(textBtn)
+    const textBtn = document.createElement("button")
+    textBtn.type = "button"
+    textBtn.className = "lp-ob-steps__text"
+    textBtn.textContent = item.text
+    textBtn.addEventListener("click", () => this.beginEdit(item.id, textBtn))
+
     li.appendChild(handle)
+    li.appendChild(textBtn)
     return li
   }
 
