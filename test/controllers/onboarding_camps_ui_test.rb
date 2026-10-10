@@ -29,7 +29,8 @@ class OnboardingCampsUiTest < ActionDispatch::IntegrationTest
 
   test "camps step with one camp enables submit and quiets add button" do
     get v2_onboarding_path(step: "camps")
-    session[:v2_onboarding] = session[:v2_onboarding].merge("camp_titles" => [ "Get certified" ])
+    goal = session[:v2_onboarding].fetch("goal")
+    session[:v2_onboarding] = { "goal" => goal, "camp_titles" => [ "Get certified" ] }
     get v2_onboarding_path(step: "camps")
 
     assert_response :success
