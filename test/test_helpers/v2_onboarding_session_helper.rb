@@ -14,6 +14,8 @@ module V2OnboardingSessionHelper
   end
 
   def coerce_v2_onboarding_session!
+    return if @request.nil?
+
     draft = session[:v2_onboarding]
     return unless draft.is_a?(Hash) && draft.present?
 
