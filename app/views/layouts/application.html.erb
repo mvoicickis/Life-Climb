@@ -125,7 +125,7 @@
 
       <%= yield %>
     </main>
-    <% unless controller_path.start_with?("admin") || controller_name == "feedbacks" || controller_name == "life_points" || controller_name == "v2_onboardings" || controller_name == "summit_next_goals" || (controller_name == "settings" && action_name == "show") %>
+    <% unless controller_path.start_with?("admin") || controller_name == "feedbacks" || controller_name == "life_points" || (controller_name == "settings" && action_name == "show") %>
       <%= render "shared/feedback_fab", page: request.path %>
     <% end %>
   </body>
