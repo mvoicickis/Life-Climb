@@ -1,8 +1,19 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+
+# Integration tests merge into session[:v2_onboarding]; round-trip through JSON so
+# nested camp_titles survive rack-test cookie serialization between requests.
+module PlainV2OnboardingSessionWrite
+  def []=(key, value)
+    if key.to_s == "v2_onboarding" && value.is_a?(Hash)
+      value = JSON.parse(JSON.generate(value.as_json))
+    end
+    super
+  end
+end
+ActionDispatch::Request::Session.prepend(PlainV2OnboardingSessionWrite)
 require_relative "test_helpers/session_test_helper"
-require_relative "test_helpers/v2_onboarding_session_helper"
 require_relative "test_helpers/climb_test_helper"
 require_relative "test_helpers/today_v2_test_helper"
 require_relative "test_helpers/stripe_test_helper"
