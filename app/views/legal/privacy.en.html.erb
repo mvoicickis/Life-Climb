@@ -1,21 +1,64 @@
-<% content_for :title, "Privacy — Life Climb" %>
+<% content_for :title, "Privacy policy — Life Climb" %>
 
-<%= render layout: "legal/page_shell", locals: { title: "Privacy" } do %>
+<%= render layout: "legal/page_shell", locals: { title: "Privacy policy" } do %>
+  <p>Last updated: 11 October 2026</p>
+
+  <h2 class="lp-legal__heading">Who we are</h2>
+  <p>
+    Life Climb (lifeclimb.app) is run by Mareks Voicickis, Oststraße 15, 57392 Schmallenberg, Germany.
+    Email: <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %>.
+    We are responsible for your data under the EU General Data Protection Regulation (GDPR).
+  </p>
+
   <h2 class="lp-legal__heading">What we collect</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe what Life Climb collects and why.</p>
+  <ul class="lp-legal__list">
+    <li>Account: your name, email address, password (stored only as a secure hash), language and app settings. If you turn on two-step login, the data needed for it.</li>
+    <li>What you add: your goal, camps, battles, Basics and what you log for them, and a mountain photo if you upload one.</li>
+    <li>Time zone: so reminders and "today" match your local day.</li>
+    <li>Technical data: when you log in, we store your IP address and browser/device type with your session. Sessions expire after 30 days.</li>
+    <li>Usage events: a few steps in the app (for example signing up, finishing onboarding, winning your first battle), so we can see where the app needs to be better.</li>
+    <li>Feedback: what you send us, and a contact detail if you add one.</li>
+    <li>Reminders: if you allow notifications, the push address your browser gives us.</li>
+    <li>Payments: if you subscribe, Stripe handles the payment. We store your Stripe customer and subscription IDs and the subscription status. We never see or store your card details.</li>
+  </ul>
 
-  <h2 class="lp-legal__heading">How we use it</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe how collected data is used.</p>
+  <h2 class="lp-legal__heading">Why we use it</h2>
+  <ul class="lp-legal__list">
+    <li>To run the app and your account (GDPR Art. 6(1)(b), contract).</li>
+    <li>To keep the app secure and improve it (Art. 6(1)(f), legitimate interest).</li>
+    <li>To send reminders, only if you allow notifications (Art. 6(1)(a), consent). You can turn them off at any time on the You page or in your browser.</li>
+  </ul>
 
-  <h2 class="lp-legal__heading">Third parties</h2>
-  <p class="lp-legal__todo">TODO (Mareks): list processors and services (hosting, billing, push, email, fonts, AI, etc.).</p>
+  <h2 class="lp-legal__heading">Who else handles data</h2>
+  <ul class="lp-legal__list">
+    <li>Render: hosts the app and its database.</li>
+    <li>Stripe: processes payments, if you subscribe.</li>
+    <li>Browser push services (for example Google Firebase Cloud Messaging): deliver reminders you allowed.</li>
+    <li>AI provider (OpenRouter or a similar service): if you use the planning help, the text of your goal and climb is sent to create suggestions.</li>
+    <li>An email provider: sends emails like password resets.</li>
+  </ul>
+  <p>We don't sell your data and don't use it for advertising.</p>
 
-  <h2 class="lp-legal__heading">Cookies and device storage</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe cookies, local storage, session storage, and offline cache.</p>
+  <h2 class="lp-legal__heading">Cookies and storage</h2>
+  <p>We only use cookies and browser storage the app needs to work: keeping you logged in, remembering your language, and showing the app offline. No advertising or tracking cookies.</p>
 
   <h2 class="lp-legal__heading">How long we keep data</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe retention and account deletion.</p>
+  <p>
+    Until you delete your account. Login sessions expire after 30 days. Deleting your account removes your goal, camps, battles, Basics, sessions, reminders and feedback.
+    A few things stay: anonymous usage events that aren't linked to you, the customer record at Stripe (your subscription is cancelled), and copies in emails and server logs for a short time.
+  </p>
 
-  <h2 class="lp-legal__heading">Your rights and contact</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe rights and how to reach you.</p>
+  <h2 class="lp-legal__heading">Your rights</h2>
+  <p>
+    You can ask to see, correct, delete or export your data, limit or object to how we use it, and withdraw consent at any time.
+    You can delete your account yourself on the You page (see <%= link_to "/delete-account", delete_account_path, class: "lp-legal__link" %>).
+    Email <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %> for anything else.
+    You can also complain to a data protection authority; ours is the Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen.
+  </p>
+
+  <h2 class="lp-legal__heading">Children</h2>
+  <p>Life Climb is not meant for children under 16.</p>
+
+  <h2 class="lp-legal__heading">Changes</h2>
+  <p>If we change this policy, we'll update this page and the date above.</p>
 <% end %>
