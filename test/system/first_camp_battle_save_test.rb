@@ -65,8 +65,9 @@ class FirstCampBattleSaveTest < ApplicationSystemTestCase
       click_button I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
     end
 
-    assert_selector "#trail-battles-list-#{@camp.id}", text: battle_title, wait: 15
-    assert_no_selector "#{setup_root}", wait: 10
+    assert_selector "#trail-sheet-camp-#{@camp.id}", text: battle_title, wait: 15
+    assert_selector "#trail-battles-list-#{@camp.id}", text: battle_title, wait: 5
+    assert_no_selector setup_root, wait: 5
     refute @journey.reload.first_camp_reveal_pending?
     assert @camp.children.for_kind("day").exists?(title: battle_title)
   end

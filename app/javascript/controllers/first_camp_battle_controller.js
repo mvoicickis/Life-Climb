@@ -58,14 +58,20 @@ export default class extends Controller {
     this.submitting = true
     this.syncSubmit()
 
-    try {
-      form.requestSubmit()
-    } catch (error) {
-      delete form.dataset.confirmed
-      this.submitting = false
-      this.syncSubmit()
-      throw error
-    }
+    window.requestAnimationFrame(() => {
+      try {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit()
+        } else {
+          form.submit()
+        }
+      } catch (error) {
+        delete form.dataset.confirmed
+        this.submitting = false
+        this.syncSubmit()
+        throw error
+      }
+    })
   }
 
   saved(event) {
