@@ -1120,6 +1120,8 @@ en:
           title_placeholder: "Read 10 pages" # TODO: translate for lv/de/es/ru.
           submit: "Save for today" # TODO: translate for lv/de/es/ru.
           need_title: "Write something first." # TODO: translate for lv/de/es/ru.
+          blank_title: "Write one small thing first."
+          not_saved: "Not saved. Tap to try again."
           pick_days: "Pick days of the week" # TODO: translate for lv/de/es/ru.
           weekdays_label: "Days of the week" # TODO: translate for lv/de/es/ru.
           need_days: "Pick at least one day." # TODO: translate for lv/de/es/ru.

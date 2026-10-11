@@ -5,22 +5,43 @@ export default class extends Controller {
     "form",
     "titleField",
     "repeatField",
+    "submit",
     "error"
   ]
 
   static values = {
-    needTitle: String
+    needTitle: String,
+    notSaved: String
+  }
+
+  connect() {
+    this.submitting = false
+    this.syncSubmit()
   }
 
   titleKeydown(event) {
     if (event.key !== "Enter") return
     event.preventDefault()
+    if (this.submitTarget?.disabled) return
     this.formTarget.requestSubmit()
   }
 
+  syncSubmit() {
+    if (!this.hasSubmitTarget || !this.hasTitleFieldTarget) return
+    const enabled = this.titleFieldTarget.value.trim().length > 0 && !this.submitting
+    this.submitTarget.disabled = !enabled
+  }
+
   submit(event) {
-    if (this.formTarget.dataset.confirmed === "true") {
-      this.formTarget.dataset.confirmed = "false"
+    const form = this.formTarget
+
+    if (form.dataset.confirmed === "1") {
+      delete form.dataset.confirmed
+      return
+    }
+
+    if (this.submitting) {
+      event.preventDefault()
       return
     }
 
@@ -33,12 +54,37 @@ export default class extends Controller {
       return
     }
 
-    this.formTarget.dataset.confirmed = "true"
-    this.formTarget.requestSubmit()
+    form.dataset.confirmed = "1"
+    this.submitting = true
+    this.syncSubmit()
+
+    window.requestAnimationFrame(() => {
+      try {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit()
+        } else {
+          form.submit()
+        }
+      } catch (error) {
+        delete form.dataset.confirmed
+        this.submitting = false
+        this.syncSubmit()
+        throw error
+      }
+    })
   }
 
   saved(event) {
-    if (!event.detail.success) return
+    this.submitting = false
+    this.syncSubmit()
+    delete this.formTarget.dataset.confirmed
+
+    if (!event.detail.success) {
+      if (!this.errorTarget?.textContent?.trim()) {
+        this.showError(this.notSavedValue)
+      }
+      return
+    }
 
     const reveal = this.application.getControllerForElementAndIdentifier(
       document.getElementById("mountain-trail"),
