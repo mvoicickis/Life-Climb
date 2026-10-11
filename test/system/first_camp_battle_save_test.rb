@@ -48,14 +48,26 @@ class FirstCampBattleSaveTest < ApplicationSystemTestCase
                     visible: :all,
                     wait: 10
 
-    within("#trail-sheet-camp-#{@camp.id} .lp-first-camp-setup") do
-      fill_in placeholder: I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder"),
-            with: battle_title
-    end
-    click_button I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
+    setup_root = "#first-camp-setup-#{@camp.id}"
+    assert_selector "#{setup_root} .lp-first-camp-setup__submit[disabled]", visible: :all, wait: 5
 
-    assert_no_selector ".lp-first-camp-setup", wait: 10
-    assert_selector "#trail-battles-list-#{@camp.id}", text: battle_title, wait: 10
+    page.execute_script(<<~JS, battle_title, @camp.id)
+      const input = document.querySelector(
+        `#first-camp-setup-${arguments[1]} [data-first-camp-battle-target='titleField']`
+      )
+      if (!input) throw new Error("first-camp title field missing")
+      input.value = arguments[0]
+      input.dispatchEvent(new Event("input", { bubbles: true }))
+    JS
+
+    within(setup_root) do
+      assert_selector ".lp-first-camp-setup__submit:not([disabled])", wait: 5
+      click_button I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
+    end
+
+    assert_selector "#trail-battles-list-#{@camp.id}", text: battle_title, wait: 15
+    assert_no_selector "#{setup_root}", wait: 10
     refute @journey.reload.first_camp_reveal_pending?
+    assert @camp.children.for_kind("day").exists?(title: battle_title)
   end
 end
