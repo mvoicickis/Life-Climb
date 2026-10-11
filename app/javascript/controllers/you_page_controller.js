@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// You: expand language card, inline name edit.
+// You: inline name edit.
 export default class extends Controller {
   static targets = [
-    "languageCard",
     "nameButton",
     "nameForm",
     "nameInput",
@@ -12,9 +11,6 @@ export default class extends Controller {
 
   connect() {
     this.syncVersion()
-    if (this.element.dataset.youPageOpen === "language") {
-      this.languageCardTarget?.classList.add("is-open")
-    }
     if (this.element.dataset.youPageOpen === "name") this.editName()
   }
 
@@ -23,11 +19,6 @@ export default class extends Controller {
 
     const meta = document.querySelector('meta[name="app-version"]')
     this.versionTarget.textContent = meta?.content || "dev"
-  }
-
-  toggleLanguage(event) {
-    event.preventDefault()
-    this.languageCardTarget?.classList.toggle("is-open")
   }
 
   editName(event) {

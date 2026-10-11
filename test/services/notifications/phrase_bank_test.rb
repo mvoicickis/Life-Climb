@@ -49,15 +49,6 @@ module Notifications
       assert_includes other_pool, body.delete_prefix("🏔️ ")
     end
 
-    test "locale uses translated strings" do
-      en = PhraseBank.phrases_for(kind: "win", category: "self", locale: :en)
-      de = PhraseBank.phrases_for(kind: "win", category: "self", locale: :de)
-      assert_equal 6, de.size
-      refute_equal en, de
-      assert de[0].present?
-      refute_equal en[0], de[0]
-    end
-
     test "morning_nudge phrases exist for later PR5" do
       I18n.with_locale(:en) do
         phrases = (0..5).map { |i| I18n.t("notifications.morning_nudge.#{i}") }

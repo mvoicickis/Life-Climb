@@ -47,4 +47,4 @@ Rails 8, Hotwire/Turbo, Stimulus, importmap, Tailwind (no Node), minitest. SQLit
 - Words an 8-year-old knows. Commands, not questions. No abbreviations ("3 days", not "3d").
 - Numbers only count up. No deficit copy; show nothing at zero. Missing a day costs nothing.
 - Never ship copy telling the user to do something that doesn't work.
-- Locales: English, plus lv/de/es/ru with the English text and `# TODO: translate`. All five files, every time. Never yes/no/on/off as YAML keys.
+- Locales: English only for now — new copy keys go in `config/locales/en.yml` only. lv/de/es/ru files are kept but unused. Never yes/no/on/off as YAML keys.

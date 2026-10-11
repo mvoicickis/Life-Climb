@@ -39,7 +39,7 @@ class SendWebPushJob < ApplicationJob
     unless kind.in?(%w[morning evening])
       if Notifications::PhraseBank::TRIGGERS.include?(kind)
         category = Onboarding::Categories.resolve_for(user: user, explicit: message["category"])
-        locale = user.locale.presence || I18n.default_locale
+        locale = :en
         message["body"] = Notifications::PhraseBank.body_for(
           kind: kind,
           category: category,
@@ -55,7 +55,7 @@ class SendWebPushJob < ApplicationJob
       return
     end
 
-    I18n.with_locale(user.locale.presence || I18n.default_locale) do
+    I18n.with_locale(:en) do
       action_day = morning_action_day(user, kind)
       has_battle = user.daily_todos.for_day(action_day).exists?
       second_action =

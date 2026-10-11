@@ -54,7 +54,7 @@ module Notifications
       gate = NotificationGate.allow?(user: user, kind: KIND)
       return false unless gate.allowed?
 
-      locale = user.locale.presence || I18n.default_locale
+      locale = :en
       copy = EveningNudgeCopy.for(user: user, date: local_date, locale: locale)
 
       badge = Today::BattleOpenCount.for(user: user, on: local_date)
