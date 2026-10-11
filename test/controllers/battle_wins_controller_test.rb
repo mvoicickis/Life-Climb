@@ -157,7 +157,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_match "battle-day-stream-bridge", response.body
-    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"true\"", response.body
+    assert_match "data-battle-day-stream-bridge-push-offer-eligible-value=\"false\"", response.body
     assert_match "data-battle-day-stream-bridge-win-number-value=", response.body
   end
 
@@ -177,7 +177,7 @@ class BattleWinsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_select "#mountain-push-offer-host[data-controller='push-offer']"
+    assert_select "#mountain-push-offer-host", count: 0
   end
 
   test "camp sheet undo via reopen keeps life points" do

@@ -18,6 +18,10 @@ export default class extends Controller {
     subscribeUrl: String,
     settingsUrl: String,
     headline: String,
+    goalLabel: String,
+    goalTitle: String,
+    reminderLine: String,
+    showOnConnect: Boolean,
     yesLabel: String,
     notNowLabel: String,
     iosHeadline: String,
@@ -35,6 +39,9 @@ export default class extends Controller {
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
     this.syncPushEndpointFields()
     this.syncStandaloneSubscription()
+    if (this.showOnConnectValue) {
+      this.prepareOffer()
+    }
   }
 
   disconnect() {
@@ -112,16 +119,40 @@ export default class extends Controller {
     card.setAttribute("role", "dialog")
     card.setAttribute("aria-live", "polite")
 
-    const headline = document.createElement("p")
-    headline.className = "lp-push-offer__headline"
     if (mode === "ios_install") {
+      const headline = document.createElement("p")
+      headline.className = "lp-push-offer__headline"
       headline.textContent = this.iosHeadlineValue
+      card.appendChild(headline)
     } else if (mode === "unsupported") {
+      const headline = document.createElement("p")
+      headline.className = "lp-push-offer__headline"
       headline.textContent = this.unsupportedMessageValue
+      card.appendChild(headline)
     } else {
-      headline.textContent = this.headlineValue
+      const goalTitle = (this.goalTitleValue || "").trim()
+      if (goalTitle) {
+        const label = document.createElement("p")
+        label.className = "lp-push-offer__goal-label"
+        label.textContent = this.goalLabelValue || "Your goal"
+        card.appendChild(label)
+
+        const title = document.createElement("p")
+        title.className = "lp-push-offer__goal-title"
+        title.textContent = goalTitle
+        card.appendChild(title)
+
+        const reminder = document.createElement("p")
+        reminder.className = "lp-push-offer__headline is-subline"
+        reminder.textContent = this.reminderLineValue || this.headlineValue
+        card.appendChild(reminder)
+      } else {
+        const headline = document.createElement("p")
+        headline.className = "lp-push-offer__headline"
+        headline.textContent = this.headlineValue
+        card.appendChild(headline)
+      }
     }
-    card.appendChild(headline)
 
     if (mode === "ios_install" && this.iosBodyValue) {
       const body = document.createElement("p")
@@ -171,6 +202,7 @@ export default class extends Controller {
     card.appendChild(actions)
     host.appendChild(card)
     this.cardElement = card
+    document.body.classList.add("push-offer-open")
   }
 
   showNotSavedError() {
@@ -302,6 +334,7 @@ export default class extends Controller {
   }
 
   hideCard() {
+    document.body.classList.remove("push-offer-open")
     this.element.hidden = true
     this.element.innerHTML = ""
     this.cardElement = null

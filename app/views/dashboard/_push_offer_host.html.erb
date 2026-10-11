@@ -1,5 +1,7 @@
 <% host_id = local_assigns.fetch(:host_id, "today-push-offer-host") %>
 <% host_class = local_assigns.fetch(:host_class, "lp-push-offer-host") %>
+<% goal_title = local_assigns.fetch(:goal_title, nil).to_s %>
+<% show_on_connect = local_assigns.fetch(:show_on_connect, false) %>
 <div id="<%= host_id %>"
      class="<%= host_class %>"
      hidden
@@ -11,6 +13,10 @@
      data-push-offer-subscribe-url-value="<%= push_subscription_path %>"
      data-push-offer-settings-url-value="<%= settings_path(anchor: "you-reminders") %>"
      data-push-offer-headline-value="<%= t('dash.push_offer.headline') %>"
+     data-push-offer-goal-label-value="<%= t('dash.push_offer.goal_label') %>"
+     data-push-offer-goal-title-value="<%= goal_title %>"
+     data-push-offer-reminder-line-value="<%= t('dash.push_offer.reminder_line') %>"
+     data-push-offer-show-on-connect-value="<%= show_on_connect ? 'true' : 'false' %>"
      data-push-offer-yes-label-value="<%= t('dash.push_offer.yes_label') %>"
      data-push-offer-not-now-label-value="<%= t('dash.push_offer.not_now') %>"
      data-push-offer-ios-headline-value="<%= t('dash.push_offer.ios_headline') %>"
