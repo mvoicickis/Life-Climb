@@ -1185,6 +1185,21 @@ es:
       need_journey: "Bloquea una Montaña primero y vuelve."
       need_goal: "Define tu Meta de temporada en la Montaña primero."
       open_project: "Abrir “%{title}” en la Montaña"
+  # TODO: translate
+  account_delete:
+    open: "Delete account"
+    title: "Delete your account"
+    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    subscription_line: "Your subscription will be cancelled."
+    password_label: "Password"
+    confirm: "Delete"
+    cancel: "Cancel"
+    deleted_notice: "Your account is deleted."
+    not_while_impersonating: "You can't delete this account while impersonating. Stop impersonating first."
+    errors:
+      wrong_password: "Wrong password."
+      stripe_blocked: "We couldn't cancel your subscription, so nothing was deleted. Try again in a minute."
+      rate_limited: "Too many tries. Wait a minute, then try again."
   settings:
     title: "Tú"
     subtitle: "Da forma a Hoy para que sea simple y motivador."

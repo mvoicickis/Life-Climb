@@ -1420,6 +1420,21 @@ lv:
       need_journey: "Vispirms nofiksē Kalnu, tad atgriezies."
       need_goal: "Vispirms iestati sezonas Mērķi uz Kalna."
       open_project: "Atvērt “%{title}” uz Kalna"
+  # TODO: translate
+  account_delete:
+    open: "Delete account"
+    title: "Delete your account"
+    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    subscription_line: "Your subscription will be cancelled."
+    password_label: "Password"
+    confirm: "Delete"
+    cancel: "Cancel"
+    deleted_notice: "Your account is deleted."
+    not_while_impersonating: "You can't delete this account while impersonating. Stop impersonating first."
+    errors:
+      wrong_password: "Wrong password."
+      stripe_blocked: "We couldn't cancel your subscription, so nothing was deleted. Try again in a minute."
+      rate_limited: "Too many tries. Wait a minute, then try again."
   settings:
     title: "Tu"
     subtitle: "Veido Šodien tā, lai tas paliek vienkāršs un motivējošs."

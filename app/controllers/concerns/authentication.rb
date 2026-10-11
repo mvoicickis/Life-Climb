@@ -96,10 +96,16 @@ module Authentication
     end
 
     def terminate_session
-      Current.session&.destroy
+      clear_client_session!
+      reset_session
+    end
+
+    # Safe when the DB session row was already removed (e.g. user destroy cascades sessions).
+    def clear_client_session!
+      session_id = Current.session&.id || cookies.signed[:session_id]
+      Session.where(id: session_id).delete_all if session_id.present?
       cookies.delete(:session_id, same_site: :lax, secure: Rails.env.production?)
       Current.reset
-      reset_session
     end
 
     def stash_pending_2fa!(user)

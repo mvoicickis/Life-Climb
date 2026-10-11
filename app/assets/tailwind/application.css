@@ -3558,6 +3558,108 @@ html[data-theme="dark"] {
   background: color-mix(in srgb, var(--lp-lime) 12%, var(--lp-elevated));
 }
 
+.lp-you-row--muted .lp-you-row__label {
+  color: var(--lp-muted);
+  font-weight: 600;
+}
+
+.delete-account-sheet__panel {
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.delete-account-sheet__body {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--lp-muted);
+}
+
+.delete-account-sheet__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.delete-account-sheet__password {
+  width: 100%;
+  min-height: var(--lp-tap);
+  padding: 0.65rem 0.85rem;
+  font-size: 16px;
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+}
+
+.delete-account-sheet__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--lp-ink);
+}
+
+.delete-account-sheet__error-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+}
+
+.delete-account-sheet__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.delete-account-sheet__cancel,
+.delete-account-sheet__delete {
+  flex: 1;
+  min-height: var(--lp-tap);
+  border-radius: var(--lp-radius-field);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delete-account-sheet__cancel {
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+}
+
+.delete-account-sheet__delete {
+  border: 0;
+  background: var(--rpg-red);
+  color: var(--lp-surface);
+}
+
+.delete-account-sheet__delete:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lp-landing-flash {
+  margin: 0.75rem 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-paper);
+  color: var(--lp-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 @keyframes lp-you-row-flash {
   0% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--lp-lime) 45%, transparent); }
   100% { box-shadow: 0 0 0 0 transparent; }
