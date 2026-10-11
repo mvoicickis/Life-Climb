@@ -30,7 +30,9 @@ class LegalControllerTest < ActionDispatch::IntegrationTest
     get privacy_path
     assert_response :success
     assert_match(/What we collect/, response.body)
-    assert_match(/TODO \(Mareks\)/, response.body)
+    assert_match(/Last updated: 11 October 2026/, response.body)
+    assert_match(/General Data Protection Regulation/, response.body)
+    assert_no_match(/TODO \(Mareks\)/, response.body)
   end
 
   test "delete account page describes in-app deletion and limits" do
