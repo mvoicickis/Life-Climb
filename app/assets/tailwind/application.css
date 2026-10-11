@@ -3581,6 +3581,12 @@ html[data-theme="dark"] {
   gap: 0.75rem;
 }
 
+.delete-account-sheet__form .lp-auth-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+
 .delete-account-sheet__password {
   width: 100%;
   min-height: var(--lp-tap);
