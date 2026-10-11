@@ -16,7 +16,7 @@ class FirstCampBattlesController < ApplicationController
       return render_stale_journey
     end
 
-    title = params.require(:title).to_s.strip
+    title = params.fetch(:title, "").to_s.strip
     if title.blank?
       log_first_camp_failure("blank_title")
       return render_first_camp_error(t("strategy.rpg.trail.first_camp_reveal.blank_title"))
