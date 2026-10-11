@@ -1895,6 +1895,27 @@
     overflow-wrap: anywhere;
   }
 
+  .lp-legal__subheading {
+    margin: 0 0 var(--lp-space-3);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--lp-muted);
+  }
+
+  .lp-legal__link {
+    font-weight: 700;
+    color: var(--lp-green-deep);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+  }
+
+  .lp-legal__link:focus-visible {
+    outline: 2px solid var(--lp-green-deep);
+    outline-offset: 2px;
+    border-radius: var(--lp-radius-field);
+  }
+
   .lp-legal__section + .lp-legal__section {
     margin-top: var(--lp-space-5);
     padding-top: var(--lp-space-4);

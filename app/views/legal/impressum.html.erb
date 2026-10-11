@@ -2,18 +2,34 @@
 
 <%= render layout: "legal/page_shell", locals: { title: "Impressum / Legal notice" } do %>
   <section class="lp-legal__section" lang="de">
-    <h2 class="lp-legal__heading">Deutsch</h2>
-    <p class="lp-legal__todo">TODO (Mareks): Anbieterkennzeichnung nach § 5 TMG (Name, Anschrift, Kontakt).</p>
-    <p class="lp-legal__todo">TODO (Mareks): Umsatzsteuer-ID oder Hinweis, falls nicht vorhanden.</p>
-    <p class="lp-legal__todo">TODO (Mareks): Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV.</p>
-    <p class="lp-legal__todo">TODO (Mareks): Streitbeilegung / Verbraucherstreitbeilegung, falls zutreffend.</p>
+    <h2 class="lp-legal__heading">Impressum</h2>
+    <p class="lp-legal__subheading">Angaben gemäß § 5 DDG</p>
+    <p>
+      Mareks Voicickis<br>
+      Oststraße 15<br>
+      57392 Schmallenberg<br>
+      Deutschland
+    </p>
+    <h3 class="lp-legal__heading">Kontakt</h3>
+    <p>
+      E-Mail: <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %><br>
+      Telefon / WhatsApp: <%= link_to "+353 87 234 6580", "tel:+353872346580", class: "lp-legal__link" %>
+    </p>
   </section>
 
   <section class="lp-legal__section" lang="en">
-    <h2 class="lp-legal__heading">English</h2>
-    <p class="lp-legal__todo">TODO (Mareks): provider name, address, and contact for non-German readers.</p>
-    <p class="lp-legal__todo">TODO (Mareks): company registration or VAT ID, if applicable.</p>
-    <p class="lp-legal__todo">TODO (Mareks): responsible person for content, if required in your jurisdiction.</p>
-    <p class="lp-legal__todo">TODO (Mareks): dispute resolution note, if applicable.</p>
+    <h2 class="lp-legal__heading">Legal notice</h2>
+    <p class="lp-legal__subheading">Information according to § 5 DDG (German Digital Services Act)</p>
+    <p>
+      Mareks Voicickis<br>
+      Oststraße 15<br>
+      57392 Schmallenberg<br>
+      Germany
+    </p>
+    <h3 class="lp-legal__heading">Contact</h3>
+    <p>
+      Email: <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %><br>
+      Phone / WhatsApp: <%= link_to "+353 87 234 6580", "tel:+353872346580", class: "lp-legal__link" %>
+    </p>
   </section>
 <% end %>
