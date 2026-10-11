@@ -45,9 +45,4 @@ class ApplicationController < ActionController::Base
   def true_admin_session?
     User.exists?(id: session[:admin_impersonator_id], admin: true)
   end
-
-  def onboarding_entry_path
-    user = Current.user || current_user
-    user&.planning_v2? ? v2_onboarding_path : onboarding_path
-  end
 end

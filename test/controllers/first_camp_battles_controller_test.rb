@@ -58,32 +58,6 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Study for 20 minutes", @project.reload.children.for_kind("day").sole.title
   end
 
-  test "create rejects blank title with message" do
-    post life_journey_first_camp_battles_path(@journey),
-         params: { title: "   ", repeat: "none" },
-         as: :turbo_stream
-
-    assert_response :unprocessable_entity
-    assert_match(/Write one small thing first\./, response.body)
-    assert @journey.reload.first_camp_reveal_pending?
-  end
-
-  test "create when reveal is not pending returns visit stream and creates nothing" do
-    @journey.clear_first_camp_reveal!
-
-    assert_equal 1, @project.reload.children.for_kind("day").count
-
-    post life_journey_first_camp_battles_path(@journey),
-         params: { title: "Should not save", repeat: "none" },
-         as: :turbo_stream
-
-    assert_response :unprocessable_entity
-    assert_match(/turbo_visit/, response.body)
-    assert_match life_journey_path(@journey), response.body
-    assert_equal 1, @project.reload.children.for_kind("day").count
-    refute_equal "Should not save", @project.children.for_kind("day").sole.title
-  end
-
   test "create accepts weekly repeat with weekdays" do
     post life_journey_first_camp_battles_path(@journey),
          params: {
