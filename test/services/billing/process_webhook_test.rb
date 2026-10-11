@@ -56,6 +56,19 @@ module Billing
       end
     end
 
+    test "subscription event for unknown customer is processed without error" do
+      event = subscription_event(
+        id: "evt_orphan_customer",
+        type: "customer.subscription.updated",
+        subscription_id: "sub_orphan",
+        customer_id: "cus_ghost",
+        status: "active",
+        current_period_end: 1.month.from_now.to_i
+      )
+
+      assert_equal :processed, ProcessWebhook.call(event:)
+    end
+
     test "syncs subscription from checkout.session.completed" do
       period_end = 1.month.from_now.to_i
       event = checkout_completed_event(

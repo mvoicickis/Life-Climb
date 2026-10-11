@@ -178,6 +178,21 @@
         <% end %>
       </section>
 
+      <% unless impersonating? %>
+        <section class="lp-you-card"
+                 data-controller="delete-account"
+                 data-delete-account-open-value="<%= @account_delete_open %>">
+          <button type="button"
+                  class="lp-you-row lp-you-row--muted"
+                  data-action="click->delete-account#open">
+            <span class="lp-you-row__label"><%= t("account_delete.open") %></span>
+          </button>
+          <%= render "shared/delete_account_sheet",
+                open: @account_delete_open,
+                error_key: @account_delete_sheet_error %>
+        </section>
+      <% end %>
+
       <% if (current_user.admin? && !impersonating?) || (developer? && !impersonating?) %>
         <section class="lp-you-card">
           <% if current_user.admin? && !impersonating? %>

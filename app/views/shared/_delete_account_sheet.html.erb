@@ -1,0 +1,83 @@
+<%# Delete account confirmation sheet — errors render here only, not page flash. %>
+<%
+  sheet_open = local_assigns.fetch(:open, false)
+  sheet_error_key = local_assigns[:error_key].presence
+  sheet_error_message = sheet_error_key ? t("account_delete.errors.#{sheet_error_key}") : nil
+%>
+<div data-delete-account-target="dialog"
+     class="share-sheet delete-account-sheet"
+     hidden
+     aria-hidden="true"
+     role="presentation">
+  <div data-delete-account-target="backdrop"
+       class="share-sheet__backdrop"
+       data-action="click->delete-account#closeOnBackdrop"></div>
+
+  <div data-delete-account-target="panel"
+       class="share-sheet__panel delete-account-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="delete-account-sheet-title"
+       tabindex="-1">
+    <div class="share-sheet__handle" aria-hidden="true"></div>
+
+    <div class="share-sheet__header">
+      <div>
+        <h2 id="delete-account-sheet-title" class="share-sheet__title"><%= t("account_delete.title") %></h2>
+      </div>
+      <button type="button"
+              class="share-sheet__close"
+              data-action="click->delete-account#close"
+              aria-label="<%= t('account_delete.cancel') %>">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <p class="delete-account-sheet__body"><%= t("account_delete.body") %></p>
+    <% if current_user.subscription_cancel_on_delete? %>
+      <p class="delete-account-sheet__body"><%= t("account_delete.subscription_line") %></p>
+    <% end %>
+
+    <%= form_with url: account_path,
+          method: :delete,
+          class: "delete-account-sheet__form",
+          data: { turbo: false, delete_account_target: "form", action: "submit->delete-account#submit" } do %>
+      <label class="lp-auth-label" for="account_delete_password"><%= t("account_delete.password_label") %></label>
+      <input type="password"
+             id="account_delete_password"
+             name="password"
+             class="delete-account-sheet__password"
+             autocomplete="current-password"
+             required
+             data-delete-account-target="password"
+             data-action="input->delete-account#passwordInput">
+
+      <p class="delete-account-sheet__error"
+         role="alert"
+         <%= "hidden" unless sheet_error_message %>
+         data-delete-account-target="error">
+        <% if sheet_error_message %>
+          <span class="delete-account-sheet__error-icon" aria-hidden="true">!</span>
+          <span data-delete-account-target="errorText"><%= sheet_error_message %></span>
+        <% else %>
+          <span class="delete-account-sheet__error-icon" aria-hidden="true">!</span>
+          <span data-delete-account-target="errorText"></span>
+        <% end %>
+      </p>
+
+      <div class="delete-account-sheet__actions">
+        <button type="button"
+                class="delete-account-sheet__cancel"
+                data-action="click->delete-account#close">
+          <%= t("account_delete.cancel") %>
+        </button>
+        <button type="submit"
+                class="delete-account-sheet__delete"
+                disabled
+                data-delete-account-target="submit">
+          <%= t("account_delete.confirm") %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>

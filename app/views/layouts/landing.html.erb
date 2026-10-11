@@ -29,6 +29,9 @@
   </head>
 
   <body class="lp-landing-body lp-min-h-screen antialiased">
+    <% if flash[:notice].present? %>
+      <p class="lp-landing-flash" role="status"><%= flash[:notice] %></p>
+    <% end %>
     <%= yield %>
     <%= render "shared/feedback_fab", page: request.path %>
   </body>

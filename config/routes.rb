@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   end
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
+  resource :account, only: :destroy
   resource :settings, only: %i[ show update ] do
     get "name/edit", to: "settings#edit_name", as: :edit_name, on: :collection
     get "today_count/edit", to: "settings#edit_today_count", as: :edit_today_count, on: :collection

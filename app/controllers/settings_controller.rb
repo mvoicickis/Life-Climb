@@ -1,5 +1,7 @@
 class SettingsController < ApplicationController
   def show
+    @account_delete_open = params[:delete_account].present?
+    @account_delete_sheet_error = session.delete(:account_delete_sheet_error)
     @home_habits = current_user.home_board_habits
     @all_habits = current_user.habits.active.ordered
     @commitment_journey = current_user.primary_focused_journey

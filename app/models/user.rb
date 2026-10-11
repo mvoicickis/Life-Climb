@@ -112,6 +112,12 @@ class User < ApplicationRecord
     premium?
   end
 
+  def subscription_cancel_on_delete?
+    return false if stripe_subscription_id.blank?
+
+    !Billing::CancelSubscription::TERMINAL_STATUSES.include?(subscription_status.to_s)
+  end
+
   def selected_life_areas
     planning_v2? ? life_areas.v2_selected : (active_dream&.life_areas&.tree || life_areas.none)
   end

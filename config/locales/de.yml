@@ -1185,6 +1185,21 @@ de:
       need_journey: "Sperre zuerst einen Berg, dann komm zurück."
       need_goal: "Setze zuerst dein Saisonziel auf dem Berg."
       open_project: "„%{title}“ auf dem Berg öffnen"
+  # TODO: translate
+  account_delete:
+    open: "Delete account"
+    title: "Delete your account"
+    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    subscription_line: "Your subscription will be cancelled."
+    password_label: "Password"
+    confirm: "Delete"
+    cancel: "Cancel"
+    deleted_notice: "Your account is deleted."
+    not_while_impersonating: "You can't delete this account while impersonating. Stop impersonating first."
+    errors:
+      wrong_password: "Wrong password."
+      stripe_blocked: "We couldn't cancel your subscription, so nothing was deleted. Try again in a minute."
+      rate_limited: "Too many tries. Wait a minute, then try again."
   settings:
     title: "Du"
     subtitle: "Gestalte Heute so, dass es einfach und motivierend bleibt."
