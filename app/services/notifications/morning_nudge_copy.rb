@@ -58,6 +58,5 @@ module Notifications
       fallback = I18n.t("notifications.morning_push.weekday_#{key}")
       NudgeBody.build(user: @user, date: @date, fallback: fallback)
     end
-
   end
 end
