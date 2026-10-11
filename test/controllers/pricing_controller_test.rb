@@ -48,5 +48,4 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     refute_match period_end.strftime("%H:%M"), response.body
     refute_match "septembris", response.body
   end
-
 end
