@@ -8,7 +8,8 @@
      id="first-camp-setup-<%= project.id %>"
      style="--lp-trail-accent: <%= accent %>"
      data-controller="first-camp-battle"
-     data-first-camp-battle-need-title-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_title') %>">
+     data-first-camp-battle-need-title-value="<%= t('strategy.rpg.trail.first_camp_reveal.need_title') %>"
+     data-first-camp-battle-not-saved-value="<%= t('strategy.rpg.trail.first_camp_reveal.not_saved') %>">
   <div class="lp-trail-camp-idle lp-frost">
     <h3 class="lp-trail-camp-idle__title"><%= t("strategy.rpg.trail.first_camp_reveal.setup_lead") %></h3>
 
@@ -34,15 +35,18 @@
                 enterkeyhint: "done",
                 data: {
                   first_camp_battle_target: "titleField",
-                  action: "keydown->first-camp-battle#titleKeydown"
+                  action: "keydown->first-camp-battle#titleKeydown input->first-camp-battle#syncSubmit"
                 } %>
         <% end %>
       </label>
 
       <%= submit_tag t("strategy.rpg.trail.first_camp_reveal.submit"),
-            class: "lp-first-camp-setup__submit" %>
+            class: "lp-first-camp-setup__submit",
+            disabled: true,
+            data: { first_camp_battle_target: "submit" } %>
 
       <p class="lp-first-camp-setup__error"
+         id="first-camp-setup-error"
          data-first-camp-battle-target="error"
          hidden
          role="alert"></p>

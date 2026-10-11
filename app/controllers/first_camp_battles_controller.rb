@@ -5,14 +5,28 @@ class FirstCampBattlesController < ApplicationController
   before_action :set_journey
 
   def create
-    project = first_camp_project
-    return head :unprocessable_entity if project.blank?
+    unless @journey.first_camp_reveal_pending?
+      log_first_camp_failure("reveal_not_pending")
+      return render_stale_journey
+    end
 
-    title = params.require(:title).to_s.strip
-    return head :unprocessable_entity if title.blank?
+    project = first_camp_project
+    if project.blank?
+      log_first_camp_failure("missing_camp")
+      return render_stale_journey
+    end
+
+    title = params.fetch(:title, "").to_s.strip
+    if title.blank?
+      log_first_camp_failure("blank_title")
+      return render_first_camp_error(t("strategy.rpg.trail.first_camp_reveal.blank_title"))
+    end
 
     repeat, weekdays = parse_repeat_params
-    return head :unprocessable_entity if repeat == "weekly" && weekdays.empty?
+    if repeat == "weekly" && weekdays.empty?
+      log_first_camp_failure("weekly_without_weekdays")
+      return render_first_camp_error(t("strategy.rpg.trail.first_camp_reveal.not_saved"))
+    end
 
     battle = nil
     ActiveRecord::Base.transaction do
@@ -48,8 +62,9 @@ class FirstCampBattlesController < ApplicationController
         redirect_to life_journey_path(@journey, open_camp: @project.id), status: :see_other
       end
     end
-  rescue ActiveRecord::RecordInvalid
-    head :unprocessable_entity
+  rescue ActiveRecord::RecordInvalid => e
+    log_first_camp_failure("record_invalid", detail: e.record.errors.full_messages.join(", "))
+    render_first_camp_error(t("strategy.rpg.trail.first_camp_reveal.not_saved"))
   end
 
   private
@@ -75,5 +90,26 @@ class FirstCampBattlesController < ApplicationController
     end
 
     [ "none", nil ]
+  end
+
+  def log_first_camp_failure(reason, detail: nil)
+    message = "[first_camp_battle] #{reason} user_id=#{current_user.id} journey_id=#{@journey.id}"
+    message = "#{message} #{detail}" if detail.present?
+    Rails.logger.warn(message)
+  end
+
+  def render_stale_journey
+    respond_to do |format|
+      format.turbo_stream { render :stale, status: :unprocessable_entity }
+      format.html { redirect_to life_journey_path(@journey), status: :see_other }
+    end
+  end
+
+  def render_first_camp_error(message)
+    @error_message = message
+    respond_to do |format|
+      format.turbo_stream { render :error, status: :unprocessable_entity }
+      format.html { head :unprocessable_entity }
+    end
   end
 end
