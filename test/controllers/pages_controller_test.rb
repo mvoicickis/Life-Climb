@@ -18,6 +18,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Name today(?:&#39;|')s battle/i, response.body)
     assert_no_match(/Win the battle\. Your mountain rises/, response.body)
     assert_no_match(/landing-scene-climb/, response.body)
+    assert_select "a.lp-legal-footer-links__link[href=?]", privacy_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
     assert_match(/Free to start/, response.body)
     assert_match(/\+50/, response.body)
     assert_match(/Battle strength/, response.body)

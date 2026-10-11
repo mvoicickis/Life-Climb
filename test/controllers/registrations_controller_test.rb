@@ -7,6 +7,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
     assert_select "input[name='user[name]']"
+    assert_select "a.lp-legal-footer-links__link[href=?]", privacy_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
 
     assert_difference("User.count", 1) do
       post registration_url, params: {

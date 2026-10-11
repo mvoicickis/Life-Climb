@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   resource :two_factor_session, only: %i[ new create destroy ]
 
   root "pages#home"
+  get "privacy", to: "legal#privacy", as: :privacy
+  get "terms", to: "legal#terms", as: :terms
+  get "delete-account", to: "legal#delete_account", as: :delete_account
+  get "impressum", to: "legal#impressum", as: :impressum
   resource :dashboard, only: :show, controller: "dashboard" do
     resource :quick_battles, only: :create, controller: "dashboard/quick_battles"
   end

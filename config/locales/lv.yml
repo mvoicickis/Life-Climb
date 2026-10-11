@@ -52,6 +52,13 @@ lv:
       - nov
       - dec
   app_name: "LifePoints"
+  legal:
+    links:
+      nav_label: "Legal" # TODO: translate
+      privacy: "Privacy" # TODO: translate
+      terms: "Terms" # TODO: translate
+      delete_account: "Delete account" # TODO: translate
+      impressum: "Impressum" # TODO: translate
   legacy_host_banner:
     title: "Life Climb has a new home" # TODO: translate
     body: "Open it at lifeclimb.app, sign in, and add it to your home screen." # TODO: translate
