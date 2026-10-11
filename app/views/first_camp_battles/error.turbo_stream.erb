@@ -1,0 +1,6 @@
+<%= turbo_stream.update "first-camp-setup-error" do %>
+  <p class="lp-first-camp-setup__error"
+     id="first-camp-setup-error"
+     data-first-camp-battle-target="error"
+     role="alert"><%= @error_message %></p>
+<% end %>

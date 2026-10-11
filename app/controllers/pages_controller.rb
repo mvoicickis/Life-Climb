@@ -4,7 +4,7 @@ class PagesController < ApplicationController
 
   def home
     if authenticated?
-      redirect_to(current_user.needs_onboarding? ? onboarding_path : dashboard_path)
+      redirect_to(current_user.needs_onboarding? ? onboarding_entry_path : dashboard_path)
       return
     end
 

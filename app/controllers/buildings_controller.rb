@@ -5,7 +5,7 @@ class BuildingsController < ApplicationController
   def show
     @building = current_user.focus_building || current_user.buildings.active.order(:id).first
     if @building.nil?
-      redirect_to onboarding_path and return if current_user.needs_onboarding?
+      redirect_to onboarding_entry_path and return if current_user.needs_onboarding?
       redirect_to life_points_path, alert: t("buildings.empty") and return
     end
 

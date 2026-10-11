@@ -72,7 +72,7 @@ module Authentication
         return stored
       end
       return admin_root_path if Current.user&.admin?
-      return onboarding_path if Current.user&.needs_onboarding?
+      return onboarding_entry_path if Current.user&.needs_onboarding?
 
       dashboard_path
     end
