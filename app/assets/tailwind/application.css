@@ -3498,7 +3498,8 @@ html[data-theme="dark"] {
 }
 
 /* Today already clears the fixed nav via .lp-main:has(.lp-dash) — avoid double void. */
-.lp-game:has(.lp-dash) {
+.lp-game:has(.lp-dash),
+.lp-game:has(.lp-ob) {
   padding-bottom: 0;
 }
 
@@ -3876,6 +3877,10 @@ html[data-theme="dark"] {
   max-width: 42rem;
   margin: 0 auto;
   padding-bottom: 1rem;
+}
+
+.lp-main:has(.lp-ob) {
+  padding-bottom: 0;
 }
 
 .lp-top-nav {
@@ -27329,7 +27334,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 0 0.5rem;
+  padding: 0 0 calc(0.5rem + var(--lp-ob-dock-offset, 0px));
 }
 
 .lp-ob-steps__list {
@@ -27483,8 +27488,16 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob-steps__dock {
-  flex-shrink: 0;
-  padding: 0.75rem 0 calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--lp-ob-keyboard-inset, 0px);
+  z-index: 20;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 0.75rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--lp-border);
   background: var(--lp-surface);
 }
