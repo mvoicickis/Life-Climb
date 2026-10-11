@@ -19,6 +19,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name=app-version][content=?]", APP_VERSION
     assert_select "[data-you-page-target=version]"
     assert_select "h1", text: "You"
+    assert_select "a.lp-legal-footer-links__link[href=?]", privacy_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
+    assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
     assert_select ".lp-you"
     assert_select ".lp-you__profile"
     assert_select ".lp-you__avatar-initial", text: "O"

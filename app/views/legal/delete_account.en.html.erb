@@ -1,0 +1,35 @@
+<% content_for :title, "Delete account — Life Climb" %>
+
+<%= render layout: "legal/page_shell", locals: { title: "Delete your account" } do %>
+  <p>You can delete your Life Climb account inside the app. This removes your climb data from our database. It cannot be undone.</p>
+
+  <h2 class="lp-legal__heading">Steps in the app</h2>
+  <ol class="lp-legal__list">
+    <li>Sign in to Life Climb.</li>
+    <li>Open <strong>You</strong> (the You tab in the bottom bar).</li>
+    <li>Tap <strong>Delete account</strong>.</li>
+    <li>Enter your password.</li>
+    <li>Tap <strong>Delete</strong> to confirm.</li>
+  </ol>
+
+  <h2 class="lp-legal__heading">What we remove</h2>
+  <p>When deletion succeeds, we remove your account and the data tied to it, including:</p>
+  <ul class="lp-legal__list">
+    <li>Your Journey, Camps, Battles, and Basics</li>
+    <li>Your sign-in sessions on our servers</li>
+    <li>Push notification subscriptions for your devices</li>
+    <li>Feedback you sent while signed in</li>
+    <li>Your notification settings, including your time zone preference</li>
+    <li>Your game progress, points, and related records stored for your account</li>
+  </ul>
+  <p>If you have an active subscription, we cancel it at Stripe as part of deletion.</p>
+
+  <h2 class="lp-legal__heading">What we do not remove</h2>
+  <ul class="lp-legal__list">
+    <li>Anonymous usage events that were saved without your user id (for example, visits to the public landing page before sign-up)</li>
+    <li>Your customer record at Stripe (we cancel the subscription; Stripe may keep billing records under their own rules)</li>
+    <li>Copies that already left our app, such as feedback email we sent to our inbox, password-reset emails, or lines in server logs</li>
+  </ul>
+
+  <p class="lp-legal__todo">TODO (Mareks): contact email for people who cannot sign in but need account deletion.</p>
+<% end %>
