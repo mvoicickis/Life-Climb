@@ -85,7 +85,7 @@
                   data-action="click->onboarding-camps#addFromButton">+</button>
         </div>
 
-        <div class="lp-ob-steps__scroll">
+        <div class="lp-ob-steps__scroll" data-onboarding-camps-target="scroll">
           <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
             <% t("v2_onboarding.camps_ghost_examples").each do |example| %>
               <div class="lp-ob-steps__ghost">
@@ -104,7 +104,7 @@
           <% end %>
         </div>
 
-        <footer class="lp-ob-steps__dock">
+        <footer class="lp-ob-steps__dock" data-onboarding-camps-target="dock">
           <%= submit_tag t("v2_onboarding.start_climbing"),
                 class: "lp-cta w-full",
                 disabled: camp_rows.empty?,
