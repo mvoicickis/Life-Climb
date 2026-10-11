@@ -33,13 +33,15 @@ export default class extends Controller {
   }
 
   submit(event) {
-    if (this.submitting) {
-      event.preventDefault()
+    const form = this.formTarget
+
+    if (form.dataset.confirmed === "1") {
+      delete form.dataset.confirmed
       return
     }
 
-    if (this.formTarget.dataset.confirmed === "true") {
-      this.formTarget.dataset.confirmed = "false"
+    if (this.submitting) {
+      event.preventDefault()
       return
     }
 
@@ -52,18 +54,26 @@ export default class extends Controller {
       return
     }
 
-    this.formTarget.dataset.confirmed = "true"
+    form.dataset.confirmed = "1"
     this.submitting = true
     this.syncSubmit()
-    this.formTarget.requestSubmit()
+
+    try {
+      form.requestSubmit()
+    } catch (error) {
+      delete form.dataset.confirmed
+      this.submitting = false
+      this.syncSubmit()
+      throw error
+    }
   }
 
   saved(event) {
     this.submitting = false
     this.syncSubmit()
+    delete this.formTarget.dataset.confirmed
 
     if (!event.detail.success) {
-      this.formTarget.dataset.confirmed = "false"
       if (!this.errorTarget?.textContent?.trim()) {
         this.showError(this.notSavedValue)
       }
