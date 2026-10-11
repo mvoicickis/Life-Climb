@@ -41,14 +41,21 @@ class LegalControllerTest < ActionDispatch::IntegrationTest
     assert_match(/subscription/i, response.body)
     assert_match(/Anonymous usage events/i, response.body)
     assert_match(/Stripe/i, response.body)
+    assert_match(/Can't log in\?/, response.body)
+    assert_match(/mailto:mvoicickis@gmail.com/, response.body)
   end
 
-  test "impressum shows German and English sections" do
+  test "impressum shows German and English provider details" do
     get impressum_path
     assert_response :success
     assert_match(/Impressum \/ Legal notice/, response.body)
-    assert_match(/Deutsch/, response.body)
-    assert_match(/English/, response.body)
-    assert_match(/TODO \(Mareks\)/, response.body)
+    assert_match(/Angaben gemäß § 5 DDG/, response.body)
+    assert_match(/Information according to § 5 DDG/, response.body)
+    assert_match(/57392 Schmallenberg/, response.body)
+    assert_match(/Deutschland/, response.body)
+    assert_match(/Germany/, response.body)
+    assert_match(/mailto:mvoicickis@gmail.com/, response.body)
+    assert_match(/tel:\+353872346580/, response.body)
+    assert_no_match(/TODO \(Mareks\)/, response.body)
   end
 end
