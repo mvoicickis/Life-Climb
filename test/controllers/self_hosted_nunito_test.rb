@@ -17,7 +17,7 @@ class SelfHostedNunitoTest < ActionDispatch::IntegrationTest
     assert_no_google_fonts_in_body
 
     sign_in_as users(:one)
-    get dashboard_path
+    get settings_path
     assert_no_google_fonts_in_body
 
     sign_in_as users(:admin)
@@ -33,14 +33,14 @@ class SelfHostedNunitoTest < ActionDispatch::IntegrationTest
     assert_match %r{/fonts/nunito\.css}, response.body
 
     sign_in_as users(:one)
-    get dashboard_path
+    get settings_path
     assert_match %r{/fonts/nunito\.css}, response.body
   end
 
   test "font stylesheet and woff2 files are served" do
     get "/fonts/nunito.css"
     assert_response :success
-    assert_includes response.media_type, "text/css"
+    assert_equal "text/css", response.media_type
 
     FONT_PATHS.each do |path|
       get path
