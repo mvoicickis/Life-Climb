@@ -36,9 +36,11 @@ class BattleWinsController < ApplicationController
     result.flash.each { |key, value| flash[key] = value }
     FirstCampWinNudge.clear_after_battle_win!(user: current_user, battle: result.battle)
 
+    quiet_win = params[:source] == "camp_sheet"
     if result.flash[:battle_celebrate]
       @win_number = current_user.daily_todos.where.not(completed_at: nil).count
-      @stream_push_offer_eligible = push_offer_eligible_for_win(win_number: @win_number)
+      eligible = push_offer_eligible_for_win(win_number: @win_number)
+      @stream_push_offer_eligible = eligible && !quiet_win
       flash[:win_number] = @win_number
       flash[:push_offer_eligible] = @stream_push_offer_eligible
     else
@@ -46,19 +48,19 @@ class BattleWinsController < ApplicationController
       @stream_push_offer_eligible = false
     end
 
-    respond_to_quick_win(journey, result.battle, awarded: result.awarded)
+    respond_to_quick_win(journey, result.battle, awarded: result.awarded, quiet_win: quiet_win)
   rescue ActiveRecord::RecordNotFound
     redirect_to dashboard_path, alert: t("dash.battle_angles.invalid"), status: :see_other
   end
 
   private
 
-  def respond_to_quick_win(journey, battle, awarded:)
+  def respond_to_quick_win(journey, battle, awarded:, quiet_win: false)
     assign_mountain_sheet_for!(battle)
     @journey = journey || @journey
     @awarded = awarded
     @battle = battle.reload
-    @quiet_win = params[:source] == "camp_sheet"
+    @quiet_win = quiet_win
     if @quiet_win && @project.present?
       days = @project.children.select { |child| child.day? && !child.holding? }
       @won_battles = days.select { |day| helpers.mountain_trail_done_today?(day) }

@@ -14,7 +14,9 @@
         journey: @journey,
         include_mission: @include_mission_in_battle,
         mission: @mission %>
-  <%= render "dashboard/push_offer_host" %>
+  <%= render "dashboard/push_offer_host",
+        goal_title: @push_offer_goal_title,
+        show_on_connect: @push_offer_show_on_visit %>
   <% if habits_enabled? %>
     <div id="today-anytime-host">
       <%= render "dashboard/dash_anytime", habits: @habits %>

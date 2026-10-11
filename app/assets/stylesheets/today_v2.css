@@ -1997,6 +1997,18 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transform: translateY(2px);
 }
 
+body.push-offer-open .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill {
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  border: 1px solid var(--lp-border);
+  box-shadow: none;
+}
+
+body.push-offer-open .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill:active {
+  box-shadow: none;
+  transform: none;
+}
+
 #today-battlefield-end-day-host .lp-today-empty-cta__wrap {
   padding: 0;
 }

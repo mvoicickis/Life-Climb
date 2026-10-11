@@ -803,7 +803,9 @@ de:
       dismissed: "Alright. I'll be in Settings if you change your mind."
     # TODO: translate
     push_offer:
+      goal_label: "Your goal" # TODO: translate
       headline: "Get a reminder tomorrow morning"
+      reminder_line: "Get a reminder tomorrow morning." # TODO: translate
       yes_label: "Remind me"
       not_now: "Not now"
       ios_headline: "Add Life Climb to your home screen"
