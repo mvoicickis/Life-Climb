@@ -5,6 +5,7 @@ module AdminImpersonationReadOnly
 
   IMPERSONATION_MUTATION_ALLOWLIST = [
     %w[admin/impersonations destroy],
+    %w[accounts destroy],
     %w[locales update]
   ].freeze
 

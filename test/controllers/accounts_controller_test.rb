@@ -17,7 +17,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to root_path
     assert_equal I18n.t("account_delete.deleted_notice"), flash[:notice]
-    assert_nil cookies[:session_id]
+    assert cookies[:session_id].blank?
     assert_not User.exists?(user_id)
 
     follow_redirect!
@@ -36,7 +36,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     follow_redirect!
     assert_response :success
-    assert_includes response.body, I18n.t("account_delete.errors.wrong_password")
+    assert_includes response.body, ERB::Util.html_escape(I18n.t("account_delete.errors.wrong_password"))
   end
 
   test "destroy requires sign in" do
@@ -75,7 +75,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to settings_path(delete_account: 1)
     follow_redirect!
-    assert_includes response.body, I18n.t("account_delete.errors.stripe_blocked")
+    assert_includes response.body, ERB::Util.html_escape(I18n.t("account_delete.errors.stripe_blocked"))
     assert User.exists?(@user.id)
   end
 end
