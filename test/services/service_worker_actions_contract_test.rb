@@ -39,7 +39,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for offline page cache" do
-    assert_includes @source, 'CACHE_VERSION = "v11"'
+    assert_includes @source, 'CACHE_VERSION = "v12"'
     assert_includes @source, "PAGE_CACHE_NAME"
     assert_includes @source, "-pages"
   end
@@ -92,6 +92,9 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     install = @source[/self\.addEventListener\("install"[\s\S]*?(?=self\.addEventListener\("activate")/]
     assert install.present?, "expected install listener in the service worker"
     assert_includes install, "await cache.addAll(PRECACHE_URLS)"
+    assert_includes @source, '"/fonts/nunito.css"'
+    assert_includes @source, '"/fonts/nunito-v1-latin-normal.woff2"'
+    assert_includes @source, '"/fonts/nunito-v1-latin-ext-normal.woff2"'
     assert_includes install, "catch"
     assert_includes install, "await self.skipWaiting()"
   end
