@@ -128,4 +128,23 @@ class UserTest < ActiveSupport::TestCase
     user.update_columns(subscription_status: "trialing", current_period_end: 1.day.from_now)
     assert user.premium?
   end
+
+  test "locale nil is valid when only English is available" do
+    user = users(:one)
+    user.locale = nil
+    assert user.valid?
+  end
+
+  test "locale en is valid when only English is available" do
+    user = users(:one)
+    user.locale = "en"
+    assert user.valid?
+  end
+
+  test "locale lv is invalid when only English is available" do
+    user = users(:one)
+    user.locale = "lv"
+    refute user.valid?
+    assert_includes user.errors[:locale], "is not included in the list"
+  end
 end

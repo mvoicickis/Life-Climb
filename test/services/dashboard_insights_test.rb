@@ -89,4 +89,4 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 end
 
-# Locale switching coverage lives in test/controllers/locales_controller_test.rb
+# English-only locale coverage lives in test/controllers/english_only_locale_test.rb

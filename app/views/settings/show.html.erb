@@ -2,8 +2,7 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 <% highlight = params[:highlight].to_s %>
-<% open_panel = %w[language name].include?(highlight) ? highlight : nil %>
-<% current_locale = locale_options.find { |opt| opt[:code] == I18n.locale } || locale_options.first %>
+<% open_panel = highlight == "name" ? highlight : nil %>
 <% user_initial = current_user.name.to_s.strip.first&.upcase.presence || "?" %>
 
 <div class="lp-you"
@@ -86,30 +85,6 @@
           </div>
         <% end %>
         <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
-      </section>
-
-      <section class="lp-you-card<%= ' is-open' if highlight == 'language' %>"
-               id="you-language"
-               data-you-page-target="languageCard">
-        <button type="button" class="lp-you-row" data-action="click->you-page#toggleLanguage">
-          <span class="lp-you-row__label"><%= t("settings.language_title") %></span>
-          <span class="lp-you-row__trail">
-            <span class="lp-you-row__value"><%= t("languages.#{current_locale[:code]}") %></span>
-            <span class="lp-you-row__chev" aria-hidden="true">›</span>
-          </span>
-        </button>
-        <div class="lp-you-langs">
-          <% locale_options.each do |opt| %>
-            <% active = I18n.locale == opt[:code] %>
-            <%= button_to locale_path(locale: opt[:code]),
-                  method: :patch,
-                  class: "lp-you-lang#{' is-active' if active}" do %>
-              <span aria-hidden="true"><%= opt[:flag] %></span>
-              <span><%= t("languages.#{opt[:code]}") %></span>
-              <% if active %><span class="lp-you-lang__check" aria-hidden="true">✓</span><% end %>
-            <% end %>
-          <% end %>
-        </div>
       </section>
 
       <section class="lp-you-card"

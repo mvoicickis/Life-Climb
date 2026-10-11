@@ -43,9 +43,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-character", count: 0
     assert_select "#you-theme", count: 0
     assert_select "html[data-theme=light]"
-    assert_select "#you-language"
-    assert_select "#you-language form[action=?]", locale_path(locale: :en)
-    assert_select "#you-language form[action=?]", locale_path(locale: :ru)
+    assert_select "#you-language", count: 0
     assert_select "#you-reminders[data-controller=?]", "push-reminders"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#enable"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest", count: 0

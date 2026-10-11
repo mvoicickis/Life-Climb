@@ -1061,12 +1061,10 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 2, mountain_trail_map_camps_finished_count(trail)
   end
 
-  test "camps_finished pluralizes in ru and lv without missing translation" do
-    %i[ru lv].each do |locale|
-      text = I18n.t("strategy.rpg.trail.camps_finished", count: 5, locale: locale)
-      assert_includes text, "5"
-      refute_match(/translation_missing/, text)
-    end
+  test "camps_finished pluralizes in English without missing translation" do
+    text = I18n.t("strategy.rpg.trail.camps_finished", count: 5, locale: :en)
+    assert_includes text, "5"
+    refute_match(/translation_missing/, text)
   end
 
   test "builtin map layout uses fixed tent slots bottom-up" do

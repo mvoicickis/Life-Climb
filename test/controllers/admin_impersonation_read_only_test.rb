@@ -57,17 +57,6 @@ class AdminImpersonationReadOnlyTest < ActionDispatch::IntegrationTest
     assert_not @todo.reload.completed?
   end
 
-  test "locale can change for preview without persisting to user record" do
-    @user.update!(locale: "en")
-    start_impersonating!(@admin, @user)
-
-    patch locale_path, params: { locale: "lv" }
-
-    assert_redirected_to dashboard_path
-    assert_equal "lv", session[:locale].to_s
-    assert_equal "en", @user.reload.locale
-  end
-
   test "impersonation banner shows read-only label" do
     start_impersonating!(@admin, @user)
 

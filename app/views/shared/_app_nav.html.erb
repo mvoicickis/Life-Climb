@@ -40,9 +40,6 @@
             <%= link_to t("nav.admin"), admin_root_path, class: "app-menu-item", role: "menuitem" %>
           <% end %>
           <div class="app-menu-divider" role="separator"></div>
-          <p class="app-menu-label"><%= t("nav.language") %></p>
-          <%= render "shared/locale_switcher", variant: :menu %>
-          <div class="app-menu-divider" role="separator"></div>
           <%= button_to t("nav.sign_out"),
                 session_path,
                 method: :delete,

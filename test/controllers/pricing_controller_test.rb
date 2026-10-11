@@ -42,21 +42,11 @@ class PricingControllerTest < ActionDispatch::IntegrationTest
     @user.update_columns(subscription_status: "active", current_period_end: period_end)
     renewal_date = I18n.l(period_end.to_date, format: :renewal, locale: :en)
 
-    get pricing_path(locale: :en)
+    get pricing_path
     assert_response :success
     assert_match I18n.t("pricing.active_until", date: renewal_date, locale: :en), response.body
     refute_match period_end.strftime("%H:%M"), response.body
     refute_match "septembris", response.body
   end
 
-  test "formats renewal date in Latvian without time" do
-    period_end = 1.year.from_now.utc.change(hour: 12)
-    @user.update_columns(subscription_status: "active", current_period_end: period_end)
-    renewal_date = I18n.l(period_end.to_date, format: :renewal, locale: :lv)
-
-    get pricing_path(locale: :lv)
-    assert_response :success
-    assert_match I18n.t("pricing.active_until", date: renewal_date, locale: :lv), response.body
-    refute_match period_end.strftime("%H:%M"), response.body
-  end
 end

@@ -23,13 +23,11 @@ class LegalControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "privacy serves English template when locale is lv" do
-    patch locale_path(locale: :lv)
-    follow_redirect!
-
+  test "privacy serves English template" do
     get privacy_path
     assert_response :success
     assert_match(/What we collect/, response.body)
+    assert_match(/keeping you logged in and showing the app offline/, response.body)
     assert_match(/Last updated: 11 October 2026/, response.body)
     assert_match(/General Data Protection Regulation/, response.body)
     assert_no_match(/TODO \(Mareks\)/, response.body)
