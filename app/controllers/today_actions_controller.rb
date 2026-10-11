@@ -2,7 +2,7 @@ class TodayActionsController < ApplicationController
   def create
     building = current_user.focus_building || current_user.buildings.active.order(:id).first
     unless building
-      redirect_to onboarding_path, alert: t("today.need_building") and return
+      redirect_to onboarding_entry_path, alert: t("today.need_building") and return
     end
 
     action = current_user.today_actions.new(
