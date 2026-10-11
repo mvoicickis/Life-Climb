@@ -56,7 +56,7 @@ Facts for writing the public privacy policy. Not user-facing.
 | **SMTP** (env-configured) | Password reset, feedback to `FEEDBACK_TO_EMAIL` |
 | **Browser push services** | Push payloads to subscription endpoints (often `fcm.googleapis.com`) |
 | **AI provider** (`Ai::Client`, default OpenRouter) | Goal/journey text from `StrategyHelpsController` → `Ai::StrategyService` (user-triggered, suggestions only) |
-| **Google Fonts** | Nunito CSS/font files from `fonts.googleapis.com` / `fonts.gstatic.com` on landing and app layouts |
+| **Self-hosted fonts** | Nunito woff2 and CSS served from our origin (`/fonts/`) — no third-party font CDN |
 
 No embedded Stripe.js. Share sheet may open Facebook/Messenger URLs (user-initiated).
 
