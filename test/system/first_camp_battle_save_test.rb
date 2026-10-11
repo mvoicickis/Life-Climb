@@ -40,10 +40,18 @@ class FirstCampBattleSaveTest < ApplicationSystemTestCase
 
     visit life_journey_path(@journey)
     assert_selector ".lp-trail.is-first-camp-reveal", wait: 10
-    assert_selector "#trail-sheet-camp-#{@camp.id} .lp-first-camp-setup", wait: 10
+    assert_selector ".lp-trail.is-awaiting-tap", wait: 15
 
-    fill_in placeholder: I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder"),
-          with: battle_title
+    find("#trail-camp-#{@camp.id}", visible: :all).click
+    assert_selector ".lp-trail-sheet.is-open", wait: 10
+    assert_selector "#trail-sheet-camp-#{@camp.id} .lp-first-camp-setup",
+                    visible: :all,
+                    wait: 10
+
+    within("#trail-sheet-camp-#{@camp.id} .lp-first-camp-setup") do
+      fill_in placeholder: I18n.t("strategy.rpg.trail.first_camp_reveal.title_placeholder"),
+            with: battle_title
+    end
     click_button I18n.t("strategy.rpg.trail.first_camp_reveal.submit")
 
     assert_no_selector ".lp-first-camp-setup", wait: 10
