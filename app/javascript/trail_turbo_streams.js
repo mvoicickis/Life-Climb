@@ -11,11 +11,6 @@ Turbo.StreamActions.open_trail_camp = function () {
   controller?.openCampById(campId)
 }
 
-Turbo.StreamActions.turbo_visit = function () {
-  const url = this.getAttribute("url")
-  if (url) Turbo.visit(url)
-}
-
 Turbo.StreamActions.update_mountain_trail_root = function () {
   const root = this.targetElements?.[0] || document.getElementById(this.target)
   if (!root) return
