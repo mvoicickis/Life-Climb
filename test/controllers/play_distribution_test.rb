@@ -58,5 +58,4 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
     get support_path
     assert_response :success
   end
-
 end
