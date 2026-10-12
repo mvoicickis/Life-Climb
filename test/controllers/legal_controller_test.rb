@@ -23,6 +23,18 @@ class LegalControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "terms serves English template" do
+    get terms_path
+    assert_response :success
+    assert_match(/Last updated: 12 October 2026/, response.body)
+    assert_match(/The app/, response.body)
+    assert_match(/German law applies/, response.body)
+    assert_match(/href="#{privacy_path}"/, response.body)
+    assert_match(/href="#{delete_account_path}"/, response.body)
+    assert_match(/mailto:mvoicickis@gmail.com/, response.body)
+    assert_no_match(/TODO \(Mareks\)/, response.body)
+  end
+
   test "privacy serves English template" do
     get privacy_path
     assert_response :success
