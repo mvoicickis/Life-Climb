@@ -15,6 +15,7 @@
     <%= csp_meta_tag %>
     <%= yield :head %>
 
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
     <link rel="icon" href="/favicon.ico?v=7" sizes="any">
     <link rel="icon" href="/icon.png?v=7" type="image/png" sizes="512x512">
     <link rel="apple-touch-icon" href="/icon.png?v=7">

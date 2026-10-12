@@ -101,7 +101,9 @@
     <%= render "shared/coach_line" %>
     <p class="mt-4 flex flex-wrap gap-4">
       <%= link_to t("life_points.numbers_link"), habits_path, class: "studio-link" if habits_enabled? %>
-      <%= link_to t("support.title"), support_path, class: "studio-link" %>
+      <% unless play_app? %>
+        <%= link_to t("support.title"), support_path, class: "studio-link" %>
+      <% end %>
       <%= link_to t("about.title"), about_path, class: "studio-link" %>
     </p>
   </section>

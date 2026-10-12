@@ -3,6 +3,7 @@
 module Billing
   class PortalsController < ApplicationController
     skip_onboarding_check
+    before_action :head_not_found_if_play_app!, only: :create
 
     def create
       result = CreatePortalSession.call(

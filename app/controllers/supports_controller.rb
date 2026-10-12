@@ -1,4 +1,6 @@
 class SupportsController < ApplicationController
+  before_action :redirect_if_play_app!, only: :show
+
   def show
     @providers = SupportProviders.enabled
     @coming_soon = SupportProviders.coming_soon

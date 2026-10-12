@@ -67,6 +67,8 @@ class AppWelcomeTest < ActionDispatch::IntegrationTest
     manifest = JSON.parse(response.body)
     assert_equal "/", manifest["start_url"]
     assert_equal "/", manifest["scope"]
+    assert_equal "/", manifest["id"]
+    assert_equal "en", manifest["lang"]
   end
 
   test "landing does not render welcome" do

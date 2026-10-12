@@ -30,7 +30,9 @@
           <p class="app-menu-email"><%= current_user.email_address %></p>
           <%= link_to t("nav.settings"), settings_path, class: "app-menu-item", role: "menuitem" %>
           <%= link_to t("about.title"), about_path, class: "app-menu-item", role: "menuitem" %>
-          <%= link_to t("support.title"), support_path, class: "app-menu-item", role: "menuitem" %>
+          <% unless play_app? %>
+            <%= link_to t("support.title"), support_path, class: "app-menu-item", role: "menuitem" %>
+          <% end %>
           <%# Stats → Habits — hidden. Page still lives at habits_path. %>
           <% if show_habits_and_journey_nav %>
             <%= link_to t("nav.stats"), habits_path, class: "app-menu-item", role: "menuitem" %>
