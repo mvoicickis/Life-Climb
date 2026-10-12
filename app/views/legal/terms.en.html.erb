@@ -1,24 +1,63 @@
-<% content_for :title, "Terms — Life Climb" %>
+<% content_for :title, "Terms of use — Life Climb" %>
 
-<%= render layout: "legal/page_shell", locals: { title: "Terms" } do %>
-  <h2 class="lp-legal__heading">The service</h2>
-  <p class="lp-legal__todo">TODO (Mareks): describe what Life Climb is and who may use it.</p>
+<%= render layout: "legal/page_shell", locals: { title: "Terms of use" } do %>
+  <p>Last updated: 12 October 2026</p>
+
+  <h2 class="lp-legal__heading">Who we are</h2>
+  <p>
+    Life Climb (lifeclimb.app) is run by Mareks Voicickis, Oststraße 15, 57392 Schmallenberg, Germany.
+    Email: <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %>.
+  </p>
+
+  <h2 class="lp-legal__heading">The app</h2>
+  <p>
+    Life Climb helps you turn a goal into small daily steps: camps, battles and Basics. It is in beta, so features may change, move or be removed, and things may sometimes break while we improve it.
+  </p>
 
   <h2 class="lp-legal__heading">Your account</h2>
-  <p class="lp-legal__todo">TODO (Mareks): account rules, security, and eligibility.</p>
+  <ul class="lp-legal__list">
+    <li>You need to be at least 16 to use Life Climb.</li>
+    <li>Give a real email address and keep your password to yourself. You're responsible for what happens in your account.</li>
+    <li>You can delete your account at any time on the You page (see <%= link_to "/delete-account", delete_account_path, class: "lp-legal__link" %>).</li>
+  </ul>
 
-  <h2 class="lp-legal__heading">Subscriptions and payments</h2>
-  <p class="lp-legal__todo">TODO (Mareks): premium billing via Stripe, renewal, and cancellation.</p>
+  <h2 class="lp-legal__heading">Your content</h2>
+  <p>
+    What you write in Life Climb (your goal, camps, battles, Basics) stays yours. You let us store and process it only to run the app for you, as described in our <%= link_to "privacy policy", privacy_path, class: "lp-legal__link" %>.
+  </p>
 
-  <h2 class="lp-legal__heading">Acceptable use</h2>
-  <p class="lp-legal__todo">TODO (Mareks): what users must not do.</p>
+  <h2 class="lp-legal__heading">Fair use</h2>
+  <p>
+    Please don't misuse Life Climb: no attempts to break, overload or get into parts of the app that aren't yours, no automated sign-ups, and nothing illegal. If someone does, we may block their account.
+  </p>
 
-  <h2 class="lp-legal__heading">Liability and disclaimers</h2>
-  <p class="lp-legal__todo">TODO (Mareks): limitations and disclaimers.</p>
+  <h2 class="lp-legal__heading">Paid plans</h2>
+  <p>
+    Life Climb is free right now. If we offer paid plans, the price, what's included and how to cancel will be shown clearly before you pay.
+  </p>
+
+  <h2 class="lp-legal__heading">No guarantees</h2>
+  <p>
+    Life Climb is a tool to help you plan and follow through. It isn't medical, financial or professional advice, and we can't promise any particular result. We work to keep the app available and your data safe, but we can't promise it will always be online or free of errors.
+  </p>
+
+  <h2 class="lp-legal__heading">Liability</h2>
+  <p>
+    We are fully liable for damage caused intentionally or through gross negligence, and for injury to life, body or health. For slight negligence, we are only liable for breaches of essential duties, and only for typical, foreseeable damage. This doesn't affect liability under mandatory law, such as product liability.
+  </p>
 
   <h2 class="lp-legal__heading">Changes</h2>
-  <p class="lp-legal__todo">TODO (Mareks): how terms may change and how users are told.</p>
+  <p>
+    If we change these terms, we'll update this page and the date above. For important changes, we'll tell you in the app or by email first.
+  </p>
+
+  <h2 class="lp-legal__heading">Law</h2>
+  <p>
+    German law applies. If you're a consumer in another country, you keep the protection of the mandatory laws of your country.
+  </p>
 
   <h2 class="lp-legal__heading">Contact</h2>
-  <p class="lp-legal__todo">TODO (Mareks): contact details for terms questions.</p>
+  <p>
+    Questions? Email <%= link_to "mvoicickis@gmail.com", "mailto:mvoicickis@gmail.com", class: "lp-legal__link" %>.
+  </p>
 <% end %>
