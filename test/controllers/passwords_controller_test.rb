@@ -17,6 +17,13 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_notice "reset instructions sent"
   end
 
+  test "create normalizes email before lookup" do
+    @user.update!(email_address: "test@example.com")
+    post passwords_path, params: { email_address: " Test@Example.com " }
+    assert_enqueued_email_with PasswordsMailer, :reset, args: [ @user ]
+    assert_redirected_to new_session_path
+  end
+
   test "create for an unknown user redirects but sends no mail" do
     post passwords_path, params: { email_address: "missing-user@example.com" }
     assert_enqueued_emails 0
