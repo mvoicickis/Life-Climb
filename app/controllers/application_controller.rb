@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include PlayDistribution
   include Authentication
   include SetLocale
   include RequireOnboarding
@@ -38,6 +39,7 @@ class ApplicationController < ActionController::Base
     return if controller_name.in?(%w[sessions passwords registrations locales two_factor_sessions])
     return if controller_path == "legal"
     return if controller_path == "rails/health"
+    return if controller_path == "play/asset_links"
 
     render template: "shared/maintenance", layout: "application", status: :service_unavailable
   end

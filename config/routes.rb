@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "terms", to: "legal#terms", as: :terms
   get "delete-account", to: "legal#delete_account", as: :delete_account
   get "impressum", to: "legal#impressum", as: :impressum
+  get "/.well-known/assetlinks.json", to: "play/asset_links#show", as: :play_asset_links
   resource :dashboard, only: :show, controller: "dashboard" do
     resource :quick_battles, only: :create, controller: "dashboard/quick_battles"
   end

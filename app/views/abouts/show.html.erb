@@ -19,7 +19,9 @@
   </div>
 
   <div class="lp-support__actions is-row">
-    <%= link_to t("support.title"), support_path, class: "lp-support__primary" %>
+    <% unless play_app? %>
+      <%= link_to t("support.title"), support_path, class: "lp-support__primary" %>
+    <% end %>
     <%= link_to t("coach.title"), new_feedback_path, class: "lp-support__secondary-link" %>
   </div>
 

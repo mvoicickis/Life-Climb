@@ -1,5 +1,5 @@
 <%# Soft thank-you after milestones — never on Today. Optional & permanently dismissible. %>
-<% if local_assigns[:moment].present? %>
+<% if local_assigns[:moment].present? && !play_app? %>
   <aside class="studio-thanks" role="complementary" aria-label="<%= t('support.moment.title') %>">
     <p class="studio-kicker"><%= t("support.moment.title") %></p>
     <h2 class="studio-rail-dream mt-2"><%= t("support.moment.#{moment}.headline") %></h2>

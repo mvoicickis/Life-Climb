@@ -66,7 +66,7 @@
         <button type="button" class="lp-you-sr" hidden data-push-reminders-target="disable" data-action="click->push-reminders#disable">
           <%= t("settings.reminders_disable") %>
         </button>
-        <% unless current_user.install_offer_installed_at? %>
+        <% unless play_app? || current_user.install_offer_installed_at? %>
           <div id="you-row-install-offer"
                class="lp-you-row lp-you-row--install"
                data-controller="pwa-install"
@@ -87,29 +87,31 @@
         <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
       </section>
 
-      <section class="lp-you-card"
-               data-controller="billing-checkout"
-               data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
-               data-billing-checkout-portal-url-value="<%= billing_portal_path %>">
-        <%= link_to pricing_path, class: "lp-you-row" do %>
-          <span class="lp-you-row__label"><%= t("pricing.premium_title") %></span>
-          <span class="lp-you-row__trail">
-            <span class="lp-you-row__value is-strong">
-              <%= current_user.premium? ? t("pricing.already_premium") : t("pricing.upgrade_cta") %>
+      <% unless play_app? %>
+        <section class="lp-you-card"
+                 data-controller="billing-checkout"
+                 data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
+                 data-billing-checkout-portal-url-value="<%= billing_portal_path %>">
+          <%= link_to pricing_path, class: "lp-you-row" do %>
+            <span class="lp-you-row__label"><%= t("pricing.premium_title") %></span>
+            <span class="lp-you-row__trail">
+              <span class="lp-you-row__value is-strong">
+                <%= current_user.premium? ? t("pricing.already_premium") : t("pricing.upgrade_cta") %>
+              </span>
+              <span class="lp-you-row__chev" aria-hidden="true">›</span>
             </span>
-            <span class="lp-you-row__chev" aria-hidden="true">›</span>
-          </span>
-        <% end %>
-        <% if current_user.stripe_customer_id.present? && StripeConfig.configured? %>
-          <button type="button"
-                  class="lp-you-row"
-                  data-action="billing-checkout#portal"
-                  data-billing-checkout-target="button">
-            <span class="lp-you-row__label"><%= t("pricing.manage_billing") %></span>
-            <span class="lp-you-row__chev" aria-hidden="true">›</span>
-          </button>
-        <% end %>
-      </section>
+          <% end %>
+          <% if current_user.stripe_customer_id.present? && StripeConfig.configured? %>
+            <button type="button"
+                    class="lp-you-row"
+                    data-action="billing-checkout#portal"
+                    data-billing-checkout-target="button">
+              <span class="lp-you-row__label"><%= t("pricing.manage_billing") %></span>
+              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            </button>
+          <% end %>
+        </section>
+      <% end %>
 
       <section class="lp-you-card"
                data-controller="share"
