@@ -26,15 +26,28 @@ export default class extends Controller {
     this.reorderHintShown = false
     this.pointerReorder = null
     this._viewportKeyboardInset = "0px"
+    this._finishing = false
     this._onViewport = () => this.syncKeyboardInset()
+    this._onPageShow = (event) => this.resetFinishingAfterBackForward(event)
+    window.addEventListener("pageshow", this._onPageShow)
     this.loadInitialItems()
     this.syncUi()
     this.bindDockViewport()
   }
 
   disconnect() {
+    window.removeEventListener("pageshow", this._onPageShow)
     this.pointerReorder?.destroy()
     this.unbindDockViewport()
+  }
+
+  resetFinishingAfterBackForward(event) {
+    if (!event.persisted) return
+
+    this._finishing = false
+    if (this.hasSubmitTarget) {
+      this.submitTarget.disabled = this.items.length === 0
+    }
   }
 
   bindDockViewport() {
@@ -99,12 +112,14 @@ export default class extends Controller {
 
   addFromButton(event) {
     event.preventDefault()
+    if (this._finishing) return
     this.submitAdd()
   }
 
   addFromEnter(event) {
     if (event.key !== "Enter") return
     event.preventDefault()
+    if (this._finishing) return
     this.submitAdd()
   }
 
@@ -252,10 +267,16 @@ export default class extends Controller {
   }
 
   beforeSubmit(event) {
+    if (this._finishing) {
+      event.preventDefault()
+      return
+    }
     if (this.items.length === 0) {
       event.preventDefault()
       return
     }
+    this._finishing = true
+    if (this.hasSubmitTarget) this.submitTarget.disabled = true
     this.renderHiddenFields()
   }
 }

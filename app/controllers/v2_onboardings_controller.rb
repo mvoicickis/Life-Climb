@@ -62,6 +62,14 @@ class V2OnboardingsController < ApplicationController
       if draft["goal"].blank?
         redirect_to v2_onboarding_path(step: "goal"), alert: t("v2_onboarding.need_goal") and return
       end
+      if current_user.onboarding_completed? && current_user.planning_v2?
+        session.delete(:v2_onboarding)
+        redirect_completed_user! and return
+      end
+      if (existing_journey = onboarding_bootstrap_journey_for(draft["goal"]))
+        session.delete(:v2_onboarding)
+        redirect_to life_journey_path(existing_journey) and return
+      end
       session[:v2_onboarding] = draft.merge("camp_titles" => titles)
       track_onboarding_event!("onboarding_step_completed", step)
       begin
@@ -143,5 +151,14 @@ class V2OnboardingsController < ApplicationController
     return unless SETUP_STEPS.include?(step)
 
     Analytics::Track.call(user: current_user, name: name, properties: { step: step })
+  end
+
+  def onboarding_bootstrap_journey_for(goal_title)
+    title = goal_title.to_s.strip
+    return if title.blank?
+
+    current_user.life_journeys.active.order(id: :desc).find do |journey|
+      journey.title == title && journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG) == "true"
+    end
   end
 end

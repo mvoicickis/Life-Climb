@@ -80,6 +80,30 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal 0, user.habits.count
   end
 
+  test "duplicate camps patch redirects to same journey without error" do
+    post registration_url, params: registration_params("double-camps@example.com")
+    patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Become a Ruby Developer" } }
+
+    camps_params = {
+      onboarding: {
+        camp_titles: [ "Get certified", "Land first role" ]
+      }
+    }
+
+    patch v2_onboarding_url(step: "camps"), params: camps_params
+    user = User.find_by!(email_address: "double-camps@example.com")
+    user.reload
+    journey = user.primary_focused_journey
+    assert_redirected_to life_journey_path(journey)
+
+    patch v2_onboarding_url(step: "camps"), params: camps_params
+    user.reload
+    assert_redirected_to life_journey_path(journey)
+    assert user.onboarding_completed?
+    assert_equal 1, user.life_journeys.count
+    assert_equal 1, user.life_areas.where(dream_id: nil, key: "purpose").count
+  end
+
   test "tracks onboarding step viewed and completed events" do
     post registration_url, params: registration_params("tracked@example.com")
     user = User.find_by!(email_address: "tracked@example.com")

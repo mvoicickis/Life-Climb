@@ -34,16 +34,24 @@ module Onboarding
       result = nil
 
       ActiveRecord::Base.transaction do
-        result = ClimbSpine.call(
-          user: @user,
-          goal_title: @goal_title,
-          camp_titles: @camp_titles
-        )
+        @user.with_lock do
+          @user.reload
+          if (journey = find_existing_bootstrap_journey)
+            ensure_onboarding_completed!
+            result = Result.new(journey: journey)
+          else
+            result = ClimbSpine.call(
+              user: @user,
+              goal_title: @goal_title,
+              camp_titles: @camp_titles
+            )
 
-        @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+            @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
 
-        Strategy::Celebrate.call(user: @user, goal: result.first_battle) if result.first_battle
-        Goals::Current.clear_cache!(user: @user)
+            Strategy::Celebrate.call(user: @user, goal: result.first_battle) if result.first_battle
+            Goals::Current.clear_cache!(user: @user)
+          end
+        end
       end
 
       result
@@ -52,6 +60,18 @@ module Onboarding
     end
 
     private
+
+    def find_existing_bootstrap_journey
+      @user.life_journeys.active.order(id: :desc).find do |journey|
+        journey.title == @goal_title && journey.setup_flag(BOOTSTRAP_FLAG) == "true"
+      end
+    end
+
+    def ensure_onboarding_completed!
+      return if @user.onboarding_completed? && @user.planning_v2?
+
+      @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+    end
 
     def normalize_camp_titles(camp_titles)
       seen = {}

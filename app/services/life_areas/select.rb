@@ -48,7 +48,17 @@ module LifeAreas
         if area
           area.update!(attrs)
         else
-          area = @user.life_areas.create!(attrs.merge(key: key, meta: {}))
+          area = @user.life_areas.find_by(key: key, dream_id: nil)
+          if area
+            area.update!(attrs)
+          else
+            begin
+              area = @user.life_areas.create!(attrs.merge(key: key, meta: {}))
+            rescue ActiveRecord::RecordNotUnique
+              area = @user.life_areas.find_by!(key: key, dream_id: nil)
+              area.update!(attrs)
+            end
+          end
         end
 
         # One mountain: drop focus on journeys outside the selected area.
