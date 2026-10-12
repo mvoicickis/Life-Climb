@@ -91,6 +91,25 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 0, @user.life_journeys.count
   end
 
+  test "second call with same args returns the same journey without duplicating spine" do
+    first = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Become a Ruby Developer",
+      camp_titles: [ "Get certified", "Land first role" ]
+    )
+
+    assert_no_difference -> { @user.life_journeys.count } do
+      assert_no_difference -> { @user.life_areas.where(dream_id: nil, key: "purpose").count } do
+        second = Onboarding::Bootstrap.call(
+          user: @user,
+          goal_title: "Become a Ruby Developer",
+          camp_titles: [ "Get certified", "Land first role" ]
+        )
+        assert_equal first.journey.id, second.journey.id
+      end
+    end
+  end
+
   test "rejects empty goal" do
     error = assert_raises(Onboarding::Bootstrap::Error) do
       Onboarding::Bootstrap.call(

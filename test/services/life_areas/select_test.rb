@@ -27,6 +27,14 @@ class LifeAreas::SelectTest < ActiveSupport::TestCase
     end
   end
 
+  test "calling twice with the same key returns the same row" do
+    first = LifeAreas::Select.call(user: @user, keys: %w[purpose]).first
+    second = LifeAreas::Select.call(user: @user, keys: %w[purpose]).first
+
+    assert_equal first.id, second.id
+    assert_equal 1, @user.life_areas.where(dream_id: nil, key: "purpose").count
+  end
+
   test "reselecting replaces previous v2 selection without touching legacy dream areas" do
     legacy_count = @user.life_areas.where.not(dream_id: nil).count
     assert legacy_count.positive?
