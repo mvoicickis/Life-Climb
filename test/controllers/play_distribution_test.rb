@@ -25,22 +25,23 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
 
   test "play cookie hides premium install and blocks monetization routes" do
     sign_in_as @user
+    cookies[:lp_distribution] = "play"
 
-    get settings_path, headers: play_cookie_headers
+    get settings_path
     assert_response :success
     assert_select "a[href=?]", pricing_path, count: 0
     assert_select "#you-row-install-offer", count: 0
 
-    get pricing_path, headers: play_cookie_headers
+    get pricing_path
     assert_redirected_to dashboard_path
 
-    get support_path, headers: play_cookie_headers
+    get support_path
     assert_redirected_to dashboard_path
 
-    post billing_checkout_path, params: { interval: "monthly" }, as: :json, headers: play_cookie_headers
+    post billing_checkout_path, params: { interval: "monthly" }, as: :json
     assert_response :not_found
 
-    post billing_portal_path, as: :json, headers: play_cookie_headers
+    post billing_portal_path, as: :json
     assert_response :not_found
   end
 
@@ -58,9 +59,4 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  private
-
-  def play_cookie_headers
-    { "Cookie" => "lp_distribution=play" }
-  end
 end
