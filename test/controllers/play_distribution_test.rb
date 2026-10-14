@@ -58,4 +58,61 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
     get support_path
     assert_response :success
   end
+
+  test "android-app referer sets play cookie and hides monetization" do
+    sign_in_as @user
+
+    get root_path, headers: { "HTTP_REFERER" => "android-app://app.lifeclimb/" }
+    assert_response :success
+    assert_equal "play", response.cookies["lp_distribution"]
+
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", pricing_path, count: 0
+
+    post billing_checkout_path, params: { interval: "monthly" }, as: :json
+    assert_response :not_found
+  end
+
+  test "android-app referer without trailing slash sets play cookie" do
+    get root_path, headers: { "HTTP_REFERER" => "android-app://app.lifeclimb" }
+    assert_response :success
+    assert_equal "play", response.cookies["lp_distribution"]
+  end
+
+  test "similar package name in referer does not set play cookie" do
+    sign_in_as @user
+
+    get root_path, headers: { "HTTP_REFERER" => "android-app://app.lifeclimbfake/" }
+    assert_response :success
+    assert_nil response.cookies["lp_distribution"]
+
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", pricing_path
+  end
+
+  test "non android-app referer does not set play cookie" do
+    sign_in_as @user
+
+    get root_path, headers: { "HTTP_REFERER" => "https://google.com/" }
+    assert_response :success
+    assert_nil response.cookies["lp_distribution"]
+
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", pricing_path
+  end
+
+  test "no referer leaves web monetization unchanged" do
+    sign_in_as @user
+
+    get root_path
+    assert_response :success
+    assert_nil response.cookies["lp_distribution"]
+
+    get settings_path
+    assert_response :success
+    assert_select "a[href=?]", pricing_path
+  end
 end
