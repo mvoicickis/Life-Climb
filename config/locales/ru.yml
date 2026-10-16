@@ -1572,3 +1572,7 @@ ru:
     reached_aria: "Goal reached" # TODO: translate
     not_at_summit: "Finish every camp on your Mountain first." # TODO: translate
     need_area: "Pick a life area for your next climb." # TODO: translate
+  admin:
+    metrics:
+      opened_today: "Opened today" # TODO: translate
+      climbed_today: "Climbed today" # TODO: translate

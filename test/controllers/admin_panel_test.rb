@@ -29,6 +29,8 @@ class AdminPanelTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Total users/i, response.body)
     assert_match(/Returned users/i, response.body)
+    assert_match(/Opened today/i, response.body)
+    assert_match(/Climbed today/i, response.body)
     assert_match(/User funnel/i, response.body)
     assert_match(/First camp planted/i, response.body)
     assert_match(/admin\/developer account excluded/i, response.body)

@@ -3635,6 +3635,8 @@ en:
       users_week: "New users this week"
       users_month: "New users this month"
       returned_users: "Returned users"
+      opened_today: "Opened today"
+      climbed_today: "Climbed today"
       battles: "Completed battles"
       projects: "Completed camps" # TODO: translate for lv/de/es/ru.
       plans: "Plans"

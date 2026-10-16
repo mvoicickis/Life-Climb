@@ -48,10 +48,14 @@ module Admin
     end
 
     def cards
+      opened_today, climbed_today = today_engagement_counts
+
       {
         users_total: metrics_users.count,
         users_week: metrics_users.where(created_at: 7.days.ago.beginning_of_day..).count,
         users_month: metrics_users.where(created_at: @today.beginning_of_month.beginning_of_day..).count,
+        opened_today: opened_today,
+        climbed_today: climbed_today,
         battles_completed: completed_battles_count,
         projects_completed: StrategyGoal.for_kind("project")
                                           .where(user_id: metrics_user_ids)
@@ -68,6 +72,39 @@ module Admin
         life_points_per_day: ledger_series,
         battles_per_day: battle_series
       }
+    end
+
+    def today_engagement_counts
+      rows = metrics_users.left_joins(:notification_preference).pluck(
+        "users.id",
+        "users.last_opened_on",
+        "notification_preferences.time_zone"
+      )
+
+      opened_today_entries = rows.filter_map do |user_id, last_opened_on, time_zone|
+        next if last_opened_on.blank?
+
+        zone_stub = Struct.new(:notification_preference).new(Struct.new(:time_zone).new(time_zone))
+        zone_name = Battles::WinsOnLocalDate.time_zone_for(zone_stub)
+        local_today = Battles::WinsOnLocalDate.local_today_for(zone_stub)
+        next unless last_opened_on == local_today
+
+        [ user_id, local_today, zone_name ]
+      end
+
+      users_by_id = User.where(id: opened_today_entries.map(&:first)).index_by(&:id)
+      climbed_today = opened_today_entries.count do |user_id, local_today, zone_name|
+        user = users_by_id[user_id]
+        next false unless user
+
+        Battles::WinsOnLocalDate.count_for_date(
+          user: user,
+          date: local_today,
+          time_zone: zone_name
+        ).positive?
+      end
+
+      [ opened_today_entries.size, climbed_today ]
     end
 
     def completed_battles_count
