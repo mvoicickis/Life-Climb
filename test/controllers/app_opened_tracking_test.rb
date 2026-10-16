@@ -101,11 +101,15 @@ class AppOpenedTrackingTest < ActionDispatch::IntegrationTest
 
   test "tracker failure does not break Today GET" do
     travel_to berlin_time(2026, 10, 16, 10, 0) do
-      Analytics::TrackAppOpened.stub(:call, proc { raise StandardError, "boom" }) do
+      original = Analytics::TrackAppOpened.method(:call)
+      Analytics::TrackAppOpened.define_singleton_method(:call) { |**| raise StandardError, "boom" }
+      begin
         assert_no_difference -> { app_opened_events.count } do
           get dashboard_path
         end
         assert_response :success
+      ensure
+        Analytics::TrackAppOpened.define_singleton_method(:call, original)
       end
     end
   end

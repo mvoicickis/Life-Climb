@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
   def app_open_tracking_eligible?
     user = current_user
     return false if user.blank?
-    return false unless request.get?
+    return false unless request.get? || request.head?
     return false unless request.format.html?
     return false if request.format.turbo_stream?
     return false if impersonating?
