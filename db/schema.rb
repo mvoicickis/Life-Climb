@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_27_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -550,6 +550,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_27_180000) do
     t.integer "install_offer_dismiss_count", default: 0, null: false
     t.datetime "install_offer_dismissed_at"
     t.datetime "install_offer_installed_at"
+    t.date "last_opened_on"
+    t.datetime "next_app_open_at"
     t.string "locale"
     t.integer "mountain_trail_tour_ack", default: 0, null: false
     t.string "name"
