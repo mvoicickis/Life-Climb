@@ -1622,7 +1622,7 @@ lv:
     default_two: "Izvēlies vienu lietu, kurā pārspēt vakardienu."
     default_three: "Turi rītdienu vienkāršu: viena skaidra uzvara."
   landing:
-    meta_title: "LifePoints — Lielākā daļa mērķu nomirst piezīmju lietotnē."
+    meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints pārvērš vienu īstu mērķi kalnā — un katru dienu dod tev vienu skaidru soli uz augšu."
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"

@@ -1388,7 +1388,7 @@ es:
     default_two: "Elige una cosa en la que superar a ayer."
     default_three: "Mantén mañana simple: una victoria clara."
   landing:
-    meta_title: "LifePoints — La mayoría de las metas mueren en tu app de notas."
+    meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints convierte una meta real en una montaña — y te da un paso claro hacia arriba, cada día."
     sign_in: "Iniciar sesión"
     start_free: "Empezar gratis"

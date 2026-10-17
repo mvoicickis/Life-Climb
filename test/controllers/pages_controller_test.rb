@@ -54,9 +54,13 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "landing social meta uses Life Climb og image and tagline" do
     get root_path
     assert_response :success
+    landing_description = I18n.t("landing.meta_description")
+    assert_match(/<title>Life Climb — The mountain is yours to climb<\/title>/, response.body)
+    assert_no_match(/Most goals die in your notes app/, response.body)
     assert_match(/name="theme-color" content="#f8fafc"/, response.body)
     assert_match(%r{og:image" content="https://lifeclimb\.app/og-lifeclimb-share\.png"}, response.body)
-    assert_match(/og:description" content="The mountain is yours to climb"/, response.body)
+    assert_match(/og:description" content="#{Regexp.escape(landing_description)}"/, response.body)
+    assert_match(/twitter:description" content="#{Regexp.escape(landing_description)}"/, response.body)
     assert_match(/og:title" content="Life Climb — The mountain is yours to climb"/, response.body)
     assert_match(/twitter:title" content="Life Climb — The mountain is yours to climb"/, response.body)
     assert_match(/og:image:alt" content="Life Climb — The mountain is yours to climb"/, response.body)
