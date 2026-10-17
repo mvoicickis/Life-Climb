@@ -47,6 +47,16 @@ class PushOffersControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "shown with count_show_day false skips show days" do
+    travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
+      patch shown_push_offer_path, params: { count_show_day: false }
+      assert_response :no_content
+      @user.reload
+      assert_equal Date.new(2026, 8, 6), @user.push_offer_last_shown_on
+      assert_equal 0, @user.push_offer_show_days
+    end
+  end
+
   test "shown does not double increment show days same day" do
     travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
       patch shown_push_offer_path

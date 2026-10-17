@@ -28,6 +28,8 @@ export default class extends Controller {
     compact: Boolean,
     showNotNow: { type: Boolean, default: true },
     markShownOnDisplay: Boolean,
+    countShowDay: { type: Boolean, default: true },
+    campSheet: Boolean,
     yesLabel: String,
     notNowLabel: String,
     iosHeadline: String,
@@ -115,6 +117,13 @@ export default class extends Controller {
     if (state.permission === "denied") return
 
     await this.prefetchForOffer()
+
+    if (this.campSheetValue) {
+      const mode = this.cardMode()
+      if (mode === "unsupported") return
+      if (mode === "remind" && !this._prefetchPublicKey) return
+    }
+
     this.renderCard()
   }
 
@@ -307,6 +316,14 @@ export default class extends Controller {
     this.yesButton.setAttribute("aria-busy", busy ? "true" : "false")
   }
 
+  patchUrl(url) {
+    if (!url) return url
+    if (this.countShowDayValue) return url
+
+    const separator = url.includes("?") ? "&" : "?"
+    return `${url}${separator}count_show_day=false`
+  }
+
   async fetchPatchOk(url) {
     const response = await fetch(url, {
       method: "PATCH",
@@ -334,7 +351,7 @@ export default class extends Controller {
   markShown() {
     if (!this.shownUrlValue) return Promise.resolve()
 
-    return this.fetchPatchOk(this.shownUrlValue).catch(() => {
+    return this.fetchPatchOk(this.patchUrl(this.shownUrlValue)).catch(() => {
       /* Network failure — offer may reappear. */
     })
   }
@@ -353,7 +370,7 @@ export default class extends Controller {
       if (permission !== "granted") {
         if (permission === "denied") {
           try {
-            await this.fetchPatchOk(this.deniedUrlValue)
+            await this.fetchPatchOk(this.patchUrl(this.deniedUrlValue))
           } catch (error) {
             console.error(error)
           }
@@ -428,7 +445,7 @@ export default class extends Controller {
     if (!this.deniedUrlValue) return
 
     try {
-      await this.fetchPatchOk(this.deniedUrlValue)
+      await this.fetchPatchOk(this.patchUrl(this.deniedUrlValue))
     } catch (error) {
       console.error(error)
     }
