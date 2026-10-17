@@ -70,6 +70,42 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     refute_match "lp-trail-battles__first-camp-hint", response.body
   end
 
+  test "first camp win includes camp push offer host when eligible" do
+    @user.update!(
+      push_offer_dismiss_count: 0,
+      push_offer_dismissed_at: nil,
+      push_offer_permission_denied_at: nil,
+      push_offer_last_shown_on: nil,
+      push_offer_show_days: 0
+    )
+    battle = save_first_battle!
+
+    post battle_win_path(battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    assert_response :success
+
+    host = css_select("#mountain-push-offer-host").first
+    assert host
+    assert_equal "true", host["data-push-offer-compact-value"]
+    assert_equal "false", host["data-push-offer-show-not-now-value"]
+    assert_equal "false", host["data-push-offer-mark-shown-on-display-value"]
+    assert_equal "false", host["data-push-offer-count-show-day-value"]
+    assert_equal "true", host["data-push-offer-camp-sheet-value"]
+    assert_select ".lp-trail-camp-finish__reminder-divider"
+    assert_select ".lp-push-offer__not-now", count: 0
+    assert_equal 0, @user.reload.push_offer_show_days
+  end
+
+  test "first camp win omits push offer when permission denied" do
+    @user.update!(push_offer_permission_denied_at: Time.current)
+    battle = save_first_battle!
+
+    post battle_win_path(battle), params: { source: "camp_sheet" }, as: :turbo_stream
+    assert_response :success
+
+    assert_select "#mountain-push-offer-host", count: 0
+    assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
+  end
+
   test "win from Today clears nudge and camp sheet shows won row" do
     battle = save_first_battle!
     todo = @user.daily_todos.for_day.find_by!(strategy_goal_id: battle.id)

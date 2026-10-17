@@ -94,6 +94,16 @@ class UserPushOfferTest < ActiveSupport::TestCase
     refute @user.push_offer_eligible?(win_number: 5)
   end
 
+  test "shown without counting show day updates last shown only" do
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      @user.mark_push_offer_shown!(count_show_day: false)
+      @user.reload
+      assert_equal Date.new(2026, 8, 6), @user.push_offer_last_shown_on
+      assert_equal 0, @user.push_offer_show_days
+      refute @user.push_offer_eligible?(win_number: 5)
+    end
+  end
+
   test "show days increment once per local day not twice same day" do
     @user.create_notification_preference!(time_zone: "Europe/Berlin")
     travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 10, 0, 0) do

@@ -325,10 +325,10 @@ class User < ApplicationRecord
     true
   end
 
-  def mark_push_offer_shown!(date: push_offer_local_date)
+  def mark_push_offer_shown!(date: push_offer_local_date, count_show_day: true)
     new_day = push_offer_last_shown_on.nil? || date > push_offer_last_shown_on
     attrs = { push_offer_last_shown_on: date }
-    attrs[:push_offer_show_days] = push_offer_show_days + 1 if new_day
+    attrs[:push_offer_show_days] = push_offer_show_days + 1 if new_day && count_show_day
     update!(attrs)
   end
 
