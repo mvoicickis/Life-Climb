@@ -1654,7 +1654,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-hp-bar__fill.is-neutral {
-  background: var(--lp-muted);
+  background: color-mix(in srgb, var(--lp-muted) 45%, transparent);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__hp-num.is-neutral {
@@ -1995,18 +1995,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill:active {
   box-shadow: 0 2px 0 var(--lp-green-deep);
   transform: translateY(2px);
-}
-
-body.push-offer-open .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill {
-  background: var(--lp-surface);
-  color: var(--lp-ink);
-  border: 1px solid var(--lp-border);
-  box-shadow: none;
-}
-
-body.push-offer-open .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__pill:active {
-  box-shadow: none;
-  transform: none;
 }
 
 #today-battlefield-end-day-host .lp-today-empty-cta__wrap {

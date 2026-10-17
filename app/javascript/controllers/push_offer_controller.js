@@ -134,110 +134,153 @@ export default class extends Controller {
 
     const mode = this.cardMode()
     const quiet = this.compactValue
+    const rowLayout = quiet
 
     const card = document.createElement("div")
-    card.className = quiet ? "lp-push-offer lp-push-offer--quiet" : "lp-push-offer"
+    card.className = rowLayout
+      ? "lp-push-offer lp-push-offer--quiet lp-push-offer--row"
+      : quiet
+        ? "lp-push-offer lp-push-offer--quiet"
+        : "lp-push-offer"
     card.setAttribute("role", "dialog")
     card.setAttribute("aria-live", "polite")
-
-    if (mode === "ios_install") {
-      const headline = document.createElement("p")
-      headline.className = "lp-push-offer__headline"
-      headline.textContent = this.iosHeadlineValue
-      card.appendChild(headline)
-    } else if (mode === "unsupported") {
-      const headline = document.createElement("p")
-      headline.className = "lp-push-offer__headline"
-      headline.textContent = this.unsupportedMessageValue
-      card.appendChild(headline)
-    } else if (quiet) {
-      const headline = document.createElement("p")
-      headline.className = "lp-push-offer__headline"
-      headline.textContent = this.reminderLineValue || this.headlineValue
-      card.appendChild(headline)
-    } else {
-      const goalTitle = (this.goalTitleValue || "").trim()
-      if (goalTitle) {
-        const label = document.createElement("p")
-        label.className = "lp-push-offer__goal-label"
-        label.textContent = this.goalLabelValue || "Your goal"
-        card.appendChild(label)
-
-        const title = document.createElement("p")
-        title.className = "lp-push-offer__goal-title"
-        title.textContent = goalTitle
-        card.appendChild(title)
-
-        const reminder = document.createElement("p")
-        reminder.className = "lp-push-offer__headline is-subline"
-        reminder.textContent = this.reminderLineValue || this.headlineValue
-        card.appendChild(reminder)
-      } else {
-        const headline = document.createElement("p")
-        headline.className = "lp-push-offer__headline"
-        headline.textContent = this.headlineValue
-        card.appendChild(headline)
-      }
-    }
-
-    if (mode === "ios_install" && this.iosBodyValue) {
-      const body = document.createElement("p")
-      body.className = "lp-push-offer__body"
-      body.textContent = this.iosBodyValue
-      card.appendChild(body)
-    }
 
     const error = document.createElement("p")
     error.className = "lp-push-offer__error"
     error.hidden = true
     error.setAttribute("role", "alert")
-    card.appendChild(error)
     this.errorElement = error
 
-    const actions = document.createElement("div")
-    actions.className = "lp-push-offer__actions"
+    if (rowLayout) {
+      const row = document.createElement("div")
+      row.className = "lp-push-offer__row"
 
-    if (mode !== "unsupported") {
-      const yes = document.createElement("button")
-      yes.type = "button"
-      const yesClass = quiet
-        ? "lp-push-offer__yes lp-push-offer__yes--quiet"
-        : "lp-cta lp-push-offer__yes"
-      yes.className = yesClass
+      const copy = document.createElement("p")
+      copy.className = "lp-push-offer__headline"
       if (mode === "ios_install") {
-        yes.textContent = this.iosInstallLabelValue
-        yes.addEventListener("click", (event) => this.install(event))
+        copy.textContent = this.iosHeadlineValue
+      } else if (mode === "unsupported") {
+        copy.textContent = this.unsupportedMessageValue
       } else {
-        yes.textContent = this.yesLabelValue
-        yes.addEventListener("click", (event) => this.enable(event))
+        copy.textContent = this.reminderLineValue || this.headlineValue
       }
-      actions.appendChild(yes)
-      this.yesButton = yes
-    } else if (this.settingsUrlValue) {
-      const settings = document.createElement("a")
-      settings.className = quiet
-        ? "lp-push-offer__yes lp-push-offer__yes--quiet"
-        : "lp-cta lp-push-offer__yes"
-      settings.href = this.settingsUrlValue
-      settings.textContent = this.settingsLinkLabelValue || "Settings"
-      actions.appendChild(settings)
+      row.appendChild(copy)
+
+      const actions = document.createElement("div")
+      actions.className = "lp-push-offer__actions lp-push-offer__actions--row"
+
+      if (mode !== "unsupported") {
+        const yes = document.createElement("button")
+        yes.type = "button"
+        yes.className = "lp-push-offer__yes lp-push-offer__yes--quiet"
+        if (mode === "ios_install") {
+          yes.textContent = this.iosInstallLabelValue
+          yes.addEventListener("click", (event) => this.install(event))
+        } else {
+          yes.textContent = this.yesLabelValue
+          yes.addEventListener("click", (event) => this.enable(event))
+        }
+        actions.appendChild(yes)
+        this.yesButton = yes
+      } else if (this.settingsUrlValue) {
+        const settings = document.createElement("a")
+        settings.className = "lp-push-offer__yes lp-push-offer__yes--quiet"
+        settings.href = this.settingsUrlValue
+        settings.textContent = this.settingsLinkLabelValue || "Settings"
+        actions.appendChild(settings)
+      }
+
+      row.appendChild(actions)
+      card.appendChild(row)
+
+      if (mode === "ios_install" && this.iosBodyValue) {
+        const body = document.createElement("p")
+        body.className = "lp-push-offer__body"
+        body.textContent = this.iosBodyValue
+        card.appendChild(body)
+      }
+    } else {
+      if (mode === "ios_install") {
+        const headline = document.createElement("p")
+        headline.className = "lp-push-offer__headline"
+        headline.textContent = this.iosHeadlineValue
+        card.appendChild(headline)
+      } else if (mode === "unsupported") {
+        const headline = document.createElement("p")
+        headline.className = "lp-push-offer__headline"
+        headline.textContent = this.unsupportedMessageValue
+        card.appendChild(headline)
+      } else {
+        const goalTitle = (this.goalTitleValue || "").trim()
+        if (goalTitle) {
+          const label = document.createElement("p")
+          label.className = "lp-push-offer__goal-label"
+          label.textContent = this.goalLabelValue || "Your goal"
+          card.appendChild(label)
+
+          const title = document.createElement("p")
+          title.className = "lp-push-offer__goal-title"
+          title.textContent = goalTitle
+          card.appendChild(title)
+
+          const reminder = document.createElement("p")
+          reminder.className = "lp-push-offer__headline is-subline"
+          reminder.textContent = this.reminderLineValue || this.headlineValue
+          card.appendChild(reminder)
+        } else {
+          const headline = document.createElement("p")
+          headline.className = "lp-push-offer__headline"
+          headline.textContent = this.headlineValue
+          card.appendChild(headline)
+        }
+      }
+
+      if (mode === "ios_install" && this.iosBodyValue) {
+        const body = document.createElement("p")
+        body.className = "lp-push-offer__body"
+        body.textContent = this.iosBodyValue
+        card.appendChild(body)
+      }
+
+      const actions = document.createElement("div")
+      actions.className = "lp-push-offer__actions"
+
+      if (mode !== "unsupported") {
+        const yes = document.createElement("button")
+        yes.type = "button"
+        yes.className = "lp-cta lp-push-offer__yes"
+        if (mode === "ios_install") {
+          yes.textContent = this.iosInstallLabelValue
+          yes.addEventListener("click", (event) => this.install(event))
+        } else {
+          yes.textContent = this.yesLabelValue
+          yes.addEventListener("click", (event) => this.enable(event))
+        }
+        actions.appendChild(yes)
+        this.yesButton = yes
+      } else if (this.settingsUrlValue) {
+        const settings = document.createElement("a")
+        settings.className = "lp-cta lp-push-offer__yes"
+        settings.href = this.settingsUrlValue
+        settings.textContent = this.settingsLinkLabelValue || "Settings"
+        actions.appendChild(settings)
+      }
+
+      if (this.showNotNowValue) {
+        const notNow = document.createElement("button")
+        notNow.type = "button"
+        notNow.className = "lp-push-offer__not-now"
+        notNow.textContent = this.notNowLabelValue
+        notNow.addEventListener("click", (event) => this.dismiss(event))
+        actions.appendChild(notNow)
+      }
+
+      card.appendChild(actions)
     }
 
-    if (this.showNotNowValue) {
-      const notNow = document.createElement("button")
-      notNow.type = "button"
-      notNow.className = quiet
-        ? "lp-push-offer__not-now lp-push-offer__not-now--quiet"
-        : "lp-push-offer__not-now"
-      notNow.textContent = this.notNowLabelValue
-      notNow.addEventListener("click", (event) => this.dismiss(event))
-      actions.appendChild(notNow)
-    }
-
-    card.appendChild(actions)
+    card.appendChild(error)
     host.appendChild(card)
     this.cardElement = card
-    document.body.classList.add("push-offer-open")
 
     if (this.markShownOnDisplayValue && !this._displayMarked) {
       this._displayMarked = true
@@ -392,7 +435,6 @@ export default class extends Controller {
   }
 
   hideCard() {
-    document.body.classList.remove("push-offer-open")
     this.element.hidden = true
     this.element.innerHTML = ""
     this.cardElement = null
