@@ -319,13 +319,17 @@ class User < ApplicationRecord
 
     return false if push_offer_permission_denied_at.present?
     return false if push_offer_dismiss_count >= PUSH_OFFER_MAX_ASKS
+    return false if push_offer_show_days >= PUSH_OFFER_MAX_ASKS
     return false if push_offer_shown_today?
 
     true
   end
 
   def mark_push_offer_shown!(date: push_offer_local_date)
-    update!(push_offer_last_shown_on: date)
+    new_day = push_offer_last_shown_on.nil? || date > push_offer_last_shown_on
+    attrs = { push_offer_last_shown_on: date }
+    attrs[:push_offer_show_days] = push_offer_show_days + 1 if new_day
+    update!(attrs)
   end
 
   def mark_push_offer_dismissed!

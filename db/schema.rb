@@ -565,6 +565,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_120000) do
     t.datetime "push_offer_dismissed_at"
     t.datetime "push_offer_permission_denied_at"
     t.date "push_offer_last_shown_on"
+    t.integer "push_offer_show_days", default: 0, null: false
     t.integer "strategy_points", default: 0, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"

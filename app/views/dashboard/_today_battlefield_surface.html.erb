@@ -17,7 +17,7 @@
   <%= render "dashboard/push_offer_host",
         show_on_connect: @push_offer_show_on_visit,
         compact: true,
-        show_not_now: true,
+        show_not_now: false,
         mark_shown_on_display: true %>
   <% if habits_enabled? %>
     <div id="today-anytime-host">

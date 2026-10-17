@@ -136,6 +136,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
       push_offer_dismissed_at: 1.day.ago,
       push_offer_permission_denied_at: 1.day.ago,
       push_offer_last_shown_on: Date.current,
+      push_offer_show_days: 2,
       install_offer_dismiss_count: 1,
       install_offer_dismissed_at: 2.days.ago,
       install_offer_installed_at: 3.days.ago,
@@ -156,6 +157,7 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert_nil user.push_offer_dismissed_at
     assert_nil user.push_offer_permission_denied_at
     assert_nil user.push_offer_last_shown_on
+    assert_equal 0, user.push_offer_show_days
     assert user.push_offer_eligible?(win_number: 1)
     assert_equal 0, user.install_offer_dismiss_count
     assert_nil user.install_offer_dismissed_at

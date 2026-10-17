@@ -9,7 +9,8 @@ class UserPushOfferTest < ActiveSupport::TestCase
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
       push_offer_permission_denied_at: nil,
-      push_offer_last_shown_on: nil
+      push_offer_last_shown_on: nil,
+      push_offer_show_days: 0
     )
     @user.push_subscriptions.delete_all
     @user.notification_preference&.destroy
@@ -91,5 +92,30 @@ class UserPushOfferTest < ActiveSupport::TestCase
     @user.mark_push_offer_permission_denied!
     refute @user.push_offer_eligible?(win_number: 1)
     refute @user.push_offer_eligible?(win_number: 5)
+  end
+
+  test "show days increment once per local day not twice same day" do
+    @user.create_notification_preference!(time_zone: "Europe/Berlin")
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 10, 0, 0) do
+      @user.mark_push_offer_shown!
+      assert_equal 1, @user.reload.push_offer_show_days
+      @user.mark_push_offer_shown!
+      assert_equal 1, @user.reload.push_offer_show_days
+    end
+  end
+
+  test "not eligible after three distinct show days" do
+    @user.create_notification_preference!(time_zone: "Europe/Berlin")
+    zone = Time.find_zone!("Europe/Berlin")
+    [ 6, 7, 8 ].each do |day|
+      travel_to zone.local(2026, 8, day, 10, 0, 0) do
+        @user.mark_push_offer_shown!
+      end
+    end
+    @user.reload
+    assert_equal 3, @user.push_offer_show_days
+    travel_to zone.local(2026, 8, 9, 10, 0, 0) do
+      refute @user.push_offer_eligible?
+    end
   end
 end

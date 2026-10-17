@@ -8,7 +8,8 @@ class PushOffersControllerTest < ActionDispatch::IntegrationTest
     @user.update!(
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
-      push_offer_permission_denied_at: nil
+      push_offer_permission_denied_at: nil,
+      push_offer_show_days: 0
     )
     sign_in_as @user
     seed_climb!(@user, today_mission: "Ship auth")
@@ -40,7 +41,19 @@ class PushOffersControllerTest < ActionDispatch::IntegrationTest
     travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
       patch shown_push_offer_path
       assert_response :no_content
-      assert_equal Date.new(2026, 8, 6), @user.reload.push_offer_last_shown_on
+      @user.reload
+      assert_equal Date.new(2026, 8, 6), @user.push_offer_last_shown_on
+      assert_equal 1, @user.push_offer_show_days
+    end
+  end
+
+  test "shown does not double increment show days same day" do
+    travel_to Time.zone.local(2026, 8, 6, 15, 0, 0) do
+      patch shown_push_offer_path
+      assert_response :no_content
+      patch shown_push_offer_path
+      assert_response :no_content
+      assert_equal 1, @user.reload.push_offer_show_days
     end
   end
 

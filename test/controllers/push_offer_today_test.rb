@@ -36,7 +36,8 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
       push_offer_permission_denied_at: nil,
-      push_offer_last_shown_on: nil
+      push_offer_last_shown_on: nil,
+      push_offer_show_days: 0
     )
     @user.push_subscriptions.delete_all
     clear_battle_wins!(@user)
@@ -59,7 +60,15 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
     host = css_select("#today-push-offer-host").first
     assert_equal "false", host["data-push-offer-show-on-connect-value"]
     assert_equal "true", host["data-push-offer-compact-value"]
+    assert_equal "false", host["data-push-offer-show-not-now-value"]
     assert_equal "", host["data-push-offer-goal-title-value"].to_s
+  end
+
+  test "all clear battlefield keeps green add battle pill in markup" do
+    @battle.update!(completed_at: Time.current)
+    get dashboard_path
+    assert_response :success
+    assert_select "a.lp-today-empty-cta__pill", minimum: 1
   end
 
   test "prior battle win without win today enables show on connect" do
