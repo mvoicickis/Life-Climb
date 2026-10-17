@@ -64,14 +64,9 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
     assert_equal "", host["data-push-offer-goal-title-value"].to_s
   end
 
-  test "all clear battlefield keeps green add battle pill in markup" do
-    @user.daily_todos.for_day(Date.current).where(completed_at: nil).find_each do |todo|
-      todo.update!(completed_at: Time.current)
-    end
-
-    get dashboard_path
-    assert_response :success
-    assert_select "a.lp-today-empty-cta__pill", minimum: 1
+  test "today v2 stylesheet does not whiten battle pills for push offer" do
+    css = Rails.root.join("app/assets/stylesheets/today_v2.css").read
+    refute_includes css, "push-offer-open"
   end
 
   test "prior battle win without win today enables show on connect" do
