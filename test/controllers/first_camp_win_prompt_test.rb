@@ -90,7 +90,8 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_equal "false", host["data-push-offer-mark-shown-on-display-value"]
     assert_equal "false", host["data-push-offer-count-show-day-value"]
     assert_equal "true", host["data-push-offer-camp-sheet-value"]
-    assert_select ".lp-trail-camp-finish__reminder-divider"
+    assert_select "#mountain-push-offer-host[hidden]"
+    assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
     assert_select ".lp-push-offer__not-now", count: 0
     assert_equal 0, @user.reload.push_offer_show_days
   end
@@ -103,7 +104,6 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#mountain-push-offer-host", count: 0
-    assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
   end
 
   test "win from Today clears nudge and camp sheet shows won row" do

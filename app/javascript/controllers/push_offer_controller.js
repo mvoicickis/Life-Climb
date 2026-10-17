@@ -141,6 +141,13 @@ export default class extends Controller {
     host.hidden = false
     host.innerHTML = ""
 
+    if (this.campSheetValue) {
+      const divider = document.createElement("div")
+      divider.className = "lp-trail-camp-finish__reminder-divider"
+      divider.setAttribute("aria-hidden", "true")
+      host.appendChild(divider)
+    }
+
     const mode = this.cardMode()
     const quiet = this.compactValue
     const rowLayout = quiet
