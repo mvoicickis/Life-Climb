@@ -39,7 +39,7 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
       push_offer_last_shown_on: nil
     )
     @user.push_subscriptions.delete_all
-    Goals::Current.goal_for(user: @user, journey: @journey).update!(title: "Become a web developer")
+    clear_battle_wins!(@user)
   end
 
   def push_offer_host_attrs
@@ -47,13 +47,29 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
     assert_select "#today-push-offer-host"
   end
 
-  test "eligible user with no win today does not show offer on connect" do
+  def clear_battle_wins!(user)
+    user.strategy_goals.battles.update_all(completed_at: nil, repeat: nil)
+    user.daily_todos.where.not(completed_at: nil).update_all(completed_at: nil)
+  end
+
+  test "eligible user who never won does not show offer on connect" do
     get dashboard_path
     assert_response :success
     push_offer_host_attrs
     host = css_select("#today-push-offer-host").first
     assert_equal "false", host["data-push-offer-show-on-connect-value"]
-    assert_includes host["data-push-offer-goal-title-value"], "Become a web developer"
+    assert_equal "true", host["data-push-offer-compact-value"]
+    assert_equal "", host["data-push-offer-goal-title-value"].to_s
+  end
+
+  test "prior battle win without win today enables show on connect" do
+    @battle.update!(completed_at: 2.days.ago)
+
+    get dashboard_path
+    assert_response :success
+    host = css_select("#today-push-offer-host").first
+    assert_equal "true", host["data-push-offer-show-on-connect-value"]
+    assert_equal "true", host["data-push-offer-mark-shown-on-display-value"]
   end
 
   test "camp sheet win today enables show on connect on next today visit" do
@@ -65,7 +81,6 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
     assert_response :success
     host = css_select("#today-push-offer-host").first
     assert_equal "true", host["data-push-offer-show-on-connect-value"]
-    assert_includes host["data-push-offer-goal-title-value"], "Become a web developer"
   end
 
   test "dismissed offer does not show on connect again same day" do
@@ -82,6 +97,7 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
   end
 
   test "mountain page has no push offer host" do
+    @battle.update!(completed_at: Time.current)
     get life_journey_path(@journey)
     assert_response :success
     assert_select "#mountain-push-offer-host", count: 0

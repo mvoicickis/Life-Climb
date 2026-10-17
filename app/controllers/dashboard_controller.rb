@@ -67,7 +67,6 @@ class DashboardController < ApplicationController
     )
     @day_percent = day_pct.percent
     @overshoot_bonus = current_user.day_overshoot_bonuses.find_by(on_date: Date.current)
-    @push_offer_goal_title = Notifications::MorningNudgeCopy.focused_goal_name_for(user: current_user)
     @push_offer_show_on_visit = push_offer_show_on_today_visit?
     render "dashboard/show_v2"
   end

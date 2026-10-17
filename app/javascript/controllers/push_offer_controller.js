@@ -3,9 +3,12 @@ import { canPrompt, ensureCapture, isStandalonePwa, promptInstall } from "pwa_in
 import { detectedBrowserTimeZone } from "browser_timezone"
 import {
   canEnablePushHere,
+  completePushSubscription,
   enablePushSubscription,
   getPushSubscriptionState,
-  isIos
+  isIos,
+  prefetchPushResources,
+  requestNotificationPermission
 } from "push_subscription"
 
 // Post-win push reminder offer — after celebration when eligible (no subscription, under ask cap).
@@ -22,6 +25,9 @@ export default class extends Controller {
     goalTitle: String,
     reminderLine: String,
     showOnConnect: Boolean,
+    compact: Boolean,
+    showNotNow: { type: Boolean, default: true },
+    markShownOnDisplay: Boolean,
     yesLabel: String,
     notNowLabel: String,
     iosHeadline: String,
@@ -35,6 +41,9 @@ export default class extends Controller {
   connect() {
     ensureCapture()
     this._enabling = false
+    this._displayMarked = false
+    this._prefetchRegistration = null
+    this._prefetchPublicKey = null
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
     this.syncPushEndpointFields()
@@ -86,15 +95,26 @@ export default class extends Controller {
     }
   }
 
+  async prefetchForOffer() {
+    if (!canEnablePushHere()) return
+    if (this._prefetchRegistration && this._prefetchPublicKey) return
+
+    try {
+      const { registration, publicKey } = await prefetchPushResources(this.vapidUrlValue)
+      this._prefetchRegistration = registration
+      this._prefetchPublicKey = publicKey
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   async prepareOffer() {
     const state = await getPushSubscriptionState()
 
     if (state.subscribed) return
-    if (state.permission === "denied") {
-      await this.markDenied()
-      return
-    }
+    if (state.permission === "denied") return
 
+    await this.prefetchForOffer()
     this.renderCard()
   }
 
@@ -113,9 +133,10 @@ export default class extends Controller {
     host.innerHTML = ""
 
     const mode = this.cardMode()
+    const quiet = this.compactValue
 
     const card = document.createElement("div")
-    card.className = "lp-push-offer"
+    card.className = quiet ? "lp-push-offer lp-push-offer--quiet" : "lp-push-offer"
     card.setAttribute("role", "dialog")
     card.setAttribute("aria-live", "polite")
 
@@ -128,6 +149,11 @@ export default class extends Controller {
       const headline = document.createElement("p")
       headline.className = "lp-push-offer__headline"
       headline.textContent = this.unsupportedMessageValue
+      card.appendChild(headline)
+    } else if (quiet) {
+      const headline = document.createElement("p")
+      headline.className = "lp-push-offer__headline"
+      headline.textContent = this.reminderLineValue || this.headlineValue
       card.appendChild(headline)
     } else {
       const goalTitle = (this.goalTitleValue || "").trim()
@@ -174,7 +200,10 @@ export default class extends Controller {
     if (mode !== "unsupported") {
       const yes = document.createElement("button")
       yes.type = "button"
-      yes.className = "lp-cta lp-push-offer__yes"
+      const yesClass = quiet
+        ? "lp-push-offer__yes lp-push-offer__yes--quiet"
+        : "lp-cta lp-push-offer__yes"
+      yes.className = yesClass
       if (mode === "ios_install") {
         yes.textContent = this.iosInstallLabelValue
         yes.addEventListener("click", (event) => this.install(event))
@@ -186,23 +215,34 @@ export default class extends Controller {
       this.yesButton = yes
     } else if (this.settingsUrlValue) {
       const settings = document.createElement("a")
-      settings.className = "lp-cta lp-push-offer__yes"
+      settings.className = quiet
+        ? "lp-push-offer__yes lp-push-offer__yes--quiet"
+        : "lp-cta lp-push-offer__yes"
       settings.href = this.settingsUrlValue
       settings.textContent = this.settingsLinkLabelValue || "Settings"
       actions.appendChild(settings)
     }
 
-    const notNow = document.createElement("button")
-    notNow.type = "button"
-    notNow.className = "lp-push-offer__not-now"
-    notNow.textContent = this.notNowLabelValue
-    notNow.addEventListener("click", (event) => this.dismiss(event))
-    actions.appendChild(notNow)
+    if (this.showNotNowValue) {
+      const notNow = document.createElement("button")
+      notNow.type = "button"
+      notNow.className = quiet
+        ? "lp-push-offer__not-now lp-push-offer__not-now--quiet"
+        : "lp-push-offer__not-now"
+      notNow.textContent = this.notNowLabelValue
+      notNow.addEventListener("click", (event) => this.dismiss(event))
+      actions.appendChild(notNow)
+    }
 
     card.appendChild(actions)
     host.appendChild(card)
     this.cardElement = card
     document.body.classList.add("push-offer-open")
+
+    if (this.markShownOnDisplayValue && !this._displayMarked) {
+      this._displayMarked = true
+      this.markShown()
+    }
   }
 
   showNotSavedError() {
@@ -224,17 +264,34 @@ export default class extends Controller {
     this.yesButton.setAttribute("aria-busy", busy ? "true" : "false")
   }
 
-  markShown() {
-    if (!this.shownUrlValue) return Promise.resolve()
-
-    return fetch(this.shownUrlValue, {
+  async fetchPatchOk(url) {
+    const response = await fetch(url, {
       method: "PATCH",
       credentials: "same-origin",
       headers: {
         Accept: "application/json",
         "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
       }
-    }).catch(() => {
+    })
+    if (!response.ok) throw new Error("Request failed")
+  }
+
+  async fetchDeleteOk(url) {
+    const response = await fetch(url, {
+      method: "DELETE",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
+      }
+    })
+    if (!response.ok) throw new Error("Request failed")
+  }
+
+  markShown() {
+    if (!this.shownUrlValue) return Promise.resolve()
+
+    return this.fetchPatchOk(this.shownUrlValue).catch(() => {
       /* Network failure — offer may reappear. */
     })
   }
@@ -248,21 +305,34 @@ export default class extends Controller {
     this.clearNotSavedError()
 
     try {
-      const result = await enablePushSubscription({
-        vapidUrl: this.vapidUrlValue,
+      const permission = await requestNotificationPermission()
+
+      if (permission !== "granted") {
+        if (permission === "denied") {
+          try {
+            await this.fetchPatchOk(this.deniedUrlValue)
+          } catch (error) {
+            console.error(error)
+          }
+          this.hideCard()
+        }
+        return
+      }
+
+      let registration = this._prefetchRegistration
+      let publicKey = this._prefetchPublicKey
+      if (!registration || !publicKey) {
+        const loaded = await prefetchPushResources(this.vapidUrlValue)
+        registration = loaded.registration
+        publicKey = loaded.publicKey
+      }
+
+      await completePushSubscription({
+        registration,
+        publicKey,
         subscribeUrl: this.subscribeUrlValue,
         timeZone: detectedBrowserTimeZone()
       })
-
-      if (!result.ok) {
-        if (result.permission === "denied") {
-          await this.markDenied()
-          this.hideCard()
-          return
-        }
-        this.showNotSavedError()
-        return
-      }
 
       await this.syncPushEndpointFields()
       await this.markShown()
@@ -300,17 +370,12 @@ export default class extends Controller {
 
     try {
       if (this.dismissUrlValue) {
-        await fetch(this.dismissUrlValue, {
-          method: "DELETE",
-          credentials: "same-origin",
-          headers: {
-            Accept: "application/json",
-            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
-          }
-        })
+        await this.fetchDeleteOk(this.dismissUrlValue)
       }
     } catch (error) {
       console.error(error)
+      this.showNotSavedError()
+      return
     }
 
     this.hideCard()
@@ -320,14 +385,7 @@ export default class extends Controller {
     if (!this.deniedUrlValue) return
 
     try {
-      await fetch(this.deniedUrlValue, {
-        method: "PATCH",
-        credentials: "same-origin",
-        headers: {
-          Accept: "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']")?.content || ""
-        }
-      })
+      await this.fetchPatchOk(this.deniedUrlValue)
     } catch (error) {
       console.error(error)
     }

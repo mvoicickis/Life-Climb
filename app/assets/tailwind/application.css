@@ -19322,6 +19322,42 @@ button.lp-basic-sheet__edit-row {
   cursor: wait;
 }
 
+.lp-push-offer--quiet {
+  background: color-mix(in srgb, var(--lp-surface) 85%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--lp-border, #e2e8f0);
+  box-shadow: var(--lp-shadow-card, 0 8px 24px rgba(15, 23, 42, 0.08));
+}
+
+.lp-push-offer--quiet .lp-push-offer__headline {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lp-push-offer__yes--quiet {
+  min-height: var(--lp-tap, 2.75rem);
+  width: 100%;
+  border: 1px solid var(--lp-border, #e2e8f0);
+  border-radius: var(--lp-radius-field, 0.75rem);
+  background: var(--lp-surface, #ffffff);
+  color: var(--lp-ink, #0f172a);
+  font-family: var(--lp-font-ui, inherit);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.lp-push-offer__not-now--quiet {
+  min-height: var(--lp-tap, 2.75rem);
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted, #475569);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 /* === elite product pass === */
 .lp-icon {
   display: inline-flex;
