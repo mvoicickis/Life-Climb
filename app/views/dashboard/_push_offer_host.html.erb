@@ -2,6 +2,9 @@
 <% host_class = local_assigns.fetch(:host_class, "lp-push-offer-host") %>
 <% goal_title = local_assigns.fetch(:goal_title, nil).to_s %>
 <% show_on_connect = local_assigns.fetch(:show_on_connect, false) %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% show_not_now = local_assigns.fetch(:show_not_now, true) %>
+<% mark_shown_on_display = local_assigns.fetch(:mark_shown_on_display, false) %>
 <div id="<%= host_id %>"
      class="<%= host_class %>"
      hidden
@@ -17,6 +20,9 @@
      data-push-offer-goal-title-value="<%= goal_title %>"
      data-push-offer-reminder-line-value="<%= t('dash.push_offer.reminder_line') %>"
      data-push-offer-show-on-connect-value="<%= show_on_connect ? 'true' : 'false' %>"
+     data-push-offer-compact-value="<%= compact ? 'true' : 'false' %>"
+     data-push-offer-show-not-now-value="<%= show_not_now ? 'true' : 'false' %>"
+     data-push-offer-mark-shown-on-display-value="<%= mark_shown_on_display ? 'true' : 'false' %>"
      data-push-offer-yes-label-value="<%= t('dash.push_offer.yes_label') %>"
      data-push-offer-not-now-label-value="<%= t('dash.push_offer.not_now') %>"
      data-push-offer-ios-headline-value="<%= t('dash.push_offer.ios_headline') %>"

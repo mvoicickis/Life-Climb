@@ -65,20 +65,28 @@ export async function getPushSubscriptionState() {
   }
 }
 
-export async function enablePushSubscription({ vapidUrl, subscribeUrl, timeZone = "" }) {
+export function requestNotificationPermission() {
+  return Notification.requestPermission()
+}
+
+export async function prefetchPushResources(vapidUrl) {
   if (!canEnablePushHere()) {
     throw new Error("unsupported")
-  }
-
-  const permission = await Notification.requestPermission()
-  if (permission !== "granted") {
-    return { ok: false, permission }
   }
 
   const registration = await navigator.serviceWorker.ready
   const { publicKey } = await fetchJson(vapidUrl)
   if (!publicKey) throw new Error("Missing VAPID public key")
 
+  return { registration, publicKey }
+}
+
+export async function completePushSubscription({
+  registration,
+  publicKey,
+  subscribeUrl,
+  timeZone = ""
+}) {
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(publicKey)
@@ -98,6 +106,37 @@ export async function enablePushSubscription({ vapidUrl, subscribeUrl, timeZone 
   await fetchJson(subscribeUrl, {
     method: "POST",
     body: JSON.stringify(body)
+  })
+
+  return { ok: true, permission: "granted" }
+}
+
+export async function enablePushSubscription({ vapidUrl, subscribeUrl, timeZone = "", prefetched = null }) {
+  if (!canEnablePushHere()) {
+    throw new Error("unsupported")
+  }
+
+  const permission = await Notification.requestPermission()
+  if (permission !== "granted") {
+    return { ok: false, permission }
+  }
+
+  let registration
+  let publicKey
+  if (prefetched?.registration && prefetched?.publicKey) {
+    registration = prefetched.registration
+    publicKey = prefetched.publicKey
+  } else {
+    const loaded = await prefetchPushResources(vapidUrl)
+    registration = loaded.registration
+    publicKey = loaded.publicKey
+  }
+
+  await completePushSubscription({
+    registration,
+    publicKey,
+    subscribeUrl,
+    timeZone
   })
 
   return { ok: true, permission: "granted" }
