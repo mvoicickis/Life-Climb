@@ -65,7 +65,10 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
   end
 
   test "all clear battlefield keeps green add battle pill in markup" do
-    @battle.update!(completed_at: Time.current)
+    @user.daily_todos.for_day(Date.current).where(completed_at: nil).find_each do |todo|
+      todo.update!(completed_at: Time.current)
+    end
+
     get dashboard_path
     assert_response :success
     assert_select "a.lp-today-empty-cta__pill", minimum: 1
