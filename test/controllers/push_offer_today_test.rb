@@ -63,13 +63,17 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
   end
 
   test "prior battle win without win today enables show on connect" do
-    @battle.update!(completed_at: 2.days.ago)
+    zone = Battles::WinsOnLocalDate.time_zone_for(@user)
+    travel_to Time.find_zone!(zone).local(2026, 8, 6, 12, 0, 0) do
+      @user.update!(created_at: Time.find_zone!(zone).local(2020, 1, 1, 0, 0, 0))
+      @battle.update!(completed_at: Time.find_zone!(zone).local(2026, 8, 5, 9, 0, 0))
 
-    get dashboard_path
-    assert_response :success
-    host = css_select("#today-push-offer-host").first
-    assert_equal "true", host["data-push-offer-show-on-connect-value"]
-    assert_equal "true", host["data-push-offer-mark-shown-on-display-value"]
+      get dashboard_path
+      assert_response :success
+      host = css_select("#today-push-offer-host").first
+      assert_equal "true", host["data-push-offer-show-on-connect-value"]
+      assert_equal "true", host["data-push-offer-mark-shown-on-display-value"]
+    end
   end
 
   test "camp sheet win today enables show on connect on next today visit" do
