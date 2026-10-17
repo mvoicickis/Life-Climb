@@ -13,7 +13,7 @@ module Battles
 
     test "ever? is false with no wins and counts_by_date empty" do
       travel_to Time.find_zone!(@zone).local(2026, 8, 6, 12, 0, 0) do
-        @user.strategy_goals.battles.update_all(completed_at: nil, repeat: nil)
+        @user.strategy_goals.battles.update_all(completed_at: nil)
 
         counts = WinsOnLocalDate.counts_by_date(
           user: @user,
@@ -28,6 +28,7 @@ module Battles
 
     test "one-shot win: counts_by_date positive iff ever?" do
       travel_to Time.find_zone!(@zone).local(2026, 8, 6, 12, 0, 0) do
+        @user.update!(created_at: Time.find_zone!(@zone).local(2020, 1, 1, 0, 0, 0))
         seed_climb!(@user, today_mission: "One shot ever")
         battle = @user.strategy_goals.find_by!(horizon: "day", title: "One shot ever")
         battle.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 5, 9, 0, 0))

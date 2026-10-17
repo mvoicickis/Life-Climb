@@ -18,6 +18,16 @@ class DashboardPushOfferQueryTest < ActionDispatch::IntegrationTest
     )
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
+    @goal = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, horizon: "goal", title: "Goal", position: 0
+    )
+    @plan = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @goal, horizon: "plan", title: "Plan", position: 0
+    )
+    @project = @user.strategy_goals.create!(
+      life_area: @area, life_journey: @journey, parent: @plan, horizon: "project", title: "Project", position: 0
+    )
+    @leaf = practice_leaf_for!(@project)
     @user.update!(
       push_offer_dismiss_count: 0,
       push_offer_dismissed_at: nil,
@@ -50,36 +60,18 @@ class DashboardPushOfferQueryTest < ActionDispatch::IntegrationTest
 
   def seed_battle_wins(count:)
     @user.strategy_goals.battles.update_all(completed_at: nil)
-    goal = @user.strategy_goals.find_by!(horizon: "goal")
-    plan = @user.strategy_goals.find_by!(horizon: "plan", parent_id: goal.id)
-    project = @user.strategy_goals.find_by!(horizon: "project", parent_id: plan.id)
-    leaf = practice_leaf_for!(project)
     count.times do |i|
-      battle = if i.zero?
-        @user.strategy_goals.battles.first ||
-          @user.strategy_goals.create!(
-            life_area: @area,
-            life_journey: @journey,
-            parent: leaf,
-            horizon: "day",
-            title: "Win #{i}",
-            scheduled_on: Date.current - 1.day,
-            position: 0
-          )
-      else
-        @user.strategy_goals.create!(
-          life_area: @area,
-          life_journey: @journey,
-          parent: leaf,
-          horizon: "day",
-          title: "Win #{i}",
-          scheduled_on: Date.current - (i + 1).days,
-          position: i
-        )
-      end
-      battle.update!(
+      battle = @user.strategy_goals.create!(
+        life_area: @area,
+        life_journey: @journey,
+        parent: @leaf,
+        horizon: "day",
+        title: "Win #{i}",
+        scheduled_on: Date.current - (i + 1).days,
+        position: i,
         completed_at: Time.find_zone!(@zone).local(2026, 1, 10 + i, 9, 0, 0)
       )
+      battle
     end
   end
 

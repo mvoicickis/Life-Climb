@@ -48,7 +48,7 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
   end
 
   def clear_battle_wins!(user)
-    user.strategy_goals.battles.update_all(completed_at: nil, repeat: nil)
+    user.strategy_goals.battles.update_all(completed_at: nil)
     user.daily_todos.where.not(completed_at: nil).update_all(completed_at: nil)
   end
 
