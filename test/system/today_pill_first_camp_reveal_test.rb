@@ -53,9 +53,10 @@ class TodayPillFirstCampRevealTest < ApplicationSystemTestCase
 
     assert_selector "#mountain-trail .lp-trail-sheet.is-open", wait: 10
     assert_selector ".lp-trail.is-first-camp-reveal", wait: 5
+    assert @journey.reload.first_camp_reveal_pending?
 
     setup_root = "#first-camp-setup-#{@camp.id}"
-    assert_selector "#{setup_root} .lp-first-camp-setup", visible: :all, wait: 10
+    assert_selector "#{setup_root}.lp-first-camp-setup", visible: :all, wait: 10
     assert_selector "#{setup_root} input[type=submit][value=?]",
                     I18n.t("strategy.rpg.trail.first_camp_reveal.submit"),
                     visible: :all,

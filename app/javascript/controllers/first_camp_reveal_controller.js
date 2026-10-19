@@ -198,7 +198,7 @@ export default class extends Controller {
 
   firstCampSetupPresent() {
     return Boolean(
-      this.element.querySelector(`#first-camp-setup-${this.campIdValue} .lp-first-camp-setup`)
+      this.element.querySelector(`#first-camp-setup-${this.campIdValue}.lp-first-camp-setup`)
     )
   }
 
