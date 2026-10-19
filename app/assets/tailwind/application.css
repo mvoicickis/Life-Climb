@@ -27532,6 +27532,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   flex: 1;
   min-width: 0;
   border-radius: var(--lp-radius-field);
+  font-size: 1rem;
 }
 
 .lp-ob-steps__add-btn {
@@ -27736,6 +27737,12 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 .lp-ob .lp-cta:disabled {
   opacity: 0.38;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.lp-ob .lp-cta[aria-busy="true"] {
+  opacity: 0.38;
+  cursor: wait;
   box-shadow: none;
 }
 

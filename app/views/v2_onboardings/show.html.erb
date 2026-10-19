@@ -78,7 +78,7 @@
                  enterkeyhint="go"
                  placeholder="<%= t("v2_onboarding.camps_add_placeholder") %>"
                  data-onboarding-camps-target="addInput"
-                 data-action="keydown->onboarding-camps#addFromEnter">
+                 data-action="input->onboarding-camps#setSubmitEnabled keydown->onboarding-camps#addFromEnter">
           <button type="button"
                   class="lp-ob-steps__add-btn"
                   aria-label="<%= t("v2_onboarding.camps_add_button") %>"

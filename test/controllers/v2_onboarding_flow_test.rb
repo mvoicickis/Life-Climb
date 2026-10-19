@@ -153,6 +153,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to v2_onboarding_path(step: "camps")
   end
 
+  # Typed-but-not-added camp submit is covered by V2OnboardingCampsTypedSubmitTest (system).
   test "camps step requires at least one camp" do
     post registration_url, params: registration_params("need-camps@example.com")
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
