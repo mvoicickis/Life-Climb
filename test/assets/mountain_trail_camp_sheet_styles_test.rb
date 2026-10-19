@@ -102,7 +102,7 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
 
   test "camp sheet open hides plant fab only" do
     assert_match(
-      /body:has\(\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open\) \.lp-dash-nav__fab[\s\S]*?visibility:\s*hidden/m,
+      /body:has\(\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open\) \.lp-dash-nav__fab\[aria-label\][\s\S]*?visibility:\s*hidden/m,
       @css,
       "expected plant FAB hide while camp sheet is open"
     )
