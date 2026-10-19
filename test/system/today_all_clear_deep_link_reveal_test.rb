@@ -23,8 +23,7 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
     )
     @journey = @result.journey
     @camp = @result.projects.first
-    @battle = @camp.children.for_kind("day").first
-    Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
+    @battle = add_todays_battle!(user: @user, project: @camp, journey: @journey)
     dismiss_onboarding_missions!(@user)
     @user.update_columns(
       character: "fox",

@@ -64,7 +64,12 @@ class OnboardingClimbSpineTest < ActiveSupport::TestCase
       password: "password12345",
       password_confirmation: "password12345"
     )
-    spine_only = Onboarding::ClimbSpine.call(user: spine_user, goal_title: goal_title, camp_titles: camp_titles)
+    spine_only = Onboarding::ClimbSpine.call(
+      user: spine_user,
+      goal_title: goal_title,
+      camp_titles: camp_titles,
+      seed_battle: false
+    )
     spine_snapshot = spine_structure_snapshot(spine_only)
 
     bootstrap_user = User.create!(
@@ -118,8 +123,8 @@ class OnboardingClimbSpineTest < ActiveSupport::TestCase
       project_positions: result.projects.map(&:position),
       project_stages: result.projects.map(&:stage),
       project_trail_y: result.projects.map { |p| p.trail_y.to_f.round(4) },
-      battle_title: result.first_battle.title,
-      battle_scheduled_on: result.first_battle.scheduled_on,
+      battle_title: result.first_battle&.title,
+      battle_scheduled_on: result.first_battle&.scheduled_on,
       commitment_key: result.journey.commitment_key,
       bootstrap_flag: result.journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG),
       reveal_flag: result.journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG),

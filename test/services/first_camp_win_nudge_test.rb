@@ -18,7 +18,7 @@ class FirstCampWinNudgeTest < ActiveSupport::TestCase
     @journey = @result.journey
     @project = @result.projects.first
     @journey.set_first_camp_win_nudge!
-    @battle = @project.children.for_kind("day").sole
+    @battle = add_todays_battle!(user: @user, project: @project, journey: @journey)
   end
 
   test "clear_after_battle_win clears nudge for pinned camp battle" do

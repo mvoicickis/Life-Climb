@@ -3,6 +3,8 @@
 require "application_system_test_case"
 
 class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
+  include ClimbTestHelper
+
   setup do
     page.driver.browser.manage.window.resize_to(360, 800)
     @email = "typed-camp-#{SecureRandom.hex(4)}@example.com"
@@ -82,6 +84,8 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
   private
 
   def finish_camp!(camp)
+    user = camp.user
+    add_todays_battle!(user: user, project: camp, journey: camp.life_journey) if camp.children.for_kind("day").none?
     camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
     camp.complete!
   end

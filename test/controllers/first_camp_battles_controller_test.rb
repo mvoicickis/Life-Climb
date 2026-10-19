@@ -18,13 +18,12 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
     )
     @journey = @result.journey
     @project = @result.projects.first
-    @seed = @result.first_battle
   end
 
-  test "create replaces seed battle with custom battle" do
+  test "create saves first custom battle" do
     assert @journey.first_camp_reveal_pending?
 
-    assert_equal 1, @project.reload.children.for_kind("day").count
+    assert_equal 0, @project.reload.children.for_kind("day").count
 
     post life_journey_first_camp_battles_path(@journey),
            params: { title: "Write the README", repeat: "none" },
@@ -39,7 +38,6 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
     battle = @project.children.for_kind("day").sole
     assert_equal "Write the README", battle.title
     assert_equal "none", battle.repeat
-    refute_equal @seed.id, battle.id
     assert @user.daily_todos.for_day(Date.current).exists?(strategy_goal_id: battle.id)
   end
 
@@ -69,6 +67,7 @@ class FirstCampBattlesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create when reveal is not pending returns visit stream and creates nothing" do
+    add_todays_battle!(user: @user, project: @project, journey: @journey)
     @journey.clear_first_camp_reveal!
 
     assert_equal 1, @project.reload.children.for_kind("day").count

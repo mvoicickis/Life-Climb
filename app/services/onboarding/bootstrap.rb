@@ -43,7 +43,8 @@ module Onboarding
             result = ClimbSpine.call(
               user: @user,
               goal_title: @goal_title,
-              camp_titles: @camp_titles
+              camp_titles: @camp_titles,
+              seed_battle: false
             )
 
             @user.update!(onboarding_completed_at: Time.current, planning_version: 2)

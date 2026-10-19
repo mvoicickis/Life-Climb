@@ -18,8 +18,9 @@ class GoalsCurrentMultiJourneyTest < ActionDispatch::IntegrationTest
     @goal_a = @bootstrap.goal
     @area = @journey_a.life_area
 
+    add_todays_battle!(user: @user, project: @bootstrap.projects.first, journey: @journey_a)
     finish_first_camp!(@bootstrap)
-    win_battle_yesterday!(@bootstrap.first_battle) if @bootstrap.first_battle
+    win_battle_yesterday!(@bootstrap.projects.first.children.for_kind("day").first)
 
     @stale_battle = @bootstrap.projects.first.children.create!(
       user: @user,
@@ -114,6 +115,7 @@ class GoalsCurrentMultiJourneyTest < ActionDispatch::IntegrationTest
 
   def finish_first_camp!(bootstrap)
     camp = bootstrap.projects.first
+    camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
     camp.complete!
     Strategy::SyncCompletion.call(project: camp)
   end

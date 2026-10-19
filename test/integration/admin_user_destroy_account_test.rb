@@ -26,7 +26,7 @@ class AdminUserDestroyAccountTest < ActionDispatch::IntegrationTest
     area = journey.life_area
     primary_goal = result.goal
     camp = result.projects.first
-    battle = result.first_battle
+    battle = add_todays_battle!(user: @target, project: camp, journey: journey)
 
     Strategy::HoldingProject.ensure!(user: @target, journey: journey)
 
