@@ -42,11 +42,14 @@ class TodayPillFirstCampRevealTest < ApplicationSystemTestCase
     assert_today_v2_shell!
 
     visit dashboard_path
-    assert_selector "#today-battlefield-end-day-host a.lp-today-empty-cta__pill",
-                    text: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
+    pill_label = I18n.t("dash.battlefield.empty_cta.add_todays_battle")
+    assert_selector "#today-battlefield-body a.lp-today-empty-cta__pill",
+                    text: pill_label,
                     wait: 8
 
-    click_on I18n.t("dash.battlefield.empty_cta.add_todays_battle")
+    pill = find("#today-battlefield-body a.lp-today-empty-cta__pill", text: pill_label)
+    pill.scroll_to(:center)
+    pill.click
 
     assert_selector "#mountain-trail .lp-trail-sheet.is-open", wait: 10
     assert_selector ".lp-trail.is-first-camp-reveal", wait: 5
