@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { parseTrailDeepLink } from "lib/trail_deep_link"
+import { parseTrailDeepLink, stripTrailDeepLinkParams } from "lib/trail_deep_link"
 import {
   clearPendingDeepLinkOpen,
   consumeDeepLinkOpenOnSheet,
@@ -31,6 +31,12 @@ export default class extends Controller {
 
     const deepLink = parseTrailDeepLink()
     if (deepLink.campId) {
+      if (this.firstCampSetupPresent()) {
+        stripTrailDeepLinkParams()
+        this.openCampSheet(true)
+        return
+      }
+
       void this.enterFromDeepLink(deepLink)
       return
     }
@@ -190,6 +196,12 @@ export default class extends Controller {
     return this.element.querySelector(`#trail-camp-${this.campIdValue}`)
   }
 
+  firstCampSetupPresent() {
+    return Boolean(
+      this.element.querySelector(`#first-camp-setup-${this.campIdValue} .lp-first-camp-setup`)
+    )
+  }
+
   bindFirstCampTap() {
     const camp = this.firstCampEl()
     if (!camp) return
@@ -222,6 +234,7 @@ export default class extends Controller {
     }
     const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
     sheet?.openCampById(this.campIdValue)
+    stripTrailDeepLinkParams()
     if (focusInput) {
       requestAnimationFrame(() => {
         const input = this.element.querySelector("[data-first-camp-battle-target='titleField']")
