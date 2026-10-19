@@ -328,6 +328,7 @@ export default class extends Controller {
     let sheetVh = null
 
     if (viewport) {
+      // Height gap only — never visualViewport.offsetTop for keyboard detection.
       const heightGap = window.innerHeight - viewport.height
       keyboardOpen = heightGap > 120
       if (keyboardOpen) {
@@ -336,6 +337,8 @@ export default class extends Controller {
         sheetVh = `${viewport.height}px`
       }
     }
+
+    document.body.classList.toggle("is-trail-camp-sheet-keyboard-open", keyboardOpen)
 
     if (
       this._viewportKeyboardOpen === keyboardOpen &&
@@ -359,6 +362,7 @@ export default class extends Controller {
   }
 
   resetViewportInsets() {
+    document.body.classList.remove("is-trail-camp-sheet-keyboard-open")
     if (!this.hasSheetTarget) return
 
     this._viewportKeyboardOpen = false
