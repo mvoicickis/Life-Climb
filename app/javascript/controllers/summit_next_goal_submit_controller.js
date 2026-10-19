@@ -51,7 +51,10 @@ export default class extends Controller {
       this.showError()
     } finally {
       this.inFlight = false
-      if (this.hasSubmitTarget) this.submitTarget.disabled = false
+      if (this.hasSubmitTarget) {
+        this.submitTarget.disabled = false
+        this.submitTarget.removeAttribute("aria-busy")
+      }
     }
   }
 

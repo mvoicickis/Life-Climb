@@ -46,7 +46,8 @@ export default class extends Controller {
 
     this._finishing = false
     if (this.hasSubmitTarget) {
-      this.submitTarget.disabled = this.items.length === 0
+      this.submitTarget.removeAttribute("aria-busy")
+      this.setSubmitEnabled()
     }
   }
 
@@ -139,15 +140,61 @@ export default class extends Controller {
     return true
   }
 
+  pendingAddText() {
+    if (!this.hasAddInputTarget) return ""
+    return this.addInputTarget.value.trim()
+  }
+
+  hasCampTitle(title) {
+    const key = title.trim().toLowerCase()
+    if (!key) return false
+    return this.items.some((item) => item.text.toLowerCase() === key)
+  }
+
+  flushPendingAddInput() {
+    const trimmed = this.pendingAddText()
+    if (!trimmed) return
+
+    if (this.hasCampTitle(trimmed)) {
+      this.addInputTarget.value = ""
+      return
+    }
+
+    this.addItem(trimmed)
+    this.addInputTarget.value = ""
+  }
+
+  canSubmit() {
+    return this.items.length > 0 || this.pendingAddText().length > 0
+  }
+
+  isSummitFlow() {
+    return (this.element.dataset.controller || "").includes("summit-next-goal-submit")
+  }
+
+  setSubmitEnabled() {
+    if (!this.hasSubmitTarget) return
+    if (this._finishing) {
+      this.submitTarget.disabled = true
+      return
+    }
+    this.submitTarget.disabled = !this.canSubmit()
+  }
+
+  setSubmitting() {
+    this._finishing = true
+    if (!this.hasSubmitTarget) return
+    this.submitTarget.disabled = true
+    this.submitTarget.setAttribute("aria-busy", "true")
+  }
+
   syncUi() {
     this.pointerReorder?.cancelActiveDrag()
 
     if (this.hasGhostsTarget) {
       this.ghostsTarget.classList.toggle("is-hidden", this.items.length > 0)
     }
-    if (this.hasSubmitTarget) {
-      this.submitTarget.disabled = this.items.length === 0
-    }
+    this.setSubmitEnabled()
     this.renderHiddenFields()
     this.renderList()
     this.maybeShowReorderHint()
@@ -269,14 +316,25 @@ export default class extends Controller {
   beforeSubmit(event) {
     if (this._finishing) {
       event.preventDefault()
+      event.stopImmediatePropagation()
       return
     }
+
+    this.flushPendingAddInput()
+
     if (this.items.length === 0) {
       event.preventDefault()
+      event.stopImmediatePropagation()
       return
     }
-    this._finishing = true
-    if (this.hasSubmitTarget) this.submitTarget.disabled = true
+
     this.renderHiddenFields()
+
+    if (this.isSummitFlow()) {
+      if (this.hasSubmitTarget) this.submitTarget.setAttribute("aria-busy", "true")
+      return
+    }
+
+    this.setSubmitting()
   }
 }
