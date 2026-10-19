@@ -721,6 +721,9 @@ export default class extends Controller {
   }
 
   teardown() {
+    const closingId = this._openCampId
+    const reveal = this.application.getControllerForElementAndIdentifier(this.element, "first-camp-reveal")
+
     document.removeEventListener("keydown", this._onKey)
     this.unbindViewportGuards()
     this.resetViewportInsets()
@@ -728,7 +731,14 @@ export default class extends Controller {
     this.hideFinishUndoBar({ force: true })
     if (!this.hasSheetTarget) return
 
-    if (this.revealPendingValue && this.hasDismissUrlValue) {
+    const firstCampId = this.element.dataset.firstCampRevealCampIdValue
+    const closingFirstCamp =
+      closingId &&
+      closingId !== "base" &&
+      firstCampId &&
+      String(closingId) === String(firstCampId)
+
+    if (this.revealPendingValue && this.hasDismissUrlValue && closingFirstCamp) {
       this.dismissFirstCampReveal()
     }
 
@@ -740,6 +750,10 @@ export default class extends Controller {
     this.sheetTarget.hidden = true
     this._openCampId = null
     this._pushedHistory = false
+
+    if (closingId === "base" && this.revealPendingValue) {
+      reveal?.resumeAfterBaseCampClose()
+    }
   }
 
   async dismissFirstCampReveal() {
@@ -767,6 +781,7 @@ export default class extends Controller {
     const params = new URLSearchParams(window.location.search)
 
     if (params.get("open_base") === "1") {
+      // Pending reveal: first-camp-reveal#connect handles open_base after this controller connects.
       if (this.revealPendingValue) return
 
       this.flagComposerOnConnectFor(this.element.querySelector("#trail-base-sheet"))
