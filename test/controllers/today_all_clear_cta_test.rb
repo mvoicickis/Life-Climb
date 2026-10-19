@@ -24,6 +24,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
                   text: I18n.t("dash.battlefield.add_another_battle")
     assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
+    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
   end
 
@@ -128,6 +129,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     query = Rack::Utils.parse_query(URI.parse(href).query)
     assert_equal path_camp.id.to_s, query["open_camp"]
     assert_equal "1", query["open_composer"]
+    assert_nil query["first_camp_setup"]
   end
 
   test "summit handoff shows summit pill and grey add another camp link" do

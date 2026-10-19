@@ -4,13 +4,14 @@ module Today
   # Photo Today — single green pill when the battlefield list is empty.
   # No plan → Today shows the first-climb coach, not the battlefield.
   class EmptyBattleCta
-    def self.for(journey:, handoff:)
-      new(journey:, handoff:).call
+    def self.for(journey:, handoff:, first_camp_setup: false)
+      new(journey:, handoff:, first_camp_setup:).call
     end
 
-    def initialize(journey:, handoff:)
+    def initialize(journey:, handoff:, first_camp_setup: false)
       @journey = journey
       @handoff = handoff
+      @first_camp_setup = first_camp_setup
     end
 
     def call
@@ -51,13 +52,16 @@ module Today
         camp_id =
           project_id.presence ||
           Strategy::PathProject.resolve(user: @journey.user, journey: @journey)&.id
+        mountain_params = {
+          open_camp: camp_id,
+          open_composer: 1
+        }
+        if @first_camp_setup && @journey.first_camp_reveal_pending?
+          mountain_params[:first_camp_setup] = 1
+        end
         {
           label: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
-          href: helpers.life_journey_path(
-            @journey,
-            open_camp: camp_id,
-            open_composer: 1
-          )
+          href: helpers.life_journey_path(@journey, **mountain_params)
         }
       else
         {

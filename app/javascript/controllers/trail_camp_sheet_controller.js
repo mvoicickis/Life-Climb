@@ -784,6 +784,7 @@ export default class extends Controller {
       return
     }
 
+    // Pending reveal + open_camp/open_composer: first-camp-reveal#connect (runs after this controller).
     if (this.revealPendingValue) return
 
     if (openComposer) {

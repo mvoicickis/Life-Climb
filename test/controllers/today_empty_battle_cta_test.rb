@@ -76,6 +76,43 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
       href_includes: "open_camp=#{project.id}"
     )
     assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
+    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
+  end
+
+  test "empty battlefield with pending first camp reveal includes first_camp_setup on pill href" do
+    user = User.create!(
+      name: "Empty reveal pill",
+      email_address: "empty-reveal-pill-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      planning_version: 2,
+      onboarding_completed_at: Time.current
+    )
+    sign_in_as user
+
+    bootstrap = Onboarding::Bootstrap.call(
+      user: user,
+      goal_title: "Bal climb",
+      camp_titles: [ "Bal" ]
+    )
+    journey = bootstrap.journey
+    camp = bootstrap.projects.first
+    dismiss_onboarding_missions!(user)
+
+    area = journey.life_area
+    user.strategy_goals.where(life_area_id: area.id, horizon: "day", scheduled_on: Date.current).destroy_all
+    user.daily_todos.for_day(Date.current).destroy_all
+
+    assert journey.first_camp_reveal_pending?
+
+    get dashboard_path
+    assert_response :success
+
+    href = assert_select("#today-battlefield-body a.lp-today-empty-cta__pill").first["href"]
+    query = Rack::Utils.parse_query(URI.parse(href).query)
+    assert_equal camp.id.to_s, query["open_camp"]
+    assert_equal "1", query["open_composer"]
+    assert_equal "1", query["first_camp_setup"]
   end
 
   test "empty battlefield shows add todays battle when camp has battles not on today" do
@@ -94,5 +131,6 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
       label: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
       href_includes: "open_camp=#{project.id}"
     )
+    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
   end
 end
