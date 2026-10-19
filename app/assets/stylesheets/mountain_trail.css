@@ -2274,8 +2274,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) {
   overflow: hidden;
 }
 
-/* Tab bar stays; plant FAB only — keeps fab-slot so tabs do not jump.
-   Attribute selector keeps .lp-dash-nav__fab { as the production style block. */
+/* Tab bar stays; hide plant FAB only (fab-slot stays so tabs do not jump). */
 body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav__fab[aria-label] {
   visibility: hidden;
   pointer-events: none;
