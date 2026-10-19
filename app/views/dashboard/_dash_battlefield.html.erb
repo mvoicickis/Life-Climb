@@ -7,7 +7,6 @@
   include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
   mission = local_assigns[:mission] || @mission
   all_clear = health.all_clear?
-  empty_cta = @empty_battle_cta
 %>
 
 <section class="lp-today-v2-field" id="today-battlefield-field" aria-label="<%= t('dash.battlefield.title') %>">
@@ -19,7 +18,12 @@
 
     <div id="today-battlefield-body">
       <% if health.empty? %>
-        <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_cta %>
+        <% empty_battlefield_cta = Today::EmptyBattleCta.for(
+             journey: journey,
+             handoff: @strategy_handoff,
+             first_camp_setup: journey&.first_camp_reveal_pending?
+           ) %>
+        <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_battlefield_cta %>
       <% else %>
         <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
           <% if include_mission && mission %>

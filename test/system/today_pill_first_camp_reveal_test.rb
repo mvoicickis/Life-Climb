@@ -57,9 +57,8 @@ class TodayPillFirstCampRevealTest < ApplicationSystemTestCase
 
     setup_root = "#first-camp-setup-#{@camp.id}"
     assert_selector "#{setup_root}.lp-first-camp-setup", visible: :all, wait: 10
-    assert_selector "#{setup_root} input[type=submit][value=?]",
-                    I18n.t("strategy.rpg.trail.first_camp_reveal.submit"),
-                    visible: :all,
-                    wait: 5
+    within("#{setup_root}.lp-first-camp-setup", visible: :all) do
+      assert_selector ".lp-first-camp-setup__submit[disabled]", visible: :all, wait: 5
+    end
   end
 end

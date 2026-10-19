@@ -31,7 +31,7 @@ export default class extends Controller {
 
     const deepLink = parseTrailDeepLink()
     if (deepLink.campId) {
-      if (this.firstCampSetupPresent()) {
+      if (deepLink.firstCampSetup && this.firstCampSetupPresent()) {
         stripTrailDeepLinkParams()
         this.openCampSheet(true)
         return
