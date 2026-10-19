@@ -30,6 +30,12 @@ export default class extends Controller {
     this._deepLinkDismissStarted = false
 
     const deepLink = parseTrailDeepLink()
+    if (deepLink.openBase) {
+      stripTrailDeepLinkParams()
+      this.openBaseSheet()
+      return
+    }
+
     if (deepLink.campId) {
       if (deepLink.firstCampSetup && this.firstCampSetupPresent()) {
         stripTrailDeepLinkParams()
@@ -241,6 +247,50 @@ export default class extends Controller {
         input?.focus({ preventScroll: true })
       })
     }
+  }
+
+  openBaseSheet() {
+    this.hideSkipHint()
+    this.firstCampEl()?.classList.remove("is-pulsing")
+    delete this.element.dataset.trailSuppressOpen
+    if (this.hasOverlayTarget) {
+      this.overlayTarget.hidden = true
+      this.overlayTarget.setAttribute("aria-hidden", "true")
+    }
+    const sheet = this.application.getControllerForElementAndIdentifier(this.element, "trail-camp-sheet")
+    sheet?.flagComposerOnConnectFor(this.element.querySelector("#trail-base-sheet"))
+    sheet?.openBase()
+    requestAnimationFrame(() => {
+      sheet?.activeTrailBattlesController()?.openComposer()
+    })
+  }
+
+  resumeAfterBaseCampClose() {
+    if (this._finished) return
+
+    if (this.hasOverlayTarget) {
+      this.overlayTarget.hidden = false
+      this.overlayTarget.removeAttribute("hidden")
+      this.overlayTarget.setAttribute("aria-hidden", "false")
+    }
+
+    this.element.dataset.trailSuppressOpen = "1"
+
+    if (this.element.classList.contains("is-awaiting-tap")) {
+      this.unbindFirstCampTap()
+      this.bindFirstCampTap()
+      this.showSkipHint()
+      return
+    }
+
+    this.unbindFirstCampTap()
+    this.bindFirstCampTap()
+    if (this.prefersReducedMotion()) {
+      this.recoverToTapReady()
+      return
+    }
+
+    void this.playReveal()
   }
 
   showSummit() {
