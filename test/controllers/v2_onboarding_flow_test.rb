@@ -44,11 +44,12 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal 0, journey.commitment_habit_count
     assert_equal 1, journey.commitment_battle_count
     assert_nil journey.setup_flag("route")
-    assert Strategy::HierarchyReady.call(user: user, journey: journey)
-    assert user.daily_todos.where(scheduled_on: Date.current).exists?
+    refute Strategy::HierarchyReady.call(user: user, journey: journey)
+    refute user.daily_todos.where(scheduled_on: Date.current).exists?
 
     gap = Today::Commitment.setup_gap(user: user, journey: journey)
     refute_equal :habits, gap&.kind
+    assert_equal :battles, gap&.kind
 
     plan = user.strategy_goals.for_kind("plan").first
     assert_equal I18n.t("v2_onboarding.climb_plan_title"), plan.title
@@ -75,8 +76,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_match(/Take the first small step/i, response.body)
+    assert_no_match(/Take the first small step/i, response.body)
     assert_no_match(/Plan Your Route/i, response.body)
+    pill_label = I18n.t("dash.battlefield.empty_cta.add_todays_battle")
+    assert_select "#today-battlefield-body a.lp-today-empty-cta__pill", text: pill_label, count: 1
+    href = assert_select("#today-battlefield-body a.lp-today-empty-cta__pill").first["href"]
+    query = Rack::Utils.parse_query(URI.parse(href).query)
+    assert_equal "1", query["first_camp_setup"]
     assert_equal 0, user.habits.count
   end
 

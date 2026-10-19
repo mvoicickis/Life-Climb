@@ -18,7 +18,6 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     )
     @journey = @result.journey
     @project = @result.projects.first
-    @seed = @result.first_battle
   end
 
   def save_first_battle!(title: "Call my mum")
@@ -36,8 +35,6 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     refute @journey.first_camp_reveal_pending?
     refute_match "lp-first-camp-win-prompt", response.body
     refute_match "Do it later", response.body
-    refute_equal @seed.id, @project.reload.children.for_kind("day").sole.id
-
     assert_select "#trail-battles-#{@project.id}"
     assert_select ".lp-trail-battles__kebab-btn"
     assert_select "#trail-battle-#{battle.id} .lp-trail-battles__first-camp-hint",

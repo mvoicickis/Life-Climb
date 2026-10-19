@@ -54,6 +54,8 @@ module RequireOnboarding
       quick_battles
       today_commitments
       battle_completions
+      completions
+      daily_logs
       daily_todos
       mission_completions
       life_journeys
@@ -87,6 +89,7 @@ module RequireOnboarding
       pricing
       life_points
       progress
+      push_offers
       focus
       pages
       finished_products

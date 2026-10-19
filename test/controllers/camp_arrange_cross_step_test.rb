@@ -26,7 +26,9 @@ class CampArrangeCrossStepTest < ActionDispatch::IntegrationTest
   end
 
   def win_first_bootstrap_battle!(user, camp)
-    battle = camp.children.for_kind("day").first
+    journey = user.primary_focused_journey
+    battle = camp.children.for_kind("day").first ||
+             add_todays_battle!(user: user, project: camp, journey: journey)
     Strategy::CascadeToDaily.call(user: user, life_area: camp.life_area)
     todo = user.daily_todos.find_by!(strategy_goal_id: battle.id, scheduled_on: Date.current)
     post complete_daily_todo_path(todo)

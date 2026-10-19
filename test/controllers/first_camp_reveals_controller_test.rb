@@ -18,7 +18,12 @@ class FirstCampRevealsControllerTest < ActionDispatch::IntegrationTest
     )
     @journey = @result.journey
     @project = @result.projects.first
-    @seed = @result.first_battle
+    @seed = add_todays_battle!(
+      user: @user,
+      project: @project,
+      journey: @journey,
+      title: I18n.t("strategy.rpg.trail.battle_suggestions").first
+    )
   end
 
   test "update with open_composer renders composer form visible in stream" do

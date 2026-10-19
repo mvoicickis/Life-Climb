@@ -50,7 +50,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     plan = goal.children.for_kind("plan").not_holding.first
     camp_a = bootstrap.projects.first
     camp_a.update_columns(position: 3, stage: 0)
-    battle_a = camp_a.children.for_kind("day").first
+    battle_a = add_todays_battle!(user: user, project: camp_a, journey: journey)
     Strategy::CascadeToDaily.call(user: user, life_area: area)
     user.daily_todos.for_day(Date.current).where(strategy_goal_id: battle_a.id).find_each do |todo|
       todo.update!(completed_at: Time.current)
@@ -110,7 +110,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     )
     journey = bootstrap.journey
     camp = bootstrap.projects.first
-    battle = camp.children.for_kind("day").first
+    battle = add_todays_battle!(user: user, project: camp, journey: journey)
     battle.update!(completed_at: Time.current, scheduled_on: Date.current)
     Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
     todo = user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)
@@ -150,7 +150,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     )
     journey = bootstrap.journey
     camp = bootstrap.projects.first
-    battle = camp.children.for_kind("day").first
+    battle = add_todays_battle!(user: user, project: camp, journey: journey)
     battle.update!(completed_at: Time.current, scheduled_on: Date.current)
     Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
     todo = user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: battle.id)

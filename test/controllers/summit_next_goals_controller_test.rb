@@ -69,6 +69,7 @@ class SummitNextGoalsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def finish_camp!(camp)
+    add_todays_battle!(user: @user, project: camp, journey: camp.life_journey) if camp.children.for_kind("day").none?
     camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
     camp.complete!
   end

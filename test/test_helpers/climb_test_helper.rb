@@ -47,6 +47,20 @@ module ClimbTestHelper
     Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
     journey
   end
+
+  def add_todays_battle!(user:, project:, journey:, title: "Read 10 pages")
+    battle = user.strategy_goals.create!(
+      life_area: journey.life_area,
+      life_journey: journey,
+      parent: project,
+      horizon: "day",
+      title: title,
+      scheduled_on: Date.current,
+      position: 0
+    )
+    Strategy::CascadeToDaily.call(user: user, life_area: journey.life_area)
+    battle
+  end
 end
 
 ActiveSupport.on_load(:action_dispatch_integration_test) do

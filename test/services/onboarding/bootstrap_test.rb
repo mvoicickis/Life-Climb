@@ -45,9 +45,8 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 0, result.projects[0].stage
     assert_equal 1, result.projects[1].stage
 
-    assert_equal 1, result.projects[0].children.for_kind("day").count
-    assert_equal Date.current, result.first_battle.scheduled_on
-    assert_equal I18n.t("strategy.rpg.trail.battle_suggestions").first, result.first_battle.title
+    assert_equal 0, result.projects[0].children.for_kind("day").count
+    assert_nil result.first_battle
     assert_equal 0, result.projects[1].children.for_kind("day").count
 
     trail = Strategy::Trail.for(plan: result.plan.reload)
@@ -62,8 +61,8 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_in_delta last_slot[:trail_y], result.projects[1].trail_y, 0.0001
     assert_operator result.projects[0].trail_y.to_f, :>, result.projects[1].trail_y.to_f
 
-    assert Strategy::HierarchyReady.call(user: @user, journey: journey)
-    assert @user.daily_todos.where(scheduled_on: Date.current).exists?
+    refute Strategy::HierarchyReady.call(user: @user, journey: journey)
+    refute @user.daily_todos.where(scheduled_on: Date.current).exists?
     assert_equal 0, @user.habits.count
   end
 

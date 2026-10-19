@@ -38,6 +38,7 @@ module Stats
         )
         old_journey = bootstrap.journey
         camp = bootstrap.projects.first
+        add_todays_battle!(user: @user, project: camp, journey: old_journey)
         camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) }
         camp.complete!
 
