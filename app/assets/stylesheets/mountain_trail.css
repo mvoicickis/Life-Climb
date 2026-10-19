@@ -1499,6 +1499,7 @@
 
 .lp-rpg.is-v4-phone {
   --lp-rpg-gutter: 0;
+  --lp-dash-nav-chrome: calc(0.8rem + var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   background: var(--lp-paper);
 }
 
@@ -2253,7 +2254,10 @@
 .lp-trail.is-v4 .lp-trail-sheet.is-open,
 .lp-trail.is-v4 .lp-trail-sheet:not([hidden]) {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--lp-dash-nav-chrome);
   z-index: 80;
   width: 100%;
   max-width: 100%;
@@ -2270,19 +2274,30 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) {
   overflow: hidden;
 }
 
-body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
+/* Tab bar stays; hide plant FAB only (fab-slot stays so tabs do not jump). */
+body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav__fab[aria-label] {
   visibility: hidden;
   pointer-events: none;
 }
 
+body.is-trail-camp-sheet-keyboard-open .lp-dash-nav {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
+  bottom: 0;
+}
+
 .lp-trail.is-v4 .lp-trail-sheet {
-  --lp-sheet-vh: 100dvh;
+  --lp-dash-nav-chrome: calc(0.8rem + var(--lp-tap) + env(safe-area-inset-bottom, 0px));
+  --lp-sheet-vh: calc(100dvh - var(--lp-dash-nav-chrome));
   --lp-keyboard-inset: 0px;
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel {
   --lp-frost: color-mix(in srgb, #ffffff 78%, transparent);
-  --won-strip-height: calc(var(--lp-tap) + env(safe-area-inset-bottom, 0px));
+  --won-strip-height: var(--lp-tap);
   position: relative;
   background: transparent;
   color: var(--lp-ink);
@@ -2296,7 +2311,7 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   max-height: var(--lp-sheet-vh, 100dvh);
   height: var(--lp-sheet-vh, 100dvh);
   margin: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: 0;
   border-radius: 0;
   box-sizing: border-box;
   overflow: hidden;
@@ -2611,7 +2626,8 @@ body:has(.lp-trail.is-v4 .lp-trail-sheet.is-open) .lp-dash-nav {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  scroll-padding-bottom: 7.5rem;
+  /* Won strip + margin only — sheet box already ends at nav top. */
+  scroll-padding-bottom: calc(var(--won-strip-height) + 0.75rem);
 }
 
 .lp-trail.is-v4 .lp-trail-sheet__panel.has-won-today .lp-trail-sheet__body {
@@ -6063,7 +6079,7 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   justify-content: center;
   gap: 0.35rem;
   min-height: var(--lp-tap);
-  padding: 0 1.2rem env(safe-area-inset-bottom, 0px);
+  padding: 0 1.2rem;
   background: var(--lp-paper-soft);
   border: 0;
   border-top: 1px solid var(--lp-border);
@@ -6382,10 +6398,10 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 
 .lp-trail.is-v4.is-first-camp-reveal .lp-trail-sheet__body {
   flex: 1 1 auto;
-  padding: 1rem 1.2rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  padding: 1rem 1.2rem 1rem;
   border-radius: 0;
   margin-top: 0;
-  scroll-padding-bottom: 7.5rem;
+  scroll-padding-bottom: calc(var(--won-strip-height) + 0.75rem);
 }
 
 .lp-first-camp-reveal {
@@ -6398,7 +6414,8 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 .lp-first-camp-reveal__skip {
   position: absolute;
   left: 50%;
-  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  /* Trail overlay, not panel — clear fixed nav chrome. */
+  bottom: calc(1rem + var(--lp-dash-nav-chrome));
   transform: translateX(-50%);
   margin: 0;
   padding: 0.35rem 0.75rem;

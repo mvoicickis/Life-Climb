@@ -80,8 +80,10 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
   end
 
   test "camp sheet panel uses shared viewport variables and full height" do
+    assert_includes @css, "--lp-dash-nav-chrome"
     assert_includes @css, "--lp-sheet-vh"
     assert_includes @css, "--lp-keyboard-inset"
+    assert_match(/--lp-sheet-vh:\s*calc\(100dvh\s*-\s*var\(--lp-dash-nav-chrome\)\)/, @css)
     assert_includes @css, "max-height: var(--lp-sheet-vh, 100dvh)"
     assert_includes @css, "height: var(--lp-sheet-vh, 100dvh)"
     refute_match(
@@ -90,9 +92,34 @@ class MountainTrailCampSheetStylesTest < ActiveSupport::TestCase
     )
   end
 
+  test "camp sheet open does not hide dash nav" do
+    refute_match(
+      /body:has\(\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open\) \.lp-dash-nav\s*\{[^}]*visibility:\s*hidden/m,
+      @css,
+      "open camp sheet must not hide the whole bottom nav"
+    )
+  end
+
+  test "camp sheet open hides plant fab only" do
+    assert_match(
+      /body:has\(\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open\) \.lp-dash-nav__fab\[aria-label\][\s\S]*?visibility:\s*hidden/m,
+      @css,
+      "expected plant FAB hide while camp sheet is open"
+    )
+  end
+
+  test "keyboard open hides dash nav via body class" do
+    assert_match(
+      /body\.is-trail-camp-sheet-keyboard-open \.lp-dash-nav\s*\{[^}]*visibility:\s*hidden/m,
+      @css,
+      "expected keyboard body class to hide bottom nav"
+    )
+  end
+
   test "open camp sheet masks map with paper-soft and stage pins photo" do
     open_sheet = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet\.is-open[\s\S]*?\}/m]
     assert open_sheet, "expected v4 open camp sheet block"
+    assert_match(/bottom:\s*var\(--lp-dash-nav-chrome\)/, open_sheet)
     assert_match(/background:\s*var\(--lp-paper-soft\)/, open_sheet)
 
     stage = @css[/\.lp-trail\.is-v4 \.lp-trail-sheet__stage\s*\{[^}]+\}/m]
