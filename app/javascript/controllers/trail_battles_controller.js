@@ -15,7 +15,7 @@ export default class extends Controller {
     "unitField", "unitMirrorField", "unitWrap", "renameDialog", "renameField",
     "descriptionDialog", "descriptionField", "sessionToast", "addRow",
     "pickDaysDialog", "weekdaysRow", "pickDaysError",
-    "composer", "composerTrigger", "composerForm", "composerAddBtn",
+    "composer", "composerTrigger", "composerForm", "composerAddBtn", "dailyHint",
     "winToast", "idleFinishForm", "idleFinishButton", "idleFinishNotice"
   ]
 
@@ -36,6 +36,7 @@ export default class extends Controller {
     this._pickDays = new Set()
     this._pickDaysUrl = null
     this.styleDailyRow()
+    this.syncDailyHint()
     if (this.hasQuantityToggleTarget && this.quantityToggleTarget.checked) {
       this.syncQuantityFields()
     }
@@ -65,6 +66,7 @@ export default class extends Controller {
     }
 
     this.syncQuantityFields()
+    this.syncDailyHint()
 
     if (!this.titleFieldTarget.value.trim()) {
       event.preventDefault()
@@ -76,6 +78,16 @@ export default class extends Controller {
     if (!this.hasRepeatFieldTarget || !this.hasDailyToggleTarget) return
     this.repeatFieldTarget.value = this.dailyToggleTarget.checked ? "daily" : "none"
     this.styleDailyRow()
+    this.syncDailyHint()
+  }
+
+  syncDailyHint() {
+    if (!this.hasDailyHintTarget || !this.hasDailyToggleTarget) return
+
+    const hint = this.dailyHintTarget
+    const on = this.dailyToggleTarget.checked
+    const text = on ? hint.dataset.onText : hint.dataset.offText
+    if (text) hint.textContent = text
   }
 
   toggleQuantity() {

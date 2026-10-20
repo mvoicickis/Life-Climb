@@ -71,8 +71,14 @@
              class="lp-trail-battles__daily-check sr-only"
              data-trail-battles-target="dailyToggle"
              data-action="change->trail-battles#toggleDaily">
+      <span class="lp-trail-battles__body">
+        <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.every_day") %></span>
+        <p class="lp-trail-battles__daily-hint"
+           data-trail-battles-target="dailyHint"
+           data-on-text="<%= t("strategy.rpg.trail.every_day_hint_on") %>"
+           data-off-text="<%= t("strategy.rpg.trail.every_day_hint_off") %>"><%= t("strategy.rpg.trail.every_day_hint_off") %></p>
+      </span>
       <span class="lp-trail-battles__switch" aria-hidden="true"></span>
-      <span class="lp-trail-battles__daily-label"><%= t("strategy.rpg.trail.every_day") %></span>
     </label>
   <% end %>
 <% end %>

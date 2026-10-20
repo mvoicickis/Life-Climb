@@ -6060,6 +6060,77 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
   box-shadow: none;
 }
 
+/* Camp-sheet add form: Settings-style daily row (Base Camp is-qty unchanged). */
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lp-space-2);
+  width: 100%;
+  min-width: 0;
+  min-height: var(--lp-tap);
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lp-space-1);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__daily-label {
+  color: var(--lp-ink);
+  font-weight: 700;
+  font-size: var(--lp-type-ui-md);
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__daily-hint {
+  margin: 0;
+  font-size: var(--lp-type-ui-sm);
+  line-height: 1.35;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__switch {
+  flex-shrink: 0;
+  width: 3.1875rem;
+  height: 1.9375rem;
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-muted) 42%, var(--lp-paper-soft));
+  border: 1px solid color-mix(in srgb, var(--lp-muted) 28%, var(--lp-border));
+  box-sizing: border-box;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__switch::after {
+  top: 2px;
+  left: 2px;
+  width: 1.6875rem;
+  height: 1.6875rem;
+  background: var(--lp-surface);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--lp-ink) 16%, transparent);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__daily-check:checked ~ .lp-trail-battles__switch {
+  background: var(--lp-ink);
+  border-color: var(--lp-ink);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty) .lp-trail-battles__daily-check:checked ~ .lp-trail-battles__switch::after {
+  transform: translateX(1.25rem);
+}
+
+.lp-trail.is-v4 .lp-trail-battles__composer-form .lp-trail-battles__daily-switch:not(.is-qty):focus-within {
+  outline: 2px solid color-mix(in srgb, var(--lp-ink) 45%, transparent);
+  outline-offset: 2px;
+  border-radius: var(--lp-radius-field);
+}
+
 .lp-trail.is-v4 .lp-trail-sheet__done-slot {
   position: absolute;
   inset: 0;
@@ -6520,6 +6591,18 @@ html:has(.lp-rpg.is-focus-phase.is-first-climb.is-v4-phone) body,
 }
 
 .lp-trail.is-v4 .lp-trail-battles__first-camp-hint {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--lp-muted);
+  text-align: left;
+  overflow-wrap: anywhere;
+  width: 100%;
+}
+
+.lp-trail.is-v4 .lp-trail-battles__daily-hint {
   margin: 0.35rem 0 0;
   padding: 0;
   font-size: var(--lp-type-ui-md);
