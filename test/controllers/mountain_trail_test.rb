@@ -384,7 +384,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select "#trail-base-sheet[data-trail-battles-need-days-value=?]",
                   I18n.t("strategy.rpg.trail.first_camp_reveal.need_days")
     assert_select "#trail-battles-#{@project.id} .lp-trail-battles__daily-switch"
-    hint_sel = "#trail-battles-#{@project.id} [data-trail-battles-target='dailyHint']"
+    hint_sel = "#trail-battles-#{@project.id} .lp-trail-battles__daily-hint"
     assert_select hint_sel, text: I18n.t("strategy.rpg.trail.every_day_hint_off")
     assert_select "#{hint_sel}[data-on-text=?]", I18n.t("strategy.rpg.trail.every_day_hint_on")
     assert_select "#{hint_sel}[data-off-text=?]", I18n.t("strategy.rpg.trail.every_day_hint_off")
