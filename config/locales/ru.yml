@@ -286,6 +286,9 @@ ru:
         won_battles_strip: "Won"  # TODO: translate
         edit_goal_name: "Edit name" # TODO: translate
         daily: "Do this every day" # TODO: translate
+        every_day: "Every day" # TODO: translate
+        every_day_hint_off: "Win it once and it's done." # TODO: translate
+        every_day_hint_on: "Shows up on Today every day." # TODO: translate
         seed_battle_hint: "Win this one to get moving." # TODO: translate
         battle_suggestions: # TODO: translate
           - "Take the first small step"

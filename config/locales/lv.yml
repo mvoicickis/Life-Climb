@@ -436,6 +436,8 @@ lv:
           delete_aria: "Delete %{title}" # TODO: translate for lv/de/es/ru.
           stage_complete: "Stage complete"
         every_day: "Katru dienu"
+        every_day_hint_off: "Win it once and it's done." # TODO: translate
+        every_day_hint_on: "Shows up on Today every day." # TODO: translate
         just_once: "Tikai vienreiz"
         log_a_number: "Pierakstīt skaitli"
         just_tick: "Tikai ķeksītis"

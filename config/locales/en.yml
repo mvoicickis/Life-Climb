@@ -1076,6 +1076,8 @@ en:
           - "Move $20 to savings"
           - "Update one resume bullet"
         every_day: "Every day"
+        every_day_hint_off: "Win it once and it's done."
+        every_day_hint_on: "Shows up on Today every day."
         just_once: "Just once"
         more_camps:
           one: "%{count} more camp"
