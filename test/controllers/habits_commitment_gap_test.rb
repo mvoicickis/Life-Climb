@@ -50,7 +50,7 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
     assert_equal 1, @user.habits.active.on_home.count
     assert_match(%r{data-habits-count[^>]*>1/3}, response.body)
     assert_match(/data-commitment-gap-open-value="habit"/, response.body)
-    assert_no_match(/Unfiled Trackers/, response.body)
+    assert_no_match(/#{Regexp.escape(I18n.t("habits.unfiled_title"))}/, response.body)
 
     post habits_path,
          params: {
@@ -100,7 +100,7 @@ class HabitsCommitmentGapTest < ActionDispatch::IntegrationTest
     assert habit.quantity_checkin?
     assert_equal "steps", habit.unit
     assert_nil habit.area_id
-    assert_match(/Unfiled Trackers/, response.body)
+    assert_match(/#{Regexp.escape(I18n.t("habits.unfiled_title"))}/, response.body)
     assert_match(/today-battle-surface/, response.body)
     assert_match(/lp-dash-anytime/, response.body)
     assert_match(/Daily steps/, response.body)
