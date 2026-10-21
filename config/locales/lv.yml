@@ -345,14 +345,14 @@ lv:
           empty: "Pievieno kaut ko, ko dari katru dienu."
           more: "+%{count}"
           add_placeholder: "What will you do every day?" # TODO: translate
-          dock_add_pill: "Add a Basic" # TODO: translate
-          add_habit: "Add Basic" # TODO: translate
+          dock_add_pill: "Add a habit" # TODO: translate
+          add_habit: "Add habit" # TODO: translate
           count_toggle: "Count how many" # TODO: translate
           starter_title: "Add the first thing you do every day." # TODO: translate
           starter_example_1: "20 push-ups" # TODO: translate
           starter_example_2: "Read 5 pages" # TODO: translate
           starter_example_3: "One German lesson" # TODO: translate
-          form_error_aria: "Could not add Basic" # TODO: translate
+          form_error_aria: "Could not add habit" # TODO: translate
           daily_hint: "Parādīsies atkal rīt."
           amount_hint: "Jautā skaitu, piemēram, lappuses. Atstāj tukšu, ja pietiek ar ķeksīti."
 
@@ -999,7 +999,7 @@ lv:
       title: "Ikdienas soļi"
       hint: "Pieraksti tik reižu, cik vēlies"
       empty: "Šodien vēl nav ikdienas soļu — pievieno Bāzes nometnē."
-      add_basic: "+ Add a Basic" # TODO: translate
+      add_basic: "+ Add a habit" # TODO: translate
       add: "Pievienot"
       add_placeholder: "Pievienot"
       add_aria: "Pievienot %{unit}"
@@ -1015,7 +1015,7 @@ lv:
       amount_of_target: "%{amount} no %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "Šo pierakstu neizdevās saglabāt"
-      edit_basic: "Edit Basic"  # TODO: translate
+      edit_basic: "Edit habit"  # TODO: translate
       done: "Done"  # TODO: translate
       amount_today_unit: "%{unit} today"  # TODO: translate
       step_add: "Add %{n}"  # TODO: translate
@@ -1344,8 +1344,8 @@ lv:
       name_label: "Name" # TODO: translate
       one_tap_adds: "One tap adds" # TODO: translate
       unit_aria: "Unit" # TODO: translate
-      delete_basic: "Delete Basic" # TODO: translate
-      delete_confirm: "Delete this Basic. All its days go away too." # TODO: translate
+      delete_basic: "Delete habit" # TODO: translate
+      delete_confirm: "Delete this habit. All its days go away too." # TODO: translate
       keep: "Keep" # TODO: translate
       delete: "Delete" # TODO: translate
     share: "Dalīties"
@@ -1435,7 +1435,7 @@ lv:
   account_delete:
     open: "Delete account"
     title: "Delete your account"
-    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    body: "This removes your goal, camps, battles and habits for good. It can't be undone." # TODO: translate
     subscription_line: "Your subscription will be cancelled."
     password_label: "Password"
     confirm: "Delete"
@@ -1759,7 +1759,7 @@ lv:
     camp_examples: "Piemēri: Iegūt sertifikātu · Iemācīties 1. nodaļu · Nokārtot prakses eksāmenu"
     battles_title: "Kā vienu lietu tu vari šodien pabeigt?"
     battles_lead: "Mēs tās saucam par Kaujām. Viena uzvara šodien tuvina tevi %{goal}."
-    basic_lead: "Mēs tās saucam par Pamatiem. Tie tuvina tevi %{goal}."
+    basic_lead: "Mēs tās saucam par Pamatiem. Tie tuvina tevi %{goal}." # TODO: translate (Basic → habit)
     battle_placeholder: "Uzraksti savu atbildi"
     battle_examples_label: "Tikai iedvesmai — augstāk raksti savu"
     battle_examples: "Mācīties 1. nodaļu 20 minūtes, nosūtīt vienu darba pieteikumu, iztukšot iesūtni, sagatavot rītdienas pusdienas"

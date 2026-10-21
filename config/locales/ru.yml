@@ -338,14 +338,14 @@ ru:
             amount: "%{amount} %{unit}"  # TODO: translate
             undo: "Undo"  # TODO: translate
           add_placeholder: "What will you do every day?"  # TODO: translate
-          dock_add_pill: "Add a Basic"  # TODO: translate
-          add_habit: "Add Basic"  # TODO: translate
+          dock_add_pill: "Add a habit"  # TODO: translate
+          add_habit: "Add habit"  # TODO: translate
           count_toggle: "Count how many"  # TODO: translate
           starter_title: "Add the first thing you do every day."  # TODO: translate
           starter_example_1: "20 push-ups"  # TODO: translate
           starter_example_2: "Read 5 pages"  # TODO: translate
           starter_example_3: "One German lesson"  # TODO: translate
-          form_error_aria: "Could not add Basic"  # TODO: translate
+          form_error_aria: "Could not add habit"  # TODO: translate
     help:
       cta_onboarding: "Помоги уточнить эту гору"
     first_climb:
@@ -781,10 +781,10 @@ ru:
       already_linked: "У этой битвы уже есть место для чеклиста."
     anytime:
       # TODO: translate
-      title: "Basics"
+      title: "Habits"
       hint: "Log as many times as you like"
-      empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
-      add_basic: "+ Add a Basic" # TODO: translate
+      empty: "No habits on Today yet — add one in Base Camp." # TODO: translate
+      add_basic: "+ Add a habit" # TODO: translate
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"
@@ -800,7 +800,7 @@ ru:
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
-      edit_basic: "Edit Basic"  # TODO: translate
+      edit_basic: "Edit habit"  # TODO: translate
       done: "Done"  # TODO: translate
       amount_today_unit: "%{unit} today"  # TODO: translate
       step_add: "Add %{n}"  # TODO: translate
@@ -1122,8 +1122,8 @@ ru:
       name_label: "Name" # TODO: translate
       one_tap_adds: "One tap adds" # TODO: translate
       unit_aria: "Unit" # TODO: translate
-      delete_basic: "Delete Basic" # TODO: translate
-      delete_confirm: "Delete this Basic. All its days go away too." # TODO: translate
+      delete_basic: "Delete habit" # TODO: translate
+      delete_confirm: "Delete this habit. All its days go away too." # TODO: translate
       keep: "Keep" # TODO: translate
       delete: "Delete" # TODO: translate
     share: "Поделиться"
@@ -1213,7 +1213,7 @@ ru:
   account_delete:
     open: "Delete account"
     title: "Delete your account"
-    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    body: "This removes your goal, camps, battles and habits for good. It can't be undone." # TODO: translate
     subscription_line: "Your subscription will be cancelled."
     password_label: "Password"
     confirm: "Delete"
@@ -1476,7 +1476,7 @@ ru:
       title: "Инструменты разработчика"
       subtitle: "Видно только разработчику. Не меняет других игроков."
       restart_npe: "Перезапустить опыт нового игрока"
-      restart_npe_confirm: "Очистить Цели, Планы, Проекты, Битвы, Базовые привычки и путешествия этого аккаунта, сбросить онбординг и обнулить Action Points, и открыть первый экран? Вход сохраняется."
+      restart_npe_confirm: "Очистить Цели, Планы, Проекты, Битвы, Базовые привычки и путешествия этого аккаунта, сбросить онбординг и обнулить Action Points, и открыть первый экран? Вход сохраняется." # TODO: translate (Basic → habit)
       restart_npe_done: "Опыт нового игрока перезапущен — данные Стратегии очищены."
   v2_onboarding:
     title: "Начни своё приключение"
@@ -1531,7 +1531,7 @@ ru:
     battle_placeholder: "Напиши свой ответ"
     battle_examples_label: "Только для вдохновения — напиши своё выше"
     battle_examples: "Почитать главу 1 двадцать минут, отправить одну заявку на работу, разобрать входящие, приготовить обед на завтра"
-    basic_lead: "Мы называем это Основами. Они приближают тебя к %{goal}."
+    basic_lead: "Мы называем это Основами. Они приближают тебя к %{goal}." # TODO: translate (Basic → habit)
     battles_lead: "Мы называем это Битвами. Одна победа сегодня приближает тебя к %{goal}."
     continue: "Продолжить"
     commitment_kicker: "Насколько жёстко сегодня?"

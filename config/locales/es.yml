@@ -336,14 +336,14 @@ es:
             amount: "%{amount} %{unit}"  # TODO: translate
             undo: "Undo"  # TODO: translate
           add_placeholder: "What will you do every day?"  # TODO: translate
-          dock_add_pill: "Add a Basic"  # TODO: translate
-          add_habit: "Add Basic"  # TODO: translate
+          dock_add_pill: "Add a habit"  # TODO: translate
+          add_habit: "Add habit"  # TODO: translate
           count_toggle: "Count how many"  # TODO: translate
           starter_title: "Add the first thing you do every day."  # TODO: translate
           starter_example_1: "20 push-ups"  # TODO: translate
           starter_example_2: "Read 5 pages"  # TODO: translate
           starter_example_3: "One German lesson"  # TODO: translate
-          form_error_aria: "Could not add Basic"  # TODO: translate
+          form_error_aria: "Could not add habit"  # TODO: translate
     help:
       cta_onboarding: "Ayúdame a aclarar esta montaña"
     first_climb:
@@ -775,10 +775,10 @@ es:
       already_linked: "Esa batalla ya tiene un hogar de checklist."
     anytime:
       # TODO: translate
-      title: "Basics"
+      title: "Habits"
       hint: "Log as many times as you like"
-      empty: "No Basics on Today yet — add one in Base Camp." # TODO: translate
-      add_basic: "+ Add a Basic" # TODO: translate
+      empty: "No habits on Today yet — add one in Base Camp." # TODO: translate
+      add_basic: "+ Add a habit" # TODO: translate
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"
@@ -794,7 +794,7 @@ es:
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
-      edit_basic: "Edit Basic"  # TODO: translate
+      edit_basic: "Edit habit"  # TODO: translate
       done: "Done"  # TODO: translate
       amount_today_unit: "%{unit} today"  # TODO: translate
       step_add: "Add %{n}"  # TODO: translate
@@ -1110,8 +1110,8 @@ es:
       name_label: "Name" # TODO: translate
       one_tap_adds: "One tap adds" # TODO: translate
       unit_aria: "Unit" # TODO: translate
-      delete_basic: "Delete Basic" # TODO: translate
-      delete_confirm: "Delete this Basic. All its days go away too." # TODO: translate
+      delete_basic: "Delete habit" # TODO: translate
+      delete_confirm: "Delete this habit. All its days go away too." # TODO: translate
       keep: "Keep" # TODO: translate
       delete: "Delete" # TODO: translate
     share: "Compartir"
@@ -1201,7 +1201,7 @@ es:
   account_delete:
     open: "Delete account"
     title: "Delete your account"
-    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    body: "This removes your goal, camps, battles and habits for good. It can't be undone." # TODO: translate
     subscription_line: "Your subscription will be cancelled."
     password_label: "Password"
     confirm: "Delete"
@@ -1464,7 +1464,7 @@ es:
       title: "Herramientas de desarrollador"
       subtitle: "Solo visible para el desarrollador. No cambia a otros jugadores."
       restart_npe: "Reiniciar experiencia de nuevo jugador"
-      restart_npe_confirm: "¿Borrar Metas, Planes, Proyectos, Batallas, Básicos y viajes de esta cuenta, reiniciar el onboarding y poner Action Points a cero, y abrir la primera pantalla? Tu cuenta de acceso se mantiene."
+      restart_npe_confirm: "¿Borrar Metas, Planes, Proyectos, Batallas, Básicos y viajes de esta cuenta, reiniciar el onboarding y poner Action Points a cero, y abrir la primera pantalla? Tu cuenta de acceso se mantiene." # TODO: translate (Basic → habit)
       restart_npe_done: "Experiencia de nuevo jugador reiniciada — datos de Estrategia borrados."
   v2_onboarding:
     title: "Empieza tu aventura"
@@ -1519,7 +1519,7 @@ es:
     battle_placeholder: "Escribe tu propia respuesta"
     battle_examples_label: "Solo como inspiración — escribe la tuya arriba"
     battle_examples: "Estudiar el capítulo 1 durante 20 minutos, enviar una solicitud de empleo, vaciar el bandeja de entrada, preparar el almuerzo de mañana"
-    basic_lead: "A esto les llamamos Básicos. Te acercan a %{goal}."
+    basic_lead: "A esto les llamamos Básicos. Te acercan a %{goal}." # TODO: translate (Basic → habit)
     battles_lead: "A esto les llamamos Batallas. Una victoria hoy te acerca a %{goal}."
     continue: "Continuar"
     commitment_kicker: "¿Qué tan duro hoy?"
