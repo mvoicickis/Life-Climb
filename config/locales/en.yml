@@ -63,8 +63,8 @@ en:
       risk_cleared: "Nothing left today."
       # TODO: translate for lv/de/es/ru
       risk_basics_left:
-        one: "One Basic left today."
-        other: "%{count} Basics left today."
+        one: "One habit left today."
+        other: "%{count} habits left today."
       risk_empty: "No battles on Today's list yet."
       risk_before_first_win: "Win a battle to move the bar."
       risk_open:
@@ -161,7 +161,7 @@ en:
         sub: "Day %{day} is closed."
       inline_ack:
         battles: "All battles won today"
-        basics: "Basics logged for today"
+        basics: "Habits logged for today"
       bridge:
         no_camps: "Open a camp on Mountain when you are ready to plan tomorrow."
       steps:
@@ -207,7 +207,7 @@ en:
     section_battles: "Battles"
     section_quests: "Quests"
     section_habits: "Habits"
-    habits_empty: "No daily trackers yet."
+    habits_empty: "No habits yet."
     habits_empty_cta: "Add on Mountain"
     timeline:
       title: "Today's timeline"
@@ -254,12 +254,12 @@ en:
       already_linked: "That battle already has a checklist home."
     anytime:
       # Heading drafts: A (shipped) Basics · B Basics · C Anytime
-      title: "Basics"
+      title: "Habits"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
       binary_subtitle: "Every day"
-      empty: "No daily trackers on Today yet."
-      add_basic: "+ Add a Basic"
+      empty: "No habits on Today yet."
+      add_basic: "+ Add a habit"
       add: "Add"
       add_placeholder: "Add"
       add_aria: "Add %{unit}"
@@ -275,7 +275,7 @@ en:
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
-      edit_basic: "Edit Basic"
+      edit_basic: "Edit habit"
       done: "Done"
       amount_today_unit: "%{unit} today"
       step_add: "Add %{n}"
@@ -622,7 +622,7 @@ en:
       battles_camp_hint: "Battles won over time"
       target_line: "Target %{target} %{unit}"
       habits_title: "Habits this week"
-      habits_hint: "Trackers linked to this mountain."
+      habits_hint: "Habits linked to this mountain."
       habit_done: "done"
       habit_missed: "missed"
     patterns:
@@ -641,13 +641,13 @@ en:
     trackers:
       title: "Your stats"
       chart_label: "%{name} — last 14 days"
-      empty_area: "No Trackers in this Area yet."
-      add_tracker: "+ Add a Tracker"
-      add_tracker_title: "Add a Tracker"
+      empty_area: "No habits in this Area yet."
+      add_tracker: "+ Add a habit"
+      add_tracker_title: "Add a habit"
       add_tracker_hint: "Name it, pick a unit, and optionally file it under an Area."
-      create: "Add Tracker"
+      create: "Add habit"
       hide: "Hide"
-      created: "Tracker added."
+      created: "Habit added."
       move_up: "↑"
       move_down: "↓"
 
@@ -814,18 +814,18 @@ en:
         other: "%{count} battles planned"
       objectives_menu: "Objectives"
       project_trackers:
-        title: "Trackers"
-        add: "Add another Tracker to this camp" # TODO: translate for lv/de/es/ru.
-        pick_existing: "Link an existing Tracker"
-        pick_blank: "Choose a Tracker"
-        link_existing: "Link Tracker"
-        new_name: "Or create a new Tracker"
-        new_name_placeholder: "Tracker name"
+        title: "Habits"
+        add: "Add another habit to this camp" # TODO: translate for lv/de/es/ru.
+        pick_existing: "Link an existing habit"
+        pick_blank: "Choose a habit"
+        link_existing: "Link habit"
+        new_name: "Or create a new habit"
+        new_name_placeholder: "Habit name"
         new_unit: "Unit"
         create_and_link: "Create and link"
         linked: "Linked %{name} to this camp" # TODO: translate for lv/de/es/ru.
-        need_project: "Only camps on the Path can hold Trackers." # TODO: translate for lv/de/es/ru.
-        habit_missing: "That Tracker wasn’t found."
+        need_project: "Only camps on the Path can hold habits." # TODO: translate for lv/de/es/ru.
+        habit_missing: "That habit wasn’t found."
       nested_camps: "Camps"
       camps_label: "Quest Folders"
       quest_folders_label: "Quest Folders"
@@ -1035,7 +1035,7 @@ en:
             other: "%{count} wins today"
           plant_next_headline: "Plant the next camp"
           plant_next_sub: "Keep the climb moving"
-          basics_sub: "Log your daily trackers"
+          basics_sub: "Log your daily habits"
           open_headline:
             one: "%{count} battle waiting"
             other: "%{count} battles waiting"
@@ -1193,19 +1193,19 @@ en:
             undo: "Undo"
           kind: "Every day · no finish line"
           sub:
-            one: "1 daily tracker. Missing a day takes nothing away."
-            other: "%{count} daily trackers. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
+            one: "1 daily habit. Missing a day takes nothing away."
+            other: "%{count} daily habits. Missing a day takes nothing away." # TODO: translate for lv/de/es/ru.
           empty: "Optional — add something you repeat every day."
           more: "+%{count}"
           add_placeholder: "What will you do every day?"
-          dock_add_pill: "Add a Basic"
-          add_habit: "Add Basic"
+          dock_add_pill: "Add a habit"
+          add_habit: "Add habit"
           count_toggle: "Count how many"
           starter_title: "Add the first thing you do every day."
           starter_example_1: "20 push-ups"
           starter_example_2: "Read 5 pages"
           starter_example_3: "One German lesson"
-          form_error_aria: "Could not add Basic"
+          form_error_aria: "Could not add habit"
           daily_hint: "Shows up again tomorrow."
           amount_hint: "Ask how many, like pages. Leave off for a simple tick."
         won_battles:
@@ -1708,7 +1708,7 @@ en:
         need_title: "Name the battle first."
         need_end_time: "Pick when it ends."
         close_reveal: "Close"
-        unfiled_tracker_nudge: "Logged under Unfiled Trackers — file into an Area anytime."
+        unfiled_tracker_nudge: "Logged under Unfiled habits — file into an Area anytime."
     next_up:
       kicker: "Next up"
       create_goal_title: "Lock your season goal"
@@ -2118,7 +2118,7 @@ en:
     camp_placeholder: "Get certified"
     camp_examples: "Examples: Get certified · Study chapter 1 · Pass the practice exam"
     basic_title: "What is one thing you will do every day?"
-    basic_lead: "We call these Basics. They move you toward %{goal}."
+    basic_lead: "We call these habits. They move you toward %{goal}."
     basic_placeholder: "Drink water"
     basic_hint: "Shows up on Today every morning — missing a day takes nothing away."
     battles_title: "What is one thing you can finish today?"
@@ -2529,7 +2529,7 @@ en:
       approach_hint: "How will you learn with your schedule?"
       approach_placeholder: "Morning lessons. Weekend camps. Weekly review." # TODO: translate for lv/de/es/ru.
       program_hint: "Major learning steps."
-      program_placeholder: "Basics → camps → teach/share → certify" # TODO: translate for lv/de/es/ru.
+      program_placeholder: "Habits → camps → teach/share → certify" # TODO: translate for lv/de/es/ru.
       milestone_hint: "Next multi-day learning step."
       next_placeholder: "Complete the CRUD course"
       finished_hint: "What finished learning proof will you have?"
@@ -2800,8 +2800,8 @@ en:
       name_label: "Name"
       one_tap_adds: "One tap adds"
       unit_aria: "Unit"
-      delete_basic: "Delete Basic"
-      delete_confirm: "Delete this Basic. All its days go away too."
+      delete_basic: "Delete habit"
+      delete_confirm: "Delete this habit. All its days go away too."
       keep: "Keep"
       delete: "Delete"
     share: "Share"
@@ -2831,12 +2831,12 @@ en:
     linked_mountain: "Mountain · %{title}"
     area_label: "Area (optional)"
     area_none: "Unfiled — no Area"
-    area_hint: "File this Tracker under an Area like Finance or Health."
-    unfiled_title: "Unfiled Trackers"
-    unfiled_hint: "Trackers not filed under an Area yet."
-    unfiled_empty: "All Trackers are filed under an Area."
-    state_section: "Tracker state"
-    state_hint: "Mark how this Tracker feels right now. Optional."
+    area_hint: "File this habit under an Area like Finance or Health."
+    unfiled_title: "Unfiled habits"
+    unfiled_hint: "Habits not filed under an Area yet."
+    unfiled_empty: "All habits are filed under an Area."
+    state_section: "Habit state"
+    state_hint: "Mark how this habit feels right now. Optional."
     state_fallback_good: "On track"
     state_fallback_attention: "Needs attention"
     state_unset: "No state yet"
@@ -2876,7 +2876,7 @@ en:
     example_number: "e.g. %{n}"
   areas:
     title: "Areas"
-    hint: "Group Trackers under life Areas you name yourself."
+    hint: "Group habits under life Areas you name yourself."
     name_label: "New Area"
     name_placeholder: "Finance, Health, Home…"
     add: "Add Area"
@@ -2884,24 +2884,24 @@ en:
     updated: "Area saved."
     removed: "Area removed."
     remove: "Remove"
-    remove_confirm: "Remove this Area? Trackers stay — they become unfiled."
-    empty: "No Areas yet. Add one to file Trackers under."
-    empty_trackers: "No Trackers in this Area yet."
+    remove_confirm: "Remove this Area? Habits stay — they become unfiled."
+    empty: "No Areas yet. Add one to file habits under."
+    empty_trackers: "No habits in this Area yet."
     moved: "Area order updated."
     move_failed: "Couldn’t move that Area."
     improve:
       cta: "Create a Camp to improve this" # TODO: translate for lv/de/es/ru.
-      hint: "Adds a Camp on your Mountain, linked to this Tracker." # TODO: translate for lv/de/es/ru.
+      hint: "Adds a Camp on your Mountain, linked to this habit." # TODO: translate for lv/de/es/ru.
       project_title: "Improve %{name}"
       plan_title: "%{name} focus"
-      need_attention: "Mark this Tracker as needing attention first."
+      need_attention: "Mark this habit as needing attention first."
       need_journey: "Lock a Mountain first, then come back."
       need_goal: "Set your season Goal on Mountain first."
       open_project: "Open “%{title}” on Mountain"
   account_delete:
     open: "Delete account"
     title: "Delete your account"
-    body: "This removes your goal, camps, battles and Basics for good. It can't be undone."
+    body: "This removes your goal, camps, battles and habits for good. It can't be undone."
     subscription_line: "Your subscription will be cancelled."
     password_label: "Password"
     confirm: "Delete"
@@ -3091,7 +3091,7 @@ en:
       title: "Developer Tools"
       subtitle: "Only visible to the developer. Does not change other players."
       restart_npe: "Restart New Player Experience"
-      restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, Basics, and journeys, reset onboarding and Action Points to zero, then open the first onboarding screen? Your login account stays." # TODO: translate for lv/de/es/ru.
+      restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, habits, and journeys, reset onboarding and Action Points to zero, then open the first onboarding screen? Your login account stays." # TODO: translate for lv/de/es/ru.
       restart_npe_done: "New Player Experience restarted — Strategy data cleared."
   feedback:
     title: "Feedback"
