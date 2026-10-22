@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+class Rack::Attack::Request
+  def ip
+    ActionDispatch::Request.new(env).remote_ip
+  end
+end
+
 class Rack::Attack
   # Use Rails.cache (memory_store in current prod; swap to Redis/Solid Cache when multi-dyno).
   Rack::Attack.cache.store = Rails.cache
