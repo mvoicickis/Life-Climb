@@ -5,32 +5,7 @@ module Notifications
   module NudgeCandidateScope
     KINDS = %i[morning evening].freeze
 
-    POSTGRES_LOCAL_HOUR_IN_WINDOW = <<~SQL.squish
-      EXTRACT(
-        HOUR FROM timezone(notification_preferences.time_zone, CURRENT_TIMESTAMP)
-      ) BETWEEN ? AND ?
-    SQL
-
-    POSTGRES_NOT_SENT_TODAY = {
-      morning: <<~SQL.squish,
-        (
-          notification_preferences.last_morning_nudge_sent_on IS NULL
-          OR notification_preferences.last_morning_nudge_sent_on <> (
-            timezone(notification_preferences.time_zone, CURRENT_TIMESTAMP)
-          )::date
-        )
-      SQL
-      evening: <<~SQL.squish,
-        (
-          notification_preferences.last_evening_nudge_sent_on IS NULL
-          OR notification_preferences.last_evening_nudge_sent_on <> (
-            timezone(notification_preferences.time_zone, CURRENT_TIMESTAMP)
-          )::date
-        )
-      SQL
-    }.freeze
-
-    RUBY_PLUCK_COLUMNS = {
+    PLUCK_COLUMNS = {
       morning: [
         "users.id",
         "notification_preferences.time_zone",
@@ -51,11 +26,7 @@ module Notifications
 
       scope = subscribed_with_preferences
       scope = apply_gate_sql_filters(scope)
-      if postgresql?
-        apply_postgres_window(scope, hours: hours, kind: kind)
-      else
-        apply_ruby_window(scope, hours: hours, kind: kind)
-      end
+      apply_local_window(scope, hours: hours, kind: kind)
     end
 
     def subscribed_with_preferences
@@ -76,20 +47,8 @@ module Notifications
            )
     end
 
-    def postgresql?
-      ActiveRecord::Base.connection.adapter_name.match?(/postgres/i)
-    end
-
-    def apply_postgres_window(scope, hours:, kind:)
-      dedupe_sql = POSTGRES_NOT_SENT_TODAY.fetch(kind) do
-        raise ArgumentError, "unsupported nudge kind: #{kind.inspect}"
-      end
-
-      scope.where(POSTGRES_LOCAL_HOUR_IN_WINDOW, hours.begin, hours.end).where(dedupe_sql)
-    end
-
-    def apply_ruby_window(scope, hours:, kind:)
-      pluck_columns = RUBY_PLUCK_COLUMNS.fetch(kind) do
+    def apply_local_window(scope, hours:, kind:)
+      pluck_columns = PLUCK_COLUMNS.fetch(kind) do
         raise ArgumentError, "unsupported nudge kind: #{kind.inspect}"
       end
 
