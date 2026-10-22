@@ -21,6 +21,14 @@ class Rack::Attack
     end
   end
 
+  throttle("google_sign_in_start/ip", limit: 10, period: 3.minutes) do |req|
+    req.ip if req.path == "/auth/google_oauth2" && req.post?
+  end
+
+  throttle("google_sign_in_callback/ip", limit: 10, period: 3.minutes) do |req|
+    req.ip if req.path == "/auth/google_oauth2/callback" && req.get?
+  end
+
   throttle("registrations/ip", limit: 5, period: 15.minutes) do |req|
     req.ip if req.path == "/registration" && req.post?
   end

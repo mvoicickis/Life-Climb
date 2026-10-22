@@ -41,7 +41,7 @@ module RequireOnboarding
   end
 
   def onboarding_flow_controller?
-    %w[onboarding sessions registrations passwords v2_onboardings life_area_selections next_mountains two_factor_sessions].include?(controller_name)
+    %w[onboarding sessions registrations passwords omniauth_callbacks v2_onboardings life_area_selections next_mountains two_factor_sessions].include?(controller_name)
   end
 
   def hierarchy_gate_exempt?

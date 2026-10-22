@@ -61,7 +61,7 @@ module Authentication
       path = request.fullpath.to_s
       return nil if path.blank?
       return nil unless path.start_with?("/") && !path.start_with?("//")
-      return nil if path.start_with?("/session", "/registration", "/passwords", "/two_factor_session")
+      return nil if path.start_with?("/session", "/registration", "/passwords", "/two_factor_session", "/auth")
 
       path
     end
@@ -75,6 +75,29 @@ module Authentication
       return onboarding_entry_path if Current.user&.needs_onboarding?
 
       dashboard_path
+    end
+
+    def complete_sign_in!(user, new_account: false)
+      promote_configured_admin!(user)
+
+      if user.privileged_for_2fa? && user.otp_enabled?
+        stash_pending_2fa!(user)
+        redirect_to new_two_factor_session_path
+        return
+      end
+
+      clear_pending_2fa!
+      start_new_session_for user
+      redirect_to new_account ? v2_onboarding_path(step: "goal") : after_authentication_url
+    end
+
+    def promote_configured_admin!(user)
+      email = ENV["ADMIN_EMAIL"].to_s.strip.downcase.presence
+      return if email.blank?
+      return unless user.email_address == email
+      return if user.admin?
+
+      user.update_columns(admin: true)
     end
 
     def start_new_session_for(user)
