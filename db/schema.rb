@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -361,6 +361,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
     t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
+  create_table "oauth_identities", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "provider", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["provider", "uid"], name: "index_oauth_identities_on_provider_and_uid", unique: true
+    t.index ["user_id"], name: "index_oauth_identities_on_user_id"
+  end
+
   create_table "pattern_snapshots", force: :cascade do |t|
     t.date "computed_on", null: false
     t.datetime "created_at", null: false
@@ -551,10 +562,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
     t.datetime "install_offer_dismissed_at"
     t.datetime "install_offer_installed_at"
     t.date "last_opened_on"
-    t.datetime "next_app_open_at"
     t.string "locale"
     t.integer "mountain_trail_tour_ack", default: 0, null: false
     t.string "name"
+    t.datetime "next_app_open_at"
     t.datetime "onboarding_completed_at"
     t.json "otp_backup_codes_digest", default: [], null: false
     t.datetime "otp_enabled_at"
@@ -563,8 +574,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
     t.integer "planning_version", default: 2, null: false
     t.integer "push_offer_dismiss_count", default: 0, null: false
     t.datetime "push_offer_dismissed_at"
-    t.datetime "push_offer_permission_denied_at"
     t.date "push_offer_last_shown_on"
+    t.datetime "push_offer_permission_denied_at"
     t.integer "push_offer_show_days", default: 0, null: false
     t.integer "strategy_points", default: 0, null: false
     t.string "stripe_customer_id"
@@ -616,6 +627,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
   add_foreign_key "missions", "life_journeys"
   add_foreign_key "missions", "users"
   add_foreign_key "notification_preferences", "users"
+  add_foreign_key "oauth_identities", "users"
   add_foreign_key "pattern_snapshots", "users"
   add_foreign_key "practice_tasks", "strategy_goals"
   add_foreign_key "practice_tasks", "users"

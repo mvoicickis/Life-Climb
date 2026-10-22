@@ -102,6 +102,20 @@ module Accounts
       assert_equal 0, DailyTodo.where(user_id: @target.id).count
     end
 
+    test "destroy removes oauth identities" do
+      OauthIdentity.create!(
+        user: @target,
+        provider: "google",
+        uid: "sub-destroy-#{SecureRandom.hex(4)}",
+        email: @target.email_address
+      )
+
+      result = DestroyUser.call(user: @target)
+
+      assert result.ok?
+      assert_equal 0, OauthIdentity.where(user_id: @target.id).count
+    end
+
     test "stripe failure leaves user intact" do
       @target.update_columns(stripe_subscription_id: "sub_fail", subscription_status: "active")
 

@@ -30,6 +30,7 @@ class User < ApplicationRecord
   has_many :pattern_snapshots, dependent: :destroy
   has_many :user_events, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :oauth_identities, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
