@@ -10,7 +10,7 @@
     <div>
       <%= form.label :email_address, t("auth.email"), class: "lp-auth-label" %>
       <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
-          value: params[:email_address],
+          value: flash[:auth_email_address].presence || params[:email_address],
           class: "lp-auth-input" %>
     </div>
 

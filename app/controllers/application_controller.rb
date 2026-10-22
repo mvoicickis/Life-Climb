@@ -14,7 +14,58 @@ class ApplicationController < ActionController::Base
   before_action :enforce_maintenance_mode
   after_action :track_app_opened_if_eligible
 
+  rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_authenticity_token
+
   private
+
+  def handle_invalid_authenticity_token
+    email = csrf_retry_email_address
+    logged_in = authenticated?
+
+    Rails.logger.warn("[CSRF] #{controller_path}##{action_name} host=#{request.host}")
+
+    reset_session
+
+    flash[:alert] = csrf_retry_alert_message
+    flash[:auth_email_address] = email if email.present?
+
+    redirect_to csrf_retry_redirect_path(logged_in: logged_in)
+  end
+
+  def csrf_retry_email_address
+    case controller_name
+    when "registrations"
+      params.dig(:user, :email_address).to_s.strip.presence
+    else
+      params[:email_address].to_s.strip.presence
+    end
+  end
+
+  def csrf_retry_alert_message
+    case [ controller_name, action_name ]
+    when %w[registrations create]
+      t("auth.csrf_signup_retry")
+    when %w[sessions create]
+      t("auth.csrf_login_retry")
+    else
+      t("auth.csrf_retry")
+    end
+  end
+
+  def csrf_retry_redirect_path(logged_in:)
+    case [ controller_name, action_name ]
+    when %w[registrations create]
+      new_registration_path
+    when %w[sessions create]
+      new_session_path
+    when %w[passwords create]
+      new_password_path
+    when %w[two_factor_sessions create]
+      new_two_factor_session_path
+    else
+      logged_in ? root_path : new_session_path
+    end
+  end
 
   def current_user
     Current.user

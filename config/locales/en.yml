@@ -3240,6 +3240,9 @@ en:
     new_password: "New password"
     repeat_password: "Repeat new password"
     save_password: "Save password"
+    csrf_signup_retry: "Not saved. Tap Create account again."
+    csrf_login_retry: "Not saved. Log in again."
+    csrf_retry: "Not saved. Try again."
 
   studio:
     why_today: "Are you going the right way?"

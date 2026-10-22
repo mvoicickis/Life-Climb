@@ -29,6 +29,7 @@
     <div>
       <%= form.label :email_address, t("auth.email"), class: "lp-auth-label" %>
       <%= form.email_field :email_address, required: true, autocomplete: "username",
+          value: flash[:auth_email_address],
           class: "lp-auth-input" %>
     </div>
 

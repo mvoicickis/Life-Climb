@@ -1437,6 +1437,9 @@ es:
     new_password: "Nueva contraseña"
     repeat_password: "Repite la nueva contraseña"
     save_password: "Guardar contraseña"
+    csrf_signup_retry: "Not saved. Tap Create account again." # TODO: translate
+    csrf_login_retry: "Not saved. Log in again." # TODO: translate
+    csrf_retry: "Not saved. Try again." # TODO: translate
   game_ui:
     good_morning: "Buenos días"
     good_afternoon: "Buenas tardes"
