@@ -4,6 +4,8 @@ require "test_helper"
 
 module Notifications
   class MorningNudgeRunTest < ActiveSupport::TestCase
+    include ActiveJob::TestHelper
+
     FakeResponse = Struct.new(:body, :inspect)
 
     setup do
@@ -37,6 +39,16 @@ module Notifications
 
     teardown do
       WebPush.define_singleton_method(:payload_send, @original_payload_send)
+      clear_enqueued_jobs
+    end
+
+    def run_nudge_and_deliver
+      result = nil
+      assert_enqueued_jobs 1, only: SendWebPushJob do
+        result = MorningNudgeRun.call
+      end
+      perform_enqueued_jobs
+      result
     end
 
     test "sends battle body from strategy when ad-hoc todo exists on local day" do
@@ -51,7 +63,7 @@ module Notifications
           lp_reward: 10
         )
 
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "morning", @last_payload["kind"]
@@ -69,7 +81,7 @@ module Notifications
 
     test "sends plan title when nothing planned" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal "Plan today", @last_payload["title"]
         assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
@@ -93,7 +105,7 @@ module Notifications
           mission.update!(status: "complete", completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0))
         end
 
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
@@ -106,7 +118,7 @@ module Notifications
         seed_climb!(@user, today_mission: "Already planned")
         assert @user.daily_todos.for_day(Date.current).incomplete.exists?
 
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "Today: Already planned", @last_payload["body"]
@@ -115,15 +127,17 @@ module Notifications
 
     test "dedupes same local day across morning window" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal Date.new(2026, 8, 6), @pref.reload.last_morning_nudge_sent_on
       end
 
       @send_calls = 0
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 10, 0, 0) do
-        second = MorningNudgeRun.call
-        assert_equal 0, second.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          second = MorningNudgeRun.call
+          assert_equal 0, second.sent
+        end
         assert_equal 0, @send_calls
       end
     end
@@ -144,58 +158,49 @@ module Notifications
           lp_reward: 10
         )
 
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal "This is why you started. Keep going.", @last_payload["body"]
         assert_equal Date.new(2026, 8, 7), @pref.reload.last_morning_nudge_sent_on
       end
     end
 
-    test "does not stamp sent_on when WebPush fails" do
-      WebPush.define_singleton_method(:payload_send) do |**_kwargs|
-        raise StandardError, "push failed"
-      end
-
+    test "claims send date on enqueue so a second cron pass does not double-send" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 0, result.sent
-        assert_nil @pref.reload.last_morning_nudge_sent_on
-      end
-
-      WebPush.define_singleton_method(:payload_send) do |**kwargs|
-        @last_payload = JSON.parse(kwargs[:message])
-        true
-      end
-
-      # Restore working stub for retry assertion
-      test_case = self
-      WebPush.define_singleton_method(:payload_send) do |**kwargs|
-        test_case.instance_variable_set(:@last_payload, JSON.parse(kwargs[:message]))
-        test_case.instance_variable_set(
-          :@send_calls,
-          test_case.instance_variable_get(:@send_calls) + 1
-        )
-        true
-      end
-
-      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 10, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 1, result.sent
+        assert_enqueued_jobs 1, only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 1, result.sent
+        end
         assert_equal Date.new(2026, 8, 6), @pref.reload.last_morning_nudge_sent_on
+
+        WebPush.define_singleton_method(:payload_send) do |**_kwargs|
+          raise StandardError, "push failed"
+        end
+        perform_enqueued_jobs
+
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          second = MorningNudgeRun.call
+          assert_equal 0, second.sent
+        end
       end
     end
 
-    test "skips outside local morning window" do
+    test "skips outside local morning window without reconcile" do
+      @user.update!(day_shield_on: Date.new(2020, 1, 1), day_shields_available: 0)
+
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 12, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_equal 0, @send_calls
+        assert_equal Date.new(2020, 1, 1), @user.reload.day_shield_on
       end
     end
 
     test "sends at local hour 11" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 11, 0, 0) do
-        result = MorningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
       end
     end
@@ -204,8 +209,10 @@ module Notifications
       @pref.update!(time_zone: nil)
 
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_equal 0, @send_calls
       end
     end
@@ -214,8 +221,10 @@ module Notifications
       @pref.update!(vacation_paused: true)
 
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_equal 0, @send_calls
       end
     end
@@ -224,8 +233,10 @@ module Notifications
       @pref.update!(frequency: "off")
 
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
-        result = MorningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_equal 0, @send_calls
       end
     end
