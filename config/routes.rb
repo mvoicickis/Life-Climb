@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   resource :session
+  get "/auth/google_oauth2/callback", to: "omniauth_callbacks#google_oauth2"
+  get "/auth/failure", to: "omniauth_callbacks#failure"
   resources :passwords, param: :token
   resource :registration, only: %i[ new create ]
   resource :two_factor_session, only: %i[ new create destroy ]

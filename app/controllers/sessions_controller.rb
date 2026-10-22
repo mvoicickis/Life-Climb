@@ -7,17 +7,7 @@ class SessionsController < ApplicationController
 
   def create
     if user = User.authenticate_by(params.permit(:email_address, :password))
-      promote_configured_admin!(user)
-
-      if user.privileged_for_2fa? && user.otp_enabled?
-        stash_pending_2fa!(user)
-        redirect_to new_two_factor_session_path
-        return
-      end
-
-      clear_pending_2fa!
-      start_new_session_for user
-      redirect_to after_authentication_url
+      complete_sign_in!(user, new_account: false)
     else
       redirect_to new_session_path, alert: "Try another email address or password."
     end
@@ -26,16 +16,5 @@ class SessionsController < ApplicationController
   def destroy
     terminate_session
     redirect_to new_session_path, status: :see_other
-  end
-
-  private
-
-  def promote_configured_admin!(user)
-    email = ENV["ADMIN_EMAIL"].to_s.strip.downcase.presence
-    return if email.blank?
-    return unless user.email_address == email
-    return if user.admin?
-
-    user.update_columns(admin: true)
   end
 end

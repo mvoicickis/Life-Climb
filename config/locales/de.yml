@@ -1442,6 +1442,7 @@ de:
     csrf_signup_retry: "Not saved. Tap Create account again." # TODO: translate
     csrf_login_retry: "Not saved. Log in again." # TODO: translate
     csrf_retry: "Not saved. Try again." # TODO: translate
+    google_sign_in_failed: "Google sign-in didn't work. Try again or use your email." # TODO: translate
   game_ui:
     good_morning: "Guten Morgen"
     good_afternoon: "Guten Tag"

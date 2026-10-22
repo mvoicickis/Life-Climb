@@ -3245,6 +3245,7 @@ en:
     csrf_signup_retry: "Not saved. Tap Create account again."
     csrf_login_retry: "Not saved. Log in again."
     csrf_retry: "Not saved. Try again."
+    google_sign_in_failed: "Google sign-in didn't work. Try again or use your email."
 
   studio:
     why_today: "Are you going the right way?"
