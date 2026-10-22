@@ -3246,6 +3246,9 @@ en:
     csrf_login_retry: "Not saved. Log in again."
     csrf_retry: "Not saved. Try again."
     google_sign_in_failed: "Google sign-in didn't work. Try again or use your email."
+    continue_with_google: "Continue with Google"
+    or: "or"
+    google_open_in_browser: "To use Google, open this page in Safari or Chrome."
 
   studio:
     why_today: "Are you going the right way?"

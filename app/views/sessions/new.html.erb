@@ -7,6 +7,8 @@
   <h1 class="lp-auth-title"><%= t("auth.sign_in_title") %></h1>
   <p class="lp-auth-sub"><%= t("auth.sign_in_subtitle") %></p>
 
+  <%= render "shared/auth_google_sign_in" %>
+
   <%= form_with url: session_path, class: "space-y-4", data: { turbo: false } do |form| %>
     <div>
       <%= form.label :email_address, t("auth.email"), class: "lp-auth-label" %>

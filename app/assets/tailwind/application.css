@@ -1016,6 +1016,79 @@
     color: #86efac;
   }
 
+  .lp-auth-google-btn {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .lp-auth-google-btn__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: var(--lp-tap);
+    padding: 0.65rem 1rem;
+    border-radius: var(--lp-radius-field, 1rem);
+    border: 1px solid var(--lp-border);
+    background: var(--lp-surface);
+    color: var(--lp-ink);
+    font-family: var(--lp-font-ui, "Nunito", system-ui, sans-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--lp-shadow-card);
+  }
+
+  .lp-auth-google-btn:hover .lp-auth-google-btn__inner {
+    background: var(--lp-paper);
+  }
+
+  .lp-auth-google-btn__icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .lp-auth-google-btn__label {
+    color: var(--lp-ink);
+  }
+
+  .lp-auth-google-hint {
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #9aa6b2;
+    text-align: center;
+  }
+
+  .lp-auth-or {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+
+  .lp-auth-or__line {
+    flex: 1;
+    min-width: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+  }
+
+  .lp-auth-or__text {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: lowercase;
+    color: #9aa6b2;
+  }
+
   .today-banner-veil {
     position: absolute;
     inset: 0;
