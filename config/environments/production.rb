@@ -92,17 +92,7 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Allow exact APP_HOST and known Render hostname only (not every *.onrender.com).
-  if ENV["APP_HOST"].present?
-    config.hosts << ENV["APP_HOST"]
-  elsif ENV["RENDER_EXTERNAL_HOSTNAME"].present?
-    config.hosts << ENV["RENDER_EXTERNAL_HOSTNAME"]
-  else
-    # Local/preview fallback — prefer setting APP_HOST in production.
-    config.hosts << /.*\.onrender\.com/
-  end
-
-  config.hosts << "lifeclimb.app"
-  config.hosts << "www.lifeclimb.app"
+  config.hosts.concat(AllowedProductionHosts.call(ENV))
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
