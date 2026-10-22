@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module Notifications
-  # Cron-driven morning nudge: every subscribed user, local 7–11am, once per local day.
+  # Cron-driven morning nudge: subscribed users in local 7–11am, once per local day.
   class MorningNudgeRun
     MORNING_HOURS = (7..11).freeze
     KIND = "morning"
     PUSH_IMAGE_PATH = "/images/push_mountain.webp"
+    SENT_ON_COLUMN = :last_morning_nudge_sent_on
 
     Result = Struct.new(:considered, :sent, :skipped, keyword_init: true)
 
@@ -18,10 +19,9 @@ module Notifications
       sent = 0
       skipped = 0
 
-      candidate_users.find_each do |user|
+      NudgeCandidateScope.users(hours: MORNING_HOURS, sent_on_column: SENT_ON_COLUMN).find_each do |user|
         considered += 1
-        Today::DayShield.reconcile!(user: user)
-        if notify!(user)
+        if enqueue!(user)
           sent += 1
         else
           skipped += 1
@@ -33,12 +33,7 @@ module Notifications
 
     private
 
-    def candidate_users
-      # Avoid SELECT DISTINCT users.* — Postgres can't DISTINCT on json columns.
-      User.where(id: PushSubscription.select(:user_id))
-    end
-
-    def notify!(user)
+    def enqueue!(user)
       pref = user.notification_preference
       return false if pref.blank? || pref.time_zone.blank?
 
@@ -46,17 +41,19 @@ module Notifications
       return false unless MORNING_HOURS.cover?(local_time.hour)
 
       local_date = local_time.to_date
-      return false if pref.last_morning_nudge_sent_on == local_date
 
       gate = NotificationGate.allow?(user: user, kind: KIND)
       return false unless gate.allowed?
 
       locale = :en
       copy = MorningNudgeCopy.for(user: user, date: local_date, locale: locale)
-
       badge = Today::BattleOpenCount.for(user: user, on: local_date)
 
-      delivered = SendWebPushJob.perform_now(
+      return false unless claim_send_date!(pref, local_date)
+
+      Today::DayShield.reconcile!(user: user)
+
+      SendWebPushJob.perform_later(
         user.id,
         {
           "title" => copy.title,
@@ -68,10 +65,6 @@ module Notifications
           "image" => PushAssetUrl.call(PUSH_IMAGE_PATH)
         }
       )
-
-      return false unless delivered
-
-      pref.update!(last_morning_nudge_sent_on: local_date)
       true
     rescue ArgumentError, TZInfo::InvalidTimezoneIdentifier => e
       Rails.logger.warn("[MorningNudgeRun] skip user=#{user.id} #{e.class}: #{e.message}")
@@ -79,6 +72,13 @@ module Notifications
     rescue StandardError => e
       Rails.logger.warn("[MorningNudgeRun] fail user=#{user.id} #{e.class}: #{e.message}")
       false
+    end
+
+    def claim_send_date!(pref, local_date)
+      column = SENT_ON_COLUMN.to_s
+      NotificationPreference.where(id: pref.id)
+                            .where("#{column} IS NULL OR #{column} != ?", local_date)
+                            .update_all(column => local_date, updated_at: Time.current) == 1
     end
   end
 end

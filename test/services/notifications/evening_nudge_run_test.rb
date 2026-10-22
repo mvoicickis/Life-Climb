@@ -4,6 +4,8 @@ require "test_helper"
 
 module Notifications
   class EveningNudgeRunTest < ActiveSupport::TestCase
+    include ActiveJob::TestHelper
+
     setup do
       @user = users(:one)
       @user.daily_todos.delete_all
@@ -35,13 +37,23 @@ module Notifications
 
     teardown do
       WebPush.define_singleton_method(:payload_send, @original_payload_send)
+      clear_enqueued_jobs
+    end
+
+    def run_nudge_and_deliver
+      result = nil
+      assert_enqueued_jobs 1, only: SendWebPushJob do
+        result = EveningNudgeRun.call
+      end
+      perform_enqueued_jobs
+      result
     end
 
     test "sends goal title and evening body in local window" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 20, 0, 0) do
         seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
 
-        result = EveningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "evening", @last_payload["kind"]
@@ -57,13 +69,15 @@ module Notifications
 
     test "dedupes same local day across evening window" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 20, 0, 0) do
-        assert_equal 1, EveningNudgeRun.call.sent
+        assert_equal 1, run_nudge_and_deliver.sent
       end
 
       @send_calls = 0
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 21, 0, 0) do
-        second = EveningNudgeRun.call
-        assert_equal 0, second.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          second = EveningNudgeRun.call
+          assert_equal 0, second.sent
+        end
         assert_equal 0, @send_calls
       end
     end
@@ -82,8 +96,10 @@ module Notifications
         todo = @user.daily_todos.for_day(Date.new(2026, 8, 6)).find_by!(strategy_goal_id: battle.id)
         todo.update!(completed_at: Time.current)
 
-        result = EveningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = EveningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_nil @pref.reload.last_evening_nudge_sent_on
       end
     end
@@ -94,8 +110,10 @@ module Notifications
         battle = @user.strategy_goals.find_by!(horizon: "day", title: "Ship auth")
         battle.update!(completed_at: Time.current)
 
-        result = EveningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = EveningNudgeRun.call
+          assert_equal 0, result.sent
+        end
       end
     end
 
@@ -105,7 +123,7 @@ module Notifications
         battle = @user.strategy_goals.find_by!(horizon: "day", title: "Yesterday win")
         battle.update!(completed_at: Time.find_zone!("Europe/Berlin").local(2026, 8, 5, 9, 0, 0))
 
-        result = EveningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
       end
     end
@@ -124,24 +142,29 @@ module Notifications
         )
         habit.completions.create!(user: @user, completed_on: Date.new(2026, 8, 6), points_awarded: 10)
 
-        result = EveningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
       end
     end
 
     test "uses local date across UTC boundary" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 7, 20, 0, 0) do
-        result = EveningNudgeRun.call
+        result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal Date.new(2026, 8, 7), @pref.reload.last_evening_nudge_sent_on
       end
     end
 
-    test "skips outside local evening window" do
+    test "skips outside local evening window without reconcile" do
+      @user.update!(day_shield_on: Date.new(2020, 1, 1), day_shields_available: 0)
+
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 18, 0, 0) do
-        result = EveningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = EveningNudgeRun.call
+          assert_equal 0, result.sent
+        end
         assert_equal 0, @send_calls
+        assert_equal Date.new(2020, 1, 1), @user.reload.day_shield_on
       end
     end
 
@@ -149,8 +172,10 @@ module Notifications
       @pref.update!(time_zone: nil)
 
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 20, 0, 0) do
-        result = EveningNudgeRun.call
-        assert_equal 0, result.sent
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = EveningNudgeRun.call
+          assert_equal 0, result.sent
+        end
       end
     end
   end
