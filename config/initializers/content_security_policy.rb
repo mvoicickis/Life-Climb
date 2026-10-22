@@ -12,7 +12,7 @@ Rails.application.configure do
     policy.connect_src :self, :https
     policy.frame_ancestors :none
     policy.base_uri    :self
-    policy.form_action :self, "https://wa.me", "mailto:"
+    policy.form_action :self, "https://wa.me", "mailto:", "https://accounts.google.com"
   end
 
   config.content_security_policy_nonce_generator = ->(request) {
