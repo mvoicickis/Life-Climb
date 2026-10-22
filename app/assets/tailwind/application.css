@@ -959,6 +959,38 @@
     border-color: #57d35b;
   }
 
+  .lp-auth-password-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .lp-auth-password-row .lp-auth-input {
+    flex: 1;
+    min-width: 0;
+    font-size: 1rem;
+  }
+
+  .lp-auth-password-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--lp-tap);
+    min-height: var(--lp-tap);
+    border-radius: 1rem;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(23, 28, 34, 0.88);
+    color: #f3f6f8;
+    cursor: pointer;
+  }
+
+  .lp-auth-password-toggle:focus {
+    outline: none;
+    border-color: #57d35b;
+  }
+
   .lp-auth-submit {
     width: 100%;
     cursor: pointer;

@@ -7,6 +7,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
     assert_select "input[name='user[name]']"
+    assert_select "input[name='user[password_confirmation]']", count: 0
     assert_select "a.lp-legal-footer-links__link[href=?]", privacy_path
     assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
     assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
@@ -17,8 +18,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
         user: {
           name: "Mareks",
           email_address: "mareks-new@example.com",
-          password: "password12345",
-          password_confirmation: "password12345"
+          password: "password12345"
         }
       }
     end
@@ -26,6 +26,21 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user = User.find_by!(email_address: "mareks-new@example.com")
     assert_equal "Mareks", user.name
     assert_equal "Mareks", user.display_name
+    assert_redirected_to v2_onboarding_path(step: "goal")
+  end
+
+  test "registration succeeds with password only" do
+    assert_difference("User.count", 1) do
+      post registration_url, params: {
+        user: {
+          name: "Solo Password",
+          email_address: "solo-password@example.com",
+          password: "password12345"
+        }
+      }
+    end
+
+    assert User.find_by(email_address: "solo-password@example.com").authenticate("password12345")
     assert_redirected_to v2_onboarding_path(step: "goal")
   end
 
@@ -37,8 +52,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
           user: {
             name: "Berlin User",
             email_address: "berlin-new@example.com",
-            password: "password12345",
-            password_confirmation: "password12345"
+            password: "password12345"
           }
         }
       end
@@ -56,8 +70,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
           user: {
             name: "No Zone",
             email_address: "nozone@example.com",
-            password: "password12345",
-            password_confirmation: "password12345"
+            password: "password12345"
           }
         }
       end
@@ -69,8 +82,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
       post registration_url, params: {
         user: {
           email_address: "noname@example.com",
-          password: "password12345",
-          password_confirmation: "password12345"
+          password: "password12345"
         }
       }
     end
