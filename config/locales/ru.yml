@@ -1430,6 +1430,8 @@ ru:
     name_placeholder: "Как тебя называть?"
     email: "Email"
     password: "Пароль"
+    show_password: "Show password" # TODO: translate
+    hide_password: "Hide password" # TODO: translate
     password_confirmation: "Повтори пароль"
     sign_in_title: "С возвращением"
     sign_in_subtitle: "Войди, чтобы продолжить расти."

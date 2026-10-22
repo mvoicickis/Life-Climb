@@ -24,8 +24,7 @@ class CsrfAuthenticationTest < ActionDispatch::IntegrationTest
         user: {
           name: "Test User",
           email_address: email,
-          password: "password12345",
-          password_confirmation: "password12345"
+          password: "password12345"
         }
       }
     end

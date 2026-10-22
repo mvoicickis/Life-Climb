@@ -1651,6 +1651,8 @@ lv:
     name_placeholder: "Kā tevi saukt?"
     email: "E-pasts"
     password: "Parole"
+    show_password: "Show password" # TODO: translate
+    hide_password: "Hide password" # TODO: translate
     password_confirmation: "Atkārto paroli"
     sign_in_title: "Laipni lūgts atpakaļ"
     sign_in_subtitle: "Ienāc, lai turpinātu augt."

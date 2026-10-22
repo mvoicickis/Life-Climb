@@ -3221,6 +3221,8 @@ en:
     name_placeholder: "What should we call you?"
     email: "Email"
     password: "Password"
+    show_password: "Show password"
+    hide_password: "Hide password"
     password_confirmation: "Confirm password"
     sign_in_title: "Welcome back"
     sign_in_subtitle: "Your mountain is waiting."

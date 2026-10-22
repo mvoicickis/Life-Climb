@@ -17,7 +17,6 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     fill_in I18n.t("auth.name"), with: "Alex"
     fill_in I18n.t("auth.email"), with: @email
     fill_in I18n.t("auth.password"), with: @password
-    fill_in I18n.t("auth.password_confirmation"), with: @password
     click_button I18n.t("auth.register_submit")
 
     assert_selector "h1", text: I18n.t("v2_onboarding.mountain_name_title"), wait: 8

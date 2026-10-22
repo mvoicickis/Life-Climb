@@ -1418,6 +1418,8 @@ es:
     name_placeholder: "¿Cómo te llamamos?"
     email: "Correo"
     password: "Contraseña"
+    show_password: "Show password" # TODO: translate
+    hide_password: "Hide password" # TODO: translate
     password_confirmation: "Repite la contraseña"
     sign_in_title: "Bienvenido de nuevo"
     sign_in_subtitle: "Inicia sesión para seguir creciendo."
