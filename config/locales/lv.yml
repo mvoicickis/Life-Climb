@@ -1670,6 +1670,9 @@ lv:
     new_password: "Jaunā parole"
     repeat_password: "Atkārto jauno paroli"
     save_password: "Saglabāt paroli"
+    csrf_signup_retry: "Not saved. Tap Create account again." # TODO: translate
+    csrf_login_retry: "Not saved. Log in again." # TODO: translate
+    csrf_retry: "Not saved. Try again." # TODO: translate
   game_ui:
     good_morning: "Labrīt"
     good_afternoon: "Labdien"
