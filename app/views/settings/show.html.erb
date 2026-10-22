@@ -150,7 +150,7 @@
         <%= button_to session_path,
               method: :delete,
               class: "lp-you-row lp-you-row--signout lp-you-signout",
-              form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } do %>
+              form: { data: { turbo: false, action: "submit->offline-page-cache#clearBeforeSignOut" } } do %>
           <%= t("nav.sign_out") %>
         <% end %>
       </section>

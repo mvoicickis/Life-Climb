@@ -66,6 +66,10 @@ module Authentication
       path
     end
 
+    def redirect_authenticated_from_auth_pages
+      redirect_to after_authentication_url if authenticated?
+    end
+
     def after_authentication_url
       stored = session.delete(:return_to_after_authenticating)
       if stored.present? && stored.start_with?("/") && !stored.start_with?("//")
