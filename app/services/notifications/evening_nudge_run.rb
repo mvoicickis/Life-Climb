@@ -19,7 +19,7 @@ module Notifications
       sent = 0
       skipped = 0
 
-      NudgeCandidateScope.users(hours: EVENING_HOURS, sent_on_column: SENT_ON_COLUMN).find_each do |user|
+      NudgeCandidateScope.users(kind: :evening, hours: EVENING_HOURS).find_each do |user|
         considered += 1
         if enqueue!(user)
           sent += 1
