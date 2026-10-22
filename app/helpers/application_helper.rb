@@ -437,4 +437,18 @@ module ApplicationHelper
   def active_goal_title(strategy_goal: nil, journey: nil)
     strategy_goal&.title.presence || journey&.title || t("dash.active_goal_fallback")
   end
+
+  def google_sign_in_configured?
+    ENV["GOOGLE_CLIENT_ID"].to_s.strip.present? &&
+      ENV["GOOGLE_CLIENT_SECRET"].to_s.strip.present?
+  end
+
+  def in_app_browser?
+    ua = request.user_agent.to_s
+    %w[FBAN FBAV FB_IAB FBIOS Instagram Messenger].any? { |token| ua.include?(token) }
+  end
+
+  def google_sign_in_button_visible?
+    google_sign_in_configured? && !in_app_browser?
+  end
 end

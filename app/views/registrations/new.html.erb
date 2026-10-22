@@ -7,6 +7,8 @@
   <h1 class="lp-auth-title"><%= t("auth.register_title") %></h1>
   <p class="lp-auth-sub"><%= t("auth.register_subtitle") %></p>
 
+  <%= render "shared/auth_google_sign_in" %>
+
   <%= form_with model: @user, url: registration_path,
         class: "space-y-4",
         data: { controller: "browser-timezone", turbo: false } do |form| %>

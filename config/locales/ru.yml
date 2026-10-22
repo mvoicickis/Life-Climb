@@ -1455,6 +1455,9 @@ ru:
     csrf_login_retry: "Not saved. Log in again." # TODO: translate
     csrf_retry: "Not saved. Try again." # TODO: translate
     google_sign_in_failed: "Google sign-in didn't work. Try again or use your email." # TODO: translate
+    continue_with_google: "Continue with Google" # TODO: translate
+    or: "or" # TODO: translate
+    google_open_in_browser: "To use Google, open this page in Safari or Chrome." # TODO: translate
   game_ui:
     good_morning: "Доброе утро"
     good_afternoon: "Добрый день"
