@@ -8,6 +8,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Back to Home|Atpakaļ uz sākumu/, response.body)
     assert_match(/Life Climb/, response.body)
+    assert_select "meta[name=turbo-cache-control][content=?]", "no-cache"
   end
 
   test "create with valid credentials" do

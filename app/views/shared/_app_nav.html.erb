@@ -47,7 +47,7 @@
                 method: :delete,
                 class: "app-menu-item app-menu-item--danger w-full text-left",
                 role: "menuitem",
-                form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
+                form: { data: { turbo: false, action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
         </div>
       </div>
     </div>

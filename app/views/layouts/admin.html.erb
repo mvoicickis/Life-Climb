@@ -39,7 +39,7 @@
                 session_path,
                 method: :delete,
                 class: "lp-admin__ghost is-danger",
-                form: { data: { action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
+                form: { data: { turbo: false, action: "submit->offline-page-cache#clearBeforeSignOut" } } %>
         </div>
       </div>
     </header>
