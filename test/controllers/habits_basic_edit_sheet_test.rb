@@ -45,6 +45,10 @@ class HabitsBasicEditSheetTest < ActionDispatch::IntegrationTest
     assert_equal 5, @habit.quick_add_amount
     assert_match dom_id(@habit, :today_sheet), response.body
     assert_match "data-tcard-menu-target=\"sheet\"", response.body
+    assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_title)}"/, response.body)
+    assert_match "Read more", response.body
+    assert_match dom_id(@habit, :edit_sheet), response.body
+    assert_match 'data-basic-edit-sheet-initial-name-value="Read more"', response.body
   end
 
   test "basic edit PATCH blank name returns 422" do

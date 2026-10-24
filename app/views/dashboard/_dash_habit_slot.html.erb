@@ -30,7 +30,7 @@
           <% if habit.identity_label.present? %>
             <p class="lp-habit-identity"><%= habit.identity_label %></p>
           <% end %>
-          <b class="lp-dash-tcard__title"><%= habit.name %></b>
+          <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
           <%= render "dashboard/dash_habit_today_meta", habit: habit %>
         </div>
         <%= button_to t("dash.battlefield.undo"),
@@ -57,7 +57,7 @@
           <% if habit.identity_label.present? %>
             <p class="lp-habit-identity"><%= habit.identity_label %></p>
           <% end %>
-          <b class="lp-dash-tcard__title"><%= habit.name %></b>
+          <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
           <%= render "dashboard/dash_habit_today_meta", habit: habit %>
         </div>
         <% unless photo_today %>
@@ -72,7 +72,7 @@
         <% if habit.identity_label.present? %>
           <p class="lp-habit-identity"><%= habit.identity_label %></p>
         <% end %>
-        <b class="lp-dash-tcard__title"><%= habit.name %></b>
+        <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
         <%= render "dashboard/dash_habit_today_meta", habit: habit %>
       </div>
 
