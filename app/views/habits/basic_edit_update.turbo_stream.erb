@@ -2,4 +2,10 @@
   <%= render "life_journeys/mountain_battle_streams" %>
 <% else %>
   <%= render "daily_logs/today_streams", habit: @habit, home_habits: @home_habits %>
+  <%= turbo_stream.replace dom_id(@habit, :today_title) do %>
+    <b id="<%= dom_id(@habit, :today_title) %>" class="lp-dash-tcard__title"><%= @habit.name %></b>
+  <% end %>
+  <%= turbo_stream.replace dom_id(@habit, :edit_sheet) do %>
+    <%= render "habits/edit_sheet", habit: @habit, return_to: "today", sheet_target: true %>
+  <% end %>
 <% end %>
