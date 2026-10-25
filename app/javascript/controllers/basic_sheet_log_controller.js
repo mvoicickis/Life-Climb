@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { applyTurboStreamFromResponse } from "lib/apply_turbo_stream"
+import { setTotal, retry, subscribe, formatAmount, parseAmount } from "lib/basic_today_save_queue"
 
 const ROW_STATE_CLASSES = ["is-done", "is-over", "is-hit"]
 
@@ -26,32 +26,34 @@ export default class extends Controller {
   }
 
   connect() {
-    this.confirmedAmount = this.amountValue
-    this.pendingAmount = null
-    this.inFlight = false
     this.editingExact = false
-    this.syncDisplay(this.confirmedAmount)
+    this.unsubscribe = subscribe(this.habitIdValue, (state) => this.onQueue(state), {
+      amount: this.amountValue,
+      setUrl: this.setUrlValue
+    })
+  }
+
+  disconnect() {
+    this.unsubscribe?.()
   }
 
   stepMinus() {
-    if (this.inFlight) return
-    const next = Math.max(0, this.confirmedAmount - this.quickValue)
+    const current = this.displayAmount()
+    const next = Math.max(0, current - this.quickValue)
     this.saveTotal(next)
   }
 
   stepPlus() {
-    if (this.inFlight) return
-    const next = this.confirmedAmount + this.quickValue
-    this.saveTotal(next)
+    const current = this.displayAmount()
+    this.saveTotal(current + this.quickValue)
   }
 
   openExact(event) {
-    if (this.inFlight) return
     event.preventDefault()
     this.editingExact = true
     this.numDisplayTarget.hidden = true
     this.numInputTarget.hidden = false
-    this.numInputTarget.value = String(this.confirmedAmount)
+    this.numInputTarget.value = String(this.displayAmount())
     this.numInputTarget.focus()
   }
 
@@ -75,83 +77,40 @@ export default class extends Controller {
     this.numInputTarget.hidden = true
     this.numDisplayTarget.hidden = false
     if (save) {
-      const parsed = this.parseAmount(this.numInputTarget.value)
+      const parsed = parseAmount(this.numInputTarget.value)
       if (parsed !== null) this.saveTotal(parsed)
-      else this.syncDisplay(this.confirmedAmount)
+      else this.syncDisplay(this.displayAmount())
     } else {
-      this.syncDisplay(this.confirmedAmount)
+      this.syncDisplay(this.displayAmount())
     }
   }
 
   retrySave() {
-    if (this.pendingAmount === null || this.inFlight) return
-    this.saveTotal(this.pendingAmount)
+    retry(this.habitIdValue)
   }
 
-  async saveTotal(nextTotal) {
-    if (this.inFlight) return
-    const total = Math.max(0, nextTotal)
-    this.pendingAmount = total
-    this.hideNotice()
-    this.inFlight = true
-    this.setSteppersDisabled(true)
+  saveTotal(nextTotal) {
+    setTotal(this.habitIdValue, nextTotal, { debounceMs: 0, setUrl: this.setUrlValue })
+  }
 
-    const prior = this.confirmedAmount
-    const token = document.querySelector("meta[name='csrf-token']")?.content
-    const body = new FormData()
-    body.append("authenticity_token", token || "")
-    body.append("mode", "set")
-    body.append("return_to", "today")
-    body.append("daily_log[amount]", String(total))
-
-    try {
-      const response = await fetch(this.setUrlValue, {
-        method: "POST",
-        headers: {
-          Accept: "text/vnd.turbo-stream.html",
-          "X-CSRF-Token": token || ""
-        },
-        body,
-        credentials: "same-origin"
-      })
-
-      if (response.ok) {
-        const applied = await applyTurboStreamFromResponse(response)
-        if (applied) {
-          this.readAmountFromDom()
-          this.syncRowState()
-          this.pendingAmount = null
-        } else {
-          this.failSave(prior)
-        }
-      } else {
-        this.failSave(prior)
-      }
-    } catch (_err) {
-      this.failSave(prior)
-    } finally {
-      this.inFlight = false
-      this.setSteppersDisabled(false)
+  onQueue(state) {
+    this.syncDisplay(state.localTotal)
+    if (state.failed) {
+      if (this.hasSaveNoticeTarget) this.saveNoticeTarget.hidden = false
+    } else {
+      this.hideNotice()
     }
-  }
-
-  failSave(prior) {
-    this.confirmedAmount = prior
-    this.syncDisplay(prior)
-    this.saveNoticeTarget.hidden = false
+    if (!state.inFlight && state.localTotal === state.confirmedTotal && !state.failed) {
+      this.syncRowState()
+    }
   }
 
   hideNotice() {
     if (this.hasSaveNoticeTarget) this.saveNoticeTarget.hidden = true
   }
 
-  setSteppersDisabled(disabled) {
-    if (this.hasMinusBtnTarget) this.minusBtnTarget.disabled = disabled
-    if (this.hasPlusBtnTarget) this.plusBtnTarget.disabled = disabled
-  }
-
   syncDisplay(amount) {
-    const text = this.formatAmount(amount)
+    const text = formatAmount(amount)
     if (this.hasTotalCountTarget) this.totalCountTarget.textContent = text
     if (this.hasNumDisplayTarget) this.numDisplayTarget.textContent = text
     if (this.hasTotalLineTarget) {
@@ -160,15 +119,15 @@ export default class extends Controller {
     if (this.hasTotalUnitTarget) {
       this.totalUnitTarget.hidden = amount === 0
     }
-    this.confirmedAmount = amount
     this.amountValue = amount
   }
 
-  readAmountFromDom() {
+  displayAmount() {
     if (this.hasNumDisplayTarget) {
-      const parsed = this.parseAmount(this.numDisplayTarget.textContent)
-      if (parsed !== null) this.confirmedAmount = parsed
+      const parsed = parseAmount(this.numDisplayTarget.textContent)
+      if (parsed !== null) return parsed
     }
+    return this.amountValue
   }
 
   syncRowState() {
@@ -178,20 +137,6 @@ export default class extends Controller {
     const state = meta.dataset.basicRowState || ""
     ROW_STATE_CLASSES.forEach((klass) => row.classList.remove(klass))
     state.split(/\s+/).filter(Boolean).forEach((klass) => row.classList.add(klass))
-  }
-
-  parseAmount(raw) {
-    const text = String(raw ?? "").trim().replace(/,/g, "")
-    if (text === "") return null
-    const num = Number(text)
-    if (!Number.isFinite(num) || num < 0) return null
-    return num
-  }
-
-  formatAmount(amount) {
-    const num = Number(amount)
-    if (!Number.isFinite(num)) return "0"
-    return num === Math.floor(num) ? String(Math.floor(num)) : String(num)
   }
 
   done(event) {

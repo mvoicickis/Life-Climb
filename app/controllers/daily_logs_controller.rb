@@ -114,6 +114,9 @@ class DailyLogsController < ApplicationController
   end
 
   def respond_log_failure!(message, fallback_habit: false)
+    Rails.logger.warn(
+      "[daily_logs] habit_id=#{params[:habit_id]} mode=#{params[:mode]} return_to=#{params[:return_to]} #{message}"
+    )
     alert = log_failure_alert(message)
     respond_to do |format|
       format.turbo_stream do

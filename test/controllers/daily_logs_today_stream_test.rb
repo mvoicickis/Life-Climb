@@ -67,21 +67,17 @@ class DailyLogsTodayStreamTest < ActionDispatch::IntegrationTest
     goal = @habit.goal
     rhythm_scope = -> { @user.life_point_ledgers.where(source: @habit) }
 
-    assert_difference -> { rhythm_scope.call.count }, 1 do
+    assert_difference -> { rhythm_scope.call.sum(:amount) }, LifePointsAward::RHYTHM do
       post daily_logs_path(habit_id: @habit.id),
            params: { mode: "set", return_to: "today", daily_log: { amount: goal } },
            as: :turbo_stream
       assert_response :success
-    end
 
-    assert_no_difference -> { rhythm_scope.call.count } do
       post daily_logs_path(habit_id: @habit.id),
            params: { mode: "set", return_to: "today", daily_log: { amount: 1 } },
            as: :turbo_stream
       assert_response :success
-    end
 
-    assert_no_difference -> { rhythm_scope.call.count } do
       post daily_logs_path(habit_id: @habit.id),
            params: { mode: "set", return_to: "today", daily_log: { amount: goal } },
            as: :turbo_stream
@@ -90,6 +86,25 @@ class DailyLogsTodayStreamTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, rhythm_scope.call.count
     assert_equal LifePointsAward::RHYTHM, rhythm_scope.call.sum(:amount)
+  end
+
+  test "rapid set increments award rhythm once when reaching goal" do
+    goal = @habit.goal
+    rhythm_scope = -> { @user.life_point_ledgers.where(source: @habit) }
+
+    assert_difference -> { rhythm_scope.call.sum(:amount) }, LifePointsAward::RHYTHM do
+      post daily_logs_path(habit_id: @habit.id),
+           params: { mode: "set", return_to: "today", daily_log: { amount: 5 } },
+           as: :turbo_stream
+      post daily_logs_path(habit_id: @habit.id),
+           params: { mode: "set", return_to: "today", daily_log: { amount: 15 } },
+           as: :turbo_stream
+      post daily_logs_path(habit_id: @habit.id),
+           params: { mode: "set", return_to: "today", daily_log: { amount: goal } },
+           as: :turbo_stream
+    end
+
+    assert_equal 1, rhythm_scope.call.count
   end
 
   test "html set still redirects to dashboard" do

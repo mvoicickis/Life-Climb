@@ -1,7 +1,7 @@
 <%# locals: habit %>
 <% ctx = habit_today_amount_context(habit) %>
 <% if ctx[:progress].is_a?(Numeric) && (habit.binary_checkin? || (habit.quantity_checkin? && habit.stretch_goal?)) %>
-  <%= tag.div(id: dom_id(habit, :today_segs), class: "lp-dash-habit__segs", aria: { hidden: true }) do %>
+  <%= tag.div(id: dom_id(habit, :today_segs), class: "lp-dash-habit__segs", aria: { hidden: true }, data: { basic_today_client_target: "segs" }) do %>
     <% habit_progress_segments(ctx[:progress], count: 16).each do |klass| %>
       <i class="<%= klass %>"></i>
     <% end %>

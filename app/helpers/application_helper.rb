@@ -236,6 +236,7 @@ module ApplicationHelper
     }
   end
 
+  # Mirrored in basic_today_save_queue.js (habitTodayRowState) — change both.
   def habit_today_row_state(habit)
     ctx = habit_today_amount_context(habit)
     tokens = []
@@ -269,6 +270,7 @@ module ApplicationHelper
   end
 
   # Discrete notches for RPG progress bars (hero 10, habit 12).
+  # Mirrored in basic_today_save_queue.js (habitProgressSegments) — change both.
   def habit_progress_segments(percent, count:)
     p = percent.nil? ? 0 : percent.to_i
     over = p > 100

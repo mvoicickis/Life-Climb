@@ -85,6 +85,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-dash-anytime", count: 1
     assert_select ".lp-dash-anytime form[data-controller='juicy-feedback']", minimum: 1
+    assert_select ".lp-dash-habit__quick-wrap form[data-controller='juicy-feedback']", count: 0
   end
 
   test "quest objective sheet markup is absent on Today V2" do

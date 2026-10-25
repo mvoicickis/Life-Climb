@@ -18301,7 +18301,8 @@ button.lp-strategy-overflow {
   gap: 0.1rem;
   margin-left: auto;
 }
-.lp-dash-habit__act > form {
+.lp-dash-habit__act > form,
+.lp-dash-habit__act > .lp-dash-habit__quick-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18375,6 +18376,15 @@ button.lp-strategy-overflow {
   25% { opacity: 1; transform: translateY(-2px) scale(1.1); }
   100% { opacity: 0; transform: translateY(-22px) scale(1); }
 }
+.is-total-pop {
+  display: inline-block;
+  animation: lp-total-pop 150ms ease;
+}
+@keyframes lp-total-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
 @media (prefers-reduced-motion: reduce) {
   .lp-dash-habit__qb,
   .lp-dash-habit__qb.is-pressed {
@@ -18385,6 +18395,9 @@ button.lp-strategy-overflow {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+  .is-total-pop {
+    animation: none;
   }
 }
 

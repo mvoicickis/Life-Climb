@@ -4,6 +4,8 @@
 <% ctx = habit_today_amount_context(habit, on: local_day)
    quick = habit.quantity_checkin? ? habit.quick_add_value : nil
    binary = habit.binary_checkin?
+   quantity = habit.quantity_checkin?
+   stretch_target = quantity && habit.stretch_goal? ? habit.todays_goal_value(on: local_day) : nil
    habit_win_form_data = {
      turbo: true,
      turbo_stream: true,
@@ -15,10 +17,26 @@
      juicy_feedback_win_not_saved_value: t("dash.battlefield.win_not_saved")
    } %>
 <li id="<%= dom_id(habit, :today) %>"
-    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if habit.quantity_checkin? %><%= ' is-binary-tick' if binary %> <%= habit_today_row_state(habit) %><%= ' is-struck' if binary && ctx[:done] %>"
-    data-controller="tcard-menu"
+    class="lp-dash-tcard is-habit is-compact is-slot<%= ' is-quantity' if quantity %><%= ' is-binary-tick' if binary %> <%= habit_today_row_state(habit) %><%= ' is-struck' if binary && ctx[:done] %>"
+    data-controller="<%= quantity ? 'tcard-menu basic-today-client' : 'tcard-menu' %>"
     data-tcard-menu-portal-value="true"
-    data-lp="<%= habit.points %>">
+    data-lp="<%= habit.points %>"
+    <% if quantity %>
+    data-basic-today-client-habit-id-value="<%= habit.id %>"
+    data-basic-today-client-amount-value="<%= ctx[:amount].to_d %>"
+    data-basic-today-client-quick-value="<%= quick %>"
+    data-basic-today-client-goal-value="<%= habit.goal.presence || 0 %>"
+    data-basic-today-client-stretch-goal-value="<%= habit.stretch_goal? %>"
+    data-basic-today-client-target-value="<%= stretch_target.present? ? format_amount(stretch_target) : 0 %>"
+    data-basic-today-client-unit-value="<%= habit.unit %>"
+    data-basic-today-client-set-url-value="<%= daily_logs_path(habit_id: habit.id) %>"
+    data-basic-today-client-amount-of-target-format-value="<%= t('dash.anytime.amount_of_target', amount: '%{amount}', target: '%{target}', unit: '%{unit}') %>"
+    data-basic-today-client-over-by-format-value="<%= t('dash.anytime.over_by', amount: '%{amount}') %>"
+    data-basic-today-client-win-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
+    data-basic-today-client-meta-id-value="<%= dom_id(habit, :today_meta) %>"
+    data-basic-today-client-today-id-value="<%= dom_id(habit, :today) %>"
+    data-basic-today-client-show-pct-value="<%= ctx[:show_pct] %>"
+    <% end %>>
   <% if binary %>
     <div class="lp-dash-habit__r1 lp-dash-habit__r1--binary-tick">
       <% if ctx[:done] %>
@@ -120,4 +138,11 @@
   <% end %>
 
   <%= render "dashboard/dash_habit_today_segs", habit: habit %>
+  <% if quantity %>
+    <button type="button"
+            class="lp-battle-win-save-notice"
+            data-basic-today-client-target="saveNotice"
+            data-action="click->basic-today-client#retrySave"
+            hidden><%= t("dash.battlefield.win_not_saved") %></button>
+  <% end %>
 </li>

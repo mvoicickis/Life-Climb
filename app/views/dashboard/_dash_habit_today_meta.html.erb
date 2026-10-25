@@ -5,22 +5,29 @@
       class: "lp-dash-tcard__meta",
       data: { basic_row_state: habit_today_row_state(habit) }) do %>
   <% if habit.quantity_checkin? && habit.stretch_goal? && ctx[:target].present? && ctx[:amount].to_d.positive? %>
-    <%= t("dash.anytime.amount_of_target",
+    <span data-basic-today-client-target="metaPrimary"><%= t("dash.anytime.amount_of_target",
           amount: format_amount(ctx[:amount]),
           target: format_amount(ctx[:target]),
-          unit: habit.unit) %>
+          unit: habit.unit) %></span>
     <% if ctx[:over] %>
-      · <%= t("dash.anytime.over_by", amount: format_amount(ctx[:amount] - ctx[:target])) %>
+      <span data-basic-today-client-target="metaOver"> · <%= t("dash.anytime.over_by", amount: format_amount(ctx[:amount] - ctx[:target])) %></span>
+    <% else %>
+      <span data-basic-today-client-target="metaOver" hidden></span>
     <% end %>
+  <% elsif habit.quantity_checkin? && habit.stretch_goal? && ctx[:target].present? %>
+    <span data-basic-today-client-target="metaPrimary" hidden></span>
+    <span data-basic-today-client-target="metaOver" hidden></span>
   <% elsif habit.quantity_checkin? && ctx[:amount].to_d.positive? %>
-    <%= format_amount(ctx[:amount]) %> <%= habit.unit %>
+    <span data-basic-today-client-target="amountSpan"><%= format_amount(ctx[:amount]) %></span> <%= habit.unit %>
     <% if habit.standard? && habit.range_summary.present? %>
       · <%= habit.range_summary %>
     <% end %>
+  <% elsif habit.quantity_checkin? %>
+    <span data-basic-today-client-target="amountSpan" hidden>0</span>
   <% elsif habit.binary_checkin? %>
     <%= t("dash.anytime.binary_subtitle") %>
   <% end %>
   <% if ctx[:show_pct] && !habit.binary_checkin? %>
-    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>"><%= ctx[:progress] %>%</span>
+    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>" data-basic-today-client-target="pct"><%= ctx[:progress] %>%</span>
   <% end %>
 <% end %>
