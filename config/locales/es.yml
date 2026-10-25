@@ -820,6 +820,7 @@ es:
       not_now: "Not now"
       ios_headline: "Add Life Climb to your home screen"
       ios_body: "Morning reminders need the app on your home screen on iPhone."
+      ios_steps: 'Tap Share, then "Add to Home Screen".' # TODO: translate
       ios_install: "Add to home screen"
       android_headline: "Morning nudge on your home screen"
       android_body: "Add Life Climb to your home screen, then we'll ask for a morning reminder."

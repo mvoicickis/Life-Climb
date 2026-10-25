@@ -87,6 +87,7 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_equal "false", host["data-push-offer-mark-shown-on-display-value"]
     assert_equal "false", host["data-push-offer-count-show-day-value"]
     assert_equal "true", host["data-push-offer-camp-sheet-value"]
+    assert_equal I18n.t("dash.push_offer.ios_steps"), host["data-push-offer-ios-steps-value"]
     assert_select "#mountain-push-offer-host[hidden]"
     assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
     assert_select ".lp-push-offer__not-now", count: 0

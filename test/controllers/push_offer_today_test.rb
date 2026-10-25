@@ -61,6 +61,7 @@ class PushOfferTodayTest < ActionDispatch::IntegrationTest
     assert_equal "false", host["data-push-offer-show-on-connect-value"]
     assert_equal "true", host["data-push-offer-compact-value"]
     assert_equal "false", host["data-push-offer-show-not-now-value"]
+    assert_equal I18n.t("dash.push_offer.ios_steps"), host["data-push-offer-ios-steps-value"]
     assert_equal "", host["data-push-offer-goal-title-value"].to_s
   end
 

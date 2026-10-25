@@ -19393,9 +19393,11 @@ button.lp-basic-sheet__edit-row {
 
 .lp-push-offer__body {
   margin: 0.45rem 0 0;
+  min-width: 0;
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--lp-muted, #475569);
+  overflow-wrap: anywhere;
 }
 
 .lp-push-offer__actions {

@@ -34,6 +34,7 @@ export default class extends Controller {
     notNowLabel: String,
     iosHeadline: String,
     iosBody: String,
+    iosSteps: String,
     iosInstallLabel: String,
     unsupportedMessage: String,
     notSavedMessage: String,
@@ -152,6 +153,18 @@ export default class extends Controller {
     const quiet = this.compactValue
     const rowLayout = quiet
 
+    const error = document.createElement("p")
+    error.className = "lp-push-offer__error"
+    error.hidden = true
+    error.setAttribute("role", "alert")
+    this.errorElement = error
+
+    if (mode === "ios_install") {
+      this.appendIosInstallCard(host, quiet, error)
+      this.markShownIfNeeded()
+      return
+    }
+
     const card = document.createElement("div")
     card.className = rowLayout
       ? "lp-push-offer lp-push-offer--quiet lp-push-offer--row"
@@ -161,21 +174,13 @@ export default class extends Controller {
     card.setAttribute("role", "dialog")
     card.setAttribute("aria-live", "polite")
 
-    const error = document.createElement("p")
-    error.className = "lp-push-offer__error"
-    error.hidden = true
-    error.setAttribute("role", "alert")
-    this.errorElement = error
-
     if (rowLayout) {
       const row = document.createElement("div")
       row.className = "lp-push-offer__row"
 
       const copy = document.createElement("p")
       copy.className = "lp-push-offer__headline"
-      if (mode === "ios_install") {
-        copy.textContent = this.iosHeadlineValue
-      } else if (mode === "unsupported") {
+      if (mode === "unsupported") {
         copy.textContent = this.unsupportedMessageValue
       } else {
         copy.textContent = this.reminderLineValue || this.headlineValue
@@ -189,13 +194,8 @@ export default class extends Controller {
         const yes = document.createElement("button")
         yes.type = "button"
         yes.className = "lp-push-offer__yes lp-push-offer__yes--quiet"
-        if (mode === "ios_install") {
-          yes.textContent = this.iosInstallLabelValue
-          yes.addEventListener("click", (event) => this.install(event))
-        } else {
-          yes.textContent = this.yesLabelValue
-          yes.addEventListener("click", (event) => this.enable(event))
-        }
+        yes.textContent = this.yesLabelValue
+        yes.addEventListener("click", (event) => this.enable(event))
         actions.appendChild(yes)
         this.yesButton = yes
       } else if (this.settingsUrlValue) {
@@ -208,20 +208,8 @@ export default class extends Controller {
 
       row.appendChild(actions)
       card.appendChild(row)
-
-      if (mode === "ios_install" && this.iosBodyValue) {
-        const body = document.createElement("p")
-        body.className = "lp-push-offer__body"
-        body.textContent = this.iosBodyValue
-        card.appendChild(body)
-      }
     } else {
-      if (mode === "ios_install") {
-        const headline = document.createElement("p")
-        headline.className = "lp-push-offer__headline"
-        headline.textContent = this.iosHeadlineValue
-        card.appendChild(headline)
-      } else if (mode === "unsupported") {
+      if (mode === "unsupported") {
         const headline = document.createElement("p")
         headline.className = "lp-push-offer__headline"
         headline.textContent = this.unsupportedMessageValue
@@ -251,13 +239,6 @@ export default class extends Controller {
         }
       }
 
-      if (mode === "ios_install" && this.iosBodyValue) {
-        const body = document.createElement("p")
-        body.className = "lp-push-offer__body"
-        body.textContent = this.iosBodyValue
-        card.appendChild(body)
-      }
-
       const actions = document.createElement("div")
       actions.className = "lp-push-offer__actions"
 
@@ -265,13 +246,8 @@ export default class extends Controller {
         const yes = document.createElement("button")
         yes.type = "button"
         yes.className = "lp-cta lp-push-offer__yes"
-        if (mode === "ios_install") {
-          yes.textContent = this.iosInstallLabelValue
-          yes.addEventListener("click", (event) => this.install(event))
-        } else {
-          yes.textContent = this.yesLabelValue
-          yes.addEventListener("click", (event) => this.enable(event))
-        }
+        yes.textContent = this.yesLabelValue
+        yes.addEventListener("click", (event) => this.enable(event))
         actions.appendChild(yes)
         this.yesButton = yes
       } else if (this.settingsUrlValue) {
@@ -298,6 +274,34 @@ export default class extends Controller {
     host.appendChild(card)
     this.cardElement = card
 
+    this.markShownIfNeeded()
+  }
+
+  appendIosInstallCard(host, quiet, error) {
+    const card = document.createElement("div")
+    card.className = quiet ? "lp-push-offer lp-push-offer--quiet" : "lp-push-offer"
+    card.setAttribute("role", "dialog")
+    card.setAttribute("aria-live", "polite")
+
+    const headline = document.createElement("p")
+    headline.className = "lp-push-offer__headline"
+    headline.textContent = this.iosHeadlineValue
+    card.appendChild(headline)
+
+    const steps = (this.iosStepsValue || "").trim()
+    if (steps) {
+      const body = document.createElement("p")
+      body.className = "lp-push-offer__body"
+      body.textContent = steps
+      card.appendChild(body)
+    }
+
+    card.appendChild(error)
+    host.appendChild(card)
+    this.cardElement = card
+  }
+
+  markShownIfNeeded() {
     if (this.markShownOnDisplayValue && !this._displayMarked) {
       this._displayMarked = true
       this.markShown()
