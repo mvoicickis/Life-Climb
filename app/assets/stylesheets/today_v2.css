@@ -202,7 +202,8 @@ body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
 }
 
 .lp-today-v2-row.has-win-save-notice,
-.lp-dash-tcard.is-habit.is-binary-tick.has-win-save-notice {
+.lp-dash-tcard.is-habit.is-binary-tick.has-win-save-notice,
+.lp-dash-tcard.is-habit.is-quantity.has-win-save-notice {
   flex-wrap: wrap;
 }
 

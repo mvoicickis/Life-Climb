@@ -123,11 +123,13 @@ class AnytimeQuantityInputTest < ActionDispatch::IntegrationTest
     assert_equal 7, @habit.reload.today_amount.to_i
   end
 
-  test "plus form posts mode add only via daily_logs endpoint" do
-    post daily_logs_path(habit_id: @habit.id),
-         params: { mode: "add", return_to: "today", daily_log: { amount: "5" } }
-    assert_redirected_to dashboard_path
-    assert_equal 5, @habit.reload.today_amount.to_i
+  test "Today plus control is a button that debounces set saves not mode add" do
+    get dashboard_path
+    assert_response :success
+    quick = "##{dom_id(@habit, :today_quick)}"
+    assert_select "#{quick} button.lp-dash-habit__qb.is-big[type=button]", count: 1
+    assert_select "#{quick} form[data-controller='juicy-feedback']", count: 0
+    assert_select "##{dom_id(@habit, :today)}[data-controller*='basic-today-client']", count: 1
   end
 
   test "failed today add shows unmistakable alert after optimistic pop path" do
