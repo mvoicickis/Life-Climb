@@ -9,6 +9,10 @@ module Battles
   # (not Date.current), battle wins only (not every touch!), always-one-gap
   # soft freeze (no Base Camp token bank), derived (no stored counter).
   class DaysInARow
+    # When local today is before created_at (travel_to in tests, rare TZ edges),
+    # still look back a year so earlier wins are not dropped by a one-day window.
+    LOOKBACK_DAYS = 366
+
     def self.count(user:)
       new(user:).count
     end
@@ -21,8 +25,13 @@ module Battles
       zone_name = WinsOnLocalDate.time_zone_for(@user)
       today = WinsOnLocalDate.local_today_for(@user)
       zone = Time.find_zone!(zone_name)
-      from = @user.created_at.in_time_zone(zone).to_date
-      from = today if from > today
+      created = @user.created_at.in_time_zone(zone).to_date
+      from =
+        if created > today
+          today - LOOKBACK_DAYS
+        else
+          created
+        end
 
       counts = WinsOnLocalDate.counts_by_date(
         user: @user,

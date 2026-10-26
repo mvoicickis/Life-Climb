@@ -40,8 +40,8 @@ module Battles
       travel_to zone_time(2026, 8, 6, 12) do
         seed_climb!(@user, today_mission: "Stretch daily")
         battle = @user.strategy_goals.find_by!(horizon: "day", title: "Stretch daily")
-        battle.update!(repeat: "daily")
         from = @today - 1
+        battle.update!(repeat: "daily", scheduled_on: from)
         Strategy::CascadeToDaily.call(user: @user, life_area: battle.life_area, from: from, to: @today)
         [ from, @today ].each do |day|
           todo = @user.daily_todos.for_day(day).find_by!(strategy_goal_id: battle.id)
