@@ -15,6 +15,15 @@ class PushSubscriptionsController < ApplicationController
     if subscription.save
       Notifications::EnsureTimeZone.call(user: current_user, zone: params[:time_zone])
       status = subscription.previously_new_record? ? :created : :ok
+      source = params[:source].to_s.strip
+      if source == "camp_sheet" || source == "today"
+        Rails.logger.info(
+          "[PushOffer] user_id=#{current_user.id} action=subscribe source=#{source}"
+        )
+      else
+        # Settings and other callers POST without source; offer UI appends it via offerUrl.
+        Rails.logger.info("[PushOffer] user_id=#{current_user.id} action=subscribe")
+      end
       render json: { ok: true, id: subscription.id }, status: status
     else
       Rails.logger.warn(
