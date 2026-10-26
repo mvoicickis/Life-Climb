@@ -30,6 +30,7 @@ export default class extends Controller {
     markShownOnDisplay: Boolean,
     countShowDay: { type: Boolean, default: true },
     campSheet: Boolean,
+    source: { type: String, default: "today" },
     yesLabel: String,
     notNowLabel: String,
     iosHeadline: String,
@@ -86,7 +87,7 @@ export default class extends Controller {
     try {
       const result = await enablePushSubscription({
         vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.subscribeUrlValue,
+        subscribeUrl: this.offerUrl(this.subscribeUrlValue),
         timeZone: detectedBrowserTimeZone()
       })
       if (result.ok) {
@@ -114,15 +115,27 @@ export default class extends Controller {
   async prepareOffer() {
     const state = await getPushSubscriptionState()
 
-    if (state.subscribed) return
-    if (state.permission === "denied") return
+    if (state.subscribed) {
+      console.info("[PushOffer] skip", "subscribed")
+      return
+    }
+    if (state.permission === "denied") {
+      console.info("[PushOffer] skip", "denied")
+      return
+    }
 
     await this.prefetchForOffer()
 
     if (this.campSheetValue) {
       const mode = this.cardMode()
-      if (mode === "unsupported") return
-      if (mode === "remind" && !this._prefetchPublicKey) return
+      if (mode === "unsupported") {
+        console.info("[PushOffer] skip", "unsupported")
+        return
+      }
+      if (mode === "remind" && !this._prefetchPublicKey) {
+        console.info("[PushOffer] skip", "no_vapid")
+        return
+      }
     }
 
     this.renderCard()
@@ -327,12 +340,21 @@ export default class extends Controller {
     this.yesButton.setAttribute("aria-busy", busy ? "true" : "false")
   }
 
-  patchUrl(url) {
+  offerSource() {
+    const value = (this.sourceValue || "").trim()
+    if (value === "camp_sheet" || value === "today") return value
+    return this.campSheetValue ? "camp_sheet" : "today"
+  }
+
+  offerUrl(url) {
     if (!url) return url
-    if (this.countShowDayValue) return url
+
+    const params = new URLSearchParams()
+    params.set("source", this.offerSource())
+    if (!this.countShowDayValue) params.set("count_show_day", "false")
 
     const separator = url.includes("?") ? "&" : "?"
-    return `${url}${separator}count_show_day=false`
+    return `${url}${separator}${params.toString()}`
   }
 
   async fetchPatchOk(url) {
@@ -362,7 +384,7 @@ export default class extends Controller {
   markShown() {
     if (!this.shownUrlValue) return Promise.resolve()
 
-    return this.fetchPatchOk(this.patchUrl(this.shownUrlValue)).catch(() => {
+    return this.fetchPatchOk(this.offerUrl(this.shownUrlValue)).catch(() => {
       /* Network failure — offer may reappear. */
     })
   }
@@ -381,7 +403,7 @@ export default class extends Controller {
       if (permission !== "granted") {
         if (permission === "denied") {
           try {
-            await this.fetchPatchOk(this.patchUrl(this.deniedUrlValue))
+            await this.fetchPatchOk(this.offerUrl(this.deniedUrlValue))
           } catch (error) {
             console.error(error)
           }
@@ -401,7 +423,7 @@ export default class extends Controller {
       await completePushSubscription({
         registration,
         publicKey,
-        subscribeUrl: this.subscribeUrlValue,
+        subscribeUrl: this.offerUrl(this.subscribeUrlValue),
         timeZone: detectedBrowserTimeZone()
       })
 
@@ -441,7 +463,7 @@ export default class extends Controller {
 
     try {
       if (this.dismissUrlValue) {
-        await this.fetchDeleteOk(this.dismissUrlValue)
+        await this.fetchDeleteOk(this.offerUrl(this.dismissUrlValue))
       }
     } catch (error) {
       console.error(error)
@@ -456,7 +478,7 @@ export default class extends Controller {
     if (!this.deniedUrlValue) return
 
     try {
-      await this.fetchPatchOk(this.patchUrl(this.deniedUrlValue))
+      await this.fetchPatchOk(this.offerUrl(this.deniedUrlValue))
     } catch (error) {
       console.error(error)
     }

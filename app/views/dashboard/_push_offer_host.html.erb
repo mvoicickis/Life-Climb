@@ -7,6 +7,7 @@
 <% mark_shown_on_display = local_assigns.fetch(:mark_shown_on_display, false) %>
 <% count_show_day = local_assigns.fetch(:count_show_day, true) %>
 <% camp_sheet = local_assigns.fetch(:camp_sheet, false) %>
+<% source = camp_sheet ? "camp_sheet" : "today" %>
 <div id="<%= host_id %>"
      class="<%= host_class %>"
      hidden
@@ -27,6 +28,7 @@
      data-push-offer-mark-shown-on-display-value="<%= mark_shown_on_display ? 'true' : 'false' %>"
      data-push-offer-count-show-day-value="<%= count_show_day ? 'true' : 'false' %>"
      data-push-offer-camp-sheet-value="<%= camp_sheet ? 'true' : 'false' %>"
+     data-push-offer-source-value="<%= source %>"
      data-push-offer-yes-label-value="<%= t('dash.push_offer.yes_label') %>"
      data-push-offer-not-now-label-value="<%= t('dash.push_offer.not_now') %>"
      data-push-offer-ios-headline-value="<%= t('dash.push_offer.ios_headline') %>"
