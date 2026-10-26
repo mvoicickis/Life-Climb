@@ -75,6 +75,10 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
       push_offer_last_shown_on: nil,
       push_offer_show_days: 0
     )
+    goal = @result.goal || @project.root_goal
+    tricky = 'Ship <b>it</b> & "go"'
+    goal.update!(title: tricky)
+    Goals::Current.clear_cache!(user: @user)
     battle = save_first_battle!
 
     post battle_win_path(battle), params: { source: "camp_sheet" }, as: :turbo_stream
@@ -88,10 +92,17 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_equal "false", host["data-push-offer-count-show-day-value"]
     assert_equal "true", host["data-push-offer-camp-sheet-value"]
     assert_equal "camp_sheet", host["data-push-offer-source-value"]
+    assert_equal tricky, host["data-push-offer-goal-title-value"]
+    assert_equal I18n.t("dash.push_offer.mountain_label"), host["data-push-offer-mountain-label-value"]
+    assert_equal I18n.t("dash.push_offer.mountain_line"), host["data-push-offer-mountain-line-value"]
+    assert_equal I18n.t("dash.push_offer.mountain_yes"), host["data-push-offer-mountain-yes-value"]
+    assert_equal I18n.t("dash.push_offer.mountain_done"), host["data-push-offer-mountain-done-value"]
     assert_equal I18n.t("dash.push_offer.ios_steps"), host["data-push-offer-ios-steps-value"]
     assert_select "#mountain-push-offer-host[hidden]"
+    assert_select ".lp-trail-camp-finish:not(.is-push-offer-open) .lp-trail-camp-finish__cta"
     assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
     assert_select ".lp-push-offer__not-now", count: 0
+    refute_includes response.body, "<b>it</b>"
     assert_equal 0, @user.reload.push_offer_show_days
   end
 

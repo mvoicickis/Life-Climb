@@ -39,7 +39,11 @@ export default class extends Controller {
     iosInstallLabel: String,
     unsupportedMessage: String,
     notSavedMessage: String,
-    settingsLinkLabel: String
+    settingsLinkLabel: String,
+    mountainLabel: String,
+    mountainLine: String,
+    mountainYes: String,
+    mountainDone: String
   }
 
   connect() {
@@ -48,6 +52,7 @@ export default class extends Controller {
     this._displayMarked = false
     this._prefetchRegistration = null
     this._prefetchPublicKey = null
+    this._doneTimer = null
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
     this.syncPushEndpointFields()
@@ -59,6 +64,8 @@ export default class extends Controller {
 
   disconnect() {
     document.removeEventListener("battle-day:celebrate", this._celebrateHandler)
+    this.clearDoneTimer()
+    this.setPushOfferOpen(false)
   }
 
   onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false } = {}) {
@@ -128,6 +135,10 @@ export default class extends Controller {
 
     if (this.campSheetValue) {
       const mode = this.cardMode()
+      if (mode === "ios_install") {
+        console.info("[PushOffer] skip", "ios")
+        return
+      }
       if (mode === "unsupported") {
         console.info("[PushOffer] skip", "unsupported")
         return
@@ -150,17 +161,32 @@ export default class extends Controller {
     return "remind"
   }
 
+  finishRoot() {
+    return this.element.closest(".lp-trail-camp-finish")
+  }
+
+  setPushOfferOpen(open) {
+    const root = this.finishRoot()
+    if (!root) return
+    root.classList.toggle("is-push-offer-open", Boolean(open))
+  }
+
+  clearDoneTimer() {
+    if (this._doneTimer) {
+      window.clearTimeout(this._doneTimer)
+      this._doneTimer = null
+    }
+  }
+
   renderCard() {
+    if (this.campSheetValue) {
+      this.renderCampSheetCard()
+      return
+    }
+
     const host = this.element
     host.hidden = false
     host.innerHTML = ""
-
-    if (this.campSheetValue) {
-      const divider = document.createElement("div")
-      divider.className = "lp-trail-camp-finish__reminder-divider"
-      divider.setAttribute("aria-hidden", "true")
-      host.appendChild(divider)
-    }
 
     const mode = this.cardMode()
     const quiet = this.compactValue
@@ -288,6 +314,107 @@ export default class extends Controller {
     this.cardElement = card
 
     this.markShownIfNeeded()
+  }
+
+  renderCampSheetCard() {
+    const host = this.element
+    host.hidden = false
+    host.innerHTML = ""
+
+    const error = document.createElement("p")
+    error.className = "lp-push-offer__error"
+    error.hidden = true
+    error.setAttribute("role", "alert")
+    this.errorElement = error
+
+    const card = document.createElement("div")
+    card.className = "lp-push-offer is-mountain-reminder is-enter"
+    card.setAttribute("role", "dialog")
+    card.setAttribute("aria-live", "polite")
+
+    const label = document.createElement("p")
+    label.className = "lp-push-offer__goal-label"
+    label.textContent = this.mountainLabelValue || "The mountain is yours to climb:"
+    card.appendChild(label)
+
+    const goalTitle = (this.goalTitleValue || "").trim()
+    if (goalTitle) {
+      const title = document.createElement("p")
+      title.className = "lp-push-offer__goal-title is-mountain"
+      title.textContent = goalTitle
+      card.appendChild(title)
+    }
+
+    const ask = document.createElement("div")
+    ask.className = "lp-push-offer__ask"
+
+    const line = document.createElement("p")
+    line.className = "lp-push-offer__body is-mountain-line"
+    line.textContent = this.mountainLineValue || "One small step each day gets you there."
+    ask.appendChild(line)
+
+    const yes = document.createElement("button")
+    yes.type = "button"
+    yes.className = "lp-push-offer__yes is-mountain-yes"
+    const bell = document.createElement("span")
+    bell.className = "lp-push-offer__bell-inline"
+    bell.setAttribute("aria-hidden", "true")
+    bell.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 10.5a5.5 5.5 0 0 1 11 0c0 4 1.5 5.5 1.5 5.5H5s1.5-1.5 1.5-5.5Z"/><path d="M10 17.5a2 2 0 0 0 4 0"/></svg>'
+    yes.appendChild(bell)
+    const yesText = document.createElement("span")
+    yesText.textContent = this.mountainYesValue || "Remind me tomorrow"
+    yes.appendChild(yesText)
+    yes.addEventListener("click", (event) => this.enable(event))
+    ask.appendChild(yes)
+    this.yesButton = yes
+
+    card.appendChild(ask)
+    card.appendChild(error)
+    host.appendChild(card)
+    this.cardElement = card
+    this.askElement = ask
+
+    this.setPushOfferOpen(true)
+    this.markShownIfNeeded()
+  }
+
+  showCampSheetDone() {
+    if (!this.cardElement) return
+
+    if (this.askElement) {
+      this.askElement.remove()
+      this.askElement = null
+    }
+    this.yesButton = null
+
+    const done = document.createElement("p")
+    done.className = "lp-push-offer__done is-pop"
+    const raw = (this.mountainDoneValue || "Reminders on ✓").trim()
+    const tickIndex = raw.lastIndexOf("✓")
+    if (tickIndex >= 0) {
+      done.appendChild(document.createTextNode(raw.slice(0, tickIndex)))
+      const tick = document.createElement("span")
+      tick.className = "lp-push-offer__done-tick"
+      tick.setAttribute("aria-hidden", "true")
+      tick.textContent = "✓"
+      done.appendChild(tick)
+      if (tickIndex + 1 < raw.length) {
+        done.appendChild(document.createTextNode(raw.slice(tickIndex + 1)))
+      }
+    } else {
+      done.textContent = raw
+    }
+    this.cardElement.appendChild(done)
+
+    this.clearDoneTimer()
+    this._doneTimer = window.setTimeout(() => {
+      if (this.cardElement) this.cardElement.classList.add("is-fade-out")
+      this._doneTimer = window.setTimeout(() => {
+        this._doneTimer = null
+        this.hideCard()
+      }, 450)
+    }, 2000)
   }
 
   appendIosInstallCard(host, quiet, error) {
@@ -429,7 +556,12 @@ export default class extends Controller {
 
       await this.syncPushEndpointFields()
       await this.markShown()
-      this.hideCard()
+
+      if (this.campSheetValue) {
+        this.showCampSheetDone()
+      } else {
+        this.hideCard()
+      }
     } catch (error) {
       console.error(error)
       this.showNotSavedError()
@@ -485,9 +617,12 @@ export default class extends Controller {
   }
 
   hideCard() {
+    this.clearDoneTimer()
+    this.setPushOfferOpen(false)
     this.element.hidden = true
     this.element.innerHTML = ""
     this.cardElement = null
+    this.askElement = null
     this.yesButton = null
     this.errorElement = null
   }

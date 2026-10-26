@@ -827,6 +827,10 @@ es:
       android_install: "Add to home screen"
       unsupported: "Reminders aren't supported in this browser. Try Settings on a phone."
       settings_link: "Open Settings"
+      mountain_label: "The mountain is yours to climb:" # TODO: translate
+      mountain_line: "One small step each day gets you there." # TODO: translate
+      mountain_yes: "Remind me tomorrow" # TODO: translate
+      mountain_done: "Reminders on ✓" # TODO: translate
     commitment:
       tier_label: "Compromiso diario"
       # TODO: translate

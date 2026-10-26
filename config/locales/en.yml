@@ -307,6 +307,10 @@ en:
       android_install: "Add to home screen"
       unsupported: "Reminders aren't supported in this browser. Try Settings on a phone."
       settings_link: "Open Settings"
+      mountain_label: "The mountain is yours to climb:"
+      mountain_line: "One small step each day gets you there."
+      mountain_yes: "Remind me tomorrow"
+      mountain_done: "Reminders on ✓"
     commitment:
       tier_label: "Daily commitment"
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
