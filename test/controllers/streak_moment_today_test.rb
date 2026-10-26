@@ -45,4 +45,36 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
       assert_select ".lp-streak-moment", count: 0
     end
   end
+
+  test "Monday streak strip shows Sunday and Monday wins with today last" do
+    monday = Date.new(2026, 8, 10)
+    sunday = monday - 1
+    travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
+      @user.update!(last_streak_moment_on: nil) if @user.has_attribute?(:last_streak_moment_on)
+      seed_climb!(@user, today_mission: "Monday win")
+      project = @user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+      journey = @user.primary_focused_journey
+      project.children.create!(
+        user: @user,
+        life_area: journey.life_area,
+        life_journey: journey,
+        horizon: "day",
+        title: "Sunday win",
+        scheduled_on: sunday,
+        position: 1,
+        completed_at: Time.find_zone!(@zone).local(2026, 8, 9, 9, 0, 0)
+      )
+      project.children.find_by!(horizon: "day", title: "Monday win")
+        .update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 10, 9, 0, 0))
+
+      get dashboard_path
+      assert_response :success
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day", count: 7
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day-mark.is-won", count: 2
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day.is-today", count: 1
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day:last-child.is-today"
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day:last-child .lp-streak-moment__day-mark.is-won"
+      assert_select ".lp-streak-moment__week .lp-streak-moment__day:nth-child(6) .lp-streak-moment__day-mark.is-won"
+    end
+  end
 end

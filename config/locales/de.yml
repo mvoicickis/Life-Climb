@@ -867,7 +867,7 @@ de:
       days_in_a_row: "days in a row"
       days_in_a_row_bang: "%{count} days in a row!"
       aria: "%{count} days in a row"
-      this_week: "This week"
+      last_7_days: "Last 7 days"  # TODO: translate
       mountain_yours: "The mountain is yours to climb:"
       continue: "Continue"
       day_of: "Day %{n} of %{m}"

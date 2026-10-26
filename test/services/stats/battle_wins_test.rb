@@ -188,5 +188,62 @@ module Stats
         assert_equal 3, stats.calendar_tier(4)
       end
     end
+
+    test "last_7_days is oldest first ending on local today with yesterday in sixth slot" do
+      travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
+        seed_climb!(@user, today_mission: "Monday win")
+        project = @user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+        journey = @user.primary_focused_journey
+        sunday = Date.new(2026, 8, 9)
+        project.children.create!(
+          user: @user,
+          life_area: journey.life_area,
+          life_journey: journey,
+          horizon: "day",
+          title: "Sunday win",
+          scheduled_on: sunday,
+          position: 1,
+          completed_at: Time.find_zone!(@zone).local(2026, 8, 9, 9, 0, 0)
+        )
+        battle = project.children.find_by!(horizon: "day", title: "Monday win")
+        battle.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 10, 9, 0, 0))
+
+        stats = BattleWins.call(user: @user)
+        window = stats.last_7_days
+        assert_equal 7, window[:days].size
+        assert_equal Date.new(2026, 8, 4), window[:days].first
+        assert_equal Date.new(2026, 8, 10), window[:days].last
+        assert_equal stats.local_today, window[:days].last
+        assert_operator window[:counts][5].to_i, :>=, 1
+        assert_equal sunday, window[:days][5]
+      end
+    end
+
+    test "last_7_days uses preference zone local today across midnight" do
+      travel_to Time.find_zone!("UTC").local(2026, 8, 10, 22, 30, 0) do
+        # Berlin is UTC+2 in August → local 2026-08-11
+        seed_climb!(@user, today_mission: "Local today win")
+        battle = @user.strategy_goals.find_by!(horizon: "day", title: "Local today win")
+        battle.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 11, 9, 0, 0))
+
+        stats = BattleWins.call(user: @user)
+        window = stats.last_7_days
+        assert_equal Date.new(2026, 8, 11), stats.local_today
+        assert_equal Date.new(2026, 8, 11), window[:days].last
+        assert_equal 7, window[:days].size
+        assert_equal Date.new(2026, 8, 5), window[:days].first
+      end
+    end
+
+    test "this_week stays Monday through Sunday for Stats" do
+      travel_to Time.find_zone!(@zone).local(2026, 8, 12, 12, 0, 0) do
+        stats = BattleWins.call(user: @user)
+        week = stats.this_week
+        assert_equal Date.new(2026, 8, 10), week[:days].first
+        assert_predicate week[:days].first, :monday?
+        assert_equal Date.new(2026, 8, 16), week[:days].last
+        assert_predicate week[:days].last, :sunday?
+      end
+    end
   end
 end

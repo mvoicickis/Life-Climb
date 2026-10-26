@@ -54,6 +54,23 @@ module Stats
       }
     end
 
+    # Rolling window for the streak-moment strip (oldest left, today right).
+    # Stats "This week" bars keep #this_week (Mon–Sun).
+    def last_7_days
+      finish = local_today
+      start = finish - 6
+      counts = counts_by_date(from: start, to: finish)
+      days = (0..6).map { |offset| start + offset }
+      values = days.map { |day| counts[day].to_i }
+
+      {
+        start: start,
+        days: days,
+        counts: values,
+        total: values.sum
+      }
+    end
+
     def by_weekday(from: nil, to: nil)
       to ||= local_today
       from ||= to - (BEST_DAY_LOOKBACK_DAYS - 1)
