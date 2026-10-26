@@ -61,6 +61,7 @@ module Developer
           push_offer_permission_denied_at: nil,
           push_offer_last_shown_on: nil,
           push_offer_show_days: 0,
+          last_streak_moment_on: nil,
           install_offer_dismiss_count: 0,
           install_offer_dismissed_at: nil,
           install_offer_installed_at: nil,

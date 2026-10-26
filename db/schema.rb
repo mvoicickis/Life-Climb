@@ -574,6 +574,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
     t.integer "planning_version", default: 2, null: false
     t.integer "push_offer_dismiss_count", default: 0, null: false
     t.datetime "push_offer_dismissed_at"
+    t.date "last_streak_moment_on"
     t.date "push_offer_last_shown_on"
     t.datetime "push_offer_permission_denied_at"
     t.integer "push_offer_show_days", default: 0, null: false

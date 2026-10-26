@@ -110,6 +110,10 @@
       <%= render "dashboard/today_battlefield_surface" %>
     </div>
   <% end %>
+
+  <div id="streak-moment-host">
+    <%= render "dashboard/streak_moment", moment: @streak_moment if @streak_moment.present? %>
+  </div>
 </div>
 
 <% if flash[:lp_toast].present? %>

@@ -2014,6 +2014,12 @@ en:
       freeze_hint: "Covers one quiet miss — applied automatically."
       freeze_earned: "Base Camp token earned"
       fresh_start: "New climb starting"
+    streak_moment:
+      days_in_a_row: "days in a row"
+      aria: "%{count} days in a row"
+      this_week: "This week"
+      mountain_yours: "The mountain is yours to climb:"
+      continue: "Continue"
     peek:
       open_trail: "Open trail"
       add_next: "Add next step"
