@@ -66,13 +66,17 @@ class StreakCommitmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "decline increments declines" do
+    seed_climb!(@user, today_mission: "Ship auth")
+
     post decline_streak_commitment_path
     assert_response :no_content
     assert_equal 1, @user.reload.streak_commit_declines
   end
 
   test "destroy clears commitment" do
+    seed_climb!(@user, today_mission: "Ship auth")
     @user.update!(streak_commitment_target_days: 7, streak_commitment_started_on: @today)
+
     delete streak_commitment_path
     assert_response :no_content
     @user.reload
