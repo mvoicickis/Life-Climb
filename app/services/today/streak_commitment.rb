@@ -10,6 +10,12 @@ module Today
       new(user)
     end
 
+    # Read-only view for push copy. Never sync!/clear!/update!.
+    # Returns { target:, n: } or nil.
+    def self.peek(user, date: nil)
+      new(user).peek(date: date)
+    end
+
     def initialize(user)
       @user = user
     end
@@ -20,6 +26,29 @@ module Today
         @user.has_attribute?(:streak_commitment_started_on) &&
         @user.has_attribute?(:streak_commit_declines)
       )
+    end
+
+    # Push-safe: target present and DaysInARow ≥ 2. Does not write.
+    def peek(date: nil)
+      return nil if read_only?
+
+      target = @user.streak_commitment_target_days
+      return nil if target.blank?
+
+      streak = Battles::DaysInARow.count(user: @user)
+      return nil if streak < 2
+
+      zone = Battles::WinsOnLocalDate.time_zone_for(@user)
+      on = date || Battles::WinsOnLocalDate.local_today_for(@user)
+      won_today = Notifications::BattleWinsOnLocalDate.any?(
+        user: @user,
+        date: on,
+        time_zone: zone
+      )
+      n = won_today ? streak : streak + 1
+      n = [ n, target.to_i ].min
+
+      { target: target.to_i, n: n }
     end
 
     # Clear broken commitment wherever commitment is read.

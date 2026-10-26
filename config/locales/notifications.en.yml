@@ -122,5 +122,6 @@ en:
       weekday_sat: "Five minutes today moves you closer."
     push:
       today_battle: "Today: %{title}"
+      day_of_commitment: "Day %{n} of %{m}: %{rest}"
     evening_push:
       body: "One small step before bed."

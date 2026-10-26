@@ -122,5 +122,6 @@ de:
       weekday_sat: "Five minutes today moves you closer." # TODO: translate
     push:
       today_battle: "Today: %{title}" # TODO: translate
+      day_of_commitment: "Day %{n} of %{m}: %{rest}" # TODO: translate
     evening_push:
       body: "One small step before bed." # TODO: translate
