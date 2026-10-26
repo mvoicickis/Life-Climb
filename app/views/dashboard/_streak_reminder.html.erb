@@ -1,0 +1,66 @@
+<%# locals: target_days, goal_title, battle_line %>
+<% target_days = local_assigns[:target_days].to_i %>
+<% goal_title = local_assigns[:goal_title].to_s %>
+<% battle_line = local_assigns[:battle_line].to_s %>
+
+<div class="lp-streak-moment__card is-reminder"
+     data-controller="push-offer"
+     data-push-offer-dismiss-url-value="<%= push_offer_path %>"
+     data-push-offer-denied-url-value="<%= push_offer_path %>"
+     data-push-offer-shown-url-value="<%= shown_push_offer_path %>"
+     data-push-offer-vapid-url-value="<%= push_config_path(format: :json) %>"
+     data-push-offer-subscribe-url-value="<%= push_subscription_path %>"
+     data-push-offer-settings-url-value="<%= settings_path(anchor: 'you-reminders') %>"
+     data-push-offer-source-value="streak"
+     data-push-offer-show-on-connect-value="true"
+     data-push-offer-mark-shown-on-display-value="true"
+     data-push-offer-count-show-day-value="false"
+     data-push-offer-show-not-now-value="true"
+     data-push-offer-goal-title-value="<%= goal_title %>"
+     data-push-offer-goal-label-value="<%= t('climb.streak_moment.committed_to', count: target_days) %>"
+     data-push-offer-reminder-line-value="<%= t('climb.streak_moment.remind_morning') %>"
+     data-push-offer-headline-value="<%= t('climb.streak_moment.remind_morning') %>"
+     data-push-offer-yes-label-value="<%= t('climb.streak_moment.remind_tomorrow') %>"
+     data-push-offer-not-now-label-value="<%= t('climb.streak_moment.not_now') %>"
+     data-push-offer-not-saved-message-value="<%= t('dash.battlefield.win_not_saved') %>"
+     data-push-offer-ios-headline-value="<%= t('dash.push_offer.ios_headline') %>"
+     data-push-offer-ios-body-value="<%= t('dash.push_offer.ios_body') %>"
+     data-push-offer-ios-steps-value="<%= t('dash.push_offer.ios_steps') %>"
+     data-push-offer-ios-install-label-value="<%= t('dash.push_offer.ios_install') %>"
+     data-push-offer-unsupported-message-value="<%= t('dash.push_offer.unsupported') %>"
+     data-push-offer-settings-link-label-value="<%= t('dash.push_offer.settings_link') %>"
+     role="dialog"
+     aria-label="<%= t('climb.streak_moment.remind_tomorrow') %>">
+  <div class="lp-streak-moment__notif" aria-hidden="true">
+    <img class="lp-streak-moment__notif-icon" src="/icon.png?v=8" alt="" width="36" height="36">
+    <div class="lp-streak-moment__notif-body">
+      <p class="lp-streak-moment__notif-title"><%= goal_title.presence || t("dash.active_goal_fallback") %></p>
+      <p class="lp-streak-moment__notif-line"><%= battle_line %></p>
+    </div>
+    <div class="lp-streak-moment__notif-meta">
+      <span class="lp-streak-moment__notif-now"><%= t("climb.streak_moment.notif_now") %></span>
+      <span class="lp-streak-moment__notif-bell" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6.5 9.5 A5.5 5.5 0 0 1 17.5 9.5 V14 L19.5 17 H4.5 L6.5 14 Z"/>
+          <path d="M10 20 H14"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+  <span class="lp-streak-moment__goal-label"><%= t("climb.streak_moment.committed_to", count: target_days) %></span>
+  <p class="lp-streak-moment__goal-title"><%= goal_title.presence || t("dash.active_goal_fallback") %></p>
+  <p class="lp-streak-moment__hint"><%= t("climb.streak_moment.remind_morning") %></p>
+  <div class="lp-today-empty-cta__wrap lp-streak-moment__cta">
+    <button type="button"
+            class="lp-today-empty-cta__pill"
+            data-action="click->push-offer#enable">
+      <%= t("climb.streak_moment.remind_tomorrow") %>
+    </button>
+  </div>
+  <button type="button"
+          class="lp-streak-moment__skip"
+          data-action="click->push-offer#dismiss">
+    <%= t("climb.streak_moment.not_now") %>
+  </button>
+  <p class="lp-push-offer__error" hidden role="alert"></p>
+</div>
