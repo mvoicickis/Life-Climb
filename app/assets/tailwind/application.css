@@ -27944,5 +27944,6 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 
 @import "../stylesheets/mountain_trail.css";
 @import "../stylesheets/today_v2.css";
+@import "../stylesheets/streak_moment.css";
 @import "../stylesheets/app_welcome.css";
 @import "../stylesheets/you_v2.css";

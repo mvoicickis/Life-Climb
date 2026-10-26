@@ -85,4 +85,10 @@
       <%= render "shared/climb_reward", reward: @stream_climb_reward %>
     <% end %>
   <% end %>
+
+  <% if @stream_streak_moment.present? %>
+    <%= turbo_stream.update "streak-moment-host" do %>
+      <%= render "dashboard/streak_moment", moment: @stream_streak_moment %>
+    <% end %>
+  <% end %>
 <% end %>

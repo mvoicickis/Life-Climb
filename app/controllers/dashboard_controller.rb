@@ -68,6 +68,17 @@ class DashboardController < ApplicationController
     @day_percent = day_pct.percent
     @overshoot_bonus = current_user.day_overshoot_bonuses.find_by(on_date: Date.current)
     @push_offer_show_on_visit = push_offer_show_on_today_visit?
+    assign_streak_moment!
     render "dashboard/show_v2"
+  end
+
+  def assign_streak_moment!
+    return if read_only_impersonation?
+
+    goal_title = helpers.active_goal_title(strategy_goal: @strategy_goal, journey: @journey)
+    @streak_moment = Today::StreakMoment.present_for!(
+      user: current_user,
+      goal_title: goal_title
+    )
   end
 end

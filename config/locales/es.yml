@@ -863,6 +863,12 @@ es:
       freeze_hint: "Cubre un día perdido en calma — automático."
       freeze_earned: "Token Base Camp ganado"
       fresh_start: "Nueva subida empezando"
+    streak_moment: # TODO: translate
+      days_in_a_row: "days in a row"
+      aria: "%{count} days in a row"
+      this_week: "This week"
+      mountain_yours: "The mountain is yours to climb:"
+      continue: "Continue"
     reward:
       personal_best: "Tu mayor subida hasta ahora"
       back_to_trail: "Volver al sendero"

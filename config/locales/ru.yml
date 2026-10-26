@@ -873,6 +873,12 @@ ru:
       freeze_hint: "Покрывает один спокойный пропуск — автоматически."
       freeze_earned: "Жетон Basecamp получен"
       fresh_start: "Новый подъём начинается"
+    streak_moment: # TODO: translate
+      days_in_a_row: "days in a row"
+      aria: "%{count} days in a row"
+      this_week: "This week"
+      mountain_yours: "The mountain is yours to climb:"
+      continue: "Continue"
     reward:
       personal_best: "Самый большой подъём пока"
       back_to_trail: "Вернуться на тропу"

@@ -1,0 +1,53 @@
+<%# locals: moment (Today::StreakMoment::Result) %>
+<% moment = local_assigns[:moment] %>
+<% return if moment.blank? %>
+<% week = moment.week || {} %>
+<% week_days = Array(week[:days]) %>
+<% week_counts = Array(week[:counts]) %>
+<% local_today = Battles::WinsOnLocalDate.local_today_for(current_user) %>
+
+<div class="lp-streak-moment"
+     data-controller="streak-moment"
+     role="dialog"
+     aria-label="<%= t('climb.streak_moment.aria', count: moment.days) %>">
+  <div class="lp-streak-moment__veil" data-action="click->streak-moment#dismiss" aria-hidden="true"></div>
+  <div class="lp-streak-moment__card">
+    <div class="lp-streak-moment__badge">
+      <img class="lp-streak-moment__logo" src="/icon.png?v=8" alt="" aria-hidden="true" width="56" height="56">
+      <div class="lp-streak-moment__num-halo">
+        <div class="lp-streak-moment__num-roll" aria-live="polite">
+          <span class="lp-streak-moment__num is-from"><%= moment.from_days %></span>
+          <span class="lp-streak-moment__num is-to"><%= moment.days %></span>
+        </div>
+      </div>
+      <p class="lp-streak-moment__sub"><%= t("climb.streak_moment.days_in_a_row") %></p>
+    </div>
+
+    <% if week_days.any? %>
+      <ul class="lp-streak-moment__week" aria-label="<%= t('climb.streak_moment.this_week') %>">
+        <% week_days.each_with_index do |day, index| %>
+          <% won = week_counts[index].to_i.positive? %>
+          <li class="lp-streak-moment__day<%= ' is-today' if day == local_today %>">
+            <span class="lp-streak-moment__day-label"><%= l(day, format: "%a") %></span>
+            <span class="lp-streak-moment__day-mark<%= ' is-won' if won %>"></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if moment.goal_title.present? %>
+      <div class="lp-streak-moment__goal">
+        <span class="lp-streak-moment__goal-label"><%= t("climb.streak_moment.mountain_yours") %></span>
+        <p class="lp-streak-moment__goal-title"><%= moment.goal_title %></p>
+      </div>
+    <% end %>
+
+    <div class="lp-today-empty-cta__wrap lp-streak-moment__cta">
+      <button type="button"
+              class="lp-today-empty-cta__pill"
+              data-action="streak-moment#dismiss">
+        <%= t("climb.streak_moment.continue") %>
+      </button>
+    </div>
+  </div>
+</div>

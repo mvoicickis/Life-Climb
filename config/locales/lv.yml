@@ -1091,6 +1091,12 @@ lv:
       freeze_hint: "Nosedz vienu mierīgu izlaisto dienu — automātiski."
       freeze_earned: "Nopelnīts Base Camp žetons"
       fresh_start: "Sākas jauns kāpiens"
+    streak_moment: # TODO: translate
+      days_in_a_row: "days in a row"
+      aria: "%{count} days in a row"
+      this_week: "This week"
+      mountain_yours: "The mountain is yours to climb:"
+      continue: "Continue"
     reward:
       personal_best: "Lielākais kāpiens līdz šim"
       back_to_trail: "Atpakaļ uz taku"

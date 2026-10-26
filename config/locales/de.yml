@@ -863,6 +863,12 @@ de:
       freeze_hint: "Deckt einen ruhigen Aussetzer — automatisch."
       freeze_earned: "Basecamp-Token verdient"
       fresh_start: "Neuer Aufstieg beginnt"
+    streak_moment: # TODO: translate
+      days_in_a_row: "days in a row"
+      aria: "%{count} days in a row"
+      this_week: "This week"
+      mountain_yours: "The mountain is yours to climb:"
+      continue: "Continue"
     reward:
       personal_best: "Bisher größter Aufstieg"
       back_to_trail: "Zurück zum Pfad"
