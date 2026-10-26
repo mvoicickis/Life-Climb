@@ -36,7 +36,7 @@ class PushOffersController < ApplicationController
 
   def push_offer_source_param
     value = params[:source].to_s.strip
-    return value if value == "camp_sheet" || value == "today"
+    return value if value == "camp_sheet" || value == "today" || value == "streak"
 
     "unknown"
   end

@@ -875,10 +875,33 @@ ru:
       fresh_start: "Новый подъём начинается"
     streak_moment: # TODO: translate
       days_in_a_row: "days in a row"
+      days_in_a_row_bang: "%{count} days in a row!"
       aria: "%{count} days in a row"
       this_week: "This week"
       mountain_yours: "The mountain is yours to climb:"
       continue: "Continue"
+      day_of: "Day %{n} of %{m}"
+      you_did_it: "You did it."
+      pick_next: "Pick your next climb"
+      share: "Share"
+      pick_climb: "Pick your climb"
+      choice_days:
+        one: "%{count} day"
+        other: "%{count} days"
+      commit_to:
+        one: "Commit to %{count} day"
+        other: "Commit to %{count} days"
+      commit_to_template: "Commit to %{count} days"
+      commit_hint: "Win one battle a day. Small steps reach big goals."
+      not_now: "Not now"
+      committed_to:
+        one: "You committed to %{count} day:"
+        other: "You committed to %{count} days:"
+      remind_morning: "We'll remind you each morning."
+      remind_tomorrow: "Remind me tomorrow"
+      today_battle: "Today: %{title}"
+      today_battle_fallback: "Today: win one battle"
+      notif_now: "now"
     reward:
       personal_best: "Самый большой подъём пока"
       back_to_trail: "Вернуться на тропу"

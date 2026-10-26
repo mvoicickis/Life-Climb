@@ -124,10 +124,12 @@ export default class extends Controller {
 
     if (state.subscribed) {
       console.info("[PushOffer] skip", "subscribed")
+      if (this.offerSource() === "streak") this.closeStreakOverlay()
       return
     }
     if (state.permission === "denied") {
       console.info("[PushOffer] skip", "denied")
+      if (this.offerSource() === "streak") this.closeStreakOverlay()
       return
     }
 
@@ -181,6 +183,11 @@ export default class extends Controller {
   renderCard() {
     if (this.campSheetValue) {
       this.renderCampSheetCard()
+      return
+    }
+
+    if (this.offerSource() === "streak" && this.element.querySelector(".lp-streak-moment__notif")) {
+      this.bindStreakReminderCard()
       return
     }
 
@@ -469,8 +476,22 @@ export default class extends Controller {
 
   offerSource() {
     const value = (this.sourceValue || "").trim()
-    if (value === "camp_sheet" || value === "today") return value
+    if (value === "camp_sheet" || value === "today" || value === "streak") return value
     return this.campSheetValue ? "camp_sheet" : "today"
+  }
+
+  bindStreakReminderCard() {
+    const host = this.element
+    host.hidden = false
+    this.cardElement = host
+    this.yesButton = host.querySelector("[data-action*='push-offer#enable']")
+    this.errorElement = host.querySelector(".lp-push-offer__error, .lp-streak-moment__error")
+    this.markShownIfNeeded()
+  }
+
+  closeStreakOverlay() {
+    const root = this.element.closest(".lp-streak-moment")
+    if (root) root.remove()
   }
 
   offerUrl(url) {
@@ -594,7 +615,10 @@ export default class extends Controller {
     if (this._enabling) return
 
     try {
-      if (this.dismissUrlValue) {
+      // Streak reminder "Not now" marks shown only — does not burn win-offer dismiss count.
+      if (this.offerSource() === "streak") {
+        await this.markShown()
+      } else if (this.dismissUrlValue) {
         await this.fetchDeleteOk(this.offerUrl(this.dismissUrlValue))
       }
     } catch (error) {
@@ -619,6 +643,10 @@ export default class extends Controller {
   hideCard() {
     this.clearDoneTimer()
     this.setPushOfferOpen(false)
+    if (this.offerSource() === "streak") {
+      this.closeStreakOverlay()
+      return
+    }
     this.element.hidden = true
     this.element.innerHTML = ""
     this.cardElement = null

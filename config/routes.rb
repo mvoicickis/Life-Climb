@@ -27,6 +27,9 @@ Rails.application.routes.draw do
   resource :push_offer, only: %i[ destroy update ] do
     patch :shown, on: :member
   end
+  resource :streak_commitment, only: %i[ create destroy ], controller: "streak_commitments" do
+    post :decline, on: :member
+  end
   resource :life_map, only: :show, controller: "life_maps"
   resource :missions, only: :show, controller: "missions"
   resource :account, only: :destroy

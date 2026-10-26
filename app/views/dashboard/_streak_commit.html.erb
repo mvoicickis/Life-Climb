@@ -1,0 +1,34 @@
+<%# locals: offered_targets (Array), default_target (Integer) %>
+<% offered = Array(local_assigns[:offered_targets]) %>
+<% default = local_assigns[:default_target].to_i %>
+<% return if offered.empty? || default <= 0 %>
+
+<img class="lp-streak-moment__logo is-commit" src="/icon.png?v=8" alt="" aria-hidden="true" width="48" height="48">
+<h2 class="lp-streak-moment__title"><%= t("climb.streak_moment.pick_climb") %></h2>
+<div class="lp-streak-moment__choices" data-streak-moment-target="choices" role="group" aria-label="<%= t('climb.streak_moment.pick_climb') %>">
+  <% offered.each do |days| %>
+    <button type="button"
+            class="lp-streak-moment__choice<%= ' is-selected' if days == default %>"
+            data-action="streak-moment#selectDays"
+            data-days="<%= days %>"
+            aria-pressed="<%= days == default ? 'true' : 'false' %>">
+      <%= t("climb.streak_moment.choice_days", count: days) %>
+    </button>
+  <% end %>
+</div>
+<p class="lp-streak-moment__hint"><%= t("climb.streak_moment.commit_hint") %></p>
+<div class="lp-today-empty-cta__wrap lp-streak-moment__cta">
+  <button type="button"
+          class="lp-today-empty-cta__pill"
+          data-streak-moment-target="commitCta"
+          data-action="streak-moment#commit"
+          data-days="<%= default %>">
+    <%= t("climb.streak_moment.commit_to", count: default) %>
+  </button>
+</div>
+<button type="button"
+        class="lp-streak-moment__skip"
+        data-action="streak-moment#decline">
+  <%= t("climb.streak_moment.not_now") %>
+</button>
+<p class="lp-streak-moment__error" data-streak-moment-target="error" hidden role="alert"></p>

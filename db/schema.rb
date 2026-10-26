@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -578,6 +578,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_190000) do
     t.date "push_offer_last_shown_on"
     t.datetime "push_offer_permission_denied_at"
     t.integer "push_offer_show_days", default: 0, null: false
+    t.integer "streak_commit_declines", default: 0, null: false
+    t.date "streak_commitment_started_on"
+    t.integer "streak_commitment_target_days"
     t.integer "strategy_points", default: 0, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"

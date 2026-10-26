@@ -16,7 +16,7 @@ class PushSubscriptionsController < ApplicationController
       Notifications::EnsureTimeZone.call(user: current_user, zone: params[:time_zone])
       status = subscription.previously_new_record? ? :created : :ok
       source = params[:source].to_s.strip
-      if source == "camp_sheet" || source == "today"
+      if source == "camp_sheet" || source == "today" || source == "streak"
         Rails.logger.info(
           "[PushOffer] user_id=#{current_user.id} action=subscribe source=#{source}"
         )

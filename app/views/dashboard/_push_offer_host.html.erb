@@ -7,7 +7,7 @@
 <% mark_shown_on_display = local_assigns.fetch(:mark_shown_on_display, false) %>
 <% count_show_day = local_assigns.fetch(:count_show_day, true) %>
 <% camp_sheet = local_assigns.fetch(:camp_sheet, false) %>
-<% source = camp_sheet ? "camp_sheet" : "today" %>
+<% source = local_assigns.fetch(:source, camp_sheet ? "camp_sheet" : "today") %>
 <div id="<%= host_id %>"
      class="<%= host_class %>"
      hidden
