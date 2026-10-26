@@ -42,6 +42,18 @@
       <% unless first_win %>
         <p class="lp-trail-camp-finish__body"><%= t("strategy.rpg.trail.finish_camp_card.body") %></p>
       <% end %>
+      <% if first_win && camp_push_offer %>
+        <%= render "dashboard/push_offer_host",
+              host_id: "mountain-push-offer-host",
+              host_class: "lp-trail-camp-finish__push-offer lp-push-offer-host",
+              goal_title: Notifications::MorningNudgeCopy.focused_goal_name_for(user: current_user),
+              compact: true,
+              show_not_now: false,
+              mark_shown_on_display: true,
+              show_on_connect: true,
+              count_show_day: false,
+              camp_sheet: true %>
+      <% end %>
       <button type="button"
               class="lp-trail-camp-finish__cta"
               data-action="click->trail-camp-finish#addAnotherBattle">
@@ -68,17 +80,6 @@
          data-action="click->trail-camp-finish#retryFinish"
          role="status"
          hidden></p>
-      <% if first_win && camp_push_offer %>
-        <%= render "dashboard/push_offer_host",
-              host_id: "mountain-push-offer-host",
-              host_class: "lp-trail-camp-finish__push-offer lp-push-offer-host",
-              compact: true,
-              show_not_now: false,
-              mark_shown_on_display: true,
-              show_on_connect: true,
-              count_show_day: false,
-              camp_sheet: true %>
-      <% end %>
     </div>
   <% elsif state == :finished_undo %>
     <div class="lp-trail-camp-finish__card lp-trail-camp-idle lp-trail-camp-finish__undo-wrap"

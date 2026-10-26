@@ -2986,8 +2986,198 @@ body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
 }
 
 .lp-trail.is-v4 .lp-trail-camp-finish__push-offer.lp-push-offer-host {
-  margin: 0;
+  margin: 0 0 0.15rem;
   max-width: none;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish__cta {
+  transition:
+    background 0.45s ease,
+    color 0.45s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+
+.lp-trail.is-v4 .lp-trail-camp-finish.is-push-offer-open .lp-trail-camp-finish__cta {
+  border-color: var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  box-shadow: none;
+  transition-delay: 0.4s;
+  transition-duration: 0.55s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-trail.is-v4 .lp-push-offer.is-mountain-reminder {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-surface);
+  box-shadow: var(--lp-shadow-card);
+  text-align: left;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lp-trail.is-v4 .lp-push-offer.is-mountain-reminder.is-enter {
+  animation: lp-mountain-reminder-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+
+.lp-trail.is-v4 .lp-push-offer.is-mountain-reminder.is-fade-out {
+  animation: lp-mountain-reminder-fade-out 0.45s ease forwards;
+}
+
+.lp-trail.is-v4 .lp-push-offer.is-mountain-reminder .lp-push-offer__goal-label {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__goal-title.is-mountain {
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--lp-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-trail.is-v4 .lp-push-offer__body.is-mountain-line {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__ask {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-push-offer__yes.is-mountain-yes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--lp-tap);
+  margin: 0;
+  padding: 0.75rem var(--lp-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  font-family: var(--lp-font-ui);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+  box-shadow: var(--lp-shadow-cta);
+  cursor: pointer;
+  animation: lp-mountain-cta-pulse 0.55s ease 1.35s both;
+}
+
+.lp-trail.is-v4 .lp-push-offer__bell-inline {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: currentColor;
+  animation: lp-mountain-bell-ring 0.6s ease 0.95s both;
+}
+
+.lp-trail.is-v4 .lp-push-offer__bell-inline svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-trail.is-v4 .lp-push-offer__done {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__done.is-pop .lp-push-offer__done-tick {
+  display: inline-block;
+  transform-origin: center;
+  animation: lp-mountain-tick-pop 0.28s ease both;
+}
+
+@keyframes lp-mountain-reminder-in {
+  0% { opacity: 0; transform: translateY(12px); }
+  70% { opacity: 1; transform: translateY(-3px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lp-mountain-reminder-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes lp-mountain-bell-ring {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(14deg); }
+  40% { transform: rotate(-12deg); }
+  60% { transform: rotate(8deg); }
+  80% { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes lp-mountain-cta-pulse {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lp-mountain-tick-pop {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-trail.is-v4 .lp-trail-camp-finish__cta,
+  .lp-trail.is-v4 .lp-trail-camp-finish.is-push-offer-open .lp-trail-camp-finish__cta {
+    transition: none !important;
+  }
+
+  .lp-trail.is-v4 .lp-push-offer.is-mountain-reminder.is-enter,
+  .lp-trail.is-v4 .lp-push-offer.is-mountain-reminder.is-fade-out,
+  .lp-trail.is-v4 .lp-push-offer__yes.is-mountain-yes,
+  .lp-trail.is-v4 .lp-push-offer__bell-inline,
+  .lp-trail.is-v4 .lp-push-offer__done.is-pop .lp-push-offer__done-tick {
+    animation: lp-mountain-fade-only 0.35s ease both !important;
+  }
+
+  @keyframes lp-mountain-fade-only {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }
 
 .lp-trail.is-v4 .lp-trail-camp-finish__save-notice[hidden] {
