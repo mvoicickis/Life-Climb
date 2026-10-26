@@ -60,7 +60,7 @@
     <% end %>
 
     <% if week_days.any? %>
-      <ul class="lp-streak-moment__week" aria-label="<%= t('climb.streak_moment.this_week') %>">
+      <ul class="lp-streak-moment__week" aria-label="<%= t('climb.streak_moment.last_7_days') %>">
         <% week_days.each_with_index do |day, index| %>
           <% won = week_counts[index].to_i.positive? %>
           <li class="lp-streak-moment__day<%= ' is-today' if day == local_today %>">

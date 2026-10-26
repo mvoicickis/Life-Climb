@@ -58,7 +58,7 @@ module Today
       return nil if days < 2
       return nil unless won_today?
 
-      week = Stats::BattleWins.call(user: @user).this_week
+      week = Stats::BattleWins.call(user: @user).last_7_days
       target = @commitment.target_days
       kind = kind_for(days: days, target: target)
       offered = @commitment.offered_targets(days_in_a_row: days)
