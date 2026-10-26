@@ -1,12 +1,11 @@
 <%# Today climb hero — DayPercent all day; overshoot absorbed (no separate card).
-    locals: day_percent, habits_count, battles_count, streak, life_points, commitment, journey %>
+    locals: day_percent, habits_count, battles_count, battle_days, life_points, commitment, journey %>
 <% percent = local_assigns[:day_percent] %>
 <% habits_count = local_assigns.fetch(:habits_count) { Array(@habits).size } %>
 <% battles_count = local_assigns.fetch(:battles_count) { Array(@daily_todos).size } %>
-<% streak = local_assigns[:streak] || @climb_streak || strategy_climb_streak_status %>
 <% life_points = local_assigns.fetch(:life_points) { @life_points } %>
 <% commitment = local_assigns[:commitment] || @commitment %>
-<% streak_days = streak.respond_to?(:days) ? streak.days.to_i : 0 %>
+<% streak_days = local_assigns.fetch(:battle_days) { battle_days_in_a_row }.to_i %>
 <% tier_name = commitment&.journey&.commitment_name.presence ||
                (local_assigns[:journey] || @journey)&.commitment_name.presence ||
                "Easy" %>
@@ -33,10 +32,12 @@
         <span data-commitment-tier="<%= tier_name %>"><%= tier_name.upcase %></span>
       </p>
     </div>
-    <div class="lp-dash-hero__stat is-fire" title="<%= t('dash.timeline.stats_pill') %>">
-      <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
-      <span><%= streak_days %></span>
-    </div>
+    <% if streak_days.positive? %>
+      <div class="lp-dash-hero__stat is-fire" title="<%= t('dash.timeline.stats_pill') %>">
+        <%= render "shared/lp_icon", name: "fire", class_name: "lp-icon is-inline" %>
+        <span><%= streak_days %></span>
+      </div>
+    <% end %>
     <div class="lp-dash-hero__stat is-ap" title="<%= t('dash.action_points_label') %>">
       <%= render "shared/lp_icon", name: "bolt", class_name: "lp-icon is-inline" %>
       <span data-battle-day-target="lpTotal"><%= number_with_delimiter(life_points) %></span>

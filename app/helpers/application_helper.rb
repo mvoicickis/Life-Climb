@@ -14,6 +14,11 @@ module ApplicationHelper
     pref.nil? || pref.time_zone.blank?
   end
 
+  # Shown streak on Today hero / Mountain HUD. Memoized once per request.
+  def battle_days_in_a_row
+    @battle_days_in_a_row ||= Battles::DaysInARow.count(user: current_user)
+  end
+
   # Skip rendering when no companion is chosen yet (nil character_image).
   def companion_image_tag(user = current_user, **options)
     return if user.blank? || user.character_image.blank?
