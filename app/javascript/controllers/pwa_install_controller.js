@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { isInAppBrowser } from "in_app_browser"
 import {
   canPrompt,
   ensureCapture,
@@ -6,26 +7,42 @@ import {
   onInstallPromptChange,
   promptInstall
 } from "pwa_install_prompt"
+import { isIos } from "push_subscription"
 
-// Today tip + Settings row for Chrome/Android PWA install (BIP only).
+// Settings row: native BIP on Chrome/Android, otherwise a light install-guide sheet.
 export default class extends Controller {
-  static targets = ["root", "title", "body", "actions", "message", "row"]
+  static targets = [
+    "root",
+    "title",
+    "body",
+    "actions",
+    "row",
+    "dialog",
+    "backdrop",
+    "panel",
+    "safariCopy",
+    "inAppCopy",
+    "otherCopy",
+    "gotIt"
+  ]
   static values = {
     surface: { type: String, default: "tip" },
     dismissUrl: String,
     installedUrl: String,
-    dismissedMessage: String,
-    browserMenuMessage: String
+    dismissedMessage: String
   }
 
   connect() {
     ensureCapture()
+    this.previouslyFocused = null
+    this.boundKeydown = this.onKeydown.bind(this)
     this.unsubscribe = onInstallPromptChange((detail) => this.onPromptChange(detail))
     this.refreshVisibility()
   }
 
   disconnect() {
     if (this.unsubscribe) this.unsubscribe()
+    this.teardownOpenState()
   }
 
   onPromptChange(detail = {}) {
@@ -51,19 +68,18 @@ export default class extends Controller {
       return
     }
 
-    // Settings: always rendered; hide only when already installed.
     this.element.classList.remove("hidden")
     this.element.hidden = false
   }
 
   hideForInstalled() {
+    this.closeGuide()
     this.element.hidden = true
     this.element.classList.add("hidden")
   }
 
   async install(event) {
     event.preventDefault()
-    this.clearMessage()
 
     if (isStandalonePwa()) {
       this.hideForInstalled()
@@ -71,12 +87,7 @@ export default class extends Controller {
     }
 
     if (!canPrompt()) {
-      if (this.surfaceValue === "settings") {
-        this.showMessage(
-          this.browserMenuMessageValue ||
-            "Your browser will offer this from its own menu."
-        )
-      }
+      this.openGuide()
       return
     }
 
@@ -89,9 +100,84 @@ export default class extends Controller {
     this.refreshVisibility()
   }
 
+  openGuide() {
+    if (!this.hasDialogTarget) return
+
+    this.showGuideMode(this.guideMode())
+    this.previouslyFocused = document.activeElement
+    this.dialogTarget.hidden = false
+    this.dialogTarget.setAttribute("aria-hidden", "false")
+    document.body.classList.add("share-sheet-open")
+    document.addEventListener("keydown", this.boundKeydown)
+
+    requestAnimationFrame(() => {
+      this.dialogTarget.classList.add("is-open")
+      if (this.hasGotItTarget) this.gotItTarget.focus()
+    })
+  }
+
+  closeGuide(event) {
+    event?.preventDefault()
+    this.teardownOpenState()
+  }
+
+  closeOnBackdrop(event) {
+    if (event.target === this.backdropTarget) this.closeGuide(event)
+  }
+
+  onKeydown(event) {
+    if (event.key === "Escape") this.closeGuide(event)
+  }
+
+  guideMode() {
+    if (isInAppBrowser()) return "in_app"
+    if (isIos()) return "safari"
+    return "other"
+  }
+
+  showGuideMode(mode) {
+    const blocks = [
+      ["safari", this.hasSafariCopyTarget ? this.safariCopyTarget : null],
+      ["in_app", this.hasInAppCopyTarget ? this.inAppCopyTarget : null],
+      ["other", this.hasOtherCopyTarget ? this.otherCopyTarget : null]
+    ]
+    blocks.forEach(([key, node]) => {
+      if (!node) return
+      const visible = key === mode
+      node.hidden = !visible
+    })
+
+    const visible = blocks.find(([key]) => key === mode)?.[1]
+    const title = visible?.querySelector("[id]")
+    if (this.hasPanelTarget && title?.id) {
+      this.panelTarget.setAttribute("aria-labelledby", title.id)
+    }
+  }
+
+  teardownOpenState() {
+    if (!this.hasDialogTarget) {
+      document.removeEventListener("keydown", this.boundKeydown)
+      return
+    }
+    if (this.dialogTarget.hidden && !this.dialogTarget.classList.contains("is-open")) {
+      document.removeEventListener("keydown", this.boundKeydown)
+      return
+    }
+
+    this.dialogTarget.classList.remove("is-open")
+    this.dialogTarget.hidden = true
+    this.dialogTarget.setAttribute("aria-hidden", "true")
+    document.body.classList.remove("share-sheet-open")
+    document.removeEventListener("keydown", this.boundKeydown)
+
+    if (this.previouslyFocused?.focus) {
+      this.previouslyFocused.focus()
+    }
+    this.previouslyFocused = null
+  }
+
   async dismiss(event) {
     event.preventDefault()
-    this.clearMessage()
 
     try {
       await this.request(this.dismissUrlValue, "DELETE")
@@ -105,11 +191,6 @@ export default class extends Controller {
       this.bodyTarget.textContent =
         this.dismissedMessageValue ||
         "Alright. I'll be in Settings if you change your mind."
-    } else {
-      this.showMessage(
-        this.dismissedMessageValue ||
-          "Alright. I'll be in Settings if you change your mind."
-      )
     }
 
     window.setTimeout(() => {
@@ -126,18 +207,6 @@ export default class extends Controller {
       /* still hide locally */
     }
     this.hideForInstalled()
-  }
-
-  showMessage(text) {
-    if (!this.hasMessageTarget) return
-    this.messageTarget.textContent = text
-    this.messageTarget.hidden = false
-  }
-
-  clearMessage() {
-    if (!this.hasMessageTarget) return
-    this.messageTarget.hidden = true
-    this.messageTarget.textContent = ""
   }
 
   async request(url, method) {

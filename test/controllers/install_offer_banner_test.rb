@@ -90,6 +90,18 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#you-row-install-offer", count: 1
     assert_match(/Add to home screen/, response.body)
+    assert_select ".lp-install-sheet", count: 1
+    assert_select "#lp-install-sheet-safari-title", text: I18n.t("settings.install_guide.safari_title")
+    assert_select ".lp-install-sheet__steps li", text: I18n.t("settings.install_guide.safari_step_1")
+    assert_select ".lp-install-sheet__steps li", text: I18n.t("settings.install_guide.safari_step_2")
+    assert_select ".lp-install-sheet__steps li", text: I18n.t("settings.install_guide.safari_step_3")
+    assert_select ".lp-install-sheet__note", text: I18n.t("settings.install_guide.safari_note")
+    assert_select ".lp-install-sheet__note", text: I18n.t("settings.install_guide.safari_open_here")
+    assert_select "#lp-install-sheet-in-app-title", text: I18n.t("settings.install_guide.in_app_title")
+    assert_select ".lp-install-sheet__body", text: I18n.t("settings.install_guide.in_app_body")
+    assert_select "#lp-install-sheet-other-title", text: I18n.t("settings.install_guide.other_title")
+    assert_select ".lp-install-sheet__body", text: I18n.t("settings.install_guide.other_body")
+    assert_select ".lp-install-sheet__got-it", text: I18n.t("settings.install_guide.got_it")
   end
 
   test "settings hides install offer row when already installed" do
@@ -97,5 +109,6 @@ class InstallOfferBannerTest < ActionDispatch::IntegrationTest
     get settings_path
     assert_response :success
     assert_select "#you-row-install-offer", count: 0
+    assert_select ".lp-install-sheet", count: 0
   end
 end

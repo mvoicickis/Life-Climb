@@ -72,8 +72,7 @@
                data-controller="pwa-install"
                data-pwa-install-surface-value="settings"
                data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
-               data-pwa-install-installed-url-value="<%= install_offer_path %>"
-               data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
+               data-pwa-install-installed-url-value="<%= install_offer_path %>">
             <button type="button"
                     class="lp-you-row__tap"
                     data-pwa-install-target="row"
@@ -81,7 +80,7 @@
               <span class="lp-you-row__label"><%= t("settings.install_offer.row_label") %></span>
               <span class="lp-you-row__chev" aria-hidden="true">›</span>
             </button>
-            <p class="lp-you-sr" data-pwa-install-target="message"></p>
+            <%= render "shared/pwa_install_sheet" %>
           </div>
         <% end %>
         <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
