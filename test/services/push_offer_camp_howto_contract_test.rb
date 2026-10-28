@@ -51,4 +51,3 @@ class PushOfferCampHowtoContractTest < ActiveSupport::TestCase
     assert_operator host_idx, :>, cta_idx
   end
 end
-

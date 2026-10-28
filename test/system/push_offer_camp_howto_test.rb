@@ -84,9 +84,11 @@ class PushOfferCampHowtoTest < ApplicationSystemTestCase
     sign_in_open_camp_and_win!(ua: FB_UA)
 
     assert_selector "#mountain-push-offer-host .lp-push-offer.is-camp-howto", wait: 8
-    assert_selector ".lp-push-offer.is-camp-howto", text: I18n.t("dash.push_offer.camp_inapp_label")
+    # Label is CSS uppercase — match case-insensitively.
+    assert_selector ".lp-push-offer.is-camp-howto", text: /keep your climb/i
     assert_selector ".lp-push-offer.is-camp-howto", text: I18n.t("dash.push_offer.camp_inapp_title")
     assert_selector ".lp-push-offer.is-camp-howto", text: I18n.t("dash.push_offer.camp_inapp_steps")
+    assert_no_selector ".lp-push-offer.is-camp-howto", text: /get a reminder tomorrow/i
     assert_no_selector ".lp-push-offer.is-camp-howto", text: I18n.t("dash.push_offer.camp_ios_title")
     assert_no_selector ".lp-push-offer.is-camp-howto", text: I18n.t("dash.push_offer.camp_ios_steps")
     assert_no_selector "#mountain-push-offer-host .lp-push-offer__yes"
@@ -103,8 +105,8 @@ class PushOfferCampHowtoTest < ApplicationSystemTestCase
                     text: I18n.t("dash.push_offer.mountain_yes"),
                     wait: 5
     assert_no_selector ".lp-push-offer.is-camp-howto"
-    assert_no_text I18n.t("dash.push_offer.camp_inapp_label")
-    assert_no_text I18n.t("dash.push_offer.camp_ios_label")
+    assert_no_text(/keep your climb/i)
+    assert_no_text(/get a reminder tomorrow/i)
     assert_selector ".lp-trail-camp-finish__cta", text: I18n.t("strategy.rpg.trail.finish_camp_card.add_another")
   end
 end
