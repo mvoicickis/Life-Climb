@@ -1052,6 +1052,12 @@ lv:
       mountain_line: "One small step each day gets you there." # TODO: translate
       mountain_yes: "Remind me tomorrow" # TODO: translate
       mountain_done: "Reminders on ✓" # TODO: translate
+      camp_ios_label: "Get a reminder tomorrow" # TODO: translate
+      camp_ios_title: "Add Life Climb to your Home Screen." # TODO: translate
+      camp_ios_steps: "Tap Share, then Add to Home Screen." # TODO: translate
+      camp_inapp_label: "Keep your climb" # TODO: translate
+      camp_inapp_title: "Open Life Climb in your browser." # TODO: translate
+      camp_inapp_steps: "Tap the menu at the top right, then Open in browser." # TODO: translate
     commitment:
       tier_label: "Dienas solījums"
       # TODO: translate

@@ -6,6 +6,7 @@ import {
   completePushSubscription,
   enablePushSubscription,
   getPushSubscriptionState,
+  isInAppBrowser,
   isIos,
   prefetchPushResources,
   requestNotificationPermission
@@ -43,7 +44,13 @@ export default class extends Controller {
     mountainLabel: String,
     mountainLine: String,
     mountainYes: String,
-    mountainDone: String
+    mountainDone: String,
+    campIosLabel: String,
+    campIosTitle: String,
+    campIosSteps: String,
+    campInappLabel: String,
+    campInappTitle: String,
+    campInappSteps: String
   }
 
   connect() {
@@ -136,9 +143,13 @@ export default class extends Controller {
     await this.prefetchForOffer()
 
     if (this.campSheetValue) {
-      const mode = this.cardMode()
+      const mode = this.campSheetMode()
+      if (mode === "inapp") {
+        this.renderCampHowToCard("inapp")
+        return
+      }
       if (mode === "ios_install") {
-        console.info("[PushOffer] skip", "ios")
+        this.renderCampHowToCard("ios")
         return
       }
       if (mode === "unsupported") {
@@ -161,6 +172,12 @@ export default class extends Controller {
     if (iosInstallNeeded) return "ios_install"
     if (unsupported) return "unsupported"
     return "remind"
+  }
+
+  // Camp sheet: in-app before iOS install (FB/IG on iPhone are ios_install otherwise).
+  campSheetMode() {
+    if (isInAppBrowser()) return "inapp"
+    return this.cardMode()
   }
 
   finishRoot() {
@@ -446,6 +463,69 @@ export default class extends Controller {
     card.appendChild(error)
     host.appendChild(card)
     this.cardElement = card
+  }
+
+  // Camp sheet how-to when push cannot work here (iOS Safari or known in-app browsers).
+  // No CTA — Add another battle stays the only green. Does not whiten the finish CTAs.
+  renderCampHowToCard(kind) {
+    const host = this.element
+    host.hidden = false
+    host.innerHTML = ""
+
+    const error = document.createElement("p")
+    error.className = "lp-push-offer__error"
+    error.hidden = true
+    error.setAttribute("role", "alert")
+    this.errorElement = error
+
+    const isIosKind = kind === "ios"
+    const labelText = isIosKind ? this.campIosLabelValue : this.campInappLabelValue
+    const titleText = isIosKind ? this.campIosTitleValue : this.campInappTitleValue
+    const stepsText = isIosKind ? this.campIosStepsValue : this.campInappStepsValue
+
+    const card = document.createElement("aside")
+    card.className = "lp-push-offer is-camp-howto"
+    card.setAttribute("role", "note")
+    card.setAttribute("aria-label", (labelText || "").trim() || "Reminder tip")
+
+    const label = document.createElement("p")
+    label.className = "lp-push-offer__camp-howto-label"
+    label.textContent = labelText
+    card.appendChild(label)
+
+    const title = document.createElement("p")
+    title.className = "lp-push-offer__camp-howto-title"
+    title.textContent = titleText
+    card.appendChild(title)
+
+    const step = document.createElement("p")
+    step.className = "lp-push-offer__camp-howto-step"
+
+    const icon = document.createElement("span")
+    icon.className = isIosKind
+      ? "lp-push-offer__camp-howto-icon"
+      : "lp-push-offer__camp-howto-menu"
+    icon.setAttribute("aria-hidden", "true")
+    if (isIosKind) {
+      icon.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>'
+    } else {
+      icon.textContent = "⋯"
+    }
+    step.appendChild(icon)
+
+    const stepText = document.createElement("span")
+    stepText.className = "lp-push-offer__camp-howto-step-text"
+    stepText.textContent = stepsText
+    step.appendChild(stepText)
+    card.appendChild(step)
+
+    card.appendChild(error)
+    host.appendChild(card)
+    this.cardElement = card
+    this.yesButton = null
+
+    this.markShownIfNeeded()
   }
 
   markShownIfNeeded() {

@@ -98,7 +98,15 @@ class FirstCampWinPromptTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("dash.push_offer.mountain_yes"), host["data-push-offer-mountain-yes-value"]
     assert_equal I18n.t("dash.push_offer.mountain_done"), host["data-push-offer-mountain-done-value"]
     assert_equal I18n.t("dash.push_offer.ios_steps"), host["data-push-offer-ios-steps-value"]
+    assert_equal I18n.t("dash.push_offer.camp_ios_label"), host["data-push-offer-camp-ios-label-value"]
+    assert_equal I18n.t("dash.push_offer.camp_ios_title"), host["data-push-offer-camp-ios-title-value"]
+    assert_equal I18n.t("dash.push_offer.camp_ios_steps"), host["data-push-offer-camp-ios-steps-value"]
+    assert_equal I18n.t("dash.push_offer.camp_inapp_label"), host["data-push-offer-camp-inapp-label-value"]
+    assert_equal I18n.t("dash.push_offer.camp_inapp_title"), host["data-push-offer-camp-inapp-title-value"]
+    assert_equal I18n.t("dash.push_offer.camp_inapp_steps"), host["data-push-offer-camp-inapp-steps-value"]
     assert_select "#mountain-push-offer-host[hidden]"
+    assert_select ".lp-trail-camp-finish__card #mountain-push-offer-host", count: 0
+    assert_select ".lp-trail-camp-finish > #mountain-push-offer-host"
     assert_select ".lp-trail-camp-finish:not(.is-push-offer-open) .lp-trail-camp-finish__cta"
     assert_select ".lp-trail-camp-finish__reminder-divider", count: 0
     assert_select ".lp-push-offer__not-now", count: 0

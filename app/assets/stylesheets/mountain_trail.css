@@ -2714,10 +2714,15 @@ body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
+  gap: var(--lp-space-3, 0.75rem);
   padding-block: 0.5rem 5.5rem;
   padding-inline: var(--lp-space-4, 1rem);
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   pointer-events: none;
 }
 
@@ -2730,6 +2735,7 @@ body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  flex: 0 0 auto;
   align-self: stretch;
   margin: 0 auto;
   padding: 1rem 0.9rem 0.95rem;
@@ -2986,9 +2992,102 @@ body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
 }
 
 .lp-trail.is-v4 .lp-trail-camp-finish__push-offer.lp-push-offer-host {
-  margin: 0 0 0.15rem;
-  max-width: none;
+  pointer-events: auto;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+.lp-trail.is-v4 .lp-push-offer.is-camp-howto {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--lp-space-2, 0.55rem);
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-surface);
+  box-shadow: var(--lp-shadow-card);
+  text-align: left;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-label {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-title {
+  margin: 0;
+  min-width: 0;
+  color: var(--lp-ink);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lp-space-2, 0.55rem);
+  min-width: 0;
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-step-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.1rem;
+  color: var(--lp-muted);
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-trail.is-v4 .lp-push-offer__camp-howto-menu {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.25rem;
+  margin-top: 0.05rem;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
 }
 
 .lp-trail.is-v4 .lp-trail-camp-finish__cta {

@@ -11,6 +11,12 @@ export function isAndroid() {
   return /Android/i.test(navigator.userAgent)
 }
 
+// Matches ApplicationHelper#in_app_browser? — social WebViews that block Web Push.
+export function isInAppBrowser(userAgent = typeof navigator !== "undefined" ? navigator.userAgent : "") {
+  const ua = (userAgent || "").toString()
+  return ["FBAN", "FBAV", "FB_IAB", "FBIOS", "Instagram", "Messenger"].some((token) => ua.includes(token))
+}
+
 export function canEnablePushHere() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false
   if (isIos() && !isStandalonePwa()) return false
