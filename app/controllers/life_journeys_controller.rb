@@ -4,60 +4,36 @@ class LifeJourneysController < ApplicationController
   before_action :require_planning_v2
   before_action :set_journey, only: %i[ show update ]
 
+  NEW_GOAL_SESSION_KEY = :new_goal
+  NEW_GOAL_STEPS = %w[goal camps].freeze
+
   def new
-    assign_new_goal_form!(
-      ring: params[:ring].presence || "me",
-      journey: current_user.life_journeys.new
-    )
+    @draft = new_goal_draft
+    @step = params[:step].presence || "goal"
+    @step = "goal" unless NEW_GOAL_STEPS.include?(@step)
+
+    if @step == "camps" && @draft["goal"].to_s.strip.blank?
+      redirect_to new_life_journey_path(ring: @draft["ring"].presence || params[:ring].presence) and return
+    end
+
+    ring = @draft["ring"].presence || params[:ring].presence || "me"
+    assign_new_goal_form!(ring: ring, journey: current_user.life_journeys.new)
+    @setup_step_index = NEW_GOAL_STEPS.index(@step) + 1
+    @setup_step_total = NEW_GOAL_STEPS.size
+    @goal_title = @draft["goal"].to_s
+    @camp_titles = Array(@draft["camp_titles"])
   end
 
   def create
-    ring = params[:ring].to_s
-    attrs = params.fetch(:life_journey, {}).permit(
-      :title, :ideal_scene, :current_reality, :next_win, :today_mission, :closer_percent
-    )
-    area_key = LifeArea.key_for_ring(ring)
+    step = params[:step].to_s
+    step = "goal" unless NEW_GOAL_STEPS.include?(step)
 
-    unless area_key
-      assign_new_goal_form!(
-        ring: ring.presence || "me",
-        journey: build_new_journey_from_attrs(attrs)
-      )
-      flash.now[:alert] = t("my_world.rings.unknown")
-      render :new, status: :unprocessable_entity
-      return
+    case step
+    when "goal"
+      create_new_goal_name_step
+    when "camps"
+      create_new_goal_camps_step
     end
-
-    areas = LifeAreas::Select.call(user: current_user, keys: [ area_key ])
-    area = areas.find { |row| row.key == area_key } ||
-           current_user.life_areas.where(dream_id: nil).find_by!(key: area_key)
-
-    journey = Journeys::Create.call(
-      user: current_user,
-      life_area: area,
-      title: attrs[:title].presence || attrs[:ideal_scene].to_s.truncate(80),
-      ideal_scene: attrs[:ideal_scene],
-      current_reality: attrs[:current_reality],
-      next_win: attrs[:next_win],
-      closer_percent: attrs[:closer_percent].presence || 30
-    )
-    Focus::SetJourneys.call(user: current_user, journey_ids: [ journey.id ])
-    Missions::EnsureDaily.call(
-      user: current_user,
-      mission_title: attrs[:today_mission].presence
-    )
-    journey.bootstrap_setup_flags_from_content!(
-      today_mission: journey.missions.for_day.primary.order(:id).first,
-      today_todos: current_user.daily_todos.for_day.ordered
-    )
-    redirect_to dashboard_path, notice: t("journeys.created")
-  rescue Journeys::Create::Error, Focus::SetJourneys::Error, LifeAreas::Select::Error, ActiveRecord::RecordNotFound => e
-    assign_new_goal_form!(
-      ring: ring.presence || "me",
-      journey: build_new_journey_from_attrs(attrs)
-    )
-    flash.now[:alert] = e.message
-    render :new, status: :unprocessable_entity
   end
 
   def show
@@ -801,13 +777,137 @@ class LifeJourneysController < ApplicationController
     @area_key = LifeArea.key_for_ring(@ring) || "self"
   end
 
-  def build_new_journey_from_attrs(attrs)
-    current_user.life_journeys.new(
-      title: attrs[:title],
-      ideal_scene: attrs[:ideal_scene],
-      current_reality: attrs[:current_reality],
-      next_win: attrs[:next_win]
+  def create_new_goal_name_step
+    ring = params[:ring].to_s
+    goal = params.dig(:onboarding, :goal).to_s.strip
+    goal = params[:goal].to_s.strip if goal.blank?
+
+    unless LifeArea.key_for_ring(ring)
+      assign_new_goal_form!(ring: ring.presence || "me", journey: current_user.life_journeys.new)
+      @step = "goal"
+      @setup_step_index = 1
+      @setup_step_total = NEW_GOAL_STEPS.size
+      @goal_title = goal
+      @camp_titles = []
+      @draft = new_goal_draft.merge("ring" => @ring, "goal" => goal)
+      flash.now[:alert] = t("my_world.rings.unknown")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    if goal.blank?
+      assign_new_goal_form!(ring: ring.presence || "me", journey: current_user.life_journeys.new)
+      @step = "goal"
+      @setup_step_index = 1
+      @setup_step_total = NEW_GOAL_STEPS.size
+      @goal_title = ""
+      @camp_titles = []
+      @draft = new_goal_draft.merge("ring" => @ring)
+      @name_error = t("v2_onboarding.need_goal")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    session[NEW_GOAL_SESSION_KEY] = {
+      "user_id" => current_user.id,
+      "ring" => ring,
+      "goal" => goal,
+      "camp_titles" => Array(new_goal_draft["camp_titles"])
+    }
+    redirect_to new_life_journey_path(step: "camps")
+  end
+
+  def create_new_goal_camps_step
+    draft = new_goal_draft
+    ring = (params[:ring].presence || draft["ring"]).to_s
+    goal = draft["goal"].to_s.strip
+    titles = normalize_new_goal_camp_titles(
+      camp_titles_from_params.presence || camp_titles_from_draft(draft)
     )
+
+    area_key = LifeArea.key_for_ring(ring)
+    unless area_key
+      assign_new_goal_form!(ring: ring.presence || "me", journey: current_user.life_journeys.new)
+      @step = "goal"
+      @setup_step_index = 1
+      @setup_step_total = NEW_GOAL_STEPS.size
+      @goal_title = goal
+      @camp_titles = titles
+      @draft = draft.merge("ring" => @ring, "goal" => goal)
+      flash.now[:alert] = t("my_world.rings.unknown")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    if goal.blank?
+      redirect_to new_life_journey_path(ring: ring.presence), alert: t("v2_onboarding.need_goal") and return
+    end
+
+    if titles.empty?
+      session[NEW_GOAL_SESSION_KEY] = draft.merge(
+        "user_id" => current_user.id,
+        "ring" => ring,
+        "goal" => goal,
+        "camp_titles" => []
+      )
+      redirect_to new_life_journey_path(step: "camps"), alert: t("v2_onboarding.need_camp") and return
+    end
+
+    areas = LifeAreas::Select.call(user: current_user, keys: [ area_key ])
+    area = areas.find { |row| row.key == area_key } ||
+           current_user.life_areas.where(dream_id: nil).find_by!(key: area_key)
+
+    result = Onboarding::ClimbSpine.call(
+      user: current_user,
+      goal_title: goal,
+      camp_titles: titles,
+      life_area: area,
+      seed_battle: false,
+      celebrate_goal: false,
+      include_bootstrap_flag: false,
+      first_camp_reveal_status: "done"
+    )
+    Goals::Current.clear_cache!(user: current_user)
+    session.delete(NEW_GOAL_SESSION_KEY)
+    redirect_to life_journey_path(result.journey)
+  rescue Onboarding::ClimbSpine::Error, LifeAreas::Select::Error, ActiveRecord::RecordNotFound => e
+    session[NEW_GOAL_SESSION_KEY] = {
+      "user_id" => current_user.id,
+      "ring" => ring,
+      "goal" => goal,
+      "camp_titles" => titles
+    }
+    redirect_to new_life_journey_path(step: "camps"), alert: e.message
+  end
+
+  def new_goal_draft
+    draft = (session[NEW_GOAL_SESSION_KEY] || {}).stringify_keys
+    if draft["user_id"].present? && draft["user_id"].to_i != current_user.id
+      session.delete(NEW_GOAL_SESSION_KEY)
+      return {}
+    end
+    draft
+  end
+
+  def camp_titles_from_params
+    from_onboarding = Array(params.dig(:onboarding, :camp_titles)).map(&:to_s).map(&:strip).reject(&:blank?)
+    return from_onboarding if from_onboarding.any?
+
+    Array(params[:camp_titles]).map(&:to_s).map(&:strip).reject(&:blank?)
+  end
+
+  def camp_titles_from_draft(draft)
+    Array(draft["camp_titles"]).map(&:to_s).map(&:strip).reject(&:blank?)
+  end
+
+  def normalize_new_goal_camp_titles(camp_titles)
+    seen = {}
+    Array(camp_titles).map { |t| t.to_s.strip }.reject(&:blank?).each_with_object([]) do |title, list|
+      next if seen[title.downcase]
+
+      seen[title.downcase] = true
+      list << title
+    end.first(Onboarding::Bootstrap::MAX_CAMPS)
   end
 
   def require_planning_v2

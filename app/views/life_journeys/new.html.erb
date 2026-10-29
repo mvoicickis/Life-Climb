@@ -1,88 +1,140 @@
 <% content_for :title, t("journeys.new_title") %>
 <% content_for :lp_game, true %>
-<%
-  area_key = @area_key.presence || "self"
-  area_label = I18n.t("life_area_catalog.#{area_key}.name", default: area_key.humanize)
-%>
 
-<div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
-  <header>
-    <h1 class="text-3xl font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "title", default: t("journeys.new_title")) %></h1>
-    <p class="mt-2 text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "subtitle", default: t("journeys.new_subtitle")) %></p>
-  </header>
+<% if @step == "camps" %>
+  <% camp_rows = Array(@camp_titles).presence || [] %>
+  <% content_for :lp_hide_top_nav, true %>
+  <div class="lp-ob lp-ob--camps"
+       data-controller="onboarding-camps"
+       data-onboarding-camps-reorder-hint-value="<%= t("v2_onboarding.camps_reorder_hint") %>"
+       data-onboarding-camps-max-length-value="<%= StrategyGoal::TITLE_MAX %>">
+    <div class="lp-ob__mountain-bg lp-ob__mountain-bg--steps" aria-hidden="true">
+      <%= image_tag "onboarding_path.webp", class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
+    </div>
 
-  <%= form_with url: life_journeys_path, scope: :life_journey, class: "space-y-4" do |f| %>
-    <fieldset class="ring-picker">
-      <legend class="ring-picker__title"><%= t("my_world.rings.pick_title") %></legend>
-      <div class="ring-picker__chips" role="radiogroup" aria-label="<%= t("my_world.rings.pick_title") %>">
-        <% @rings.each do |ring| %>
-          <% color_i = LifeArea.world_ring_color_index(ring) %>
-          <label class="ring-picker__chip<%= " is-selected" if ring == @ring %>"
-                 style="--chip-color: var(--lp-world-<%= color_i %>)">
-            <%= radio_button_tag :ring, ring, ring == @ring, class: "ring-picker__input" %>
-            <span class="ring-picker__dot" aria-hidden="true"></span>
-            <span class="ring-picker__copy">
-              <span class="ring-picker__name"><%= t("my_world.rings.#{ring}.name") %></span>
-              <span class="ring-picker__hint"><%= t("my_world.rings.#{ring}.hint") %></span>
-            </span>
-          </label>
+    <div class="lp-ob__body lp-ob__body--camps">
+      <header class="lp-ob-steps__head">
+        <div class="lp-ob__step-head">
+          <%= link_to t("v2_onboarding.back"), new_life_journey_path(step: "goal", ring: @ring), class: "lp-ob__back" %>
+          <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+        </div>
+        <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>">
+          <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+        </div>
+
+        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title") %></h1>
+        <% if @goal_title.present? %>
+          <p class="lp-ob__goal-echo"><%= @goal_title %></p>
+        <% end %>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead") %></p>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead_order") %></p>
+      </header>
+
+      <%= form_with url: life_journeys_path(step: "camps"),
+            method: :post,
+            class: "lp-ob-steps",
+            data: {
+              turbo: false,
+              onboarding_camps_target: "form",
+              action: "submit->onboarding-camps#beforeSubmit"
+            } do %>
+        <%= hidden_field_tag :ring, @ring %>
+
+        <div class="lp-ob-steps__add">
+          <label class="sr-only" for="new_goal_camp_add"><%= t("v2_onboarding.camps_add_label") %></label>
+          <input type="text"
+                 id="new_goal_camp_add"
+                 class="lp-input lp-ob-steps__add-input"
+                 autocomplete="off"
+                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                 enterkeyhint="go"
+                 placeholder="<%= t("v2_onboarding.camps_add_placeholder") %>"
+                 data-onboarding-camps-target="addInput"
+                 data-action="input->onboarding-camps#setSubmitEnabled keydown->onboarding-camps#addFromEnter">
+          <button type="button"
+                  class="lp-ob-steps__add-btn"
+                  aria-label="<%= t("v2_onboarding.camps_add_button") %>"
+                  data-action="click->onboarding-camps#addFromButton">+</button>
+        </div>
+
+        <div class="lp-ob-steps__scroll" data-onboarding-camps-target="scroll">
+          <div class="lp-ob-steps__ghosts" data-onboarding-camps-target="ghosts" aria-hidden="true">
+            <% t("v2_onboarding.camps_ghost_examples").each do |example| %>
+              <div class="lp-ob-steps__ghost">
+                <span class="lp-ob-steps__ghost-handle" aria-hidden="true"></span>
+                <%= example %>
+              </div>
+            <% end %>
+          </div>
+          <ul class="lp-ob-steps__list" data-onboarding-camps-target="list" aria-label="<%= t("v2_onboarding.camps_list_label") %>"></ul>
+          <p class="lp-ob-steps__hint" data-onboarding-camps-target="hint" hidden></p>
+        </div>
+
+        <div data-onboarding-camps-target="hiddenFields">
+          <% camp_rows.each do |title| %>
+            <%= hidden_field_tag "onboarding[camp_titles][]", title %>
+          <% end %>
+        </div>
+
+        <footer class="lp-ob-steps__dock" data-onboarding-camps-target="dock">
+          <%= submit_tag t("journeys.start_climb"),
+                class: "lp-cta w-full",
+                disabled: camp_rows.empty?,
+                data: { onboarding_camps_target: "submit" } %>
+        </footer>
+      <% end %>
+    </div>
+  </div>
+
+<% else %>
+  <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
+    <header>
+      <div class="lp-ob__step-head">
+        <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
+      </div>
+      <div class="lp-ob__progress-track mb-4" role="progressbar" aria-valuemin="1" aria-valuenow="<%= @setup_step_index %>" aria-valuemax="<%= @setup_step_total %>" aria-label="<%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %>">
+        <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
+      </div>
+      <h1 class="text-3xl font-semibold text-[var(--lp-ink)] break-words"><%= t("v2_onboarding.mountain_name_title") %></h1>
+    </header>
+
+    <%= form_with url: life_journeys_path(step: "goal"), method: :post, class: "space-y-4", data: { turbo: false } do %>
+      <fieldset class="ring-picker">
+        <legend class="ring-picker__title"><%= t("my_world.rings.pick_title") %></legend>
+        <div class="ring-picker__chips" role="radiogroup" aria-label="<%= t("my_world.rings.pick_title") %>">
+          <% @rings.each do |ring| %>
+            <% color_i = LifeArea.world_ring_color_index(ring) %>
+            <label class="ring-picker__chip<%= " is-selected" if ring == @ring %>"
+                   style="--chip-color: var(--lp-world-<%= color_i %>)">
+              <%= radio_button_tag :ring, ring, ring == @ring, class: "ring-picker__input" %>
+              <span class="ring-picker__dot" aria-hidden="true"></span>
+              <span class="ring-picker__copy">
+                <span class="ring-picker__name"><%= t("my_world.rings.#{ring}.name") %></span>
+                <span class="ring-picker__hint"><%= t("my_world.rings.#{ring}.hint") %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <p class="ring-picker__helper"><%= t("my_world.rings.change_later") %></p>
+      </fieldset>
+
+      <div class="space-y-2">
+        <label class="sr-only" for="new_goal_mountain_name"><%= t("v2_onboarding.mountain_name_title") %></label>
+        <%= text_field_tag "onboarding[goal]", @goal_title,
+              id: "new_goal_mountain_name",
+              required: true,
+              maxlength: 120,
+              class: "lp-input lp-ob-steps__add-input w-full",
+              autocomplete: "off",
+              autofocus: true,
+              placeholder: t("v2_onboarding.mountain_name_placeholder"),
+              aria: { invalid: @name_error.present? || nil, describedby: (@name_error.present? ? "new_goal_name_error" : nil) } %>
+        <% if @name_error.present? %>
+          <p id="new_goal_name_error" class="text-sm font-semibold text-[var(--lp-rose)]" role="alert"><%= @name_error %></p>
         <% end %>
       </div>
-      <p class="ring-picker__helper"><%= t("my_world.rings.change_later") %></p>
-    </fieldset>
 
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.journey") %></label>
-      <%= f.text_field :title, required: true, class: "lp-input w-full",
-            id: "life_journey_title",
-            placeholder: area_copy(area_key, "goal_placeholder") %>
-    </div>
-
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "ideal") %></label>
-      <%= f.text_area :ideal_scene, rows: 3, required: true, class: "lp-input w-full",
-            id: "life_journey_ideal_scene",
-            placeholder: area_copy(area_key, "ideal_placeholder") %>
-    </div>
-
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= area_copy(area_key, "reality") %></label>
-      <%= f.text_area :current_reality, rows: 3, required: true, class: "lp-input w-full",
-            placeholder: area_copy(area_key, "present_placeholder"),
-            id: "life_journey_current_reality" %>
-    </div>
-
-    <%= render "strategy_helps/launch",
-          goal: "",
-          ideal_scene: "",
-          current_reality: "",
-          life_area: area_label,
-          horizon: "goal",
-          accept_as: "fill",
-          source_form: true,
-          target_input: "#life_journey_title",
-          panel_id: "strategist-panel-new-journey",
-          button_label: t("strategy.help.cta_new_journey") %>
-
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.progress") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "closer", default: t("coach.progress_hint")) %></p>
-      <%= f.number_field :closer_percent, min: 0, max: 100, value: params.dig(:life_journey, :closer_percent).presence || 5, class: "lp-input w-full" %>
-    </div>
-
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.milestone") %></label>
-      <p class="text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "milestone_hint") %></p>
-      <%= f.text_field :next_win, class: "lp-input w-full",
-            placeholder: area_copy(area_key, "milestone_hint") %>
-    </div>
-
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.mission") %></label>
-      <%= text_field_tag "life_journey[today_mission]", params.dig(:life_journey, :today_mission), required: true, class: "lp-input w-full",
-            placeholder: area_copy(area_key, "today_mission_placeholder") %>
-    </div>
-
-    <%= f.submit t("coach.begin_today"), class: "lp-cta w-full" %>
-  <% end %>
-</div>
+      <%= submit_tag t("journeys.next"), class: "lp-cta w-full" %>
+    <% end %>
+  </div>
+<% end %>
