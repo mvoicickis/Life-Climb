@@ -115,24 +115,18 @@ module Stats
       return [] if battle_to_project.empty?
 
       wins_by_project = Hash.new(0)
-      recurring = Battles::WinsOnLocalDate::RECURRING_REPEATS
       battle_ids = battle_to_project.keys
 
-      @user.strategy_goals.battles
+      Battles::WinsOnLocalDate.one_shot_battles_won(user: @user)
         .where(id: battle_ids)
-        .where.not(repeat: recurring)
-        .where.not(completed_at: nil)
         .pluck(:id)
         .each do |battle_id|
           project_id = battle_to_project[battle_id]
           wins_by_project[project_id] += 1 if project_id
         end
 
-      base = @user.daily_todos.where(strategy_goal_id: battle_ids).where.not(completed_at: nil)
-      strategy_rows = base.where.not(strategy_goal_id: nil).or(base.where(tag: "strategy"))
-      strategy_rows
-        .joins(:strategy_goal)
-        .where(strategy_goals: { repeat: recurring })
+      Battles::WinsOnLocalDate.recurring_strategy_todos_won(user: @user)
+        .where(strategy_goal_id: battle_ids)
         .pluck(:strategy_goal_id)
         .each do |battle_id|
           project_id = battle_to_project[battle_id]

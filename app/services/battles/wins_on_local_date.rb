@@ -59,20 +59,28 @@ module Battles
       Date.current
     end
 
-    def self.one_shot_battles_completed_in_range(user:, range_start:, range_end:)
+    # Shared "won" relations — one-shot battles and recurring strategy todos.
+    # Stats, streaks, and My world all use these; do not copy the conditions.
+    def self.one_shot_battles_won(user:)
       user.strategy_goals.battles
         .where.not(repeat: RECURRING_REPEATS)
-        .where(completed_at: range_start..range_end)
+        .where.not(completed_at: nil)
     end
-    private_class_method :one_shot_battles_completed_in_range
 
-    def self.recurring_strategy_todos_in_date_range(user:, from:, to:)
-      base = user.daily_todos.where(scheduled_on: from..to).where.not(completed_at: nil)
+    def self.one_shot_battles_completed_in_range(user:, range_start:, range_end:)
+      one_shot_battles_won(user: user).where(completed_at: range_start..range_end)
+    end
+
+    def self.recurring_strategy_todos_won(user:)
+      base = user.daily_todos.where.not(completed_at: nil)
       strategy_rows = base.where.not(strategy_goal_id: nil).or(base.where(tag: "strategy"))
       strategy_rows
         .joins(:strategy_goal)
         .where(strategy_goals: { repeat: RECURRING_REPEATS })
     end
-    private_class_method :recurring_strategy_todos_in_date_range
+
+    def self.recurring_strategy_todos_in_date_range(user:, from:, to:)
+      recurring_strategy_todos_won(user: user).where(scheduled_on: from..to)
+    end
   end
 end
