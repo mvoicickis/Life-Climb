@@ -1881,6 +1881,35 @@ en:
     plan_together_title: "Plan it together"
     plan_together_body: "This works best with a partner or startup teammates — someone who can hold the year with you.\nYou’re not meant to carry the whole map alone."
     plan_together_help: "Message me anytime — happy to help."
+  my_world:
+    rings:
+      pick_title: "Pick the part of life this goal fits best"
+      change_later: "You can change this later."
+      unknown: "Pick a part of life for this goal."
+      me:
+        name: "Me"
+        hint: "health, body, mind"
+      family_love:
+        name: "Family & love"
+        hint: "partner, kids"
+      friends_work:
+        name: "Friends & work"
+        hint: "team, job, groups"
+      people:
+        name: "People"
+        hint: "community, helping others"
+      animals_nature:
+        name: "Animals & nature"
+        hint: "pets, plants, outdoors"
+      things_money:
+        name: "Things & money"
+        hint: "home, money, stuff"
+      spirit:
+        name: "Spirit"
+        hint: "what you believe, meaning"
+      infinity:
+        name: "Infinity"
+        hint: "whatever it means to you"
   journeys:
     new_title: "Start the next climb"
     new_subtitle: "Focus. Journey. Vision. Reality. Progress. Mission."

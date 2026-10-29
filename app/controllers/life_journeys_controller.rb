@@ -5,17 +5,33 @@ class LifeJourneysController < ApplicationController
   before_action :set_journey, only: %i[ show update ]
 
   def new
-    @life_areas = current_user.life_areas.v2_selected
-    redirect_to life_area_selections_path, alert: t("journeys.need_areas") and return if @life_areas.empty?
-
-    @journey = current_user.life_journeys.new(life_area_id: params[:life_area_id])
+    assign_new_goal_form!(
+      ring: params[:ring].presence || "me",
+      journey: current_user.life_journeys.new
+    )
   end
 
   def create
-    area = current_user.life_areas.v2_selected.find(params.require(:life_journey)[:life_area_id])
-    attrs = params.require(:life_journey).permit(
+    ring = params[:ring].to_s
+    attrs = params.fetch(:life_journey, {}).permit(
       :title, :ideal_scene, :current_reality, :next_win, :today_mission, :closer_percent
     )
+    area_key = LifeArea.key_for_ring(ring)
+
+    unless area_key
+      assign_new_goal_form!(
+        ring: ring.presence || "me",
+        journey: build_new_journey_from_attrs(attrs)
+      )
+      flash.now[:alert] = t("my_world.rings.unknown")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    areas = LifeAreas::Select.call(user: current_user, keys: [ area_key ])
+    area = areas.find { |row| row.key == area_key } ||
+           current_user.life_areas.where(dream_id: nil).find_by!(key: area_key)
+
     journey = Journeys::Create.call(
       user: current_user,
       life_area: area,
@@ -35,8 +51,13 @@ class LifeJourneysController < ApplicationController
       today_todos: current_user.daily_todos.for_day.ordered
     )
     redirect_to dashboard_path, notice: t("journeys.created")
-  rescue Journeys::Create::Error, Focus::SetJourneys::Error, ActiveRecord::RecordNotFound => e
-    redirect_to new_life_journey_path, alert: e.message
+  rescue Journeys::Create::Error, Focus::SetJourneys::Error, LifeAreas::Select::Error, ActiveRecord::RecordNotFound => e
+    assign_new_goal_form!(
+      ring: ring.presence || "me",
+      journey: build_new_journey_from_attrs(attrs)
+    )
+    flash.now[:alert] = e.message
+    render :new, status: :unprocessable_entity
   end
 
   def show
@@ -770,6 +791,23 @@ class LifeJourneysController < ApplicationController
     return key if LifeArea::HOME_ASPECT_KEYS.include?(key)
 
     "career"
+  end
+
+  def assign_new_goal_form!(ring:, journey:)
+    @rings = LifeArea.creatable_world_rings
+    requested = ring.to_s
+    @ring = @rings.include?(requested) ? requested : "me"
+    @journey = journey
+    @area_key = LifeArea.key_for_ring(@ring) || "self"
+  end
+
+  def build_new_journey_from_attrs(attrs)
+    current_user.life_journeys.new(
+      title: attrs[:title],
+      ideal_scene: attrs[:ideal_scene],
+      current_reality: attrs[:current_reality],
+      next_win: attrs[:next_win]
+    )
   end
 
   def require_planning_v2

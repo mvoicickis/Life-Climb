@@ -108,4 +108,19 @@ class LifeAreaTest < ActiveSupport::TestCase
     area = life_areas(:one_self)
     assert_equal LifeArea.world_ring_for(area.key), area.world_ring
   end
+
+  test "key_for_ring maps creatable rings and hides infinity" do
+    assert_equal "self", LifeArea.key_for_ring("me")
+    assert_equal "relationships", LifeArea.key_for_ring("family_love")
+    assert_equal "career", LifeArea.key_for_ring("friends_work")
+    assert_equal "community", LifeArea.key_for_ring("people")
+    assert_equal "nature", LifeArea.key_for_ring("animals_nature")
+    assert_equal "money", LifeArea.key_for_ring("things_money")
+    assert_equal "purpose", LifeArea.key_for_ring("spirit")
+    assert_nil LifeArea.key_for_ring("infinity")
+    assert_nil LifeArea.key_for_ring("spaceships")
+    assert_nil LifeArea.key_for_ring(nil)
+    assert_equal 7, LifeArea.creatable_world_rings.size
+    refute_includes LifeArea.creatable_world_rings, "infinity"
+  end
 end

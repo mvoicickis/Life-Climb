@@ -1,8 +1,8 @@
 <% content_for :title, t("journeys.new_title") %>
 <% content_for :lp_game, true %>
 <%
-  area = @journey.life_area || @life_areas.first
-  area_key = area&.key.presence || "self"
+  area_key = @area_key.presence || "self"
+  area_label = I18n.t("life_area_catalog.#{area_key}.name", default: area_key.humanize)
 %>
 
 <div class="lp-home mx-auto max-w-lg space-y-6 px-4 pb-24 pt-5">
@@ -12,12 +12,24 @@
   </header>
 
   <%= form_with url: life_journeys_path, scope: :life_journey, class: "space-y-4" do |f| %>
-    <div class="lp-glass space-y-3 p-4">
-      <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("journeys.area") %></label>
-      <%= f.collection_select :life_area_id, @life_areas, :id, :label,
-            { selected: @journey.life_area_id || area&.id },
-            class: "lp-input w-full" %>
-    </div>
+    <fieldset class="ring-picker">
+      <legend class="ring-picker__title"><%= t("my_world.rings.pick_title") %></legend>
+      <div class="ring-picker__chips" role="radiogroup" aria-label="<%= t("my_world.rings.pick_title") %>">
+        <% @rings.each do |ring| %>
+          <% color_i = LifeArea.world_ring_color_index(ring) %>
+          <label class="ring-picker__chip<%= " is-selected" if ring == @ring %>"
+                 style="--chip-color: var(--lp-world-<%= color_i %>)">
+            <%= radio_button_tag :ring, ring, ring == @ring, class: "ring-picker__input" %>
+            <span class="ring-picker__dot" aria-hidden="true"></span>
+            <span class="ring-picker__copy">
+              <span class="ring-picker__name"><%= t("my_world.rings.#{ring}.name") %></span>
+              <span class="ring-picker__hint"><%= t("my_world.rings.#{ring}.hint") %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+      <p class="ring-picker__helper"><%= t("my_world.rings.change_later") %></p>
+    </fieldset>
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.journey") %></label>
@@ -44,7 +56,7 @@
           goal: "",
           ideal_scene: "",
           current_reality: "",
-          life_area: area&.label,
+          life_area: area_label,
           horizon: "goal",
           accept_as: "fill",
           source_form: true,
@@ -55,7 +67,7 @@
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.progress") %></label>
       <p class="text-sm text-[var(--lp-muted)]"><%= area_copy(area_key, "closer", default: t("coach.progress_hint")) %></p>
-      <%= f.number_field :closer_percent, min: 0, max: 100, value: 5, class: "lp-input w-full" %>
+      <%= f.number_field :closer_percent, min: 0, max: 100, value: params.dig(:life_journey, :closer_percent).presence || 5, class: "lp-input w-full" %>
     </div>
 
     <div class="lp-glass space-y-3 p-4">
@@ -67,7 +79,7 @@
 
     <div class="lp-glass space-y-3 p-4">
       <label class="block text-sm font-semibold text-[var(--lp-ink)]"><%= t("coach.mission") %></label>
-      <%= text_field_tag "life_journey[today_mission]", nil, required: true, class: "lp-input w-full",
+      <%= text_field_tag "life_journey[today_mission]", params.dig(:life_journey, :today_mission), required: true, class: "lp-input w-full",
             placeholder: area_copy(area_key, "today_mission_placeholder") %>
     </div>
 

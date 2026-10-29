@@ -1606,6 +1606,35 @@ es:
     reached_aria: "Goal reached" # TODO: translate
     not_at_summit: "Finish every camp on your Mountain first." # TODO: translate
     need_area: "Pick a life area for your next climb." # TODO: translate
+  my_world:
+    rings:
+      pick_title: "Pick the part of life this goal fits best" # TODO: translate
+      change_later: "You can change this later." # TODO: translate
+      unknown: "Pick a part of life for this goal." # TODO: translate
+      me:
+        name: "Me" # TODO: translate
+        hint: "health, body, mind" # TODO: translate
+      family_love:
+        name: "Family & love" # TODO: translate
+        hint: "partner, kids" # TODO: translate
+      friends_work:
+        name: "Friends & work" # TODO: translate
+        hint: "team, job, groups" # TODO: translate
+      people:
+        name: "People" # TODO: translate
+        hint: "community, helping others" # TODO: translate
+      animals_nature:
+        name: "Animals & nature" # TODO: translate
+        hint: "pets, plants, outdoors" # TODO: translate
+      things_money:
+        name: "Things & money" # TODO: translate
+        hint: "home, money, stuff" # TODO: translate
+      spirit:
+        name: "Spirit" # TODO: translate
+        hint: "what you believe, meaning" # TODO: translate
+      infinity:
+        name: "Infinity" # TODO: translate
+        hint: "whatever it means to you" # TODO: translate
   admin:
     metrics:
       opened_today: "Opened today" # TODO: translate
