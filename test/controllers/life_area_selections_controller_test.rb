@@ -48,13 +48,36 @@ class LifeAreaSelectionsControllerTest < ActionDispatch::IntegrationTest
     journey = @user.reload.primary_focused_journey
     career = journey.life_area
     assert_equal "career", career.key
+    assert_equal 1, journey.focus_position
 
     patch life_area_selections_url, params: { key: "relationships" }
-    assert_response :redirect
+    assert_redirected_to dashboard_path
 
     career.reload
-    assert_nil career.selected_at
+    assert career.v2_selected?
     assert LifeJourney.exists?(journey.id)
-    assert_equal %w[relationships], @user.life_areas.v2_selected.pluck(:key)
+    assert_equal 1, journey.reload.focus_position
+    assert_equal %w[career relationships].sort, @user.life_areas.v2_selected.pluck(:key).sort
+  end
+
+  test "redirect after select uses the area just selected when no primary focus" do
+    LifeAreas::Select.call(user: @user, keys: %w[career])
+    career = @user.life_areas.v2_selected.find_by!(key: "career")
+    Journeys::Create.call(
+      user: @user,
+      life_area: career,
+      title: "Career climb",
+      ideal_scene: "Ideal",
+      current_reality: "Present",
+      next_win: "Next",
+      closer_percent: 20
+    )
+    # No focus_position — primary is blank; career journey must not be auto-picked
+    # when the user just selected a different empty area.
+    assert_nil @user.reload.primary_focused_journey
+
+    patch life_area_selections_url, params: { key: "relationships" }
+    assert_redirected_to new_life_journey_path
+    assert_includes @user.life_areas.v2_selected.pluck(:key), "relationships"
   end
 end

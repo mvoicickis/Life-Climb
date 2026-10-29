@@ -35,7 +35,7 @@ class LifeAreas::SelectTest < ActiveSupport::TestCase
     assert_equal 1, @user.life_areas.where(dream_id: nil, key: "purpose").count
   end
 
-  test "reselecting replaces previous v2 selection without touching legacy dream areas" do
+  test "selecting another area keeps previous selected without touching legacy dream areas" do
     legacy_count = @user.life_areas.where.not(dream_id: nil).count
     assert legacy_count.positive?
 
@@ -43,9 +43,31 @@ class LifeAreas::SelectTest < ActiveSupport::TestCase
     LifeAreas::Select.call(user: @user, keys: %w[purpose])
 
     selected = @user.life_areas.v2_selected
-    assert_equal [ "purpose" ], selected.map(&:key)
+    assert_equal %w[self purpose].sort, selected.map(&:key).sort
     assert_equal legacy_count, @user.life_areas.where.not(dream_id: nil).count
-    assert_nil @user.life_areas.find_by(key: "self", dream_id: nil).selected_at
+    assert @user.life_areas.find_by(key: "self", dream_id: nil).v2_selected?
+    assert @user.life_areas.find_by(key: "purpose", dream_id: nil).v2_selected?
+  end
+
+  test "selecting area B keeps focus_position on journeys in A" do
+    LifeAreas::Select.call(user: @user, keys: %w[career])
+    area_a = @user.life_areas.v2_selected.find_by!(key: "career")
+    journey = Journeys::Create.call(
+      user: @user,
+      life_area: area_a,
+      title: "Career climb",
+      ideal_scene: "Ideal career",
+      current_reality: "Present career",
+      next_win: "Next career",
+      closer_percent: 20
+    )
+    Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
+    assert_equal 1, journey.reload.focus_position
+
+    LifeAreas::Select.call(user: @user, keys: %w[purpose])
+
+    assert_equal 1, journey.reload.focus_position
+    assert_equal %w[career purpose].sort, @user.life_areas.v2_selected.pluck(:key).sort
   end
 
   test "rejects empty selection" do
