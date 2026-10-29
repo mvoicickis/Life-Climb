@@ -820,7 +820,7 @@ de:
       not_now: "Not now"
       ios_headline: "Add Life Climb to your home screen"
       ios_body: "Morning reminders need the app on your home screen on iPhone."
-      ios_steps: 'Tap Share, then "Add to Home Screen".' # TODO: translate
+      ios_steps: 'Tap ⋯ next to the address (or Share at the bottom). Tap Share. Tap "Add to Home Screen".' # TODO: translate
       ios_install: "Add to home screen"
       android_headline: "Morning nudge on your home screen"
       android_body: "Add Life Climb to your home screen, then we'll ask for a morning reminder."
@@ -1252,7 +1252,18 @@ de:
     # TODO: translate
     install_offer:
       row_label: "Add to home screen"
-      browser_menu: "Your browser will offer this from its own menu."
+    install_guide: # TODO: translate
+      safari_title: "Add Life Climb to your home screen"
+      safari_step_1: "Tap ⋯ next to the address (or Share at the bottom)."
+      safari_step_2: "Tap Share."
+      safari_step_3: 'Tap "Add to Home Screen".'
+      safari_note: "Life Climb also works right here in Safari."
+      safari_open_here: "Don't see it? Open this page in Safari first."
+      in_app_title: "Open Life Climb in Safari first"
+      in_app_body: "Tap the compass icon, or ⋯ then Open in Safari."
+      other_title: "Add Life Climb to your home screen"
+      other_body: "Open your browser menu and tap Add to Home screen."
+      got_it: "Got it"
     edit: "Edit" # TODO: translate
     send_feedback: "Send feedback" # TODO: translate
     two_step_login: "Two-step login" # TODO: translate
