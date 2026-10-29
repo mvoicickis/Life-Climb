@@ -117,12 +117,48 @@ class MagicalLoopTest < ActiveSupport::TestCase
       closer_percent: 25
     )
 
-    assert_equal %w[purpose], user.life_areas.v2_selected.pluck(:key)
+    assert_equal %w[career purpose].sort, user.life_areas.v2_selected.pluck(:key).sort
     assert_equal second.id, user.primary_focused_journey.id
     assert_equal "Write purpose statement", second.next_win
     assert_equal "Journal for 20 minutes", second.missions.for_day(Date.current).primary.first.title
-    assert_nil first.reload.focus_position
+    assert_equal "completed", first.reload.status
+    assert_nil first.focus_position
   end
+
+  test "begin climb into a new area focuses the new journey and keeps the old active" do
+    user = users(:two)
+    allow_extra_climbs!(user)
+    Onboarding::Run.call(
+      user: user,
+      area_key: "career",
+      title: "First",
+      ideal_scene: "Ideal A",
+      current_reality: "Present A",
+      next_win: "Next A",
+      today_mission: "Do A today",
+      closer_percent: 40
+    )
+    first = user.primary_focused_journey
+    assert_equal "active", first.status
+
+    second = Journeys::BeginClimb.call(
+      user: user,
+      area_key: "purpose",
+      title: "Purpose climb",
+      ideal_scene: "Clear purpose",
+      current_reality: "Searching",
+      next_win: "Write purpose statement",
+      today_mission: "Journal for 20 minutes",
+      closer_percent: 25
+    )
+
+    assert_equal second.id, user.reload.primary_focused_journey.id
+    assert_equal 1, second.reload.focus_position
+    assert_equal "active", first.reload.status
+    assert_nil first.focus_position
+    assert LifeJourney.exists?(first.id)
+  end
+
 
   test "v2 habit completion does not award LP" do
     user = users(:one)

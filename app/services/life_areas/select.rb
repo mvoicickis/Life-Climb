@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module LifeAreas
-  # Upserts the user's single selected Life Area from the v2 catalog (one mountain).
+  # Upserts a Life Area from the v2 catalog and marks it selected.
+  # Does not deselect other areas or clear journey focus.
   class Select
     class Error < StandardError; end
 
@@ -28,14 +29,6 @@ module LifeAreas
 
         existing = @user.life_areas.where(dream_id: nil).index_by(&:key)
 
-        # Deselect previous v2 areas without destroying journeys (restrict_with_error).
-        existing.each do |area_key, area|
-          next if area_key == key
-          next if area.selected_at.nil?
-
-          area.update!(selected_at: nil)
-        end
-
         area = existing[key]
         attrs = {
           number: LifeArea.catalog_number(key),
@@ -59,11 +52,6 @@ module LifeAreas
               area.update!(attrs)
             end
           end
-        end
-
-        # One mountain: drop focus on journeys outside the selected area.
-        @user.life_journeys.where.not(life_area_id: area.id).where.not(focus_position: nil).find_each do |journey|
-          journey.update!(focus_position: nil)
         end
       end
 
