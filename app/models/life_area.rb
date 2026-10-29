@@ -36,6 +36,36 @@ class LifeArea < ApplicationRecord
 
   CATALOG_KEYS = CATALOG.map { |entry| entry[:key] }.freeze
 
+  # My world rings — inner (Me) to outer (Infinity). Maps catalog + legacy keys; no new column.
+  WORLD_RINGS = %w[
+    me
+    family_love
+    friends_work
+    people
+    animals_nature
+    things_money
+    spirit
+    infinity
+  ].freeze
+
+  WORLD_RING_BY_KEY = {
+    "self" => "me",
+    "learning" => "me",
+    "creativity" => "me",
+    "relationships" => "family_love",
+    "family" => "family_love",
+    "love" => "family_love",
+    "career" => "friends_work",
+    "community" => "people",
+    "humanity" => "people",
+    "animals" => "animals_nature",
+    "nature" => "animals_nature",
+    "money" => "things_money",
+    "home" => "things_money",
+    "physical_world" => "things_money",
+    "purpose" => "spirit"
+  }.freeze
+
   EMOJI = {
     "self" => "🧠",
     "love" => "❤️",
@@ -171,6 +201,10 @@ class LifeArea < ApplicationRecord
     I18n.t("life_area_catalog.#{key}.hint")
   end
 
+  def world_ring
+    self.class.world_ring_for(key)
+  end
+
   def active_goal
     goals.active.ordered.first
   end
@@ -193,6 +227,12 @@ class LifeArea < ApplicationRecord
   def self.catalog_number(key)
     index = CATALOG_KEYS.index(key.to_s)
     index ? index + 1 : 1
+  end
+
+  def self.world_ring_for(key)
+    return "me" if key.nil?
+
+    WORLD_RING_BY_KEY.fetch(key.to_s, "me")
   end
 
   def self.ensure_for_dream!(dream)

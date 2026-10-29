@@ -50,4 +50,62 @@ class LifeAreaTest < ActiveSupport::TestCase
     assert area.errors[:base].present?
     assert LifeArea.exists?(area.id)
   end
+
+  test "WORLD_RINGS has eight unique values" do
+    assert_equal 8, LifeArea::WORLD_RINGS.size
+    assert_equal LifeArea::WORLD_RINGS, LifeArea::WORLD_RINGS.uniq
+  end
+
+  test "every catalog and legacy key maps to a world ring" do
+    (LifeArea::CATALOG_KEYS + LifeArea::KEYS).uniq.each do |key|
+      ring = LifeArea.world_ring_for(key)
+      assert_includes LifeArea::WORLD_RINGS, ring, "#{key} should map to a world ring"
+    end
+  end
+
+  test "world ring mapping for me" do
+    assert_equal "me", LifeArea.world_ring_for("self")
+    assert_equal "me", LifeArea.world_ring_for("learning")
+    assert_equal "me", LifeArea.world_ring_for("creativity")
+  end
+
+  test "world ring mapping for family_love" do
+    assert_equal "family_love", LifeArea.world_ring_for("relationships")
+    assert_equal "family_love", LifeArea.world_ring_for("family")
+    assert_equal "family_love", LifeArea.world_ring_for("love")
+  end
+
+  test "world ring mapping for friends_work" do
+    assert_equal "friends_work", LifeArea.world_ring_for("career")
+  end
+
+  test "world ring mapping for people" do
+    assert_equal "people", LifeArea.world_ring_for("community")
+    assert_equal "people", LifeArea.world_ring_for("humanity")
+  end
+
+  test "world ring mapping for animals_nature" do
+    assert_equal "animals_nature", LifeArea.world_ring_for("animals")
+    assert_equal "animals_nature", LifeArea.world_ring_for("nature")
+  end
+
+  test "world ring mapping for things_money" do
+    assert_equal "things_money", LifeArea.world_ring_for("money")
+    assert_equal "things_money", LifeArea.world_ring_for("home")
+    assert_equal "things_money", LifeArea.world_ring_for("physical_world")
+  end
+
+  test "world ring mapping for spirit" do
+    assert_equal "spirit", LifeArea.world_ring_for("purpose")
+  end
+
+  test "world_ring_for unknown or nil falls back to me" do
+    assert_equal "me", LifeArea.world_ring_for(nil)
+    assert_equal "me", LifeArea.world_ring_for("spaceships")
+  end
+
+  test "instance world_ring uses key" do
+    area = life_areas(:one_self)
+    assert_equal LifeArea.world_ring_for(area.key), area.world_ring
+  end
 end
