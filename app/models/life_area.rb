@@ -66,6 +66,17 @@ class LifeArea < ApplicationRecord
     "purpose" => "spirit"
   }.freeze
 
+  # One catalog key per creatable ring (Infinity has none yet).
+  WORLD_RING_CANONICAL_KEY = {
+    "me" => "self",
+    "family_love" => "relationships",
+    "friends_work" => "career",
+    "people" => "community",
+    "animals_nature" => "nature",
+    "things_money" => "money",
+    "spirit" => "purpose"
+  }.freeze
+
   EMOJI = {
     "self" => "🧠",
     "love" => "❤️",
@@ -233,6 +244,21 @@ class LifeArea < ApplicationRecord
     return "me" if key.nil?
 
     WORLD_RING_BY_KEY.fetch(key.to_s, "me")
+  end
+
+  def self.key_for_ring(ring)
+    return nil if ring.blank?
+
+    WORLD_RING_CANONICAL_KEY[ring.to_s]
+  end
+
+  def self.creatable_world_rings
+    WORLD_RINGS.select { |ring| WORLD_RING_CANONICAL_KEY.key?(ring) }
+  end
+
+  def self.world_ring_color_index(ring)
+    index = WORLD_RINGS.index(ring.to_s)
+    index ? index + 1 : 1
   end
 
   def self.ensure_for_dream!(dream)
