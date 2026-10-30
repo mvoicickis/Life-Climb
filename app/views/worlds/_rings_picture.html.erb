@@ -1,0 +1,29 @@
+<%# locals: rings %>
+<% me = rings.find { |r| r[:key] == "me" } %>
+<% me_live = me&.dig(:live) %>
+<% orbits = rings.reject { |r| r[:key] == "me" }.reverse %>
+<div class="lp-my-world-rings" aria-hidden="true">
+  <svg class="lp-my-world-rings__svg" viewBox="0 0 280 280">
+    <% orbits.each do |ring| %>
+      <% radius = my_world_orbit_radius(ring[:key]) %>
+      <% next unless radius %>
+      <% if ring[:live] %>
+        <circle class="lp-my-world-rings__orbit is-live"
+                cx="140" cy="140" r="<%= radius %>"
+                stroke="var(--lp-world-<%= ring[:color_index] %>)"
+                stroke-width="2.25"
+                fill="none" />
+      <% else %>
+        <circle class="lp-my-world-rings__orbit"
+                cx="140" cy="140" r="<%= radius %>"
+                stroke="var(--lp-border)"
+                stroke-width="1.25"
+                fill="none" />
+      <% end %>
+    <% end %>
+  </svg>
+  <div class="lp-my-world-rings__core<%= ' is-live' if me_live %>"
+       <% if me_live %>style="--ring-color: var(--lp-world-<%= me[:color_index] %>)"<% end %>>
+    <%= t("my_world.rings.me.name") %>
+  </div>
+</div>

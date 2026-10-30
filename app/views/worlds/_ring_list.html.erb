@@ -1,0 +1,28 @@
+<%# locals: rings %>
+<ul class="lp-my-world-list">
+  <% rings.each do |ring| %>
+    <% count = ring[:journeys].size %>
+    <li>
+      <button type="button"
+              class="lp-my-world-list__row"
+              data-action="click->world-ring-sheet#open"
+              data-ring="<%= ring[:key] %>"
+              aria-haspopup="dialog">
+        <span class="lp-my-world-list__dot<%= ' is-live' if ring[:live] %>"
+              <% if ring[:live] %>style="--dot-color: var(--lp-world-<%= ring[:color_index] %>)"<% end %>
+              aria-hidden="true"></span>
+        <span class="lp-my-world-list__icon" aria-hidden="true"><%= my_world_ring_icon(ring[:key]) %></span>
+        <span class="lp-my-world-list__copy">
+          <span class="lp-my-world-list__name-row">
+            <span class="lp-my-world-list__name"><%= t("my_world.rings.#{ring[:key]}.name") %></span>
+            <% if count.positive? %>
+              <span class="lp-my-world-list__count"><%= t("my_world.goals_count", count: count) %></span>
+            <% end %>
+          </span>
+          <span class="lp-my-world-list__hint"><%= t("my_world.rings.#{ring[:key]}.hint") %></span>
+        </span>
+        <span class="lp-my-world-list__chev" aria-hidden="true">›</span>
+      </button>
+    </li>
+  <% end %>
+</ul>

@@ -91,6 +91,7 @@ module RequireOnboarding
       progress
       push_offers
       focus
+      worlds
       pages
       finished_products
       buildings

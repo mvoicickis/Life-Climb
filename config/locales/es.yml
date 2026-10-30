@@ -1610,6 +1610,19 @@ es:
     next: "Next" # TODO: translate
     start_climb: "Start climb" # TODO: translate
   my_world:
+    title: "My world" # TODO: translate
+    subtitle: "Your life, ring by ring" # TODO: translate
+    back: "Mountain" # TODO: translate
+    pill: "My world" # TODO: translate
+    open_now: "Open now" # TODO: translate
+    add_goal: "Add a goal" # TODO: translate
+    add_goal_row: "+ Add a goal" # TODO: translate
+    goals_count:
+      one: "%{count} goal" # TODO: translate
+      other: "%{count} goals" # TODO: translate
+    battles_won:
+      one: "%{count} battle won" # TODO: translate
+      other: "%{count} battles won" # TODO: translate
     rings:
       pick_title: "Pick the part of life this goal fits best" # TODO: translate
       change_later: "You can change this later." # TODO: translate
