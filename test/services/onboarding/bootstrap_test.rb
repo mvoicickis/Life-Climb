@@ -25,7 +25,8 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     journey = result.journey
 
     assert @user.onboarding_completed?
-    assert_equal "purpose", journey.life_area.key
+    assert_equal "self", journey.life_area.key
+    assert_equal "me", journey.life_area.world_ring
     assert_equal "other", journey.setup_flag("onboarding_category")
     assert_equal "true", journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
     assert_equal "pending", journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
@@ -66,6 +67,17 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 0, @user.habits.count
   end
 
+  test "default area with no category lands in Me ring" do
+    result = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Become a Ruby Developer",
+      camp_titles: [ "Get certified" ]
+    )
+
+    assert_equal "self", result.journey.life_area.key
+    assert_equal "me", result.journey.life_area.world_ring
+  end
+
   test "assigns sequential stages in typed camp order" do
     result = Onboarding::Bootstrap.call(
       user: @user,
@@ -98,7 +110,7 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     )
 
     assert_no_difference -> { @user.life_journeys.count } do
-      assert_no_difference -> { @user.life_areas.where(dream_id: nil, key: "purpose").count } do
+      assert_no_difference -> { @user.life_areas.where(dream_id: nil, key: "self").count } do
         second = Onboarding::Bootstrap.call(
           user: @user,
           goal_title: "Become a Ruby Developer",

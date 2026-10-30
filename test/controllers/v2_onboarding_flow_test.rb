@@ -36,7 +36,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(journey)
 
     assert user.onboarding_completed?
-    assert_equal "purpose", user.life_areas.v2_selected.first.key
+    assert_equal "self", user.life_areas.v2_selected.first.key
     assert_equal "other", journey.setup_flag("onboarding_category")
     assert_equal "true", journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
     assert_equal "pending", journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
@@ -107,7 +107,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(journey)
     assert user.onboarding_completed?
     assert_equal 1, user.life_journeys.count
-    assert_equal 1, user.life_areas.where(dream_id: nil, key: "purpose").count
+    assert_equal 1, user.life_areas.where(dream_id: nil, key: "self").count
   end
 
   test "tracks onboarding step viewed and completed events" do

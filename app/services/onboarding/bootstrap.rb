@@ -6,7 +6,7 @@ module Onboarding
   class Bootstrap
     class Error < StandardError; end
 
-    DEFAULT_AREA_KEY = "purpose".freeze
+    DEFAULT_AREA_KEY = "self".freeze
     DEFAULT_CATEGORY = "other".freeze
     DEFAULT_COMMITMENT = "easy".freeze
     BOOTSTRAP_FLAG = "onboarding_bootstrap".freeze
