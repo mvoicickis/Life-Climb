@@ -1882,6 +1882,19 @@ en:
     plan_together_body: "This works best with a partner or startup teammates — someone who can hold the year with you.\nYou’re not meant to carry the whole map alone."
     plan_together_help: "Message me anytime — happy to help."
   my_world:
+    title: "My world"
+    subtitle: "Your life, ring by ring"
+    back: "Mountain"
+    pill: "My world"
+    open_now: "Open now"
+    add_goal: "Add a goal"
+    add_goal_row: "+ Add a goal"
+    goals_count:
+      one: "%{count} goal"
+      other: "%{count} goals"
+    battles_won:
+      one: "%{count} battle won"
+      other: "%{count} battles won"
     rings:
       pick_title: "Pick the part of life this goal fits best"
       change_later: "You can change this later."

@@ -1,0 +1,36 @@
+<% content_for :title, t("my_world.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+<% back_path = @focused_journey ? life_journey_path(@focused_journey) : new_life_journey_path %>
+<% focused_id = @focused_journey&.id %>
+
+<div class="lp-my-world"
+     data-controller="world-ring-sheet">
+  <div class="lp-my-world__scroll">
+    <div class="lp-my-world__inner">
+      <%= link_to back_path, class: "lp-my-world__back" do %>
+        <span aria-hidden="true">‹</span> <%= t("my_world.back") %>
+      <% end %>
+      <h1 class="lp-my-world__title"><%= t("my_world.title") %></h1>
+      <p class="lp-my-world__sub"><%= t("my_world.subtitle") %></p>
+
+      <%= render "worlds/rings_picture", rings: @rings %>
+      <%= render "worlds/ring_list", rings: @rings %>
+    </div>
+  </div>
+
+  <div class="lp-my-world-sheet__scrim"
+       data-world-ring-sheet-target="scrim"
+       data-action="click->world-ring-sheet#close"
+       hidden
+       aria-hidden="true"></div>
+
+  <% @rings.each do |ring| %>
+    <%= render "worlds/ring_sheet",
+          ring: ring,
+          wins_by_journey: @wins_by_journey,
+          focused_id: focused_id %>
+  <% end %>
+</div>
+
+<%= render "shared/lp_dash_nav", active: :mountain %>

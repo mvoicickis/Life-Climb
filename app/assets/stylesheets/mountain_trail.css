@@ -1907,13 +1907,23 @@
   left: calc(var(--lp-summit-x, 0.542) * 100%);
   top: calc(var(--lp-summit-y, 0.208) * 100%);
   transform: translate(-50%, calc(-100% - var(--lp-summit-stack-bottom)));
-  width: max-content;
+  width: var(--lp-summit-glass-max-w);
   max-width: var(--lp-summit-glass-max-w);
   z-index: 16;
   pointer-events: none;
 }
 
-.lp-trail.is-v4 .lp-trail__summit .lp-trail__summit-banner {
+.lp-trail.is-v4 .lp-trail__summit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.lp-trail.is-v4 .lp-trail__summit .lp-trail__summit-banner,
+.lp-trail.is-v4 .lp-trail__summit .lp-trail__my-world-pill {
   pointer-events: auto;
 }
 
@@ -1924,9 +1934,10 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: max-content;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
   max-width: 100%;
-  min-width: 120px;
   min-height: var(--lp-tap, 2.75rem);
   margin: 0;
   padding: 0.4rem 0.85rem;
@@ -1943,6 +1954,72 @@
     inset 0 1px 0 var(--lp-summit-glass-border-top);
   transition: transform 120ms ease, box-shadow 120ms ease;
   pointer-events: auto;
+}
+
+/* My world entry pill — same glass as summit banner, not green */
+.lp-trail.is-v4 .lp-trail__my-world-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lp-ink, #0f172a);
+  text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.lp-trail.is-v4 .lp-trail__my-world-pill__face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--lp-summit-glass-radius);
+  border: 1px solid var(--lp-summit-glass-border);
+  background: var(--lp-summit-glass-fill);
+  backdrop-filter: blur(var(--lp-summit-glass-blur));
+  -webkit-backdrop-filter: blur(var(--lp-summit-glass-blur));
+  box-shadow:
+    var(--lp-shadow-card, 0 14px 36px rgba(15, 23, 42, 0.08)),
+    inset 0 1px 0 var(--lp-summit-glass-border-top),
+    0 0 14px color-mix(in srgb, var(--lp-surface, #ffffff) 55%, transparent);
+  color: inherit;
+  overflow: hidden;
+}
+
+.lp-trail.is-v4 .lp-trail__my-world-pill__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.lp-trail.is-v4 .lp-trail__my-world-pill__icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.lp-trail.is-v4 .lp-trail__my-world-pill__label {
+  margin: 0;
+  font-family: var(--lp-font-ui, var(--lp-trail-font));
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.lp-trail.is-v4.is-night .lp-trail__my-world-pill {
+  color: var(--lp-surface, #ffffff);
 }
 
 .lp-trail.is-v4 .lp-trail__summit-banner::after {

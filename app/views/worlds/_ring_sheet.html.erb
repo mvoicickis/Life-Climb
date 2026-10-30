@@ -1,0 +1,65 @@
+<%# locals: ring, wins_by_journey, focused_id %>
+<% journeys = ring[:journeys] %>
+<% empty = journeys.empty? %>
+<% creatable = ring[:creatable] %>
+<div class="lp-my-world-sheet"
+     data-world-ring-sheet-target="sheet"
+     data-ring="<%= ring[:key] %>"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="world-sheet-title-<%= ring[:key] %>"
+     hidden
+     aria-hidden="true">
+  <div class="lp-my-world-sheet__grabber" aria-hidden="true"></div>
+  <p class="lp-my-world-sheet__ring" id="world-sheet-title-<%= ring[:key] %>">
+    <%= t("my_world.rings.#{ring[:key]}.name") %>
+  </p>
+  <p class="lp-my-world-sheet__hint"><%= t("my_world.rings.#{ring[:key]}.hint") %></p>
+
+  <% if empty && creatable %>
+    <%= link_to t("my_world.add_goal"),
+          new_life_journey_path(ring: ring[:key]),
+          class: "lp-my-world-sheet__pill" %>
+  <% elsif !empty %>
+    <ul class="lp-my-world-sheet__mtns">
+      <% journeys.each do |journey| %>
+        <% wins = wins_by_journey[journey.id].to_i %>
+        <% focused = journey.id == focused_id %>
+        <li>
+          <% if focused %>
+            <div class="lp-my-world-sheet__mtn is-focused">
+              <span class="lp-my-world-sheet__mtn-copy">
+                <span class="lp-my-world-sheet__mtn-title"><%= journey.title %></span>
+                <% if wins.positive? %>
+                  <span class="lp-my-world-sheet__mtn-meta"><%= t("my_world.battles_won", count: wins) %></span>
+                <% end %>
+              </span>
+              <span class="lp-my-world-sheet__mtn-now"><%= t("my_world.open_now") %></span>
+            </div>
+          <% else %>
+            <%= button_to focus_world_path,
+                  method: :patch,
+                  params: { journey_id: journey.id },
+                  class: "lp-my-world-sheet__mtn",
+                  form: { class: "lp-my-world-sheet__mtn-form" } do %>
+              <span class="lp-my-world-sheet__mtn-copy">
+                <span class="lp-my-world-sheet__mtn-title"><%= journey.title %></span>
+                <% if wins.positive? %>
+                  <span class="lp-my-world-sheet__mtn-meta"><%= t("my_world.battles_won", count: wins) %></span>
+                <% end %>
+              </span>
+              <span class="lp-my-world-sheet__mtn-chev" aria-hidden="true">›</span>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+      <% if creatable %>
+        <li>
+          <%= link_to new_life_journey_path(ring: ring[:key]), class: "lp-my-world-sheet__mtn is-add" do %>
+            <%= t("my_world.add_goal_row") %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

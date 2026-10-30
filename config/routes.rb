@@ -97,6 +97,9 @@ Rails.application.routes.draw do
   resource :companion_pick, only: :update
   resource :weekly_planner, only: %i[ show create ], controller: "weekly_planners"
   resource :focus, only: %i[ show update ], controller: "focus"
+  resource :world, only: :show, controller: "worlds" do
+    patch :focus
+  end
   resource :today_mission, only: :create, controller: "today_missions"
   resources :daily_todos, only: %i[ create update destroy ] do
     member do
