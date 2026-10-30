@@ -2,7 +2,7 @@
 
 module Onboarding
   # Six visual categories for the first-time adventure picker.
-  # Growth and Or else both map to the DB area key "purpose"; the category id
+  # Growth and Or else both map to the DB area key "self"; the category id
   # is kept separately so chip/example copy can still diverge.
   class Categories
     Entry = Data.define(:id, :area_key, :icon)
@@ -12,8 +12,8 @@ module Onboarding
       Entry.new(id: "career", area_key: "career", icon: "briefcase"),
       Entry.new(id: "money", area_key: "money", icon: "coin"),
       Entry.new(id: "relationships", area_key: "relationships", icon: "users"),
-      Entry.new(id: "growth", area_key: "purpose", icon: "sprout"),
-      Entry.new(id: "other", area_key: "purpose", icon: "dots")
+      Entry.new(id: "growth", area_key: "self", icon: "sprout"),
+      Entry.new(id: "other", area_key: "self", icon: "dots")
     ].freeze
 
     IDS = ALL.map(&:id).freeze

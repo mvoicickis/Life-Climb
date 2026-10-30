@@ -3,12 +3,12 @@
 require "test_helper"
 
 class OnboardingCategoriesTest < ActiveSupport::TestCase
-  test "growth and other share purpose area key with distinct ids" do
+  test "growth and other share self area key with distinct ids" do
     growth = Onboarding::Categories.find("growth")
     other = Onboarding::Categories.find("other")
 
-    assert_equal "purpose", growth.area_key
-    assert_equal "purpose", other.area_key
+    assert_equal "self", growth.area_key
+    assert_equal "self", other.area_key
     assert_equal "sprout", growth.icon
     assert_equal "dots", other.icon
     refute_equal growth.id, other.id
@@ -18,7 +18,7 @@ class OnboardingCategoriesTest < ActiveSupport::TestCase
     user = users(:one)
     journey = Onboarding::Run.call(
       user: user,
-      area_key: "purpose",
+      area_key: "self",
       title: "Grow",
       route_mission: true,
       onboarding_category: "other"
