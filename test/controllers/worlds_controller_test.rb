@@ -103,7 +103,7 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "mountain v4 renders the my world pill" do
+  test "mountain v4 renders the my world corner button" do
     journey = seed_climb!(@user, area_key: "career", title: "Ship LifePoints", today_mission: "Write tests")
     goal = @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: journey.id)
     goal.children.create!(
@@ -114,9 +114,11 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     get life_journey_path(journey)
     assert_response :success
     assert_select ".lp-rpg.is-v4-phone"
-    assert_select ".lp-trail__summit a.lp-trail__my-world-pill[href=?]", world_path
-    assert_select ".lp-trail__my-world-pill__label", text: I18n.t("my_world.pill")
-    assert_select ".lp-trail__summit-banner .lp-trail__my-world-pill", count: 0
+    assert_select "a.lp-trail__my-world-corner[href=?]", world_path
+    assert_select "a.lp-trail__my-world-corner[aria-label=?]", I18n.t("my_world.open")
+    assert_select ".lp-trail__my-world-corner__label", text: I18n.t("my_world.pill")
+    assert_select ".lp-trail__summit .lp-trail__my-world-corner", count: 0
+    assert_select ".lp-trail__summit .lp-trail__my-world-pill", count: 0
   end
 
   test "ring sheet wins match Battles::WinsByJourney" do

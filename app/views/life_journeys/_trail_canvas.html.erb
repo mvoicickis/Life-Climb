@@ -122,6 +122,10 @@
     <span class="lp-trail__cloud is-4"></span>
   </div>
 
+  <% if goal && !destination_overlay %>
+    <%= render "life_journeys/trail_my_world_corner" %>
+  <% end %>
+
   <%# Custom photo: glass goal control in HUD. Default photo: summit control on the peak. %>
   <% if goal && !destination_overlay && custom_mountain_photo %>
   <div class="lp-trail-hud" data-trail-ignore>
