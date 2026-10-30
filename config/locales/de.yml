@@ -1614,6 +1614,7 @@ de:
     subtitle: "Your life, ring by ring" # TODO: translate
     back: "Mountain" # TODO: translate
     pill: "My world" # TODO: translate
+    open: "Open My world" # TODO: translate
     open_now: "Open now" # TODO: translate
     add_goal: "Add a goal" # TODO: translate
     add_goal_row: "+ Add a goal" # TODO: translate

@@ -1886,6 +1886,7 @@ en:
     subtitle: "Your life, ring by ring"
     back: "Mountain"
     pill: "My world"
+    open: "Open My world"
     open_now: "Open now"
     add_goal: "Add a goal"
     add_goal_row: "+ Add a goal"
