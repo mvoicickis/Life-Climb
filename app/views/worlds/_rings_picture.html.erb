@@ -1,12 +1,15 @@
 <%# locals: rings — thick bands by win step; decorative only (aria-hidden). %>
 <% me = rings.find { |r| r[:key] == "me" } %>
 <% orbits = rings.reject { |r| r[:key] == "me" }.reverse %>
+<% open_action = "click->world-ring-sheet#open" %>
+<% hit_stroke = WorldsHelper::WORLD_BAND_HIT_STROKE %>
 <div class="lp-my-world-rings is-bands" aria-hidden="true">
   <svg class="lp-my-world-rings__svg" viewBox="0 0 280 280">
     <% orbits.each do |ring| %>
       <% geo = my_world_band_geometry(ring[:key]) %>
       <% next unless geo %>
       <% color_i = ring[:color_index] %>
+      <% thin = !ring[:has_goal] || ring[:wins].to_i <= 0 %>
       <% if !ring[:has_goal] %>
         <circle class="lp-my-world-rings__orbit"
                 cx="140" cy="140" r="<%= geo[:mid] %>"
@@ -24,7 +27,18 @@
                 cx="140" cy="140" r="<%= geo[:mid] %>"
                 stroke="<%= my_world_step_token(color_i, ring[:win_step]) %>"
                 stroke-width="<%= geo[:stroke_full] %>"
-                fill="none" />
+                fill="none"
+                data-action="<%= open_action %>"
+                data-ring="<%= ring[:key] %>" />
+      <% end %>
+      <% if thin %>
+        <circle class="lp-my-world-rings__hit"
+                cx="140" cy="140" r="<%= geo[:mid] %>"
+                stroke="transparent"
+                stroke-width="<%= hit_stroke %>"
+                fill="none"
+                data-action="<%= open_action %>"
+                data-ring="<%= ring[:key] %>" />
       <% end %>
       <% if ring[:finished] %>
         <%= my_world_finished_flag(geo[:outer]) %>
@@ -35,15 +49,21 @@
   <% me_has = me&.dig(:has_goal) %>
   <% me_color = me&.dig(:color_index) || 1 %>
   <% if !me_has %>
-    <div class="lp-my-world-rings__core"><%= t("my_world.rings.me.name") %></div>
+    <div class="lp-my-world-rings__core"
+         data-action="<%= open_action %>"
+         data-ring="me"><%= t("my_world.rings.me.name") %></div>
   <% elsif me&.dig(:wins).to_i <= 0 %>
     <div class="lp-my-world-rings__core is-outline"
-         style="--ring-color: <%= my_world_ring_token(me_color) %>">
+         style="--ring-color: <%= my_world_ring_token(me_color) %>"
+         data-action="<%= open_action %>"
+         data-ring="me">
       <%= t("my_world.rings.me.name") %>
     </div>
   <% else %>
     <div class="lp-my-world-rings__core is-fill"
-         style="--ring-fill: <%= my_world_step_token(me_color, me_step) %>">
+         style="--ring-fill: <%= my_world_step_token(me_color, me_step) %>"
+         data-action="<%= open_action %>"
+         data-ring="me">
       <%= t("my_world.rings.me.name") %>
     </div>
   <% end %>

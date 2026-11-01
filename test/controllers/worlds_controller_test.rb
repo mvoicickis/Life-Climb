@@ -231,6 +231,57 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "band and me disk open their ring sheets" do
+    seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+    seed_second_journey!(title: "Ship it", area_key: "career", battle_title: "Write tests")
+
+    get world_path
+    assert_response :success
+
+    assert_select ".lp-my-world-rings[aria-hidden=true]"
+    assert_select ".lp-my-world-rings__core[data-action=?][data-ring=me]",
+                  "click->world-ring-sheet#open"
+    LifeArea::WORLD_RINGS.drop(1).each do |ring|
+      assert_select ".lp-my-world-rings [data-action=?][data-ring=?]",
+                    "click->world-ring-sheet#open", ring
+    end
+    assert_select ".lp-my-world-rings [tabindex]", count: 0
+    assert_select ".lp-my-world-rings button", count: 0
+    assert_select ".lp-my-world-rings a", count: 0
+  end
+
+  test "list shows one green add on the innermost empty ring" do
+    seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+    seed_second_journey!(title: "Ship it", area_key: "career", battle_title: "Write tests")
+
+    get world_path
+    assert_response :success
+
+    assert_select "a.lp-my-world-list__row.is-add", count: 1
+    assert_select "a.lp-my-world-list__row.is-add[data-ring=family_friends][href=?]",
+                  new_life_journey_path(ring: "family_friends")
+    assert_select "a.lp-my-world-list__row.is-add[data-ring=family_friends] .lp-my-world-list__add",
+                  text: I18n.t("my_world.add_goal_row")
+    assert_select ".lp-my-world-list__row[data-ring=creativity] .lp-my-world-list__chev"
+    assert_select "a.lp-my-world-list__row.is-add[data-ring=creativity]", count: 0
+    assert_select "a.lp-my-world-list__row.is-add .lp-my-world-list__chev", count: 0
+    assert_select "button.lp-my-world-list__row a", count: 0
+  end
+
+  test "list hides green add when every ring has a goal" do
+    seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+    seed_second_journey!(title: "Family climb", area_key: "relationships", battle_title: "Call mom")
+    seed_second_journey!(title: "Work climb", area_key: "career", battle_title: "Write tests")
+    seed_second_journey!(title: "Create climb", area_key: "creativity", battle_title: "Sketch")
+
+    get world_path
+    assert_response :success
+
+    assert_select "a.lp-my-world-list__row.is-add", count: 0
+    assert_select ".lp-my-world-list__add", count: 0
+    assert_select "button.lp-my-world-list__row", count: 4
+  end
+
   private
 
   def seed_second_journey!(title:, area_key:, battle_title:)
