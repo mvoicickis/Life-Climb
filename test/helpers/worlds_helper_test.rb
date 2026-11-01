@@ -21,4 +21,3 @@ class WorldsHelperTest < ActiveSupport::TestCase
     assert_equal 4, WorldsHelper.day_cell_step(4)
   end
 end
-

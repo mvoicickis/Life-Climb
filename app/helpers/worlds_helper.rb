@@ -49,7 +49,6 @@ module WorldsHelper
     name[0]
   end
 
-
   def my_world_orbit_radius(ring)
     index = LifeArea::WORLD_RINGS.index(ring.to_s)
     return nil if index.nil? || index.zero?
