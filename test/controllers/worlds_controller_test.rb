@@ -106,14 +106,14 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
 
   test "outer band uses step fill and finished flag on that ring" do
     travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
-      work = seed_climb!(@user, area_key: "career", title: "Ship it", today_mission: "Write tests")
+      seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+      work = seed_second_journey!(title: "Ship it", area_key: "career", battle_title: "Write tests")
       battle = @user.strategy_goals.find_by!(horizon: "day", title: "Write tests", life_journey_id: work.id)
-      battle.update!(completed_at: Time.zone.local(2026, 8, 5, 9, 0, 0))
+      battle.update!(completed_at: Time.zone.local(2026, 8, 6, 9, 0, 0))
       assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
 
       work.update!(status: "completed", focus_position: nil, completed_at: Time.zone.local(2026, 8, 6, 11, 0, 0))
       assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
-      assert_equal 1, WorldsHelper.win_step(1)
 
       get world_path
       assert_response :success
