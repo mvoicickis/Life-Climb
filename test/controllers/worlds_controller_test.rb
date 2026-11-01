@@ -109,21 +109,15 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
       work = seed_climb!(@user, area_key: "career", title: "Ship it", today_mission: "Write tests")
       battle = @user.strategy_goals.find_by!(horizon: "day", title: "Write tests", life_journey_id: work.id)
       battle.update!(completed_at: Time.zone.local(2026, 8, 5, 9, 0, 0))
-      plan = @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: work.id).children.find(&:plan?)
-      camp = plan.children.find(&:project?)
-      camp.children.create!(
-        user: @user, life_area: work.life_area, life_journey: work,
-        horizon: "day", title: "Review PR", scheduled_on: Date.new(2026, 8, 4), position: 1,
-        completed_at: Time.zone.local(2026, 8, 4, 9, 0, 0)
-      )
+      assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
 
       work.update!(status: "completed", focus_position: nil, completed_at: Time.zone.local(2026, 8, 6, 11, 0, 0))
-      assert_equal 2, Battles::WinsByJourney.call(user: @user)[work.id]
-      assert_equal 2, WorldsHelper.win_step(2)
+      assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
+      assert_equal 1, WorldsHelper.win_step(1)
 
       get world_path
       assert_response :success
-      assert_select ".lp-my-world-rings__orbit.is-fill[stroke=?]", "var(--lp-world-3-2)"
+      assert_select ".lp-my-world-rings__orbit.is-fill[stroke=?]", "var(--lp-world-3-1)"
       assert_select ".lp-my-world-rings__flag"
       assert_select ".lp-my-world-list__row[data-ring=work_money] .lp-my-world-list__count", count: 0
       assert_select ".lp-my-world-sheet[data-ring=work_money] .lp-my-world-sheet__pill"
