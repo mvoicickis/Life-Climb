@@ -12,4 +12,13 @@ class WorldsHelperTest < ActiveSupport::TestCase
     assert_equal 3, WorldsHelper.win_step(50)
     assert_equal 4, WorldsHelper.win_step(51)
   end
+
+  test "day_cell_step edges" do
+    assert_equal 0, WorldsHelper.day_cell_step(0)
+    assert_equal 1, WorldsHelper.day_cell_step(1)
+    assert_equal 2, WorldsHelper.day_cell_step(2)
+    assert_equal 2, WorldsHelper.day_cell_step(3)
+    assert_equal 4, WorldsHelper.day_cell_step(4)
+  end
 end
+

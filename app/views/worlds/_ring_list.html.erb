@@ -2,9 +2,10 @@
 <ul class="lp-my-world-list">
   <% rings.each do |ring| %>
     <% count = ring[:journeys].size %>
+    <% show_week = count.positive? && ring[:week_dates].present? %>
     <li>
       <button type="button"
-              class="lp-my-world-list__row"
+              class="lp-my-world-list__row<%= ' has-week' if show_week %>"
               data-action="click->world-ring-sheet#open"
               data-ring="<%= ring[:key] %>"
               aria-haspopup="dialog">
@@ -20,6 +21,19 @@
             <% end %>
           </span>
           <span class="lp-my-world-list__hint"><%= t("my_world.rings.#{ring[:key]}.hint") %></span>
+          <% if show_week %>
+            <span class="lp-my-world-list__heat is-week" aria-hidden="true">
+              <% ring[:week_dates].each_with_index do |date, i| %>
+                <% wins = ring[:week_wins][i].to_i %>
+                <% today = i == ring[:week_dates].size - 1 %>
+                <span class="lp-my-world-list__heat-col">
+                  <span class="lp-my-world-list__heat-cell<%= ' is-today' if today %>"
+                        style="background: <%= my_world_day_cell_background(ring[:color_index], wins) %>"></span>
+                  <span class="lp-my-world-list__heat-day"><%= my_world_weekday_letter(date) %></span>
+                </span>
+              <% end %>
+            </span>
+          <% end %>
         </span>
         <span class="lp-my-world-list__chev" aria-hidden="true">›</span>
       </button>

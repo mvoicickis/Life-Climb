@@ -16,14 +16,23 @@ class WorldsController < ApplicationController
 
     # Two queries covering every journey (active + completed).
     @wins_by_journey = Battles::WinsByJourney.call(user: current_user)
+    # Two queries: last 7 local days per journey.
+    wins_by_journey_and_day = Battles::WinsByJourneyAndDay.call(user: current_user, days: 7)
+    local_today = Battles::WinsOnLocalDate.local_today_for(current_user)
+    week_dates = ((local_today - 6)..local_today).to_a
+
     @focused_journey = active.find { |journey| journey.focus_position == 1 } ||
                        current_user.primary_focused_journey
 
     @rings = LifeArea::WORLD_RINGS.map do |ring|
       list = active_by_ring[ring] || []
       completed_ids = completed_by_ring[ring]
-      ring_wins = (list.map(&:id) + completed_ids).sum { |id| @wins_by_journey[id].to_i }
+      journey_ids = list.map(&:id) + completed_ids
+      ring_wins = journey_ids.sum { |id| @wins_by_journey[id].to_i }
       has_goal = list.any? || completed_ids.any?
+      week_wins = week_dates.map do |date|
+        journey_ids.sum { |id| wins_by_journey_and_day.dig(id, date).to_i }
+      end
       {
         key: ring,
         journeys: list,
@@ -33,7 +42,9 @@ class WorldsController < ApplicationController
         wins: ring_wins,
         win_step: WorldsHelper.win_step(ring_wins),
         finished: completed_ids.any?,
-        creatable: LifeArea.key_for_ring(ring).present?
+        creatable: LifeArea.key_for_ring(ring).present?,
+        week_dates: week_dates,
+        week_wins: week_wins
       }
     end
     @reach_count = @rings.count { |ring| ring[:has_goal] }
