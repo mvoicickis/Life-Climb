@@ -3609,15 +3609,11 @@
   --lp-stats-cal-win-1-bg: color-mix(in srgb, var(--lp-green) 30%, var(--lp-mist));
   --lp-stats-cal-win-2-bg: color-mix(in srgb, var(--lp-green) 62%, var(--lp-mist));
   --lp-stats-cal-win-3-bg: var(--lp-green);
-  /* My world ring colors, only for ring dots/fills */
+  /* My world ring colors (4 rings) — soft peach, blue, lavender, soft yellow */
   --lp-world-1: #f2c4b8;
-  --lp-world-2: #e8b4c8;
+  --lp-world-2: #b4c8e8;
   --lp-world-3: #c5b8e8;
   --lp-world-4: #f0d5a8;
-  --lp-world-5: #b8d4c8;
-  --lp-world-6: #d4c4a8;
-  --lp-world-7: #b8c8e8;
-  --lp-world-8: #c8d0d8;
   --lp-track: #e2e8f0;
   --lp-theme-color: #f8fafc;
   --rpg-bg: #f1f5f9;

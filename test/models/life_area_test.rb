@@ -51,13 +51,17 @@ class LifeAreaTest < ActiveSupport::TestCase
     assert LifeArea.exists?(area.id)
   end
 
-  test "WORLD_RINGS has eight unique values" do
-    assert_equal 8, LifeArea::WORLD_RINGS.size
+  test "WORLD_RINGS has four unique values" do
+    assert_equal %w[me family_friends work_money creativity], LifeArea::WORLD_RINGS
     assert_equal LifeArea::WORLD_RINGS, LifeArea::WORLD_RINGS.uniq
   end
 
-  test "every catalog and legacy key maps to a world ring" do
+  test "every catalog and legacy key maps to one of the four rings" do
     (LifeArea::CATALOG_KEYS + LifeArea::KEYS).uniq.each do |key|
+      ring = LifeArea.world_ring_for(key)
+      assert_includes LifeArea::WORLD_RINGS, ring, "#{key} should map to a world ring"
+    end
+    LifeArea::WORLD_RING_BY_KEY.each_key do |key|
       ring = LifeArea.world_ring_for(key)
       assert_includes LifeArea::WORLD_RINGS, ring, "#{key} should map to a world ring"
     end
@@ -66,37 +70,28 @@ class LifeAreaTest < ActiveSupport::TestCase
   test "world ring mapping for me" do
     assert_equal "me", LifeArea.world_ring_for("self")
     assert_equal "me", LifeArea.world_ring_for("learning")
-    assert_equal "me", LifeArea.world_ring_for("creativity")
+    assert_equal "me", LifeArea.world_ring_for("purpose")
   end
 
-  test "world ring mapping for family_love" do
-    assert_equal "family_love", LifeArea.world_ring_for("relationships")
-    assert_equal "family_love", LifeArea.world_ring_for("family")
-    assert_equal "family_love", LifeArea.world_ring_for("love")
+  test "world ring mapping for family_friends" do
+    assert_equal "family_friends", LifeArea.world_ring_for("relationships")
+    assert_equal "family_friends", LifeArea.world_ring_for("family")
+    assert_equal "family_friends", LifeArea.world_ring_for("love")
+    assert_equal "family_friends", LifeArea.world_ring_for("community")
+    assert_equal "family_friends", LifeArea.world_ring_for("humanity")
   end
 
-  test "world ring mapping for friends_work" do
-    assert_equal "friends_work", LifeArea.world_ring_for("career")
+  test "world ring mapping for work_money" do
+    assert_equal "work_money", LifeArea.world_ring_for("career")
+    assert_equal "work_money", LifeArea.world_ring_for("money")
+    assert_equal "work_money", LifeArea.world_ring_for("home")
+    assert_equal "work_money", LifeArea.world_ring_for("physical_world")
   end
 
-  test "world ring mapping for people" do
-    assert_equal "people", LifeArea.world_ring_for("community")
-    assert_equal "people", LifeArea.world_ring_for("humanity")
-  end
-
-  test "world ring mapping for animals_nature" do
-    assert_equal "animals_nature", LifeArea.world_ring_for("animals")
-    assert_equal "animals_nature", LifeArea.world_ring_for("nature")
-  end
-
-  test "world ring mapping for things_money" do
-    assert_equal "things_money", LifeArea.world_ring_for("money")
-    assert_equal "things_money", LifeArea.world_ring_for("home")
-    assert_equal "things_money", LifeArea.world_ring_for("physical_world")
-  end
-
-  test "world ring mapping for spirit" do
-    assert_equal "spirit", LifeArea.world_ring_for("purpose")
+  test "world ring mapping for creativity" do
+    assert_equal "creativity", LifeArea.world_ring_for("creativity")
+    assert_equal "creativity", LifeArea.world_ring_for("animals")
+    assert_equal "creativity", LifeArea.world_ring_for("nature")
   end
 
   test "world_ring_for unknown or nil falls back to me" do
@@ -109,18 +104,16 @@ class LifeAreaTest < ActiveSupport::TestCase
     assert_equal LifeArea.world_ring_for(area.key), area.world_ring
   end
 
-  test "key_for_ring maps creatable rings and hides infinity" do
+  test "key_for_ring maps all four creatable rings" do
     assert_equal "self", LifeArea.key_for_ring("me")
-    assert_equal "relationships", LifeArea.key_for_ring("family_love")
-    assert_equal "career", LifeArea.key_for_ring("friends_work")
-    assert_equal "community", LifeArea.key_for_ring("people")
-    assert_equal "nature", LifeArea.key_for_ring("animals_nature")
-    assert_equal "money", LifeArea.key_for_ring("things_money")
-    assert_equal "purpose", LifeArea.key_for_ring("spirit")
+    assert_equal "relationships", LifeArea.key_for_ring("family_friends")
+    assert_equal "career", LifeArea.key_for_ring("work_money")
+    assert_equal "creativity", LifeArea.key_for_ring("creativity")
     assert_nil LifeArea.key_for_ring("infinity")
+    assert_nil LifeArea.key_for_ring("family_love")
     assert_nil LifeArea.key_for_ring("spaceships")
     assert_nil LifeArea.key_for_ring(nil)
-    assert_equal 7, LifeArea.creatable_world_rings.size
-    refute_includes LifeArea.creatable_world_rings, "infinity"
+    assert_equal LifeArea::WORLD_RINGS, LifeArea.creatable_world_rings
+    assert_equal 4, LifeArea.creatable_world_rings.size
   end
 end

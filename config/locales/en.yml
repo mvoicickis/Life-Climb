@@ -1902,28 +1902,16 @@ en:
       unknown: "Pick a part of life for this goal."
       me:
         name: "Me"
-        hint: "health, body, mind"
-      family_love:
-        name: "Family & love"
-        hint: "partner, kids"
-      friends_work:
-        name: "Friends & work"
-        hint: "team, job, groups"
-      people:
-        name: "People"
-        hint: "community, helping others"
-      animals_nature:
-        name: "Animals & nature"
-        hint: "pets, plants, outdoors"
-      things_money:
-        name: "Things & money"
-        hint: "home, money, stuff"
-      spirit:
-        name: "Spirit"
-        hint: "what you believe, meaning"
-      infinity:
-        name: "Infinity"
-        hint: "whatever it means to you"
+        hint: "Health, mind, learning, faith"
+      family_friends:
+        name: "Family & friends"
+        hint: "Love, family, friends, people"
+      work_money:
+        name: "Work & money"
+        hint: "Job, money, home"
+      creativity:
+        name: "Creativity"
+        hint: "Music, art, nature, animals"
   journeys:
     new_title: "Start the next climb"
     new_subtitle: "Focus. Journey. Vision. Reality. Progress. Mission."
