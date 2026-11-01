@@ -4,6 +4,8 @@ module WorldsHelper
   # Me disk outer edge, then three thick annuli. Gap between bands.
   WORLD_BAND_OUTERS = [ 40, 74, 108, 138 ].freeze
   WORLD_BAND_GAP = 3
+  # Invisible SVG stroke (~44px at the 300px band picture) for thin rings.
+  WORLD_BAND_HIT_STROKE = 42
 
   # Thin-orbit midpoints kept for any non-band callers.
   WORLD_ORBIT_RADII = [ 50, 94, 138 ].freeze

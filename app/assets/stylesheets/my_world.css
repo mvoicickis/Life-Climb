@@ -92,6 +92,16 @@
   stroke-linecap: round;
 }
 
+.lp-my-world-rings__hit {
+  cursor: pointer;
+  pointer-events: stroke;
+}
+
+.lp-my-world-rings.is-bands .lp-my-world-rings__orbit.is-fill,
+.lp-my-world-rings.is-bands .lp-my-world-rings__core {
+  cursor: pointer;
+}
+
 .lp-my-world-rings__flag {
   pointer-events: none;
 }
@@ -313,6 +323,30 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1;
+}
+
+a.lp-my-world-list__row.is-add {
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-my-world-list__add {
+  flex: 0 0 auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: var(--lp-shadow-cta);
 }
 
 .lp-my-world-list__row.has-week .lp-my-world-list__icon {
