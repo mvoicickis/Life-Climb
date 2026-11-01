@@ -23,6 +23,32 @@ module WorldsHelper
     WorldsHelper.win_step(wins)
   end
 
+  # Day-cell shade for the 7-day strip: 0 / 1 / 2–3 / 4+.
+  def self.day_cell_step(day_wins)
+    w = day_wins.to_i
+    return 0 if w <= 0
+    return 1 if w == 1
+    return 2 if w <= 3
+
+    4
+  end
+
+  def my_world_day_cell_step(day_wins)
+    WorldsHelper.day_cell_step(day_wins)
+  end
+
+  def my_world_day_cell_background(color_index, day_wins)
+    step = WorldsHelper.day_cell_step(day_wins)
+    return "var(--lp-border)" if step.zero?
+
+    my_world_step_token(color_index, step)
+  end
+
+  def my_world_weekday_letter(date)
+    name = I18n.t("date.abbr_day_names")[date.wday].to_s
+    name[0]
+  end
+
   def my_world_orbit_radius(ring)
     index = LifeArea::WORLD_RINGS.index(ring.to_s)
     return nil if index.nil? || index.zero?

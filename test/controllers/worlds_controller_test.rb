@@ -211,6 +211,26 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
                   text: I18n.t("my_world.add_goal")
   end
 
+  test "week strip hidden for empty ring and shows seven days with today marked" do
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+
+      get world_path
+      assert_response :success
+
+      assert_select ".lp-my-world-list__row[data-ring=me].has-week"
+      assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__heat-cell", count: 7
+      assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__heat-cell.is-today", count: 1
+      assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__heat-col:last-child .lp-my-world-list__heat-cell.is-today"
+      assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__heat-day", count: 7
+
+      assert_select ".lp-my-world-list__row[data-ring=family_friends].has-week", count: 0
+      assert_select ".lp-my-world-list__row[data-ring=family_friends] .lp-my-world-list__heat", count: 0
+      assert_select ".lp-my-world-list__row[data-ring=work_money] .lp-my-world-list__heat", count: 0
+      assert_select ".lp-my-world-list__row[data-ring=creativity] .lp-my-world-list__heat", count: 0
+    end
+  end
+
   private
 
   def seed_second_journey!(title:, area_key:, battle_title:)
@@ -250,6 +270,7 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
 
   def warm_world_lookups!
     Battles::WinsByJourney.call(user: @user)
+    Battles::WinsByJourneyAndDay.call(user: @user, days: 7)
     current_user_journeys = @user.life_journeys.active.includes(:life_area).order(:id).to_a
     current_user_journeys.each { |j| j.life_area.world_ring }
     @user.life_journeys.where(status: "completed").joins(:life_area).pluck(:id, "life_areas.key")
