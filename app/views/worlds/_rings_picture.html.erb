@@ -1,29 +1,55 @@
-<%# locals: rings %>
+<%# locals: rings — thick bands by win step; decorative only (aria-hidden). %>
 <% me = rings.find { |r| r[:key] == "me" } %>
-<% me_live = me&.dig(:live) %>
 <% orbits = rings.reject { |r| r[:key] == "me" }.reverse %>
-<div class="lp-my-world-rings" aria-hidden="true">
+<div class="lp-my-world-rings is-bands" aria-hidden="true">
   <svg class="lp-my-world-rings__svg" viewBox="0 0 280 280">
     <% orbits.each do |ring| %>
-      <% radius = my_world_orbit_radius(ring[:key]) %>
-      <% next unless radius %>
-      <% if ring[:live] %>
-        <circle class="lp-my-world-rings__orbit is-live"
-                cx="140" cy="140" r="<%= radius %>"
-                stroke="var(--lp-world-<%= ring[:color_index] %>)"
-                stroke-width="2.25"
+      <% geo = my_world_band_geometry(ring[:key]) %>
+      <% next unless geo %>
+      <% color_i = ring[:color_index] %>
+      <% if !ring[:has_goal] %>
+        <circle class="lp-my-world-rings__orbit"
+                cx="140" cy="140" r="<%= geo[:mid] %>"
+                stroke="var(--lp-border)"
+                stroke-width="1.5"
+                fill="none" />
+      <% elsif ring[:wins].to_i <= 0 %>
+        <circle class="lp-my-world-rings__orbit is-outline"
+                cx="140" cy="140" r="<%= geo[:mid] %>"
+                stroke="<%= my_world_ring_token(color_i) %>"
+                stroke-width="2.5"
                 fill="none" />
       <% else %>
-        <circle class="lp-my-world-rings__orbit"
-                cx="140" cy="140" r="<%= radius %>"
-                stroke="var(--lp-border)"
-                stroke-width="1.25"
+        <circle class="lp-my-world-rings__orbit is-fill"
+                cx="140" cy="140" r="<%= geo[:mid] %>"
+                stroke="<%= my_world_step_token(color_i, ring[:win_step]) %>"
+                stroke-width="<%= geo[:stroke_full] %>"
                 fill="none" />
+      <% end %>
+      <% if ring[:finished] %>
+        <%= my_world_finished_flag(geo[:outer]) %>
       <% end %>
     <% end %>
   </svg>
-  <div class="lp-my-world-rings__core<%= ' is-live' if me_live %>"
-       <% if me_live %>style="--ring-color: var(--lp-world-<%= me[:color_index] %>)"<% end %>>
-    <%= t("my_world.rings.me.name") %>
-  </div>
+  <% me_step = me&.dig(:win_step).to_i %>
+  <% me_has = me&.dig(:has_goal) %>
+  <% me_color = me&.dig(:color_index) || 1 %>
+  <% if !me_has %>
+    <div class="lp-my-world-rings__core"><%= t("my_world.rings.me.name") %></div>
+  <% elsif me&.dig(:wins).to_i <= 0 %>
+    <div class="lp-my-world-rings__core is-outline"
+         style="--ring-color: <%= my_world_ring_token(me_color) %>">
+      <%= t("my_world.rings.me.name") %>
+    </div>
+  <% else %>
+    <div class="lp-my-world-rings__core is-fill"
+         style="--ring-fill: <%= my_world_step_token(me_color, me_step) %>">
+      <%= t("my_world.rings.me.name") %>
+    </div>
+  <% end %>
+  <% if me&.dig(:finished) %>
+    <svg class="lp-my-world-rings__me-flag" viewBox="0 0 280 280" aria-hidden="true">
+      <%= my_world_finished_flag(WorldsHelper::WORLD_BAND_OUTERS[0]) %>
+    </svg>
+  <% end %>
 </div>

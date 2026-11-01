@@ -12,7 +12,9 @@
         <span aria-hidden="true">‹</span> <%= t("my_world.back") %>
       <% end %>
       <h1 class="lp-my-world__title"><%= t("my_world.title") %></h1>
-      <p class="lp-my-world__sub"><%= t("my_world.subtitle") %></p>
+      <% if @reach_count.to_i.positive? %>
+        <p class="lp-my-world__reach"><%= t("my_world.reaches", count: @reach_count) %></p>
+      <% end %>
 
       <%= render "worlds/rings_picture", rings: @rings %>
       <%= render "worlds/ring_list", rings: @rings %>

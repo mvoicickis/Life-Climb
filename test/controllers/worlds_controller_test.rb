@@ -45,7 +45,11 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "a.lp-my-world__back[href=?]", life_journey_path(me_journey)
     assert_select "h1.lp-my-world__title", text: I18n.t("my_world.title")
+    assert_select ".lp-my-world__reach", text: I18n.t("my_world.reaches", count: 2)
     assert_select ".lp-dash-nav.is-v4 .lp-dash-nav__link.is-active", text: /Mountain/i
+    assert_select ".lp-my-world-rings.is-bands"
+    assert_select ".lp-my-world-rings__orbit.is-outline", minimum: 1
+    assert_select ".lp-my-world-rings__core.is-outline"
   end
 
   test "show query count stays equal with one vs five journeys" do
@@ -69,6 +73,55 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 5, @user.life_journeys.active.count
     assert_equal one_queries, five_queries,
                  "expected flat journey queries (1-journey=#{one_queries}, 5-journey=#{five_queries})"
+  end
+
+  test "band fill step follows ring wins and finished goal keeps wins and flag" do
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      finished = seed_climb!(@user, area_key: "self", title: "Finished sleep", today_mission: "Lights out")
+      battle = @user.strategy_goals.find_by!(horizon: "day", title: "Lights out", life_journey_id: finished.id)
+      battle.update!(completed_at: Time.zone.local(2026, 8, 6, 9, 0, 0))
+      finished.update!(status: "completed", focus_position: nil, completed_at: Time.zone.local(2026, 8, 6, 10, 0, 0))
+
+      active = seed_second_journey!(title: "Still climbing", area_key: "self", battle_title: "Stretch")
+      Focus::SetJourneys.call(user: @user, journey_ids: [ active.id ])
+
+      wins = Battles::WinsByJourney.call(user: @user)
+      assert_equal 1, wins[finished.id]
+      assert_equal 0, wins[active.id].to_i
+      assert_equal 1, WorldsHelper.win_step(wins[finished.id].to_i + wins[active.id].to_i)
+
+      get world_path
+      assert_response :success
+
+      # Active list still only the live goal; finished wins still fill Me.
+      assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__count",
+                    text: I18n.t("my_world.goals_count", count: 1)
+      assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-title", text: active.title
+      assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-title", text: finished.title, count: 0
+      assert_select ".lp-my-world-rings__core.is-fill"
+      assert_select ".lp-my-world-rings__me-flag .lp-my-world-rings__flag"
+      assert_select ".lp-my-world__reach", text: I18n.t("my_world.reaches", count: 1)
+    end
+  end
+
+  test "outer band uses step fill and finished flag on that ring" do
+    travel_to Time.zone.local(2026, 8, 6, 12, 0, 0) do
+      seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "Stretch")
+      work = seed_second_journey!(title: "Ship it", area_key: "career", battle_title: "Write tests")
+      battle = @user.strategy_goals.find_by!(horizon: "day", title: "Write tests", life_journey_id: work.id)
+      battle.update!(completed_at: Time.zone.local(2026, 8, 6, 9, 0, 0))
+      assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
+
+      work.update!(status: "completed", focus_position: nil, completed_at: Time.zone.local(2026, 8, 6, 11, 0, 0))
+      assert_equal 1, Battles::WinsByJourney.call(user: @user)[work.id]
+
+      get world_path
+      assert_response :success
+      assert_select ".lp-my-world-rings__orbit.is-fill[stroke=?]", "var(--lp-world-3-1)"
+      assert_select ".lp-my-world-rings__flag"
+      assert_select ".lp-my-world-list__row[data-ring=work_money] .lp-my-world-list__count", count: 0
+      assert_select ".lp-my-world-sheet[data-ring=work_money] .lp-my-world-sheet__pill"
+    end
   end
 
   test "focus sets journey to focus 1 and redirects to its mountain" do
@@ -199,6 +252,7 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     Battles::WinsByJourney.call(user: @user)
     current_user_journeys = @user.life_journeys.active.includes(:life_area).order(:id).to_a
     current_user_journeys.each { |j| j.life_area.world_ring }
+    @user.life_journeys.where(status: "completed").joins(:life_area).pluck(:id, "life_areas.key")
   end
 
   def count_world_data_queries
