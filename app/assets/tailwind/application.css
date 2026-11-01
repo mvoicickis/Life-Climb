@@ -27444,51 +27444,6 @@ a.lp-rpg-camp-row {
   font-weight: 500;
 }
 
-/* Floating feedback FAB — restored after testing-phase removal (#263). */
-.lp-feedback-fab {
-  position: fixed;
-  right: 0.85rem;
-  bottom: calc(4.4rem + env(safe-area-inset-bottom));
-  z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0.7rem 0.45rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(18, 22, 30, 0.92);
-  border: 1px solid rgba(87, 211, 91, 0.35);
-  color: #e2e8f0;
-  text-decoration: none;
-  font-size: 0.72rem;
-  font-weight: 800;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-}
-/* No bottom tab bar — sit just above safe area (onboarding, settings, etc.). */
-body:not(:has(.lp-bottom-nav, .lp-dash-nav)) .lp-feedback-fab {
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-}
-/* Mountain: keep FAB off the bottom tab bar. */
-body:has(.lp-rpg.is-focus-phase) .lp-feedback-fab {
-  top: max(0.7rem, env(safe-area-inset-top, 0px));
-  bottom: auto;
-  right: max(0.7rem, env(safe-area-inset-right, 0px));
-}
-.lp-landing-body .lp-feedback-fab {
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-}
-.lp-feedback-fab__icon {
-  display: grid;
-  place-items: center;
-  width: 1.45rem;
-  height: 1.45rem;
-  border-radius: 999px;
-  background: rgba(87, 211, 91, 0.18);
-  color: var(--lp-green, #57d35b);
-  font-weight: 800;
-}
-.lp-feedback-fab__text { letter-spacing: 0.01em; }
-
 /* Flat Mountain project list */
 .lp-climb-path.is-list .lp-climb-path__list {
   display: flex;

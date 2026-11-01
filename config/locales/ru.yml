@@ -1357,9 +1357,6 @@ ru:
       stuck_hint: "Мягкое напоминание, если давно не было движения."
   feedback:
     title: "Отзыв"
-    # TODO: translate
-    fab_label: "Send feedback"
-    fab_short: "Feedback"
     subtitle: "Напиши мне напрямую — идеи, баги или как ощущается LifePoints."
     open: "Открыть →"
     write: "Написать →"

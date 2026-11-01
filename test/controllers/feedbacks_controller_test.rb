@@ -129,19 +129,28 @@ class FeedbacksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "/habits", Feedback.order(:id).last.page_context
   end
 
-  test "landing and today show the feedback FAB but not inline prompts" do
+  test "feedback FAB gone on landing today mountain and my world" do
     get root_path
     assert_response :success
-    assert_select ".lp-feedback-fab", count: 1
-    assert_select ".lp-feedback-fab[href=?]", new_feedback_path(page: "/")
+    assert_select ".lp-feedback-fab", count: 0
     assert_select ".lp-feedback-prompt", count: 0
 
-    sign_in_as users(:one)
-    seed_climb!(users(:one))
+    user = users(:one)
+    sign_in_as user
+    journey = seed_climb!(user)
+
     get dashboard_path
     assert_response :success
-    assert_select ".lp-feedback-fab", count: 1
+    assert_select ".lp-feedback-fab", count: 0
     assert_select ".lp-feedback-prompt", count: 0
+
+    get life_journey_path(journey)
+    assert_response :success
+    assert_select ".lp-feedback-fab", count: 0
+
+    get world_path
+    assert_response :success
+    assert_select ".lp-feedback-fab", count: 0
   end
 
   test "admin inbox shows page context and rating" do

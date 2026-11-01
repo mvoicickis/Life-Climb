@@ -1345,9 +1345,6 @@ es:
       stuck_hint: "Un aviso suave cuando no has avanzado en un tiempo."
   feedback:
     title: "Comentarios"
-    # TODO: translate
-    fab_label: "Send feedback"
-    fab_short: "Feedback"
     subtitle: "Escríbeme directamente: ideas, errores o cómo se siente LifePoints."
     open: "Abrir →"
     write: "Escribir →"

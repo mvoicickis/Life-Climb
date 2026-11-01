@@ -180,17 +180,18 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, a.reload.position
   end
 
-  test "feedback FAB hidden on You and shown on Today" do
+  test "feedback FAB gone on You and Today" do
     user = users(:one)
     sign_in_as user
     seed_climb!(user)
 
     get settings_path
     assert_response :success
+    assert_select "a#you-row-feedback[href=?]", new_feedback_path
     assert_select ".lp-feedback-fab", count: 0
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-feedback-fab", count: 1
+    assert_select ".lp-feedback-fab", count: 0
   end
 end
