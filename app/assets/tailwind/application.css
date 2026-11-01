@@ -3614,6 +3614,23 @@
   --lp-world-2: #b4c8e8;
   --lp-world-3: #c5b8e8;
   --lp-world-4: #f0d5a8;
+  /* Band fill steps 1 (pale) → 4 (strong); ink text stays readable on fills */
+  --lp-world-1-1: #fceee9;
+  --lp-world-1-2: #f2c4b8;
+  --lp-world-1-3: #e8a090;
+  --lp-world-1-4: #d4846e;
+  --lp-world-2-1: #e8f0fa;
+  --lp-world-2-2: #b4c8e8;
+  --lp-world-2-3: #8aabdb;
+  --lp-world-2-4: #6b92c9;
+  --lp-world-3-1: #efeaf8;
+  --lp-world-3-2: #c5b8e8;
+  --lp-world-3-3: #a794d6;
+  --lp-world-3-4: #8a75c4;
+  --lp-world-4-1: #fbf3dc;
+  --lp-world-4-2: #f0d5a8;
+  --lp-world-4-3: #e4bc6e;
+  --lp-world-4-4: #d4a44a;
   --lp-track: #e2e8f0;
   --lp-theme-color: #f8fafc;
   --rpg-bg: #f1f5f9;

@@ -1858,6 +1858,9 @@ lv:
   my_world:
     title: "My world" # TODO: translate
     subtitle: "Your life, ring by ring" # TODO: translate
+    reaches:
+      one: "Your world reaches %{count} ring" # TODO: translate
+      other: "Your world reaches %{count} rings" # TODO: translate
     back: "Mountain" # TODO: translate
     pill: "My world" # TODO: translate
     open: "Open My world" # TODO: translate

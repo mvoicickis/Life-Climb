@@ -60,12 +60,25 @@
   line-height: 1.35;
 }
 
+.lp-my-world__reach {
+  margin: 0.25rem 0 0.95rem;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 700;
+  color: var(--lp-ink);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .lp-my-world-rings {
   position: relative;
   width: 100%;
   max-width: 280px;
   aspect-ratio: 1;
   margin: 0 auto 1.05rem;
+}
+
+.lp-my-world-rings.is-bands {
+  max-width: 300px;
 }
 
 .lp-my-world-rings__svg {
@@ -77,6 +90,20 @@
 
 .lp-my-world-rings__orbit {
   stroke-linecap: round;
+}
+
+.lp-my-world-rings__flag {
+  pointer-events: none;
+}
+
+.lp-my-world-rings__me-flag {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .lp-my-world-rings__core {
@@ -100,9 +127,24 @@
   letter-spacing: -0.01em;
 }
 
-.lp-my-world-rings__core.is-live {
+.lp-my-world-rings.is-bands .lp-my-world-rings__core {
+  width: 4.75rem;
+  height: 4.75rem;
+  font-size: 0.78rem;
+}
+
+.lp-my-world-rings__core.is-live,
+.lp-my-world-rings__core.is-outline {
   border-color: var(--ring-color, var(--lp-world-1));
-  border-width: 2px;
+  border-width: 2.5px;
+  background: var(--lp-surface);
+}
+
+.lp-my-world-rings__core.is-fill {
+  border: 1.5px solid var(--ring-fill, var(--lp-world-1-2));
+  background: var(--ring-fill, var(--lp-world-1-2));
+  color: var(--lp-ink);
+  box-shadow: none;
 }
 
 .lp-my-world-list {

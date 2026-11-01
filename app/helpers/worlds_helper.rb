@@ -1,14 +1,71 @@
 # frozen_string_literal: true
 
 module WorldsHelper
-  # Three outer orbits, evenly spaced; outermost matches the previous outer ring.
+  # Me disk outer edge, then three thick annuli. Gap between bands.
+  WORLD_BAND_OUTERS = [ 40, 74, 108, 138 ].freeze
+  WORLD_BAND_GAP = 3
+
+  # Thin-orbit midpoints kept for any non-band callers.
   WORLD_ORBIT_RADII = [ 50, 94, 138 ].freeze
+
+  # All-time wins on a ring → fill step 0..4.
+  def self.win_step(wins)
+    w = wins.to_i
+    return 0 if w <= 0
+    return 1 if w == 1
+    return 2 if w <= 10
+    return 3 if w <= 50
+
+    4
+  end
+
+  def my_world_win_step(wins)
+    WorldsHelper.win_step(wins)
+  end
 
   def my_world_orbit_radius(ring)
     index = LifeArea::WORLD_RINGS.index(ring.to_s)
     return nil if index.nil? || index.zero?
 
     WORLD_ORBIT_RADII[index - 1]
+  end
+
+  # Geometry for a thick outer band (not Me). mid = stroke radius; outer for the flag.
+  def my_world_band_geometry(ring)
+    index = LifeArea::WORLD_RINGS.index(ring.to_s)
+    return nil if index.nil? || index.zero?
+
+    r_outer = WORLD_BAND_OUTERS[index]
+    r_inner = WORLD_BAND_OUTERS[index - 1]
+    {
+      mid: (r_inner + r_outer) / 2.0,
+      outer: r_outer.to_f,
+      stroke_full: [ r_outer - r_inner - WORLD_BAND_GAP, 2 ].max.to_f
+    }
+  end
+
+  def my_world_step_token(color_index, step)
+    "var(--lp-world-#{color_index}-#{step})"
+  end
+
+  def my_world_ring_token(color_index)
+    "var(--lp-world-#{color_index})"
+  end
+
+  # ~16px ink flag on the outer edge (top-right).
+  def my_world_finished_flag(r_outer)
+    ang = -Math::PI / 4
+    x = 140 + r_outer * Math.cos(ang)
+    y = 140 + r_outer * Math.sin(ang)
+    tag.g(class: "lp-my-world-rings__flag", transform: "translate(#{format("%.2f", x)} #{format("%.2f", y)})") do
+      tag.path(
+        d: "M0 6 V-16 M0 -16 L14 -9 L0 -2 Z",
+        fill: "var(--lp-ink)",
+        stroke: "var(--lp-ink)",
+        "stroke-width": "1.6",
+        "stroke-linejoin": "round"
+      )
+    end
   end
 
   def my_world_ring_icon(ring)

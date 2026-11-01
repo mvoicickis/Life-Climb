@@ -1884,6 +1884,9 @@ en:
   my_world:
     title: "My world"
     subtitle: "Your life, ring by ring"
+    reaches:
+      one: "Your world reaches %{count} ring"
+      other: "Your world reaches %{count} rings"
     back: "Mountain"
     pill: "My world"
     open: "Open My world"
