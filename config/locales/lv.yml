@@ -1579,8 +1579,6 @@ lv:
       stuck_hint: "Maigs atgādinājums, ja kādu laiku neesi kustējies."
   feedback:
     title: "Atsauksmes"
-    fab_label: "Sūtīt atsauksmi"
-    fab_short: "Atsauksme"
     subtitle: "Raksti man tieši — idejas, kļūdas vai kā jūtas LifePoints."
     open: "Atvērt →"
     write: "Rakstīt →"

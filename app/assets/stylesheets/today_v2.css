@@ -7,10 +7,6 @@ body:has(.lp-dash.is-today-v2) {
   color: #f7ead9;
 }
 
-body:has(.lp-dash.is-today-v2) .lp-feedback-fab {
-  display: none !important;
-}
-
 .lp-dash.is-today-v2 {
   --today-ink: #f7ead9;
   --today-muted: rgba(247, 234, 217, 0.5);

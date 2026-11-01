@@ -3166,8 +3166,6 @@ en:
   feedback:
     title: "Feedback"
     subtitle: "Tell us what feels good, what’s confusing, or what to fix. Takes a minute."
-    fab_label: "Send feedback"
-    fab_short: "Feedback"
     page_label: "Page / context"
     page_unknown: "Not sure — that’s okay"
     rating_label: "How was this? (optional)"

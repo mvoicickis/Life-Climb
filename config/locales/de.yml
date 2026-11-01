@@ -1345,9 +1345,6 @@ de:
       stuck_hint: "Ein sanfter Nudge, wenn du eine Weile nichts gemacht hast."
   feedback:
     title: "Feedback"
-    # TODO: translate
-    fab_label: "Send feedback"
-    fab_short: "Feedback"
     subtitle: "Schreib mir direkt — Ideen, Fehler oder wie sich LifePoints anfühlt."
     open: "Öffnen →"
     write: "Schreiben →"
