@@ -10,19 +10,20 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
     allow_extra_climbs!(@user)
   end
 
-  test "new shows seven creatable rings and hides infinity" do
+  test "new shows four creatable rings" do
     @user.life_areas.where(dream_id: nil).update_all(selected_at: nil)
     @user.update!(character: "fox", support_milestones_shown: [ User::COMPANION_PICK_KEY, User::ADVENTURE_GUIDE_KEY ])
 
     get new_life_journey_path
     assert_response :success
     assert_select ".ring-picker__title", text: I18n.t("my_world.rings.pick_title")
+    assert_equal 4, LifeArea.creatable_world_rings.size
     LifeArea.creatable_world_rings.each do |ring|
       assert_select "input[type=radio][name=ring][value=?]", ring
       assert_select ".ring-picker__name", text: I18n.t("my_world.rings.#{ring}.name")
     end
     assert_select "input[type=radio][name=ring][value=infinity]", count: 0
-    assert_select ".ring-picker__name", text: I18n.t("my_world.rings.infinity.name"), count: 0
+    assert_select "input[type=radio][name=ring][value=family_love]", count: 0
     assert_select "h1", text: I18n.t("v2_onboarding.mountain_name_title")
     assert_select "input#new_goal_mountain_name"
     assert_select "input[type=submit][value=?]", I18n.t("journeys.next")
@@ -33,9 +34,9 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
   test "new preselects ring from query and does not redirect without selected areas" do
     @user.life_areas.where(dream_id: nil).update_all(selected_at: nil)
 
-    get new_life_journey_path(ring: "family_love")
+    get new_life_journey_path(ring: "family_friends")
     assert_response :success
-    assert_select "input[type=radio][name=ring][value=family_love][checked]"
+    assert_select "input[type=radio][name=ring][value=family_friends][checked]"
     assert_select "input[type=radio][name=ring][value=me]:not([checked])"
   end
 
@@ -48,7 +49,7 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_difference -> { @user.life_journeys.count } do
       post life_journeys_path(step: "goal"), params: {
-        ring: "family_love",
+        ring: "family_friends",
         onboarding: { goal: "Weekly family dinner" }
       }
     end
@@ -62,7 +63,7 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference -> { @user.life_journeys.count }, 1 do
       post life_journeys_path(step: "camps"), params: {
-        ring: "family_love",
+        ring: "family_friends",
         onboarding: { camp_titles: [ "Pick a night", "Cook together" ] }
       }
     end
@@ -70,6 +71,7 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
     journey = @user.life_journeys.order(:id).last
     assert_redirected_to life_journey_path(journey)
     assert_equal "relationships", journey.life_area.key
+    assert_equal "family_friends", journey.life_area.world_ring
     assert_equal @user.id, journey.life_area.user_id
     assert_equal 1, journey.focus_position
     assert_equal "active", older.reload.status
@@ -95,14 +97,14 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
   test "empty name stays on step one and creates nothing" do
     assert_no_difference -> { @user.life_journeys.count } do
       post life_journeys_path(step: "goal"), params: {
-        ring: "family_love",
+        ring: "family_friends",
         onboarding: { goal: "   " }
       }
     end
 
     assert_response :unprocessable_entity
     assert_select "#new_goal_name_error", text: I18n.t("v2_onboarding.need_goal")
-    assert_select "input[type=radio][name=ring][value=family_love][checked]"
+    assert_select "input[type=radio][name=ring][value=family_friends][checked]"
     assert_nil session[LifeJourneysController::NEW_GOAL_SESSION_KEY]
   end
 
@@ -125,13 +127,13 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
     foreign = other.life_areas.v2_selected.find_by!(key: "relationships")
 
     post life_journeys_path(step: "goal"), params: {
-      ring: "family_love",
+      ring: "family_friends",
       onboarding: { goal: "My goal" }
     }
     assert_redirected_to new_life_journey_path(step: "camps")
 
     post life_journeys_path(step: "camps"), params: {
-      ring: "family_love",
+      ring: "family_friends",
       life_area_id: foreign.id,
       onboarding: { camp_titles: [ "First camp" ] }
     }
@@ -145,7 +147,7 @@ class LifeJourneysControllerTest < ActionDispatch::IntegrationTest
 
   test "another user cannot use this users new goal draft" do
     post life_journeys_path(step: "goal"), params: {
-      ring: "family_love",
+      ring: "family_friends",
       onboarding: { goal: "Private mountain" }
     }
     assert_redirected_to new_life_journey_path(step: "camps")

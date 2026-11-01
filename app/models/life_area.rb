@@ -36,45 +36,38 @@ class LifeArea < ApplicationRecord
 
   CATALOG_KEYS = CATALOG.map { |entry| entry[:key] }.freeze
 
-  # My world rings — inner (Me) to outer (Infinity). Maps catalog + legacy keys; no new column.
+  # My world rings — inner (Me) to outer (Creativity). Maps catalog + legacy keys; no new column.
   WORLD_RINGS = %w[
     me
-    family_love
-    friends_work
-    people
-    animals_nature
-    things_money
-    spirit
-    infinity
+    family_friends
+    work_money
+    creativity
   ].freeze
 
   WORLD_RING_BY_KEY = {
     "self" => "me",
     "learning" => "me",
-    "creativity" => "me",
-    "relationships" => "family_love",
-    "family" => "family_love",
-    "love" => "family_love",
-    "career" => "friends_work",
-    "community" => "people",
-    "humanity" => "people",
-    "animals" => "animals_nature",
-    "nature" => "animals_nature",
-    "money" => "things_money",
-    "home" => "things_money",
-    "physical_world" => "things_money",
-    "purpose" => "spirit"
+    "purpose" => "me",
+    "relationships" => "family_friends",
+    "family" => "family_friends",
+    "love" => "family_friends",
+    "community" => "family_friends",
+    "humanity" => "family_friends",
+    "career" => "work_money",
+    "money" => "work_money",
+    "home" => "work_money",
+    "physical_world" => "work_money",
+    "creativity" => "creativity",
+    "animals" => "creativity",
+    "nature" => "creativity"
   }.freeze
 
-  # One catalog key per creatable ring (Infinity has none yet).
+  # One catalog key per creatable ring (all four rings).
   WORLD_RING_CANONICAL_KEY = {
     "me" => "self",
-    "family_love" => "relationships",
-    "friends_work" => "career",
-    "people" => "community",
-    "animals_nature" => "nature",
-    "things_money" => "money",
-    "spirit" => "purpose"
+    "family_friends" => "relationships",
+    "work_money" => "career",
+    "creativity" => "creativity"
   }.freeze
 
   EMOJI = {

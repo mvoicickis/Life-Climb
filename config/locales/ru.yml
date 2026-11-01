@@ -1642,28 +1642,16 @@ ru:
       unknown: "Pick a part of life for this goal." # TODO: translate
       me:
         name: "Me" # TODO: translate
-        hint: "health, body, mind" # TODO: translate
-      family_love:
-        name: "Family & love" # TODO: translate
-        hint: "partner, kids" # TODO: translate
-      friends_work:
-        name: "Friends & work" # TODO: translate
-        hint: "team, job, groups" # TODO: translate
-      people:
-        name: "People" # TODO: translate
-        hint: "community, helping others" # TODO: translate
-      animals_nature:
-        name: "Animals & nature" # TODO: translate
-        hint: "pets, plants, outdoors" # TODO: translate
-      things_money:
-        name: "Things & money" # TODO: translate
-        hint: "home, money, stuff" # TODO: translate
-      spirit:
-        name: "Spirit" # TODO: translate
-        hint: "what you believe, meaning" # TODO: translate
-      infinity:
-        name: "Infinity" # TODO: translate
-        hint: "whatever it means to you" # TODO: translate
+        hint: "Health, mind, learning, faith" # TODO: translate
+      family_friends:
+        name: "Family & friends" # TODO: translate
+        hint: "Love, family, friends, people" # TODO: translate
+      work_money:
+        name: "Work & money" # TODO: translate
+        hint: "Job, money, home" # TODO: translate
+      creativity:
+        name: "Creativity" # TODO: translate
+        hint: "Music, art, nature, animals" # TODO: translate
   admin:
     metrics:
       opened_today: "Opened today" # TODO: translate

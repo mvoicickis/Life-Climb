@@ -10,7 +10,7 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     allow_extra_climbs!(@user)
   end
 
-  test "show lists eight rings groups goals and hides zero counts" do
+  test "show lists four rings groups goals and hides zero counts" do
     me_journey = seed_climb!(@user, area_key: "self", title: "Sleep by 11", today_mission: "Lights out")
     work_journey = seed_second_journey!(
       title: "Ship the app",
@@ -25,7 +25,8 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     get world_path
     assert_response :success
 
-    assert_select ".lp-my-world-list__row", count: 8
+    assert_select ".lp-my-world-list__row", count: 4
+    assert_select ".lp-my-world-rings__orbit", count: 3
     LifeArea::WORLD_RINGS.each do |ring|
       assert_select ".lp-my-world-list__row[data-ring=?]", ring
       assert_select ".lp-my-world-sheet[data-ring=?]", ring
@@ -33,13 +34,13 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select ".lp-my-world-list__row[data-ring=me] .lp-my-world-list__count",
                   text: I18n.t("my_world.goals_count", count: 1)
-    assert_select ".lp-my-world-list__row[data-ring=friends_work] .lp-my-world-list__count",
+    assert_select ".lp-my-world-list__row[data-ring=work_money] .lp-my-world-list__count",
                   text: I18n.t("my_world.goals_count", count: 1)
-    assert_select ".lp-my-world-list__row[data-ring=family_love] .lp-my-world-list__count", count: 0
+    assert_select ".lp-my-world-list__row[data-ring=family_friends] .lp-my-world-list__count", count: 0
     assert_select ".lp-my-world-list__count", text: /0 goal/, count: 0
 
     assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-title", text: me_journey.title
-    assert_select ".lp-my-world-sheet[data-ring=friends_work] .lp-my-world-sheet__mtn-title", text: work_journey.title
+    assert_select ".lp-my-world-sheet[data-ring=work_money] .lp-my-world-sheet__mtn-title", text: work_journey.title
     assert_select ".lp-my-world-sheet__mtn-title", text: "Other world goal", count: 0
 
     assert_select "a.lp-my-world__back[href=?]", life_journey_path(me_journey)
@@ -137,25 +138,23 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-meta",
                     text: I18n.t("my_world.battles_won", count: 1)
-      assert_select ".lp-my-world-sheet[data-ring=friends_work] .lp-my-world-sheet__mtn-title",
+      assert_select ".lp-my-world-sheet[data-ring=work_money] .lp-my-world-sheet__mtn-title",
                     text: empty.title
-      assert_select ".lp-my-world-sheet[data-ring=friends_work] .lp-my-world-sheet__mtn-meta", count: 0
+      assert_select ".lp-my-world-sheet[data-ring=work_money] .lp-my-world-sheet__mtn-meta", count: 0
       assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-now",
                     text: I18n.t("my_world.open_now")
     end
   end
 
-  test "infinity sheet has hint and no add button" do
+  test "empty creatable ring sheet shows add a goal" do
     seed_climb!(@user, area_key: "self", title: "Me climb", today_mission: "A")
 
     get world_path
     assert_response :success
-    assert_select ".lp-my-world-list__row[data-ring=infinity]"
-    assert_select ".lp-my-world-sheet[data-ring=infinity] .lp-my-world-sheet__hint",
-                  text: I18n.t("my_world.rings.infinity.hint")
-    assert_select ".lp-my-world-sheet[data-ring=infinity] .lp-my-world-sheet__pill", count: 0
-    assert_select ".lp-my-world-sheet[data-ring=infinity] .lp-my-world-sheet__mtn.is-add", count: 0
-    assert_select ".lp-my-world-sheet[data-ring=family_love] .lp-my-world-sheet__pill",
+    assert_select ".lp-my-world-list__row", count: 4
+    assert_select ".lp-my-world-sheet[data-ring=family_friends] .lp-my-world-sheet__pill",
+                  text: I18n.t("my_world.add_goal")
+    assert_select ".lp-my-world-sheet[data-ring=creativity] .lp-my-world-sheet__pill",
                   text: I18n.t("my_world.add_goal")
   end
 
