@@ -77,7 +77,7 @@ gem "pagy", "~> 43.6"
 
 gem "rack-attack", "~> 6.7"
 
-gem "rotp", "~> 6.3"
+gem "rotp", "~> 6.4"
 gem "rqrcode", "~> 3.2"
 
 gem "ruby-vips", "~> 2.2"
