@@ -422,6 +422,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   end
 
   test "mountain v4 phone includes cream tabs journey and today card hooks" do
+    @user.habits.destroy_all
     @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
@@ -969,7 +970,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       goal: 25,
       quantity_checkin: true,
@@ -1002,7 +1003,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id
@@ -1108,7 +1109,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id
