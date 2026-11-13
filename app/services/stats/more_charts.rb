@@ -165,11 +165,8 @@ module Stats
       return [] unless GameRules.habits_enabled?
       return [] unless @journey
 
-      habits = @user.habits.active.ordered.where(
-        "life_journey_id = ? OR area_id = ?",
-        @journey.id,
-        @journey.life_area_id
-      ).to_a
+      # Same Basics as Today / Mountain — user-scoped, not journey-scoped.
+      habits = @user.habits.active.on_home.ordered.to_a
       return [] if habits.empty?
 
       habit_ids = habits.map(&:id)
