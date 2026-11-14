@@ -3,15 +3,41 @@ import { Controller } from "@hotwired/stimulus"
 // Destination coach + swipe navigation (arrows/dots use Turbo links).
 export default class extends Controller {
   static targets = ["button", "createDialog", "saveButton", "prevLink", "nextLink"]
+  static values = { openOnConnect: { type: Boolean, default: false } }
 
   connect() {
     this._onViewport = () => this.ensurePrimaryVisible()
     this._swipeX = null
+    this._skipAutoOpen = false
+    this._onPageShow = (event) => {
+      // bfcache restore — do not reopen the coach.
+      if (event.persisted) this._skipAutoOpen = true
+    }
+    window.addEventListener("pageshow", this._onPageShow)
+    this.maybeOpenOnConnect()
   }
 
   disconnect() {
+    window.removeEventListener("pageshow", this._onPageShow)
     this.closeCreate()
     this._swipeX = null
+  }
+
+  // Empty-mountain only: open the naming dialog once per page instance.
+  // Dataset survives Turbo cache so restore / close will not loop.
+  maybeOpenOnConnect() {
+    if (!this.openOnConnectValue) return
+    if (this._skipAutoOpen) return
+    if (this.element.dataset.destinationCoachAutoOpened === "1") return
+    if (!this.hasCreateDialogTarget) return
+
+    requestAnimationFrame(() => {
+      if (this._skipAutoOpen) return
+      if (this.element.dataset.destinationCoachAutoOpened === "1") return
+      if (!this.hasCreateDialogTarget) return
+      this.element.dataset.destinationCoachAutoOpened = "1"
+      this.openCreate()
+    })
   }
 
   swipeStart(event) {

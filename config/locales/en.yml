@@ -756,9 +756,9 @@ en:
       create_destination_cta: "Create Destination"
       destination_coach:
         kicker: "A new summit"
-        title: "Name the climb."
-        lead: "Three short answers. Then this destination is yours."
-        name_label: "What are you climbing toward?"
+        title: "Name your mountain"
+        lead: "Three short answers. Then this mountain is yours."
+        name_label: "Name your mountain"
         name_placeholder: "Publish my book"
         name_hint: "A destination that takes months, not a day."
         continue: "Continue"

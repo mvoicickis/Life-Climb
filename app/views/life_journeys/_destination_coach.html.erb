@@ -32,13 +32,14 @@
               action: "submit->first-climb#disable"
             } do %>
         <%= hidden_field_tag :life_journey_id, journey.id %>
+        <%= hidden_field_tag :return_to, "mountain" %>
 
         <div data-destination-coach-target="panel" data-destination-coach-step="1">
           <label class="lp-first-climb__label" for="destination-coach-title">
             <span class="lp-first-climb__step">1</span>
             <%= t("strategy.rpg.destination_coach.name_label") %>
           </label>
-          <%= text_field_tag :title, nil,
+          <%= text_field_tag :title, journey.title.to_s.strip.presence,
                 id: "destination-coach-title",
                 required: true,
                 maxlength: 120,

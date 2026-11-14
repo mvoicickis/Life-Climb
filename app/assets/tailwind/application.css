@@ -18052,6 +18052,16 @@ button.lp-strategy-overflow {
   background: transparent;
   color: #f3f6f8;
 }
+.lp-destination-coach .lp-first-climb {
+  width: min(100%, 24rem);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.lp-destination-coach .lp-first-climb__input {
+  font-size: 1rem; /* 16px — avoid iOS zoom */
+  min-height: var(--lp-tap);
+  box-sizing: border-box;
+}
 .lp-destination-coach::backdrop {
   background: rgba(3, 6, 9, 0.72);
 }
