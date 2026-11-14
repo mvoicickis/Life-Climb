@@ -798,7 +798,7 @@ class MountainTrailHelperTest < ActionView::TestCase
     assert_equal 1, after[:won]
   end
 
-  test "base habits scopes to journey and ignores on_home" do
+  test "base habits are user-scoped like Today and require on_home" do
     user = users(:one)
     seed_climb!(user, today_mission: "Ship auth")
     journey = user.primary_focused_journey
@@ -810,7 +810,7 @@ class MountainTrailHelperTest < ActionView::TestCase
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       goal: 25,
       quantity_checkin: true,
@@ -834,11 +834,10 @@ class MountainTrailHelperTest < ActionView::TestCase
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       goal: 10,
-      quantity_checkin: true,
-      life_journey_id: journey.id
+      quantity_checkin: true
     )
     other_journey = user.life_journeys.create!(
       life_area: journey.life_area,
@@ -849,7 +848,7 @@ class MountainTrailHelperTest < ActionView::TestCase
       gap_percent: 80,
       status: "active"
     )
-    wrong = user.habits.create!(
+    other_linked = user.habits.create!(
       name: "Other climb",
       unit: "pages",
       points: 5,
@@ -860,6 +859,18 @@ class MountainTrailHelperTest < ActionView::TestCase
       goal: 10,
       quantity_checkin: true,
       life_journey_id: other_journey.id
+    )
+    hidden = user.habits.create!(
+      name: "Hidden home",
+      unit: "pages",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: false,
+      stat_type: "growth",
+      goal: 10,
+      quantity_checkin: true,
+      life_journey_id: journey.id
     )
     inactive = user.habits.create!(
       name: "Old habit",
@@ -875,9 +886,12 @@ class MountainTrailHelperTest < ActionView::TestCase
     )
 
     habits = mountain_trail_base_habits(journey: journey, user: user)
-    assert_equal [ quantity, second_quantity, binary ].sort_by(&:id), habits.sort_by(&:id)
-    refute_includes habits, wrong
+    assert_equal [ quantity, binary, second_quantity, other_linked ].sort_by(&:id), habits.sort_by(&:id)
+    refute_includes habits, hidden
     refute_includes habits, inactive
+
+    other_habits = mountain_trail_base_habits(journey: other_journey, user: user)
+    assert_equal habits.sort_by(&:id), other_habits.sort_by(&:id)
   end
 
   test "base habits returns empty when journey blank" do

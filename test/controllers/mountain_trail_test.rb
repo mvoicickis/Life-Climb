@@ -422,6 +422,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
   end
 
   test "mountain v4 phone includes cream tabs journey and today card hooks" do
+    @user.habits.destroy_all
     @project.children.create!(
       user: @user, life_area: @area, life_journey: @journey,
       horizon: "day", title: "Pitch the tent", scheduled_on: Date.current,
@@ -969,7 +970,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       goal: 25,
       quantity_checkin: true,
@@ -994,6 +995,44 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
           count: 0
   end
 
+  test "unlinked Basic renders on Mountain and quick-add uses the open journey" do
+    @user.habits.destroy_all
+    habit = @user.habits.create!(
+      name: "Water glasses",
+      unit: "glasses",
+      points: 5,
+      frequency: "daily",
+      active: true,
+      show_on_home: true,
+      stat_type: "growth",
+      quantity_checkin: true,
+      quick_add_amount: 1,
+      life_journey_id: nil
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select "#trail-base-habit-#{habit.id}", text: /Water glasses/
+    assert_select "#trail-base-habit-#{habit.id} input[name='life_journey_id'][value='#{@journey.id}']"
+    assert_select "#trail-base-habit-#{habit.id} input[name='goal_id'][value='#{@goal.id}']"
+    assert_select "#trail-base-habit-#{habit.id} input[name='plan_id'][value='#{@plan.id}']"
+    assert_select "#trail-base-habit-#{habit.id} .lp-trail-battles__basics-add"
+
+    assert_difference -> { habit.reload.today_amount.to_i }, 1 do
+      post daily_logs_path(habit_id: habit.id), params: {
+        mode: "add",
+        return_to: "mountain",
+        life_journey_id: @journey.id,
+        goal_id: @goal.id,
+        plan_id: @plan.id,
+        daily_log: { amount: 1 }
+      }, as: :turbo_stream
+    end
+    assert_response :success
+    assert_match "trail-base-sheet", response.body
+    assert_match "Water glasses", response.body
+  end
+
   test "basics block shows tick checkbox for binary journey habits" do
     @user.habits.destroy_all
     habit = @user.habits.create!(
@@ -1002,7 +1041,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id
@@ -1108,7 +1147,7 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id

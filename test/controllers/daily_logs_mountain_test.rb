@@ -29,7 +29,7 @@ class DailyLogsMountainTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       goal: 25,
       quantity_checkin: true,

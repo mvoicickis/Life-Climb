@@ -29,7 +29,7 @@ class CompletionsMountainTest < ActionDispatch::IntegrationTest
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id

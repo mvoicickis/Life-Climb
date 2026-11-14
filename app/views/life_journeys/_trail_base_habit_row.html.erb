@@ -22,13 +22,11 @@
           <%= button_to t("strategy.rpg.trail.base_camp.basics.undo"),
                 daily_logs_path(habit_id: habit.id),
                 method: :post,
-                params: {
-                  mode: "undo",
-                  return_to: "mountain",
-                  life_journey_id: journey.id,
-                  goal_id: goal.id,
-                  plan_id: plan.id
-                },
+                params: mountain_trail_base_habit_return_params(
+                  journey: journey,
+                  goal: goal,
+                  plan: plan
+                ).merge(mode: "undo"),
                 class: "lp-trail-battles__basics-undo",
                 form: { data: { turbo: true } } %>
         <% end %>

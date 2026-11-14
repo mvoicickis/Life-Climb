@@ -1350,14 +1350,22 @@ module MountainTrailHelper
   end
   private :mountain_trail_viewer, :mountain_trail_pick_by_stage
 
+  # Basics belong to the user — same active.on_home set Today shows.
+  # journey: still required so Base Camp UI only loads when a mountain is open.
   def mountain_trail_journey_habits(journey:, user:)
     return user.habits.none if journey.blank? || user.blank?
 
-    user.habits.active.ordered.where(
-      "life_journey_id = ? OR area_id = ?",
-      journey.id,
-      journey.life_area_id
-    )
+    user.habits.active.on_home.ordered
   end
   private :mountain_trail_journey_habits
+
+  # Mountain return params for Basic rows — always the open mountain's journey;
+  # goal/plan only when the spine has them (empty first-climb has none).
+  def mountain_trail_base_habit_return_params(journey:, goal: nil, plan: nil)
+    out = { return_to: "mountain" }
+    out[:life_journey_id] = journey.id if journey
+    out[:goal_id] = goal.id if goal
+    out[:plan_id] = plan.id if plan
+    out
+  end
 end

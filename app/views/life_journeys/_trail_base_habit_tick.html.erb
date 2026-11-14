@@ -1,16 +1,15 @@
 <%# Checkbox for tick-only Basics habits. locals: habit, journey, goal, plan %>
 <% habit = local_assigns.fetch(:habit) %>
 <% journey = local_assigns.fetch(:journey) %>
-<% goal = local_assigns.fetch(:goal) %>
-<% plan = local_assigns.fetch(:plan) %>
+<% goal = local_assigns[:goal] %>
+<% plan = local_assigns[:plan] %>
 <% local_day = current_user.local_today %>
 <% done = habit.completed_today?(on: local_day) %>
-<% mountain_params = {
-     return_to: "mountain",
-     life_journey_id: journey.id,
-     goal_id: goal.id,
-     plan_id: plan.id
-   } %>
+<% mountain_params = mountain_trail_base_habit_return_params(
+     journey: journey,
+     goal: goal,
+     plan: plan
+   ) %>
 <% if done %>
   <% completion = habit.completion_for(local_day) %>
   <%= button_to completion_path(completion),

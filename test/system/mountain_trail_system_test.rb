@@ -186,7 +186,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: false,
       life_journey_id: @journey.id
@@ -221,7 +221,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       points: 5,
       frequency: "daily",
       active: true,
-      show_on_home: false,
+      show_on_home: true,
       stat_type: "growth",
       quantity_checkin: true,
       quick_add_amount: 10,
