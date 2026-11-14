@@ -13,13 +13,14 @@ module Onboarding
     end
 
     def initialize(user:, goal_title:, camp_titles:, life_area: nil, area_key: nil,
-                   seed_battle: true, celebrate_goal: true, include_bootstrap_flag: true,
+                   journey: nil, seed_battle: true, celebrate_goal: true, include_bootstrap_flag: true,
                    first_camp_reveal_status: "pending", setup_category: nil)
       @user = user
       @goal_title = goal_title.to_s.strip
       @camp_titles = Array(camp_titles)
       @life_area = life_area
       @area_key = area_key
+      @journey = journey
       @seed_battle = seed_battle
       @celebrate_goal = celebrate_goal
       @include_bootstrap_flag = include_bootstrap_flag
@@ -37,27 +38,37 @@ module Onboarding
       projects = []
       first_battle = nil
 
-      primary_area = resolve_life_area
+      if @journey
+        raise Error, "Not your journey" unless @journey.user_id == @user.id
 
-      journey = Journeys::Create.call(
-        user: @user,
-        life_area: primary_area,
-        title: @goal_title,
-        ideal_scene: I18n.t("v2_onboarding.default_ideal", title: @goal_title),
-        current_reality: I18n.t("v2_onboarding.default_reality"),
-        next_win: nil,
-        closer_percent: 5
-      )
+        journey = @journey
+        primary_area = journey.life_area
+        raise Error, I18n.t("v2_onboarding.need_goal") if primary_area.blank?
 
-      easy = Today::Commitment::PRESETS.fetch(Bootstrap::DEFAULT_COMMITMENT)
-      journey.update!(
-        commitment_key: Bootstrap::DEFAULT_COMMITMENT,
-        commitment_name: easy[:name],
-        commitment_habit_count: 0,
-        commitment_battle_count: 1,
-        commitment_level_up_declined_on: nil
-      )
-      Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
+        journey.update!(title: @goal_title)
+      else
+        primary_area = resolve_life_area
+
+        journey = Journeys::Create.call(
+          user: @user,
+          life_area: primary_area,
+          title: @goal_title,
+          ideal_scene: I18n.t("v2_onboarding.default_ideal", title: @goal_title),
+          current_reality: I18n.t("v2_onboarding.default_reality"),
+          next_win: nil,
+          closer_percent: 5
+        )
+
+        easy = Today::Commitment::PRESETS.fetch(Bootstrap::DEFAULT_COMMITMENT)
+        journey.update!(
+          commitment_key: Bootstrap::DEFAULT_COMMITMENT,
+          commitment_name: easy[:name],
+          commitment_habit_count: 0,
+          commitment_battle_count: 1,
+          commitment_level_up_declined_on: nil
+        )
+        Focus::SetJourneys.call(user: @user, journey_ids: [ journey.id ])
+      end
 
       due_on = Strategy::YearCycle.default_goal_due
       goal = @user.strategy_goals.create!(

@@ -164,16 +164,6 @@ es:
       destinations: "Tus destinos"
       destination_prev: "Destino anterior"
       destination_next: "Siguiente destino"
-      destination_coach:
-        kicker: "A new summit" # TODO: translate
-        title: "Name your mountain" # TODO: translate
-        lead: "Three short answers. Then this mountain is yours." # TODO: translate
-        name_label: "Name your mountain" # TODO: translate
-        name_placeholder: "Publish my book" # TODO: translate
-        name_hint: "A destination that takes months, not a day." # TODO: translate
-        continue: "Continue" # TODO: translate
-        back: "Back" # TODO: translate
-        cancel: "Cancel" # TODO: translate
       destination_menu: "Opciones de destino"
       destination_swipe_hint: "desliza para cambiar de destino"
       edit_destination: "Editar destino"

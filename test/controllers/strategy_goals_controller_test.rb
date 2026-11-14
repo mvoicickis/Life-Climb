@@ -23,17 +23,13 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
 
   test "journey show is a cinematic RPG mountain with create-goal climb" do
     get life_journey_path(@journey)
+    assert_redirected_to new_life_journey_path(step: "goal", repair: @journey.id)
+
+    follow_redirect!
     assert_response :success
-    assert_match(/My Mountain/i, response.body)
-    assert_match(/One mountain\. Today.?s battle/i, response.body)
-    assert_match(/Name your mountain|New Destination/i, response.body)
-    assert_select ".lp-rpg"
-    assert_select ".lp-rpg__stage-sections"
-    assert_select "[data-controller*='strategy-celebrate']"
-    assert_select "[data-controller*='strategy-rpg']"
-    assert_select "#strategy-camp-notebook", count: 0
-    assert_select ".lp-strategy__board", count: 0
-    assert_no_match(/Today.?s Focus/i, response.body)
+    assert_select "h1", text: I18n.t("v2_onboarding.mountain_name_title")
+    assert_select "input#new_goal_mountain_name[value=?]", "Ship LifePoints"
+    assert_select "input[type=hidden][name=repair][value=?]", @journey.id.to_s
   end
 
   test "creates a path project with trail coords" do

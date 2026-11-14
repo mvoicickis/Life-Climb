@@ -24,9 +24,12 @@ class AreaRelevantJourneyCopyTest < ActionDispatch::IntegrationTest
 
   test "journey planner shows guided strategy without plan-together note" do
     get life_journey_path(@journey)
+    assert_redirected_to new_life_journey_path(step: "goal", repair: @journey.id)
+
+    follow_redirect!
     assert_response :success
-    assert_select ".lp-rpg"
-    assert_match(/Name your mountain|Begin Journey|What do I ultimately want/i, response.body)
+    assert_select "h1", text: I18n.t("v2_onboarding.mountain_name_title")
+    assert_select "input#new_goal_mountain_name[value=?]", "Rebuild connection"
     assert_no_match(/Plan it together/i, response.body)
     assert_no_match(/Message me anytime/i, response.body)
     assert_no_match(/Senior Rails developer shipping products/i, response.body)
