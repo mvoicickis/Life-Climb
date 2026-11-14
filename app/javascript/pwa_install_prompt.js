@@ -32,7 +32,9 @@ export function ensureCapture() {
 }
 
 export function isStandalonePwa() {
-  if (typeof window === "undefined" || !window.matchMedia) return false
+  if (typeof window === "undefined") return false
+  if (window.navigator?.standalone === true) return true
+  if (!window.matchMedia) return false
   return window.matchMedia("(display-mode: standalone)").matches
 }
 

@@ -513,3 +513,70 @@
   color: var(--pricing-muted);
   text-align: center;
 }
+
+.lp-install-sheet__panel {
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.lp-install-sheet__grab {
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: var(--lp-radius-pill);
+  margin: 0.15rem auto 0.85rem;
+  background: color-mix(in srgb, var(--lp-muted) 35%, transparent);
+}
+
+.lp-install-sheet__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.lp-install-sheet__steps {
+  margin: 0 0 0.75rem;
+  padding: 0 0 0 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.lp-install-sheet__steps li + li {
+  margin-top: var(--lp-space-2);
+}
+
+.lp-install-sheet__body,
+.lp-install-sheet__note {
+  margin: 0 0 var(--lp-space-2);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.lp-install-sheet__body {
+  color: var(--lp-ink);
+}
+
+.lp-install-sheet__note {
+  color: var(--lp-muted);
+}
+
+.lp-install-sheet__got-it {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  margin-top: var(--lp-space-3);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}

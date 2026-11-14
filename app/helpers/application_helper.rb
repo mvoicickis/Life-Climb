@@ -445,9 +445,12 @@ module ApplicationHelper
       ENV["GOOGLE_CLIENT_SECRET"].to_s.strip.present?
   end
 
+  # Keep in sync with app/javascript/in_app_browser.js
+  IN_APP_BROWSER_TOKENS = %w[FBAN FBAV FB_IAB FBIOS Instagram Messenger WhatsApp].freeze
+
   def in_app_browser?
     ua = request.user_agent.to_s
-    %w[FBAN FBAV FB_IAB FBIOS Instagram Messenger].any? { |token| ua.include?(token) }
+    IN_APP_BROWSER_TOKENS.any? { |token| ua.include?(token) }
   end
 
   def google_sign_in_button_visible?

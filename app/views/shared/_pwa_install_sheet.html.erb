@@ -1,0 +1,52 @@
+<div data-pwa-install-target="dialog"
+     class="share-sheet lp-install-sheet"
+     hidden
+     aria-hidden="true"
+     role="presentation">
+  <div data-pwa-install-target="backdrop"
+       class="share-sheet__backdrop"
+       data-action="click->pwa-install#closeOnBackdrop"></div>
+
+  <div data-pwa-install-target="panel"
+       class="share-sheet__panel lp-install-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="lp-install-sheet-safari-title"
+       tabindex="-1">
+    <div class="lp-install-sheet__grab" aria-hidden="true"></div>
+
+    <div data-pwa-install-target="safariCopy">
+      <h2 id="lp-install-sheet-safari-title" class="lp-install-sheet__title">
+        <%= t("settings.install_guide.safari_title") %>
+      </h2>
+      <ol class="lp-install-sheet__steps">
+        <li><%= t("settings.install_guide.safari_step_1") %></li>
+        <li><%= t("settings.install_guide.safari_step_2") %></li>
+        <li><%= t("settings.install_guide.safari_step_3") %></li>
+      </ol>
+      <p class="lp-install-sheet__note"><%= t("settings.install_guide.safari_note") %></p>
+      <p class="lp-install-sheet__note"><%= t("settings.install_guide.safari_open_here") %></p>
+    </div>
+
+    <div data-pwa-install-target="inAppCopy" hidden>
+      <h2 id="lp-install-sheet-in-app-title" class="lp-install-sheet__title">
+        <%= t("settings.install_guide.in_app_title") %>
+      </h2>
+      <p class="lp-install-sheet__body"><%= t("settings.install_guide.in_app_body") %></p>
+    </div>
+
+    <div data-pwa-install-target="otherCopy" hidden>
+      <h2 id="lp-install-sheet-other-title" class="lp-install-sheet__title">
+        <%= t("settings.install_guide.other_title") %>
+      </h2>
+      <p class="lp-install-sheet__body"><%= t("settings.install_guide.other_body") %></p>
+    </div>
+
+    <button type="button"
+            class="lp-install-sheet__got-it"
+            data-pwa-install-target="gotIt"
+            data-action="click->pwa-install#closeGuide">
+      <%= t("settings.install_guide.got_it") %>
+    </button>
+  </div>
+</div>
