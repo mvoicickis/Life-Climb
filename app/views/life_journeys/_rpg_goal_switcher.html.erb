@@ -1,11 +1,9 @@
-<%# Destination header — one destination per journey (no switching UI). locals: root_goals, goal, progress, mountain, alive, streak %>
+<%# Destination header — one destination per journey (no switching UI). locals: root_goals, goal, progress, mountain, alive, battle_days %>
 <% root_goals = local_assigns.fetch(:root_goals, []) %>
 <% goal = local_assigns[:goal] %>
 <% progress = local_assigns.fetch(:progress, 0) %>
 <% mountain = local_assigns.fetch(:mountain, {}) %>
 <% alive = local_assigns[:alive] || current_user.alive_level %>
-<% streak = local_assigns[:streak] || strategy_climb_streak_status %>
-
 <header class="lp-rpg-hud is-focus">
   <div class="lp-rpg-hud__left">
     <%= link_to settings_path, class: "lp-rpg-avatar", aria: { label: t("nav.settings") } do %>
@@ -115,7 +113,7 @@
   </div>
 
   <% xp = current_user.life_points.to_i %>
-  <% streak_days = streak.days.to_i %>
+  <% streak_days = local_assigns.fetch(:battle_days) { battle_days_in_a_row }.to_i %>
   <div class="lp-rpg-hud__chips">
     <% if xp.positive? %>
       <div class="lp-rpg-chip is-xp" data-strategy-celebrate-target="spBadge" aria-label="<%= t('strategy.rpg.xp') %>">
