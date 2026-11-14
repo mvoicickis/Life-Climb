@@ -311,6 +311,12 @@ en:
       mountain_line: "One small step each day gets you there."
       mountain_yes: "Remind me tomorrow"
       mountain_done: "Reminders on ✓"
+      camp_ios_label: "Get a reminder tomorrow"
+      camp_ios_title: "Add Life Climb to your Home Screen."
+      camp_ios_steps: "Tap Share, then Add to Home Screen."
+      camp_inapp_label: "Keep your climb"
+      camp_inapp_title: "Open Life Climb in your browser."
+      camp_inapp_steps: "Tap the menu at the top right, then Open in browser."
     commitment:
       tier_label: "Daily commitment"
       progress: "Habits %{habits_done} of %{habits_total} · Battles %{battles_done} of %{battles_total}"
