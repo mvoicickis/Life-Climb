@@ -29,7 +29,7 @@
           <% if focused %>
             <div class="lp-my-world-sheet__mtn is-focused">
               <span class="lp-my-world-sheet__mtn-copy">
-                <span class="lp-my-world-sheet__mtn-title"><%= journey.title %></span>
+                <span class="lp-my-world-sheet__mtn-title"><%= my_world_journey_title(journey) %></span>
                 <% if wins.positive? %>
                   <span class="lp-my-world-sheet__mtn-meta"><%= t("my_world.battles_won", count: wins) %></span>
                 <% end %>
@@ -43,7 +43,7 @@
                   class: "lp-my-world-sheet__mtn",
                   form: { class: "lp-my-world-sheet__mtn-form" } do %>
               <span class="lp-my-world-sheet__mtn-copy">
-                <span class="lp-my-world-sheet__mtn-title"><%= journey.title %></span>
+                <span class="lp-my-world-sheet__mtn-title"><%= my_world_journey_title(journey) %></span>
                 <% if wins.positive? %>
                   <span class="lp-my-world-sheet__mtn-meta"><%= t("my_world.battles_won", count: wins) %></span>
                 <% end %>

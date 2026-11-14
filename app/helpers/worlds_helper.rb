@@ -96,6 +96,12 @@ module WorldsHelper
     end
   end
 
+  # Same peak label as Mountain: root StrategyGoal title, else journey title.
+  def my_world_journey_title(journey)
+    goal = @root_goals_by_journey_id&.[](journey.id)
+    goal&.title.presence || journey.title
+  end
+
   def my_world_ring_icon(ring)
     icons = {
       "me" => <<~SVG,
