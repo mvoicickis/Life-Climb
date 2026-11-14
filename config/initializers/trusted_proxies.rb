@@ -29,6 +29,11 @@ CLOUDFLARE_TRUSTED_PROXY_CIDRS = [
 
 CLOUDFLARE_TRUSTED_PROXY_IPADDRS = CLOUDFLARE_TRUSTED_PROXY_CIDRS.map { |cidr| IPAddr.new(cidr) }.freeze
 
+# Prefer X-Forwarded-For over RFC 7239 Forwarded (GHSA-2gff-2mmg-m73p).
+# Cloudflare sets XFF; a client-supplied Forwarded header must not win or trip
+# ActionDispatch::RemoteIp::IpSpoofAttackError when the two disagree.
+Rack::Request.forwarded_priority = [ :x_forwarded ]
+
 # Only trust X-Forwarded-For when the TCP peer is a configured proxy (e.g. Cloudflare).
 # Direct hits to Render with a forged header keep REMOTE_ADDR as the client IP.
 module TrustProxyForwardedForOnly

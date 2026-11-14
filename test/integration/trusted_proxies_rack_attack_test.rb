@@ -34,6 +34,31 @@ class TrustedProxiesRackAttackTest < ActiveSupport::TestCase
     assert_equal UNTRUSTED_PEER, ActionDispatch::Request.new(env).remote_ip
   end
 
+  test "conflicting Forwarded header does not raise and remote_ip stays on X-Forwarded-For" do
+    assert_equal [ :x_forwarded ], Rack::Request.forwarded_priority
+
+    env = base_env(
+      remote_addr: CLOUDFLARE_EDGE,
+      x_forwarded_for: CLIENT_A,
+      forwarded: "for=#{CLIENT_B}"
+    )
+
+    assert_nothing_raised do
+      apply_remote_ip!(env)
+    end
+
+    assert_equal CLIENT_A, ActionDispatch::Request.new(env).remote_ip
+
+    login_throttle = Rack::Attack.throttles["logins/ip"]
+    req = rack_attack_request(
+      remote_addr: CLOUDFLARE_EDGE,
+      x_forwarded_for: CLIENT_A,
+      forwarded: "for=#{CLIENT_B}"
+    )
+    assert_equal CLIENT_A, req.ip
+    assert_not login_throttle.matched_by?(req)
+  end
+
   test "rack attack login throttle buckets clients not Cloudflare edges" do
     login_throttle = Rack::Attack.throttles["logins/ip"]
 
@@ -67,18 +92,24 @@ class TrustedProxiesRackAttackTest < ActiveSupport::TestCase
     ActionDispatch::RemoteIp.new(->(e) { [ 200, {}, [] ] }, true, trusted_proxies).call(env)
   end
 
-  def base_env(remote_addr:, x_forwarded_for:)
-    {
+  def base_env(remote_addr:, x_forwarded_for:, forwarded: nil)
+    env = {
       "REMOTE_ADDR" => remote_addr,
       "HTTP_X_FORWARDED_FOR" => x_forwarded_for,
       "REQUEST_METHOD" => "GET",
       "PATH_INFO" => "/",
       "rack.input" => StringIO.new
     }
+    env["HTTP_FORWARDED"] = forwarded if forwarded
+    env
   end
 
-  def rack_attack_request(remote_addr:, x_forwarded_for:)
-    env = base_env(remote_addr: remote_addr, x_forwarded_for: x_forwarded_for).merge(
+  def rack_attack_request(remote_addr:, x_forwarded_for:, forwarded: nil)
+    env = base_env(
+      remote_addr: remote_addr,
+      x_forwarded_for: x_forwarded_for,
+      forwarded: forwarded
+    ).merge(
       "REQUEST_METHOD" => "POST",
       "PATH_INFO" => "/session",
       "rack.input" => StringIO.new("email_address=throttle-test@example.com"),
