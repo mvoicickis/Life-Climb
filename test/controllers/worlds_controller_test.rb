@@ -52,6 +52,18 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".lp-my-world-rings__core.is-outline"
   end
 
+  test "show ring sheet uses renamed root goal title" do
+    journey = seed_climb!(@user, area_key: "self", title: "Old peak", today_mission: "Stretch")
+    goal = @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: journey.id)
+    assert_equal "Old peak", journey.title
+    goal.update!(title: "New peak")
+
+    get world_path
+    assert_response :success
+    assert_select ".lp-my-world-sheet[data-ring=me] .lp-my-world-sheet__mtn-title", text: "New peak"
+    assert_select ".lp-my-world-sheet__mtn-title", text: "Old peak", count: 0
+  end
+
   test "show query count stays equal with one vs five journeys" do
     seed_climb!(@user, area_key: "self", title: "One climb", today_mission: "Battle one")
     warm_world_lookups!
@@ -324,6 +336,7 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     Battles::WinsByJourneyAndDay.call(user: @user, days: 7)
     current_user_journeys = @user.life_journeys.active.includes(:life_area).order(:id).to_a
     current_user_journeys.each { |j| j.life_area.world_ring }
+    @user.strategy_goals.for_kind("goal").roots.where(life_journey_id: current_user_journeys.map(&:id)).load
     @user.life_journeys.where(status: "completed").joins(:life_area).pluck(:id, "life_areas.key")
   end
 

@@ -5,6 +5,13 @@ class WorldsController < ApplicationController
     active = current_user.life_journeys.active.includes(:life_area).order(:id).to_a
     active_by_ring = active.group_by { |journey| journey.life_area.world_ring }
 
+    # One batched read: root goals for every active journey (peak title on the ring sheet).
+    @root_goals_by_journey_id = current_user.strategy_goals
+      .for_kind("goal")
+      .roots
+      .where(life_journey_id: active.map(&:id))
+      .index_by(&:life_journey_id)
+
     # One batched read: completed journey ids + area key → ring (keeps wins after finish).
     completed_by_ring = Hash.new { |hash, key| hash[key] = [] }
     current_user.life_journeys.where(status: "completed")
