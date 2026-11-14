@@ -23,20 +23,33 @@ module MountainSheetRefresh
   end
 
   # Base camp Basics habit log — scope every id through current_user.
+  # Journey is required; goal/plan are optional so empty-spine mountains still refresh.
   def assign_mountain_sheet_for_base_camp!
     @journey = current_user.life_journeys.find(params.require(:life_journey_id))
-    @goal = current_user.strategy_goals.for_kind("goal").find(params.require(:goal_id))
-    @plan = current_user.strategy_goals.for_kind("plan").find(params.require(:plan_id))
+    @goal =
+      if params[:goal_id].present?
+        current_user.strategy_goals.for_kind("goal").find(params[:goal_id])
+      end
+    @plan =
+      if params[:plan_id].present?
+        current_user.strategy_goals.for_kind("plan").find(params[:plan_id])
+      end
 
-    unless @plan.parent_id == @goal.id && mountain_goal_matches_journey?(@goal, @journey)
+    if @plan
+      raise ActiveRecord::RecordNotFound if @goal.blank?
+      unless @plan.parent_id == @goal.id && mountain_goal_matches_journey?(@goal, @journey)
+        raise ActiveRecord::RecordNotFound
+      end
+
+      projects = helpers.mountain_trail_open_camps(@plan)
+      battles = projects.flat_map { |project|
+        project.children.select { |child| child.day? && !child.holding? }
+      }
+      helpers.mountain_trail_preload_done_today!(current_user, battles)
+    elsif @goal && !mountain_goal_matches_journey?(@goal, @journey)
       raise ActiveRecord::RecordNotFound
     end
 
-    projects = helpers.mountain_trail_open_camps(@plan)
-    battles = projects.flat_map { |project|
-      project.children.select { |child| child.day? && !child.holding? }
-    }
-    helpers.mountain_trail_preload_done_today!(current_user, battles)
     assign_mountain_climber_context!
   end
 

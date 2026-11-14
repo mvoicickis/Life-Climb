@@ -1,16 +1,14 @@
 <%# locals: habit, journey, goal, plan, quick (optional) %>
 <% quick = local_assigns.fetch(:quick) { habit.quick_add_value } %>
+<% mountain_params = mountain_trail_base_habit_return_params(
+     journey: journey,
+     goal: goal,
+     plan: plan
+   ).merge(mode: "add", daily_log: { amount: quick }) %>
 <%= button_to "+#{number_with_delimiter(quick)}",
       daily_logs_path(habit_id: habit.id),
       method: :post,
-      params: {
-        mode: "add",
-        return_to: "mountain",
-        life_journey_id: journey.id,
-        goal_id: goal.id,
-        plan_id: plan.id,
-        daily_log: { amount: quick }
-      },
+      params: mountain_params,
       class: "lp-trail-battles__basics-add",
       aria: { label: t("dash.anytime.quick_add", n: number_with_delimiter(quick), unit: habit.unit) },
       data: {

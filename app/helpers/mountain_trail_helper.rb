@@ -1358,4 +1358,14 @@ module MountainTrailHelper
     user.habits.active.on_home.ordered
   end
   private :mountain_trail_journey_habits
+
+  # Mountain return params for Basic rows — always the open mountain's journey;
+  # goal/plan only when the spine has them (empty first-climb has none).
+  def mountain_trail_base_habit_return_params(journey:, goal: nil, plan: nil)
+    out = { return_to: "mountain" }
+    out[:life_journey_id] = journey.id if journey
+    out[:goal_id] = goal.id if goal
+    out[:plan_id] = plan.id if plan
+    out
+  end
 end
