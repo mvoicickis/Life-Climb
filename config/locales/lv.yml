@@ -229,16 +229,6 @@ lv:
       destinations: "Tavi galamērķi"
       destination_prev: "Iepriekšējais galamērķis"
       destination_next: "Nākamais galamērķis"
-      destination_coach:
-        kicker: "A new summit" # TODO: translate
-        title: "Name your mountain" # TODO: translate
-        lead: "Three short answers. Then this mountain is yours." # TODO: translate
-        name_label: "Name your mountain" # TODO: translate
-        name_placeholder: "Publish my book" # TODO: translate
-        name_hint: "A destination that takes months, not a day." # TODO: translate
-        continue: "Continue" # TODO: translate
-        back: "Back" # TODO: translate
-        cancel: "Cancel" # TODO: translate
       destination_menu: "Galamērķa opcijas"
       destination_swipe_hint: "velc, lai mainītu galamērķi"
       edit_destination: "Rediģēt galamērķi"

@@ -18,14 +18,12 @@
   <div class="lp-rpg-summit">
     <p class="lp-rpg-summit__kicker"><%= t("strategy.rpg.destination") %></p>
 
-    <div class="lp-rpg-destination"
-         data-controller="destination-switcher"
-         data-destination-switcher-open-on-connect-value="<%= !(root_goals.any? && goal) %>"
-         data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
+    <div class="lp-rpg-destination">
       <% if root_goals.any? && goal %>
         <%# One destination per journey: static, no prev/next/dots/swipe and no
             "New Destination" create. Rename + companion avatar + XP/streak/SP
-            chips + celebrate mounts are unchanged. %>
+            chips + celebrate mounts are unchanged. Empty-goal repair now redirects
+            from LifeJourneysController#show into new.html.erb (name → camps). %>
         <div class="lp-rpg-destination-carousel is-single"
              aria-label="<%= t('strategy.rpg.destinations') %>">
           <div class="lp-rpg-destination-carousel__stage">
@@ -98,20 +96,12 @@
           </div>
         </div>
       <% else %>
-        <button type="button"
-                class="lp-rpg-destination-carousel__active is-empty"
-                data-destination-switcher-target="button"
-                data-action="click->destination-switcher#openCreate"
-                aria-haspopup="dialog"
-                aria-expanded="false"
-                aria-label="<%= t('strategy.rpg.new_destination') %>">
+        <div class="lp-rpg-destination-carousel__active is-empty">
           <span class="lp-rpg-destination-carousel__icon" aria-hidden="true">🏔</span>
           <span class="lp-rpg-destination-carousel__title"><%= t("strategy.zones.empty_goal") %></span>
-        </button>
+        </div>
         <p class="lp-rpg-summit__tagline"><%= t("strategy.promise") %></p>
       <% end %>
-
-      <%= render "life_journeys/destination_coach", journey: @journey %>
     </div>
   </div>
 

@@ -8,12 +8,23 @@ class LifeJourneysController < ApplicationController
   NEW_GOAL_STEPS = %w[goal camps].freeze
 
   def new
+    if params[:cancel_repair].present?
+      session.delete(NEW_GOAL_SESSION_KEY)
+      redirect_to world_path, status: :see_other
+      return
+    end
+
+    seed_empty_goal_repair_draft!
     @draft = new_goal_draft
     @step = params[:step].presence || "goal"
     @step = "goal" unless NEW_GOAL_STEPS.include?(@step)
+    @repair_journey_id = @draft["repair_journey_id"]
 
     if @step == "camps" && @draft["goal"].to_s.strip.blank?
-      redirect_to new_life_journey_path(ring: @draft["ring"].presence || params[:ring].presence) and return
+      redirect_to new_life_journey_path(
+        ring: @draft["ring"].presence || params[:ring].presence,
+        repair: @repair_journey_id
+      ) and return
     end
 
     ring = @draft["ring"].presence || params[:ring].presence || "me"
@@ -41,6 +52,12 @@ class LifeJourneysController < ApplicationController
     return redirect_to redirect_path, status: :see_other if redirect_path
 
     prepare_strategy!
+    return if performed?
+
+    if @goal.blank?
+      begin_empty_goal_repair!(@journey)
+      redirect_to new_life_journey_path(step: "goal", repair: @journey.id), status: :see_other
+    end
   end
 
   def update
@@ -781,6 +798,7 @@ class LifeJourneysController < ApplicationController
     ring = params[:ring].to_s
     goal = params.dig(:onboarding, :goal).to_s.strip
     goal = params[:goal].to_s.strip if goal.blank?
+    repair_journey_id = trusted_repair_journey_id
 
     unless LifeArea.key_for_ring(ring)
       assign_new_goal_form!(ring: ring.presence || "me", journey: current_user.life_journeys.new)
@@ -789,7 +807,8 @@ class LifeJourneysController < ApplicationController
       @setup_step_total = NEW_GOAL_STEPS.size
       @goal_title = goal
       @camp_titles = []
-      @draft = new_goal_draft.merge("ring" => @ring, "goal" => goal)
+      @repair_journey_id = repair_journey_id
+      @draft = new_goal_draft.merge("ring" => @ring, "goal" => goal, "repair_journey_id" => repair_journey_id)
       flash.now[:alert] = t("my_world.rings.unknown")
       render :new, status: :unprocessable_entity
       return
@@ -802,7 +821,8 @@ class LifeJourneysController < ApplicationController
       @setup_step_total = NEW_GOAL_STEPS.size
       @goal_title = ""
       @camp_titles = []
-      @draft = new_goal_draft.merge("ring" => @ring)
+      @repair_journey_id = repair_journey_id
+      @draft = new_goal_draft.merge("ring" => @ring, "repair_journey_id" => repair_journey_id)
       @name_error = t("v2_onboarding.need_goal")
       render :new, status: :unprocessable_entity
       return
@@ -812,9 +832,10 @@ class LifeJourneysController < ApplicationController
       "user_id" => current_user.id,
       "ring" => ring,
       "goal" => goal,
-      "camp_titles" => Array(new_goal_draft["camp_titles"])
-    }
-    redirect_to new_life_journey_path(step: "camps")
+      "camp_titles" => Array(new_goal_draft["camp_titles"]),
+      "repair_journey_id" => repair_journey_id
+    }.compact
+    redirect_to new_life_journey_path({ step: "camps", repair: repair_journey_id }.compact)
   end
 
   def create_new_goal_camps_step
@@ -824,6 +845,13 @@ class LifeJourneysController < ApplicationController
     titles = normalize_new_goal_camp_titles(
       camp_titles_from_params.presence || camp_titles_from_draft(draft)
     )
+    claimed_repair_id = claimed_repair_journey_id
+    repair_journey_id = trusted_repair_journey_id
+    if claimed_repair_id.present? && repair_journey_id.blank?
+      session.delete(NEW_GOAL_SESSION_KEY)
+      redirect_to world_path, status: :see_other
+      return
+    end
 
     area_key = LifeArea.key_for_ring(ring)
     unless area_key
@@ -833,14 +861,16 @@ class LifeJourneysController < ApplicationController
       @setup_step_total = NEW_GOAL_STEPS.size
       @goal_title = goal
       @camp_titles = titles
-      @draft = draft.merge("ring" => @ring, "goal" => goal)
+      @repair_journey_id = repair_journey_id
+      @draft = draft.merge("ring" => @ring, "goal" => goal, "repair_journey_id" => repair_journey_id)
       flash.now[:alert] = t("my_world.rings.unknown")
       render :new, status: :unprocessable_entity
       return
     end
 
     if goal.blank?
-      redirect_to new_life_journey_path(ring: ring.presence), alert: t("v2_onboarding.need_goal") and return
+      redirect_to new_life_journey_path(ring: ring.presence, repair: repair_journey_id),
+                  alert: t("v2_onboarding.need_goal") and return
     end
 
     if titles.empty?
@@ -848,9 +878,36 @@ class LifeJourneysController < ApplicationController
         "user_id" => current_user.id,
         "ring" => ring,
         "goal" => goal,
-        "camp_titles" => []
+        "camp_titles" => [],
+        "repair_journey_id" => repair_journey_id
+      ).compact
+      redirect_to new_life_journey_path(step: "camps", repair: repair_journey_id),
+                  alert: t("v2_onboarding.need_camp") and return
+    end
+
+    if repair_journey_id.present?
+      journey = current_user.life_journeys.find(repair_journey_id)
+
+      if journey_root_goal(journey).present?
+        session.delete(NEW_GOAL_SESSION_KEY)
+        redirect_to life_journey_path(journey), status: :see_other
+        return
+      end
+
+      Onboarding::ClimbSpine.call(
+        user: current_user,
+        goal_title: goal,
+        camp_titles: titles,
+        journey: journey,
+        seed_battle: false,
+        celebrate_goal: false,
+        include_bootstrap_flag: false,
+        first_camp_reveal_status: "done"
       )
-      redirect_to new_life_journey_path(step: "camps"), alert: t("v2_onboarding.need_camp") and return
+      Goals::Current.clear_cache!(user: current_user)
+      session.delete(NEW_GOAL_SESSION_KEY)
+      redirect_to life_journey_path(journey)
+      return
     end
 
     areas = LifeAreas::Select.call(user: current_user, keys: [ area_key ])
@@ -875,9 +932,10 @@ class LifeJourneysController < ApplicationController
       "user_id" => current_user.id,
       "ring" => ring,
       "goal" => goal,
-      "camp_titles" => titles
-    }
-    redirect_to new_life_journey_path(step: "camps"), alert: e.message
+      "camp_titles" => titles,
+      "repair_journey_id" => repair_journey_id
+    }.compact
+    redirect_to new_life_journey_path(step: "camps", repair: repair_journey_id), alert: e.message
   end
 
   def new_goal_draft
@@ -887,6 +945,71 @@ class LifeJourneysController < ApplicationController
       return {}
     end
     draft
+  end
+
+  def begin_empty_goal_repair!(journey)
+    ring = journey.life_area&.world_ring.presence || "me"
+    session[NEW_GOAL_SESSION_KEY] = {
+      "user_id" => current_user.id,
+      "repair_journey_id" => journey.id,
+      "ring" => ring,
+      "goal" => journey.title.to_s.strip,
+      "camp_titles" => []
+    }
+  end
+
+  def seed_empty_goal_repair_draft!
+    repair_id = params[:repair].presence || new_goal_draft["repair_journey_id"]
+    return if repair_id.blank?
+
+    journey = current_user.life_journeys.find_by(id: repair_id)
+    unless journey
+      clear_repair_from_draft!
+      return
+    end
+
+    if journey_root_goal(journey).present?
+      session.delete(NEW_GOAL_SESSION_KEY)
+      return
+    end
+
+    draft = new_goal_draft
+    ring = draft["ring"].presence || journey.life_area&.world_ring.presence || "me"
+    session[NEW_GOAL_SESSION_KEY] = {
+      "user_id" => current_user.id,
+      "repair_journey_id" => journey.id,
+      "ring" => ring,
+      "goal" => draft["goal"].presence || journey.title.to_s.strip,
+      "camp_titles" => Array(draft["camp_titles"])
+    }
+  end
+
+  def claimed_repair_journey_id
+    new_goal_draft["repair_journey_id"].presence || params[:repair].presence
+  end
+
+  def trusted_repair_journey_id
+    claimed = claimed_repair_journey_id
+    return if claimed.blank?
+    return claimed if current_user.life_journeys.exists?(id: claimed)
+
+    nil
+  end
+
+  def clear_repair_from_draft!
+    draft = new_goal_draft
+    return if draft.blank?
+
+    draft = draft.except("repair_journey_id")
+    if draft.except("user_id").values.all?(&:blank?)
+      session.delete(NEW_GOAL_SESSION_KEY)
+    else
+      session[NEW_GOAL_SESSION_KEY] = draft
+    end
+  end
+
+  def journey_root_goal(journey)
+    current_user.strategy_goals.for_kind("goal").roots.find_by(life_journey_id: journey.id)
   end
 
   def camp_titles_from_params

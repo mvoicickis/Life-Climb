@@ -113,6 +113,76 @@ class OnboardingClimbSpineTest < ActiveSupport::TestCase
     assert_equal 0, @user.life_journeys.count
   end
 
+  test "journey option reuses the journey without creating or refocusing" do
+    area = LifeAreas::Select.call(user: @user, keys: [ "career" ]).first
+    existing = Journeys::Create.call(
+      user: @user,
+      life_area: area,
+      title: "Old title",
+      ideal_scene: "Ideal",
+      current_reality: "Now",
+      next_win: nil,
+      closer_percent: 5
+    )
+    Focus::SetJourneys.call(user: @user, journey_ids: [ existing.id ])
+    @user.strategy_goals.where(life_journey_id: existing.id).delete_all
+    focused_before = @user.reload.primary_focused_journey&.id
+
+    result = nil
+    assert_no_difference -> { @user.life_journeys.count } do
+      result = Onboarding::ClimbSpine.call(
+        user: @user,
+        goal_title: "Repaired mountain",
+        camp_titles: [ "Camp one", "Camp two" ],
+        journey: existing,
+        seed_battle: false,
+        celebrate_goal: false,
+        include_bootstrap_flag: false,
+        first_camp_reveal_status: "done"
+      )
+    end
+
+    assert_equal existing.id, result.journey.id
+    assert_equal focused_before, @user.reload.primary_focused_journey&.id
+    assert_equal "Repaired mountain", existing.reload.title
+    assert_equal "Repaired mountain", result.goal.title
+    assert_equal existing.id, result.goal.life_journey_id
+    assert_equal existing.id, result.plan.life_journey_id
+    assert result.projects.all? { |camp| camp.life_journey_id == existing.id }
+    assert_equal "done", result.journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
+  end
+
+  test "journey option refuses another users journey" do
+    other = User.create!(
+      name: "Other",
+      email_address: "climb-spine-other-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345"
+    )
+    area = LifeAreas::Select.call(user: other, keys: [ "career" ]).first
+    foreign = Journeys::Create.call(
+      user: other,
+      life_area: area,
+      title: "Foreign",
+      ideal_scene: "Ideal",
+      current_reality: "Now",
+      next_win: nil,
+      closer_percent: 5
+    )
+
+    error = assert_raises(Onboarding::ClimbSpine::Error) do
+      Onboarding::ClimbSpine.call(
+        user: @user,
+        goal_title: "Nope",
+        camp_titles: [ "Camp" ],
+        journey: foreign
+      )
+    end
+
+    assert_equal "Not your journey", error.message
+    assert_equal 0, @user.life_journeys.count
+  end
+
   private
 
   def spine_structure_snapshot(result)
