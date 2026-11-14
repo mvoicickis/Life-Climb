@@ -20,6 +20,7 @@
 
     <div class="lp-rpg-destination"
          data-controller="destination-switcher"
+         data-destination-switcher-open-on-connect-value="<%= !(root_goals.any? && goal) %>"
          data-action="pointerdown->destination-switcher#swipeStart pointerup->destination-switcher#swipeEnd pointercancel->destination-switcher#swipeCancel">
       <% if root_goals.any? && goal %>
         <%# One destination per journey: static, no prev/next/dots/swipe and no

@@ -14,7 +14,15 @@ class FirstClimbsController < ApplicationController
       goal_title: params[:title].to_s.strip.presence
     )
 
-    if result.created?
+    if mountain_return?
+      # Empty-mountain coach: land on the repaired v4 trail for this journey.
+      redirect_to life_journey_path(
+                    journey,
+                    goal_id: result.goal.id,
+                    plan_id: result.plan&.id
+                  ),
+                  status: :see_other
+    elsif result.created?
       flash[:first_climb] = true
       flash[:human_win] = I18n.t("strategy.first_climb.human_ready", action: result.battle.title) if result.battle
       redirect_to dashboard_path, status: :see_other
@@ -36,6 +44,10 @@ class FirstClimbsController < ApplicationController
     return if current_user.planning_v2?
 
     redirect_to life_area_selections_path
+  end
+
+  def mountain_return?
+    params[:return_to].to_s == "mountain"
   end
 
   def journey_for_redirect
