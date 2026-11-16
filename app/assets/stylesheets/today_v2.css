@@ -1586,7 +1586,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom) + 1rem);
-  padding: 0 var(--lp-gutter) calc(5.5rem + env(safe-area-inset-bottom));
+  padding: calc(0.5rem + env(safe-area-inset-top, 0px)) var(--lp-gutter) calc(5.5rem + env(safe-area-inset-bottom));
 }
 
 .lp-dash.is-today-v2.is-today-photo #today-battle-surface {
