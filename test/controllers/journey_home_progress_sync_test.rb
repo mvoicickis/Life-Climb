@@ -27,19 +27,25 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
       milestones: [ { "title" => "Launch Beta", "tags" => [ "ship" ] }, { "title" => "First 10 users", "tags" => [ "ship" ] } ],
       next_win: "Launch Beta"
     )
-    # Onboarding::Run only plants a StrategyGoal when route_mission is set.
-    # Inline add needs a goal so HoldingProject.ensure! can plant the day battle.
-    @user.strategy_goals.create!(
-      life_area: @journey.life_area,
-      life_journey: @journey,
-      horizon: "goal",
-      title: "Ship LifePoints",
-      position: 0
-    )
   end
 
   test "journey today actions appear on home battle" do
     @user.daily_todos.for_day.destroy_all
+    @user.update!(character: @user.character.presence || "fox")
+
+    # Onboarding::Run without route_mission has no StrategyGoal. Plant a
+    # goal+plan+camp so Today stays on the battlefield (not first-climb)
+    # and the inline add row can ensure! into the holding / current camp.
+    area = @journey.life_area
+    goal = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, horizon: "goal", title: "Ship LifePoints", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: goal, horizon: "plan", title: "Build", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
 
     patch life_journey_path(@journey), params: {
       layer: "today",
