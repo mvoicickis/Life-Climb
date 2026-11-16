@@ -29,6 +29,11 @@ module Dashboard
       @open_todos = @daily_todos.reject(&:completed?)
       @done_todos = @daily_todos.select(&:completed?)
       @strategy_goal = Goals::Current.goal_for(user: current_user, journey: @journey)
+      @goal_card_camp = Today::CampProgress.call(
+        user: current_user,
+        journey: @journey,
+        goal: @strategy_goal
+      )
       retire_plan_route_if_needed!
       @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").not_holding.none?
       @show_plan_route = @first_climb_needed || plan_route_pending?
