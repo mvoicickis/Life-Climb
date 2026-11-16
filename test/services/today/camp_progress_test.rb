@@ -23,7 +23,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
   end
 
   test "zero battles yields won 0 total 0 percent 0" do
-    @camp.children.where(horizon: "day").delete_all
+    clear_camp_battles!(@camp)
 
     result = Today::CampProgress.call(user: @user, journey: @journey, goal: @goal)
 
@@ -35,7 +35,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
   end
 
   test "one of five battles won is 20 percent" do
-    @camp.children.where(horizon: "day").delete_all
+    clear_camp_battles!(@camp)
     battles = 5.times.map do |i|
       @camp.children.create!(
         user: @user,
@@ -57,7 +57,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
   end
 
   test "adding a battle drops percent" do
-    @camp.children.where(horizon: "day").delete_all
+    clear_camp_battles!(@camp)
     first = @camp.children.create!(
       user: @user,
       life_area: @journey.life_area,
@@ -91,7 +91,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
   end
 
   test "finished camp reads 100 percent" do
-    @camp.children.where(horizon: "day").delete_all
+    clear_camp_battles!(@camp)
     open_battle = @camp.children.create!(
       user: @user,
       life_area: @journey.life_area,
@@ -126,7 +126,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
   end
 
   test "query count stays flat from few battles to many" do
-    @camp.children.where(horizon: "day").delete_all
+    clear_camp_battles!(@camp)
 
     count_queries = lambda do
       queries = 0
@@ -175,5 +175,14 @@ class Today::CampProgressTest < ActiveSupport::TestCase
 
     assert_equal short_queries, long_queries,
                  "expected batched queries (3 battles=#{short_queries}, 30 battles=#{long_queries})"
+  end
+
+  private
+
+  # DailyTodos point at day goals — clear them first so SQLite FK checks pass.
+  def clear_camp_battles!(camp)
+    battle_ids = camp.children.where(horizon: "day").pluck(:id)
+    @user.daily_todos.where(strategy_goal_id: battle_ids).delete_all if battle_ids.any?
+    camp.children.where(horizon: "day").delete_all
   end
 end
