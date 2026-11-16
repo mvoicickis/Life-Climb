@@ -44,7 +44,8 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Write tests/, response.body)
     assert_match(/Polish UI/, response.body)
-    assert_match(I18n.t("dash.battlefield.add_on_mountain"), response.body)
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", count: 0
   end
 
   test "strategy battle sync marks journey today layer done" do

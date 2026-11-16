@@ -48,7 +48,7 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty battlefield shows add next camp when project is missing" do
+  test "empty battlefield shows inline add when project is missing" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)
     goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -56,10 +56,10 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     plan.children.destroy_all
     clear_today_battles!(@journey)
 
-    assert_empty_battle_pill!(
-      label: I18n.t("dash.battlefield.empty_cta.add_next_camp"),
-      href_includes: "open_plant=1"
-    )
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 0
   end
 
   test "empty battlefield shows inline add when camp has no battles" do
