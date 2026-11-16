@@ -27,7 +27,7 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     assert_includes @source, "disconnect()"
     assert_includes @source, "syncCollapsed()"
     # connect must apply current scrollTop before the next scroll event
-    connect_body = @source[ /connect\(\)\s*\{(.*)\n  \}/m, 1 ]
+    connect_body = @source[/connect\(\)\s*\{(.*)\n  \}/m, 1]
     assert connect_body.present?
     assert_includes connect_body, "addEventListener"
     assert_includes connect_body, "syncCollapsed()"
