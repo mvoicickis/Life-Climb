@@ -102,12 +102,19 @@ class Today::CampProgressTest < ActiveSupport::TestCase
       position: 0
     )
     assert_nil open_battle.completed_at
-    @camp.update_columns(completed_at: Time.current)
+    finished = @camp
+    finished.update_columns(completed_at: Time.current)
 
-    Strategy::PathProject.stub(:resolve, @camp) do
+    # PathProject skips completed camps — pin resolve so we can assert percent 100.
+    original = Strategy::PathProject.method(:resolve)
+    Strategy::PathProject.define_singleton_method(:resolve) { |**_| finished }
+    begin
       result = Today::CampProgress.call(user: @user, journey: @journey, goal: @goal)
       assert_equal 100, result[:percent]
-      assert_equal @camp.id, result[:camp_id]
+      assert_equal finished.id, result[:camp_id]
+    ensure
+      Strategy::PathProject.singleton_class.send(:remove_method, :resolve)
+      Strategy::PathProject.define_singleton_method(:resolve, original)
     end
   end
 
@@ -129,6 +136,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
     clear_camp_battles!(@camp)
 
     count_queries = lambda do
+      Goals::Current.clear_cache!(user: @user)
       queries = 0
       callback = lambda do |_name, _start, _finish, _id, payload|
         next if payload[:cached]
