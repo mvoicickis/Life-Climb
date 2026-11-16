@@ -1621,6 +1621,13 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   gap: 0.35rem;
   padding: 0.45rem 0.75rem 0.5rem;
   min-width: 0;
+  transition: padding 0.18s ease, gap 0.18s ease;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed {
+  gap: 0.25rem;
+  padding-top: 0.35rem;
+  padding-bottom: 0.4rem;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact {
@@ -1629,6 +1636,11 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   gap: 0.35rem;
   margin-bottom: 0;
   min-width: 0;
+  transition: gap 0.18s ease;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-v2-header--compact {
+  gap: 0.25rem;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
@@ -1639,6 +1651,24 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   text-transform: uppercase;
   color: var(--lp-muted);
   line-height: 1.2;
+  max-height: 1.2em;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.18s ease, opacity 0.18s ease, margin 0.18s ease;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-kicker {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
+    transition: none;
+  }
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__name {

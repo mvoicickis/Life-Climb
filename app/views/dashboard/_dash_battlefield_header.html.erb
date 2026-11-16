@@ -6,7 +6,8 @@
 <% camp_total = camp&.dig(:total).to_i %>
 <% camp_percent = camp&.dig(:percent).to_i %>
 
-<div class="lp-today-group-card lp-today-group-card--goal">
+<div class="lp-today-group-card lp-today-group-card--goal"
+     data-controller="today-goal-card">
   <header class="lp-today-v2-header lp-today-v2-header--compact" aria-label="<%= t('dash.battlefield.goal_card.label') %>">
     <p class="lp-today-goal-kicker"><%= t("dash.battlefield.goal_card.label") %></p>
     <p class="lp-today-v2-header__name" title="<%= goal_title %>"><%= goal_title %></p>

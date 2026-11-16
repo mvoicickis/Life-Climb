@@ -46,6 +46,15 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
   end
 
+  test "goal card carries the collapse controller for scroll pad" do
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today-battlefield-header .lp-today-group-card--goal[data-controller~='today-goal-card']",
+                  count: 1
+    assert_select ".lp-today-scroll__pad", count: 1
+  end
+
   test "no camp means label and title only" do
     @user.strategy_goals.where(horizon: "project", life_journey_id: @journey.id).find_each do |camp|
       camp.update_columns(completed_at: Time.current)
