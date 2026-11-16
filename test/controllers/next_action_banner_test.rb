@@ -202,7 +202,8 @@ class NextActionBannerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-dash-next", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
     assert_select "[data-commitment-progress]", count: 0
   end
 

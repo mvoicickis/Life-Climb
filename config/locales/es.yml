@@ -647,6 +647,13 @@ es:
         other: "%{count} battles waiting"  # TODO: translate
       mountain_tertiary: "Open Mountain →"  # TODO: translate
       add_another_battle: "Add another battle"  # TODO: translate
+      add_battle:
+        placeholder: "Write one small thing to do today" # TODO: translate
+        placeholder_all_clear: "Add another battle" # TODO: translate
+        submit: "Add battle" # TODO: translate
+        aria: "New battle" # TODO: translate
+        all_clear: "All battles won" # TODO: translate
+        day_full: "Today is full. Win a battle, then add another." # TODO: translate
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
         set_goal: "Set your goal" # TODO: translate

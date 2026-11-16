@@ -31,6 +31,21 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
 
   test "journey today actions appear on home battle" do
     @user.daily_todos.for_day.destroy_all
+    @user.update!(character: @user.character.presence || "fox")
+
+    # Onboarding::Run without route_mission has no StrategyGoal. Plant a
+    # goal+plan+camp so Today stays on the battlefield (not first-climb)
+    # and the inline add row can ensure! into the holding / current camp.
+    area = @journey.life_area
+    goal = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, horizon: "goal", title: "Ship LifePoints", position: 0
+    )
+    plan = @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: goal, horizon: "plan", title: "Build", position: 0
+    )
+    @user.strategy_goals.create!(
+      life_area: area, life_journey: @journey, parent: plan, horizon: "project", title: "Camp", position: 0
+    )
 
     patch life_journey_path(@journey), params: {
       layer: "today",
@@ -44,7 +59,8 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Write tests/, response.body)
     assert_match(/Polish UI/, response.body)
-    assert_match(I18n.t("dash.battlefield.add_on_mountain"), response.body)
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", count: 0
   end
 
   test "strategy battle sync marks journey today layer done" do

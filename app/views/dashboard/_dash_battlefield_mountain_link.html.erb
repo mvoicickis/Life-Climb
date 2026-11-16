@@ -1,10 +1,11 @@
-<%# locals: health, journey %>
+<%# locals: health, journey — keep Mountain link only during first-camp reveal. %>
 <% health = local_assigns.fetch(:health) %>
 <% journey = local_assigns.fetch(:journey) { @journey } %>
 <% mountain_href = journey ? life_journey_path(journey) : new_life_journey_path %>
+<% show_link = journey&.first_camp_reveal_pending? && !health.all_clear? && !health.empty? %>
 
 <div id="today-battlefield-mountain-link">
-  <% if !health.all_clear? %>
+  <% if show_link %>
     <%= link_to "#{t('dash.battlefield.add_on_mountain')} ›",
           mountain_href,
           class: "lp-today-v2-mountain-link is-add-on-mountain",

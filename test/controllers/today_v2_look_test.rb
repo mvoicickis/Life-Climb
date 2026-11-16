@@ -75,12 +75,12 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-today-v2-risk", count: 0
   end
 
-  test "mountain add link uses add_on_mountain copy" do
+  test "inline add row replaces mountain add link" do
     get dashboard_path
     assert_response :success
 
-    label = "#{I18n.t('dash.battlefield.add_on_mountain')} ›"
-    assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", text: label, minimum: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", count: 0
   end
 
   test "quantity basic hides unit meta at zero" do

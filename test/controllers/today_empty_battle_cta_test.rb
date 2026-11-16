@@ -48,7 +48,7 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "empty battlefield shows add next camp when project is missing" do
+  test "empty battlefield shows inline add when project is missing" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)
     goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -56,13 +56,13 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     plan.children.destroy_all
     clear_today_battles!(@journey)
 
-    assert_empty_battle_pill!(
-      label: I18n.t("dash.battlefield.empty_cta.add_next_camp"),
-      href_includes: "open_plant=1"
-    )
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 0
   end
 
-  test "empty battlefield shows add todays battle when camp has no battles" do
+  test "empty battlefield shows inline add when camp has no battles" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)
     goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -71,12 +71,10 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     project.children.destroy_all
     clear_today_battles!(@journey)
 
-    assert_empty_battle_pill!(
-      label: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
-      href_includes: "open_camp=#{project.id}"
-    )
-    assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
-    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-add-host .lp-today-add-battle.is-empty-attract", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 0
   end
 
   test "empty battlefield with pending first camp reveal includes first_camp_setup on pill href" do
@@ -115,7 +113,7 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     assert_equal "1", query["first_camp_setup"]
   end
 
-  test "empty battlefield shows add todays battle when camp has battles not on today" do
+  test "empty battlefield shows inline add when camp has battles not on today" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)
     goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -127,10 +125,9 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     )
     clear_today_battles!(@journey)
 
-    assert_empty_battle_pill!(
-      label: I18n.t("dash.battlefield.empty_cta.add_todays_battle"),
-      href_includes: "open_camp=#{project.id}"
-    )
-    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 0
   end
 end

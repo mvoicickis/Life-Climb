@@ -88,6 +88,13 @@ en:
       mountain_all_clear: "All clear — open Mountain for your next battle"
       mountain_tertiary: "Open Mountain →"
       add_another_battle: "Add another battle"
+      add_battle:
+        placeholder: "Write one small thing to do today"
+        placeholder_all_clear: "Add another battle"
+        submit: "Add battle"
+        aria: "New battle"
+        all_clear: "All battles won"
+        day_full: "Today is full. Win a battle, then add another."
       win_state:
         day_won:
           kicker: "Day won"

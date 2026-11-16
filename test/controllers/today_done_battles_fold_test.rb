@@ -45,7 +45,8 @@ class TodayDoneBattlesFoldTest < ActionDispatch::IntegrationTest
     assert_won_battle_row!(title: @todo.title, todo: @todo)
     assert_select ".lp-dash-timeline", count: 0
     assert_select ".lp-dash-done-fold", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
   end
 
   test "completed timed battle does not keep a timeline rail segment" do

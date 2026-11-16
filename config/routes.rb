@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resource :dashboard, only: :show, controller: "dashboard" do
     resource :quick_battles, only: :create, controller: "dashboard/quick_battles"
   end
+  post "/today/battles", to: "dashboard/today_battles#create", as: :today_battles
   resource :today_commitment, only: [], controller: "today_commitments" do
     patch :level_up
     patch :decline

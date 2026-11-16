@@ -1,0 +1,51 @@
+<%# locals: health, journey %>
+<% health = local_assigns.fetch(:health) %>
+<% journey = local_assigns.fetch(:journey) { @journey } %>
+<% show_add = today_inline_add_battle?(journey: journey) %>
+<% all_clear = health.all_clear? %>
+<% empty_attract = health.empty? && !all_clear %>
+<% placeholder =
+     if all_clear
+       t("dash.battlefield.add_battle.placeholder_all_clear")
+     else
+       t("dash.battlefield.add_battle.placeholder")
+     end %>
+
+<div id="today-battlefield-add-host">
+  <% if show_add %>
+    <div class="lp-today-add-battle<%= " is-empty-attract" if empty_attract %><%= " is-all-clear" if all_clear %>"
+         data-controller="today-add-battle"
+         data-today-add-battle-url-value="<%= today_battles_path %>"
+         data-today-add-battle-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
+         data-today-add-battle-all-clear-value="<%= all_clear %>">
+      <div class="lp-today-add-battle__row">
+        <textarea class="lp-today-add-battle__field"
+                  rows="1"
+                  maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="true"
+                  enterkeyhint="done"
+                  placeholder="<%= placeholder %>"
+                  aria-label="<%= t('dash.battlefield.add_battle.aria') %>"
+                  data-today-add-battle-target="field"
+                  data-action="input->today-add-battle#sync keydown->today-add-battle#keydown"></textarea>
+        <button type="button"
+                class="lp-today-add-battle__add<%= all_clear ? " is-ready" : " is-muted" %>"
+                aria-label="<%= t('dash.battlefield.add_battle.submit') %>"
+                <%= "disabled" unless all_clear %>
+                data-today-add-battle-target="submit"
+                data-action="click->today-add-battle#save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <button type="button"
+              class="lp-today-add-battle__fail"
+              hidden
+              data-today-add-battle-target="fail"
+              data-action="click->today-add-battle#retry">
+        <%= t("dash.battlefield.win_not_saved") %>
+      </button>
+    </div>
+  <% end %>
+</div>
