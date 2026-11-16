@@ -37,8 +37,7 @@ class TodayHeroViewportTest < ApplicationSystemTestCase
     assert_today_v2_shell!
     assert_no_legacy_today_shell!
     assert_selector ".lp-today-v2-header--compact"
-    assert_selector ".lp-today-v2-hp-bar"
-    assert_selector ".lp-today-v2-hp-bar"
+    assert_selector ".lp-today-camp-bar"
     assert_selector ".lp-dash-anytime"
 
     metrics = page.evaluate_script(<<~JS)

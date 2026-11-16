@@ -826,6 +826,10 @@ lv:
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
     battlefield:
       progress_label: "Cīņas padarītas"
+      goal_card:
+        label: "Your goal"  # TODO: translate
+        camp_bar: "Camp progress"  # TODO: translate
+        won: "%{count} won"  # TODO: translate
       risk_open:
         one: "1 cīņa gaida"
         other: "%{count} cīņas gaida"

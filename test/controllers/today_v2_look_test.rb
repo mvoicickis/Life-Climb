@@ -36,21 +36,43 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-count[hidden]", count: 0
   end
 
-  test "risk hint only before first ever battle win" do
+  test "goal card shows camp bar and reveals won after first battle win" do
     @user.daily_todos.update_all(completed_at: nil)
-    refute @user.battle_won_once?
+    journey = @user.primary_focused_journey
+    camp = Strategy::PathProject.resolve(user: @user, journey: journey)
+    assert camp.present?
+    # Keep a second open battle so winning one does not finish the camp.
+    camp.children.create!(
+      user: @user,
+      life_area: journey.life_area,
+      life_journey: journey,
+      horizon: "day",
+      title: "Next fight",
+      scheduled_on: Date.current + 1.day,
+      position: 1
+    )
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-today-v2-risk", text: I18n.t("dash.battlefield.risk_before_first_win")
+    assert_select "#today-battlefield-header .lp-today-goal-camp", text: camp.title
+    assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='width: 0%']", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
+    assert_select "#today-battlefield-header .lp-today-v2-risk", count: 0
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
     assert_response :ok
-    assert @user.reload.battle_won_once?
+    assert_match %(target="today-battlefield-header"), response.body
+    assert_match(/lp-today-camp-bar__fill[^>]*width: 50%/, response.body)
+    assert_match(/lp-today-camp-won(?![^>]*\bhidden\b)/, response.body)
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-today-v2-risk", count: 0
+    assert_select "#today-battlefield-header .lp-today-goal-camp", text: camp.title
+    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='width: 50%']", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-won:not([hidden])", count: 1
+    assert_match(/\b1\b/, css_select("#today-battlefield-header .lp-today-camp-won").text)
+    assert_select "#today-battlefield-header .lp-today-v2-risk", count: 0
   end
 
   test "mountain add link uses add_on_mountain copy" do

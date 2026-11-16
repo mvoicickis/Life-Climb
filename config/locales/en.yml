@@ -59,6 +59,10 @@ en:
     battle_title: "Today's battle"
     battlefield:
       progress_label: "Battles done"
+      goal_card:
+        label: "Your goal"
+        camp_bar: "Camp progress"
+        won: "%{count} won"
       day_n: "Day %{count}"
       risk_cleared: "Nothing left today."
       # TODO: translate for lv/de/es/ru
