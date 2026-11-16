@@ -50,15 +50,18 @@ class FixedViewportTodaySystemTest < ApplicationSystemTestCase
         const bg = document.querySelector(".lp-today-photo-bg");
         if (!pad || !bg) return { ok: false };
         const padTop = pad.getBoundingClientRect().top;
+        const padPaddingTop = parseFloat(getComputedStyle(pad).paddingTop) || 0;
         pad.scrollTop = Math.min(320, pad.scrollHeight);
         const bgTopAfterScroll = bg.getBoundingClientRect().top;
-        return { ok: true, padTop, bgTopAfterScroll };
+        return { ok: true, padTop, padPaddingTop, bgTopAfterScroll };
       })()
     JS
 
     assert layout["ok"], "expected photo Today pad and background"
     assert_operator layout["padTop"].to_f, :<, 40,
                     "scroll pad should start near viewport top at 360×640 (got #{layout['padTop']})"
+    assert_operator layout["padPaddingTop"].to_f, :>=, 8.0,
+                    "scroll pad needs safe top gap (got #{layout['padPaddingTop']})"
     assert_operator layout["bgTopAfterScroll"].to_f, :<, 1,
                     "photo bg should stay pinned to shell top after pad scroll (got #{layout['bgTopAfterScroll']})"
   end
