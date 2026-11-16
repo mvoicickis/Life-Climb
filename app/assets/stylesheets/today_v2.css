@@ -1663,6 +1663,13 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   margin: 0;
 }
 
+/* First paint after turbo header replace — no expand→collapse animation. */
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition,
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-v2-header--compact,
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-goal-kicker {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal,
   .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact,

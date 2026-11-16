@@ -1,8 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Photo Today goal card — collapse the "Your goal" kicker after a short scroll.
+// Collapsed preference lives on .lp-today-scroll__pad so stream-replaced cards
+// reconnect without flashing the expanded height.
 const COLLAPSE_AT = 24
 const COLLAPSED_CLASS = "is-collapsed"
+const NO_TRANSITION_CLASS = "is-no-transition"
+const PAD_FLAG = "goalCardCollapsed"
 
 export default class extends Controller {
   connect() {
@@ -18,13 +22,18 @@ export default class extends Controller {
     }
 
     this.pad.addEventListener("scroll", this.onScroll, { passive: true })
-    this.syncCollapsed()
+    // Instant apply from pad flag / scrollTop — no 180ms expand flash after turbo replace.
+    this.setCollapsed(this.readCollapsedPreference(), { silent: true })
   }
 
   disconnect() {
     if (this.frame != null) {
       window.cancelAnimationFrame(this.frame)
       this.frame = null
+    }
+    if (this.enableFrame != null) {
+      window.cancelAnimationFrame(this.enableFrame)
+      this.enableFrame = null
     }
     if (this.pad && this.onScroll) {
       this.pad.removeEventListener("scroll", this.onScroll)
@@ -35,6 +44,34 @@ export default class extends Controller {
 
   syncCollapsed() {
     if (!this.pad) return
-    this.element.classList.toggle(COLLAPSED_CLASS, this.pad.scrollTop > COLLAPSE_AT)
+    this.setCollapsed(this.pad.scrollTop > COLLAPSE_AT, { silent: false })
+  }
+
+  readCollapsedPreference() {
+    const flag = this.pad.dataset[PAD_FLAG]
+    if (flag === "true") return true
+    if (flag === "false") return false
+    return this.pad.scrollTop > COLLAPSE_AT
+  }
+
+  setCollapsed(collapsed, { silent = false } = {}) {
+    this.pad.dataset[PAD_FLAG] = collapsed ? "true" : "false"
+    if (silent) {
+      this.element.classList.add(NO_TRANSITION_CLASS)
+      this.element.classList.toggle(COLLAPSED_CLASS, collapsed)
+      this.queueEnableTransitions()
+      return
+    }
+    this.element.classList.toggle(COLLAPSED_CLASS, collapsed)
+  }
+
+  queueEnableTransitions() {
+    if (this.enableFrame != null) window.cancelAnimationFrame(this.enableFrame)
+    this.enableFrame = window.requestAnimationFrame(() => {
+      this.enableFrame = window.requestAnimationFrame(() => {
+        this.enableFrame = null
+        this.element.classList.remove(NO_TRANSITION_CLASS)
+      })
+    })
   }
 }
