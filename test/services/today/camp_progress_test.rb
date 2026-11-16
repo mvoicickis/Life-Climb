@@ -137,6 +137,7 @@ class Today::CampProgressTest < ActiveSupport::TestCase
 
     count_queries = lambda do
       Goals::Current.clear_cache!(user: @user)
+      ActiveRecord::Base.connection.clear_query_cache
       queries = 0
       callback = lambda do |_name, _start, _finish, _id, payload|
         next if payload[:cached]
@@ -146,7 +147,9 @@ class Today::CampProgressTest < ActiveSupport::TestCase
       end
 
       ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
-        Today::CampProgress.call(user: @user, journey: @journey, goal: @goal)
+        ActiveRecord::Base.connection.uncached do
+          Today::CampProgress.call(user: @user, journey: @journey, goal: @goal)
+        end
       end
       queries
     end
