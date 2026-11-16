@@ -16,40 +16,13 @@
       <%= render "dashboard/dash_battlefield_count", health: health %>
     </div>
 
-    <div id="today-battlefield-body">
-      <% if health.empty? %>
-        <% empty_battlefield_cta = Today::EmptyBattleCta.for(
-             journey: journey,
-             handoff: @strategy_handoff,
-             first_camp_setup: journey&.first_camp_reveal_pending?
-           ) %>
-        <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_battlefield_cta %>
-      <% else %>
-        <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
-          <% if include_mission && mission %>
-            <%= render "dashboard/dash_battlefield_row",
-                  todo: nil,
-                  mission: mission,
-                  journey: journey %>
-          <% end %>
-
-          <% open_todos.each do |todo| %>
-            <%= render "dashboard/dash_battlefield_row",
-                  todo: todo,
-                  mission: nil,
-                  journey: journey,
-                  row_state: :open %>
-          <% end %>
-        </div>
-
-        <%= render "dashboard/dash_battlefield_won_shell",
-              done_todos: done_todos,
-              journey: journey %>
-        <div id="today-battlefield-end-day-host">
-          <%= render "dashboard/dash_battlefield_all_clear_actions", health: health %>
-        </div>
-      <% end %>
-    </div>
+    <%= render "dashboard/dash_battlefield_body",
+          health: health,
+          open_todos: open_todos,
+          done_todos: done_todos,
+          journey: journey,
+          include_mission: include_mission,
+          mission: mission %>
 
     <div id="today-battles-waiting-host">
       <% if @battles_waiting_count.to_i.positive? && !all_clear %>
@@ -59,8 +32,7 @@
       <% end %>
     </div>
 
-    <% if !health.empty? %>
-      <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
-    <% end %>
+    <%= render "dashboard/dash_battlefield_mountain_link", health: health, journey: journey %>
+    <%= render "dashboard/dash_battlefield_add_battle", health: health, journey: journey %>
   </div>
 </section>

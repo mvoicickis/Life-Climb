@@ -16,7 +16,7 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     @user.habits.destroy_all
   end
 
-  test "all clear shows add another battle without ack or takeover" do
+  test "all clear shows inline add without ack or takeover" do
     @todo.update!(completed_at: Time.current)
 
     get dashboard_path
@@ -25,9 +25,8 @@ class TodayBattlefieldWinStateTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-win", count: 0
     assert_select ".lp-today-v2-eod-ack", count: 0
     assert_select "#today-end-of-day", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
-                  text: I18n.t("dash.battlefield.add_another_battle")
-    assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", count: 1
   end

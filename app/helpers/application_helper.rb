@@ -440,6 +440,20 @@ module ApplicationHelper
     strategy_goal&.title.presence || journey&.title || t("dash.active_goal_fallback")
   end
 
+  # Photo Today inline add row — off during first-camp reveal (Mountain link / empty CTA stay).
+  def today_inline_add_battle?(journey: nil)
+    journey ||= @journey
+    return false if journey.blank?
+    return false if journey.first_camp_reveal_pending?
+
+    if Strategy::PathProject.resolve(user: current_user, journey: journey).present?
+      return true
+    end
+
+    step = @strategy_handoff&.dig(:step)
+    step.in?(%i[add_battle open_strategy])
+  end
+
   def google_sign_in_configured?
     ENV["GOOGLE_CLIENT_ID"].to_s.strip.present? &&
       ENV["GOOGLE_CLIENT_SECRET"].to_s.strip.present?

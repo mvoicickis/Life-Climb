@@ -5,11 +5,11 @@ module TodayV2TestHelper
   def assert_today_v2_all_clear_shell!
     if integration_test?
       assert_select ".lp-dash.is-today-v2", count: 1
-      assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+      assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
       assert_select "#today-end-of-day", count: 0
     else
       assert_selector ".lp-dash.is-today-v2", count: 1
-      assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
+      assert_selector "#today-battlefield-add-host .lp-today-add-battle",
                       visible: :all,
                       wait: 5
       assert_no_selector "#today-end-of-day", visible: :all

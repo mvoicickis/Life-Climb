@@ -54,16 +54,26 @@
   <div id="today-end-of-day-host"></div>
 <% end %>
 
-<% unless @battlefield_health.empty? %>
-  <%= turbo_stream.replace "today-battlefield-mountain-link" do %>
-    <%= render "dashboard/dash_battlefield_mountain_link",
-          health: @battlefield_health,
-          journey: @journey %>
-  <% end %>
+<%= turbo_stream.update "today-battlefield-all-clear-line" do %>
+  <%= render "dashboard/dash_battlefield_all_clear_line",
+        health: @battlefield_health,
+        journey: @journey %>
 <% end %>
 
 <%= turbo_stream.update "today-battlefield-end-day-host" do %>
   <%= render "dashboard/dash_battlefield_all_clear_actions", health: @battlefield_health %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-mountain-link" do %>
+  <%= render "dashboard/dash_battlefield_mountain_link",
+        health: @battlefield_health,
+        journey: @journey %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-add-host" do %>
+  <%= render "dashboard/dash_battlefield_add_battle",
+        health: @battlefield_health,
+        journey: @journey %>
 <% end %>
 
 <% unless @uncompleted %>

@@ -10,7 +10,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     sign_in_as @user
   end
 
-  test "all clear shows add another battle with open composer" do
+  test "all clear shows inline add instead of add another battle pill" do
     @journey = seed_climb!(@user, today_mission: "Ship auth")
     dismiss_onboarding_missions!(@user)
     @area = @journey.life_area
@@ -21,10 +21,9 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill",
-                  text: I18n.t("dash.battlefield.add_another_battle")
-    assert_select "a.lp-today-empty-cta__pill[href*='open_composer=1']", count: 1
-    assert_select "a.lp-today-empty-cta__pill[href*='first_camp_setup']", count: 0
+    assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
+    assert_select ".lp-today-all-clear", text: I18n.t("dash.battlefield.add_battle.all_clear"), count: 1
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
   end
 
@@ -86,10 +85,8 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    href = assert_select("#today-battlefield-end-day-host a.lp-today-empty-cta__pill").first["href"]
-    query = Rack::Utils.parse_query(URI.parse(href).query)
-    assert_equal camp_b.id.to_s, query["open_camp"]
-    assert_equal "1", query["open_composer"]
+    assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
   end
 
   test "all clear camp cleared today includes open_camp for path project" do
@@ -176,11 +173,11 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
     assert_response :ok
-    assert_match "lp-today-empty-cta__pill", response.body
+    assert_match "lp-today-all-clear", response.body
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
     assert_response :ok
     assert_match %(action="update" target="today-battlefield-end-day-host"), response.body
-    assert_no_match "lp-today-empty-cta__pill", response.body
+    assert_no_match "lp-today-all-clear", response.body
   end
 end

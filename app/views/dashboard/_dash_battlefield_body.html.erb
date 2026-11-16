@@ -1,0 +1,51 @@
+<%# locals: health, open_todos, done_todos, journey, include_mission, mission %>
+<%
+  health = local_assigns.fetch(:health)
+  open_todos = Array(local_assigns.fetch(:open_todos) { @open_todos })
+  done_todos = Array(local_assigns.fetch(:done_todos) { @done_todos })
+  journey = local_assigns.fetch(:journey) { @journey }
+  include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
+  mission = local_assigns[:mission] || @mission
+  show_inline_add = today_inline_add_battle?(journey: journey)
+  all_clear = health.all_clear?
+%>
+<div id="today-battlefield-body">
+  <% if health.empty? && !show_inline_add %>
+    <% empty_battlefield_cta = Today::EmptyBattleCta.for(
+         journey: journey,
+         handoff: @strategy_handoff,
+         first_camp_setup: journey&.first_camp_reveal_pending?
+       ) %>
+    <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_battlefield_cta %>
+  <% else %>
+    <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
+      <% if include_mission && mission %>
+        <%= render "dashboard/dash_battlefield_row",
+              todo: nil,
+              mission: mission,
+              journey: journey %>
+      <% end %>
+
+      <% open_todos.each do |todo| %>
+        <%= render "dashboard/dash_battlefield_row",
+              todo: todo,
+              mission: nil,
+              journey: journey,
+              row_state: :open %>
+      <% end %>
+    </div>
+
+    <div id="today-battlefield-all-clear-line">
+      <%= render "dashboard/dash_battlefield_all_clear_line",
+            health: health,
+            journey: journey %>
+    </div>
+
+    <%= render "dashboard/dash_battlefield_won_shell",
+          done_todos: done_todos,
+          journey: journey %>
+    <div id="today-battlefield-end-day-host">
+      <%= render "dashboard/dash_battlefield_all_clear_actions", health: health %>
+    </div>
+  <% end %>
+</div>

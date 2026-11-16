@@ -30,7 +30,8 @@ class TodayLegacyEodSessionTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-eod-step--day-won", count: 0
     assert_select ".lp-today-v2-eod-step--closed", count: 0
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
     assert_select "#today-battlefield-won-list .lp-today-v2-row", minimum: 1
   end
 
@@ -44,6 +45,6 @@ class TodayLegacyEodSessionTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#today-end-of-day", count: 0
-    assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
   end
 end

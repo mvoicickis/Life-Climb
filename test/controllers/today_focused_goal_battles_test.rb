@@ -114,8 +114,8 @@ class TodayFocusedGoalBattlesTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#today-battlefield-rows .lp-today-v2-row", count: 0
-    assert_select ".lp-today-empty-cta__wrap", count: 1
-    assert_select ".lp-today-empty-cta__pill", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select ".lp-today-empty-cta__pill", count: 0
   end
 
   private

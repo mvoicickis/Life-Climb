@@ -58,7 +58,7 @@ class TodayDoneBattlesFoldMobileTest < ApplicationSystemTestCase
     assert_no_selector "#today-battlefield-rows .lp-today-v2-row"
     assert_selector "#today-battlefield-won-list .lp-today-v2-row", count: 5, visible: :all
     assert_no_selector "#today-end-of-day", visible: :all
-    assert_selector "#today-battlefield-end-day-host .lp-today-empty-cta__pill", visible: :all
+    assert_selector "#today-battlefield-add-host .lp-today-add-battle", visible: :all
     page.save_screenshot("/opt/cursor/artifacts/screenshots/today-v2-all-done-320.png")
   end
 end

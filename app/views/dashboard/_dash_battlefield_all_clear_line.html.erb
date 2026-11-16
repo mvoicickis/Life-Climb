@@ -1,0 +1,6 @@
+<%# locals: health, journey %>
+<% health = local_assigns.fetch(:health) %>
+<% journey = local_assigns.fetch(:journey) { @journey } %>
+<% if health.all_clear? && today_inline_add_battle?(journey: journey) %>
+  <p class="lp-today-all-clear"><%= t("dash.battlefield.add_battle.all_clear") %></p>
+<% end %>

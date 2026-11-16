@@ -835,6 +835,13 @@ lv:
         other: "%{count} cīņas gaida"
       mountain_tertiary: "Atvērt Kalnu →"
       add_another_battle: "Add another battle"  # TODO: translate
+      add_battle:
+        placeholder: "Write one small thing to do today" # TODO: translate
+        placeholder_all_clear: "Add another battle" # TODO: translate
+        submit: "Add battle" # TODO: translate
+        aria: "New battle" # TODO: translate
+        all_clear: "All battles won" # TODO: translate
+        day_full: "Today is full. Win a battle, then add another." # TODO: translate
       win_state:
         day_won:
           kicker: "Diena uzvarēta"

@@ -1,0 +1,31 @@
+<%= turbo_stream.replace "today-battlefield-body" do %>
+  <%= render "dashboard/dash_battlefield_body",
+        health: @battlefield_health,
+        open_todos: @open_todos,
+        done_todos: @done_todos,
+        journey: @journey,
+        include_mission: @include_mission_in_battle,
+        mission: @mission %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-count" do %>
+  <%= render "dashboard/dash_battlefield_count", health: @battlefield_health %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-header" do %>
+  <div id="today-battlefield-header">
+    <%= render "dashboard/dash_battlefield_header" %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-mountain-link" do %>
+  <%= render "dashboard/dash_battlefield_mountain_link",
+        health: @battlefield_health,
+        journey: @journey %>
+<% end %>
+
+<%= turbo_stream.replace "today-battlefield-add-host" do %>
+  <%= render "dashboard/dash_battlefield_add_battle",
+        health: @battlefield_health,
+        journey: @journey %>
+<% end %>
