@@ -27,6 +27,15 @@ class JourneyHomeProgressSyncTest < ActionDispatch::IntegrationTest
       milestones: [ { "title" => "Launch Beta", "tags" => [ "ship" ] }, { "title" => "First 10 users", "tags" => [ "ship" ] } ],
       next_win: "Launch Beta"
     )
+    # Onboarding::Run only plants a StrategyGoal when route_mission is set.
+    # Inline add needs a goal so HoldingProject.ensure! can plant the day battle.
+    @user.strategy_goals.create!(
+      life_area: @journey.life_area,
+      life_journey: @journey,
+      horizon: "goal",
+      title: "Ship LifePoints",
+      position: 0
+    )
   end
 
   test "journey today actions appear on home battle" do

@@ -129,7 +129,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     assert_nil query["first_camp_setup"]
   end
 
-  test "summit handoff shows summit pill and grey add another camp link" do
+  test "summit handoff shows inline add and grey add another camp link" do
     user = User.create!(
       name: "Summit all clear",
       email_address: "summit-all-clear-#{SecureRandom.hex(4)}@example.com",
@@ -158,8 +158,8 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-end-day-host a.lp-today-empty-cta__pill[href*='summit_next_goal']",
-                  count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
+    assert_select "#today-battlefield-end-day-host a.lp-today-empty-cta__pill", count: 0
     assert_select "#today-battlefield-end-day-host a.lp-today-all-clear__secondary[href*='open_plant=1']",
                   text: I18n.t("summit_next_goal.add_another_camp")
   end
