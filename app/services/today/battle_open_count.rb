@@ -16,10 +16,15 @@ module Today
       journey = @user.primary_focused_journey
       return 0 if journey.blank?
 
-      daily_todos = @user.daily_todos.for_day(@on).ordered.to_a
+      strategy_goal = Goals::Current.goal_for(user: @user, journey: journey)
+      daily_todos = Today::FocusedDayTodos.relation(
+        user: @user,
+        journey: journey,
+        goal: strategy_goal,
+        on: @on
+      ).ordered.to_a
       open_todos = daily_todos.reject(&:completed?)
 
-      strategy_goal = Goals::Current.goal_for(user: @user, journey: journey)
       first_climb_needed = strategy_goal.present? && strategy_goal.children.for_kind("plan").not_holding.none?
       show_plan_route = first_climb_needed || plan_route_pending?(journey, daily_todos, strategy_goal)
 
