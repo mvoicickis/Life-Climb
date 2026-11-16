@@ -32,7 +32,16 @@ module Notifications
     end
 
     def eligible_todos
-      @user.daily_todos.for_day(@on).incomplete.ordered.select do |todo|
+      journey = @user.primary_focused_journey
+      return [] if journey.blank?
+
+      strategy_goal = Goals::Current.goal_for(user: @user, journey: journey)
+      Today::FocusedDayTodos.relation(
+        user: @user,
+        journey: journey,
+        goal: strategy_goal,
+        on: @on
+      ).incomplete.ordered.select do |todo|
         next false if todo.strategy_goal_id.blank?
 
         goal = todo.strategy_goal
@@ -46,7 +55,11 @@ module Notifications
       journey = @user.primary_focused_journey
       return nil if journey.blank?
 
+      strategy_goal = Goals::Current.goal_for(user: @user, journey: journey)
+      under_ids = focused_battle_ids(strategy_goal)
+
       Strategy::DueDayBattles.on(user: @user, life_area: journey.life_area, on: @on).each do |goal|
+        next unless focused_day_battle?(goal, journey, under_ids)
         next if quest?(goal)
         next if Battles::DoneOnDate.for(user: @user, goal: goal, on: @on)
 
@@ -54,6 +67,20 @@ module Notifications
       end
 
       nil
+    end
+
+    def focused_day_battle?(goal, journey, under_ids)
+      return true if goal.life_journey_id == journey.id
+      return false if under_ids.empty?
+
+      under_ids.include?(goal.id)
+    end
+
+    def focused_battle_ids(strategy_goal)
+      return [] if strategy_goal.blank?
+      return [] unless strategy_goal.user_id == @user.id
+
+      Strategy::Progress.battles_under(strategy_goal).map(&:id)
     end
 
     def quest?(goal)

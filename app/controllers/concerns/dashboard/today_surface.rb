@@ -22,13 +22,12 @@ module Dashboard
 
       @mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first ||
                  @journey.missions.for_day(Date.current).primary.order(:id).first
-      @daily_todos = current_user.daily_todos
-        .for_day(Date.current)
-        .includes(strategy_goal: [ :practice_tasks, :parent ])
-        .ordered
+      @strategy_goal = Goals::Current.goal_for(user: current_user, journey: @journey)
+      @daily_todos = load_focused_day_todos(
+        includes: { strategy_goal: [ :practice_tasks, :parent ] }
+      )
       @open_todos = @daily_todos.reject(&:completed?)
       @done_todos = @daily_todos.select(&:completed?)
-      @strategy_goal = Goals::Current.goal_for(user: current_user, journey: @journey)
       @goal_card_camp = Today::CampProgress.call(
         user: current_user,
         journey: @journey,
@@ -61,10 +60,9 @@ module Dashboard
         Climb::Streak.reconcile!(user: current_user)
         Today::DayShield.reconcile!(user: current_user)
         Today::MissSettlement.apply!(user: current_user)
-        @daily_todos = current_user.daily_todos
-          .for_day(Date.current)
-          .includes(:life_point_ledgers, strategy_goal: [ :practice_tasks, :parent ])
-          .ordered
+        @daily_todos = load_focused_day_todos(
+          includes: [ :life_point_ledgers, { strategy_goal: [ :practice_tasks, :parent ] } ]
+        )
         @open_todos = @daily_todos.reject(&:completed?)
         @done_todos = @daily_todos.select(&:completed?)
         @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
@@ -75,6 +73,15 @@ module Dashboard
 
       @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)
+    end
+
+    def load_focused_day_todos(includes:)
+      Today::FocusedDayTodos.relation(
+        user: current_user,
+        journey: @journey,
+        goal: @strategy_goal,
+        on: Date.current
+      ).includes(includes).ordered.to_a
     end
 
     def assign_battlefield_prompt!
