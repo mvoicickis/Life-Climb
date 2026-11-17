@@ -37,7 +37,8 @@
   min-width: 0;
 }
 
-.lp-you__avatar-initial {
+.lp-you__avatar-initial,
+.lp-avatar-circle {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
@@ -51,6 +52,47 @@
   font-size: 1.35rem;
   font-weight: 800;
   line-height: 1;
+  object-fit: cover;
+}
+
+.lp-avatar-circle.is-sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.82rem;
+}
+
+.lp-you-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lp-you-avatar__button {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 0;
+}
+
+.lp-you-avatar__button:focus-visible {
+  outline: 2px solid var(--lp-green-deep);
+  outline-offset: 2px;
+}
+
+.lp-you-avatar__error {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.25rem);
+  margin: 0;
+  max-width: 8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--lp-muted);
+  overflow-wrap: anywhere;
 }
 
 .lp-you__profile-copy {

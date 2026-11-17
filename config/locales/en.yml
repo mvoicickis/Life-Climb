@@ -3191,6 +3191,17 @@ en:
     write: "Write →"
     footnote: "Opens your WhatsApp or email app with a short starter message. Send whenever you’re ready."
   climb_together:
+    avatar:
+      pick: "Pick your animal"
+      aria_pick: "Pick your animal"
+      close: "Close"
+      use_letter: "Use my letter"
+      not_saved: "Not saved"
+      animals:
+        bird: "Bird"
+        bear: "Bear"
+        fox: "Fox"
+        wolf: "Wolf"
     you:
       row_title: "Climb with someone"
       row_hint: "Invite a friend. See each other’s wins."

@@ -1352,6 +1352,17 @@ de:
     footnote: "Öffnet WhatsApp oder dein E-Mail-Programm mit einer kurzen Startnachricht. Sende, wann du bereit bist."
   # TODO: translate
   climb_together:
+    avatar:
+      pick: "Pick your animal"
+      aria_pick: "Pick your animal"
+      close: "Close"
+      use_letter: "Use my letter"
+      not_saved: "Not saved"
+      animals:
+        bird: "Bird"
+        bear: "Bear"
+        fox: "Fox"
+        wolf: "Wolf"
     you:
       row_title: "Climb with someone"
       row_hint: "Invite a friend. See each other’s wins."

@@ -1,0 +1,16 @@
+<%# locals: user:, size: (optional :sm) %>
+<%
+  user = local_assigns.fetch(:user)
+  size = local_assigns[:size]
+  size_class = size == :sm ? " is-sm" : ""
+  image = user.avatar_image
+  initial = user.name.to_s.strip.first&.upcase.presence || "?"
+%>
+<% if image.present? %>
+  <%= image_tag image,
+        class: "lp-avatar-circle#{size_class}",
+        alt: "",
+        decoding: "async" %>
+<% else %>
+  <span class="lp-avatar-circle lp-avatar-circle--initial lp-you__avatar-initial<%= size_class %>" aria-hidden="true"><%= initial %></span>
+<% end %>
