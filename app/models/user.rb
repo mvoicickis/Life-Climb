@@ -31,6 +31,14 @@ class User < ApplicationRecord
   has_many :user_events, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :oauth_identities, dependent: :destroy
+  has_many :climb_partnerships_as_inviter, class_name: "ClimbPartnership",
+           foreign_key: :inviter_id, inverse_of: :inviter, dependent: :destroy
+  has_many :climb_partnerships_as_invitee, class_name: "ClimbPartnership",
+           foreign_key: :invitee_id, inverse_of: :invitee, dependent: :destroy
+  has_many :high_fives_given, class_name: "HighFive",
+           foreign_key: :from_user_id, inverse_of: :from_user, dependent: :destroy
+  has_many :high_fives_received, class_name: "HighFive",
+           foreign_key: :to_user_id, inverse_of: :to_user, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true

@@ -10,26 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_154600) do
   create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.bigint "record_id", null: false
-    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.string "content_type"
-    t.datetime "created_at", null: false
-    t.string "filename", null: false
     t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
     t.text "metadata"
     t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -69,6 +69,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.index ["step_id"], name: "index_buildings_on_step_id"
     t.index ["user_id", "status"], name: "index_buildings_on_user_id_and_status"
     t.index ["user_id"], name: "index_buildings_on_user_id"
+  end
+
+  create_table "climb_partnerships", force: :cascade do |t|
+    t.integer "inviter_id", null: false
+    t.integer "invitee_id"
+    t.string "token", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "accepted_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitee_id"], name: "index_climb_partnerships_on_invitee_id"
+    t.index ["inviter_id"], name: "index_climb_partnerships_on_inviter_id"
+    t.index ["token"], name: "index_climb_partnerships_on_token", unique: true
   end
 
   create_table "completions", force: :cascade do |t|
@@ -117,12 +131,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   end
 
   create_table "day_overshoot_bonuses", force: :cascade do |t|
-    t.integer "awarded_ap", default: 0, null: false
-    t.datetime "created_at", null: false
+    t.integer "user_id", null: false
     t.date "on_date", null: false
     t.integer "peak_percent", default: 0, null: false
+    t.integer "awarded_ap", default: 0, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
     t.index ["user_id", "on_date"], name: "index_day_overshoot_bonuses_on_user_id_and_on_date", unique: true
     t.index ["user_id"], name: "index_day_overshoot_bonuses_on_user_id"
   end
@@ -137,7 +151,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   end
 
   create_table "feedbacks", force: :cascade do |t|
-    t.string "app_version"
     t.text "body", null: false
     t.string "contact_info"
     t.datetime "created_at", null: false
@@ -146,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.integer "rating"
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.string "app_version"
     t.index ["page_context"], name: "index_feedbacks_on_page_context"
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
   end
@@ -216,7 +230,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.integer "points", default: 5, null: false
     t.integer "position", default: 0, null: false
     t.boolean "quantity_checkin", default: false, null: false
-    t.integer "quick_add_amount"
     t.boolean "show_on_home", default: true, null: false
     t.string "stat_type", default: "growth", null: false
     t.string "state"
@@ -225,10 +238,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.string "unit", default: "times", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.integer "quick_add_amount"
     t.index ["area_id"], name: "index_habits_on_area_id"
     t.index ["life_journey_id"], name: "index_habits_on_life_journey_id"
     t.index ["user_id", "position"], name: "index_habits_on_user_id_and_position"
     t.index ["user_id"], name: "index_habits_on_user_id"
+  end
+
+  create_table "high_fives", force: :cascade do |t|
+    t.integer "from_user_id", null: false
+    t.integer "to_user_id", null: false
+    t.integer "strategy_goal_id", null: false
+    t.integer "daily_todo_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["daily_todo_id"], name: "index_high_fives_on_daily_todo_id"
+    t.index ["from_user_id", "strategy_goal_id", "daily_todo_id", "created_at"], name: "index_high_fives_on_from_battle_todo_and_created"
+    t.index ["from_user_id"], name: "index_high_fives_on_from_user_id"
+    t.index ["strategy_goal_id"], name: "index_high_fives_on_strategy_goal_id"
+    t.index ["to_user_id"], name: "index_high_fives_on_to_user_id"
   end
 
   create_table "journey_targets", force: :cascade do |t|
@@ -346,7 +374,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.datetime "created_at", null: false
     t.string "frequency", default: "sometimes", null: false
     t.string "intensity", default: "normal", null: false
-    t.date "last_evening_nudge_sent_on"
     t.date "last_morning_nudge_sent_on"
     t.integer "quiet_hours_end"
     t.integer "quiet_hours_start"
@@ -358,26 +385,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.boolean "vacation_paused", default: false, null: false
     t.date "vacation_until"
     t.boolean "win_notifications_enabled", default: true, null: false
+    t.date "last_evening_nudge_sent_on"
     t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
   create_table "oauth_identities", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "email"
+    t.integer "user_id", null: false
     t.string "provider", null: false
     t.string "uid", null: false
+    t.string "email"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
     t.index ["provider", "uid"], name: "index_oauth_identities_on_provider_and_uid", unique: true
     t.index ["user_id"], name: "index_oauth_identities_on_user_id"
   end
 
   create_table "pattern_snapshots", force: :cascade do |t|
-    t.date "computed_on", null: false
-    t.datetime "created_at", null: false
-    t.json "findings", default: [], null: false
-    t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.date "computed_on", null: false
+    t.json "findings", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id", "computed_on"], name: "index_pattern_snapshots_on_user_id_and_computed_on", unique: true
     t.index ["user_id"], name: "index_pattern_snapshots_on_user_id"
   end
@@ -432,8 +460,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   end
 
   create_table "strategy_goals", force: :cascade do |t|
-    t.string "accent_hex"
-    t.string "camp_mode", default: "battles", null: false
     t.string "color_key"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -441,27 +467,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.text "description"
     t.date "due_on"
     t.string "effort_tier"
-    t.boolean "holding", default: false, null: false
     t.string "horizon", null: false
     t.integer "life_area_id", null: false
     t.integer "life_journey_id"
     t.datetime "manually_completed_at"
     t.integer "parent_id"
     t.integer "position", default: 0, null: false
-    t.string "quantity_kind", default: "none", null: false
-    t.decimal "range_max", precision: 12, scale: 2
-    t.decimal "range_min", precision: 12, scale: 2
     t.string "repeat", default: "none", null: false
-    t.json "repeat_weekdays"
     t.date "scheduled_on"
-    t.integer "stage", default: 0, null: false
     t.decimal "target_amount", precision: 12, scale: 2
     t.string "title", null: false
-    t.decimal "trail_x", precision: 5, scale: 4
-    t.decimal "trail_y", precision: 5, scale: 4
     t.string "unit"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.boolean "holding", default: false, null: false
+    t.decimal "trail_x", precision: 5, scale: 4
+    t.decimal "trail_y", precision: 5, scale: 4
+    t.string "quantity_kind", default: "none", null: false
+    t.decimal "range_min", precision: 12, scale: 2
+    t.decimal "range_max", precision: 12, scale: 2
+    t.string "accent_hex"
+    t.string "camp_mode", default: "battles", null: false
+    t.json "repeat_weekdays"
+    t.integer "stage", default: 0, null: false
     t.index ["life_area_id"], name: "index_strategy_goals_on_life_area_id"
     t.index ["life_journey_id", "horizon"], name: "index_strategy_goals_one_holding_per_journey_horizon", unique: true, where: "holding = TRUE"
     t.index ["life_journey_id"], name: "index_strategy_goals_on_life_journey_id"
@@ -508,10 +536,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   end
 
   create_table "stripe_webhook_events", force: :cascade do |t|
-    t.datetime "created_at", null: false
+    t.string "stripe_event_id", null: false
     t.string "event_type", null: false
     t.datetime "processed_at", null: false
-    t.string "stripe_event_id", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stripe_event_id"], name: "index_stripe_webhook_events_on_stripe_event_id", unique: true
   end
@@ -532,11 +560,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   end
 
   create_table "user_events", force: :cascade do |t|
-    t.datetime "created_at", null: false
+    t.integer "user_id"
     t.string "name", null: false
     t.json "properties", default: {}, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
     t.index ["name", "created_at"], name: "index_user_events_on_name_and_created_at"
     t.index ["user_id", "name", "created_at"], name: "index_user_events_on_user_id_and_name_and_created_at"
     t.index ["user_id"], name: "index_user_events_on_user_id"
@@ -551,45 +579,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
     t.date "climb_streak_frozen_on"
     t.date "climb_streak_on"
     t.datetime "created_at", null: false
-    t.datetime "current_period_end"
     t.date "day_shield_on"
     t.integer "day_shields_available", default: 1, null: false
     t.boolean "developer", default: false, null: false
     t.string "email_address", null: false
     t.integer "focus_building_id"
     t.integer "home_stat_count", default: 6, null: false
-    t.integer "install_offer_dismiss_count", default: 0, null: false
-    t.datetime "install_offer_dismissed_at"
-    t.datetime "install_offer_installed_at"
-    t.date "last_opened_on"
     t.string "locale"
-    t.integer "mountain_trail_tour_ack", default: 0, null: false
     t.string "name"
-    t.datetime "next_app_open_at"
     t.datetime "onboarding_completed_at"
     t.json "otp_backup_codes_digest", default: [], null: false
     t.datetime "otp_enabled_at"
     t.text "otp_secret"
     t.string "password_digest", null: false
     t.integer "planning_version", default: 2, null: false
-    t.integer "push_offer_dismiss_count", default: 0, null: false
-    t.datetime "push_offer_dismissed_at"
-    t.date "last_streak_moment_on"
-    t.date "push_offer_last_shown_on"
-    t.datetime "push_offer_permission_denied_at"
-    t.integer "push_offer_show_days", default: 0, null: false
-    t.integer "streak_commit_declines", default: 0, null: false
-    t.date "streak_commitment_started_on"
-    t.integer "streak_commitment_target_days"
     t.integer "strategy_points", default: 0, null: false
-    t.string "stripe_customer_id"
-    t.string "stripe_subscription_id"
-    t.string "subscription_status"
     t.json "support_milestones_shown", default: [], null: false
     t.boolean "support_prompts_muted", default: false, null: false
     t.string "theme", default: "light", null: false
     t.integer "total_points", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.datetime "install_offer_dismissed_at"
+    t.integer "install_offer_dismiss_count", default: 0, null: false
+    t.datetime "install_offer_installed_at"
+    t.integer "mountain_trail_tour_ack", default: 0, null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.string "subscription_status"
+    t.datetime "current_period_end"
+    t.integer "push_offer_dismiss_count", default: 0, null: false
+    t.datetime "push_offer_dismissed_at"
+    t.datetime "push_offer_permission_denied_at"
+    t.date "push_offer_last_shown_on"
+    t.date "last_opened_on"
+    t.datetime "next_app_open_at"
+    t.integer "push_offer_show_days", default: 0, null: false
+    t.date "last_streak_moment_on"
+    t.integer "streak_commitment_target_days"
+    t.date "streak_commitment_started_on"
+    t.integer "streak_commit_declines", default: 0, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"
@@ -600,6 +628,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   add_foreign_key "areas", "users"
   add_foreign_key "buildings", "steps"
   add_foreign_key "buildings", "users"
+  add_foreign_key "climb_partnerships", "users", column: "invitee_id"
+  add_foreign_key "climb_partnerships", "users", column: "inviter_id"
   add_foreign_key "completions", "habits"
   add_foreign_key "completions", "users"
   add_foreign_key "daily_logs", "habits"
@@ -621,6 +651,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_194500) do
   add_foreign_key "habits", "areas"
   add_foreign_key "habits", "life_journeys"
   add_foreign_key "habits", "users"
+  add_foreign_key "high_fives", "daily_todos"
+  add_foreign_key "high_fives", "strategy_goals"
+  add_foreign_key "high_fives", "users", column: "from_user_id"
+  add_foreign_key "high_fives", "users", column: "to_user_id"
   add_foreign_key "journey_targets", "life_journeys"
   add_foreign_key "journey_targets", "users"
   add_foreign_key "life_areas", "dreams"
