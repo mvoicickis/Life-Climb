@@ -24,6 +24,8 @@
           include_mission: include_mission,
           mission: mission %>
 
+    <%= render "dashboard/partner_row", day: @partner_day_wins %>
+
     <div id="today-battles-waiting-host">
       <% if @battles_waiting_count.to_i.positive? && !all_clear %>
         <p class="lp-today-v2-waiting" id="today-battles-waiting" role="status">
