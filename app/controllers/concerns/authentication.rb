@@ -105,10 +105,15 @@ module Authentication
     end
 
     def start_new_session_for(user)
-      # Session fixation: rotate Rails session id on login; preserve safe return path.
+      # Session fixation: rotate Rails session id on login; preserve safe return path
+      # and any pending Climb together invite token through signup / Google.
       return_to = session[:return_to_after_authenticating]
+      climb_invite_token = session[ClimbTogether::INVITE_TOKEN_SESSION_KEY]
       reset_session
       session[:return_to_after_authenticating] = return_to if return_to.present?
+      if climb_invite_token.present?
+        session[ClimbTogether::INVITE_TOKEN_SESSION_KEY] = climb_invite_token
+      end
 
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |sess|
         Current.session = sess
@@ -121,6 +126,25 @@ module Authentication
         }
       end
     end
+
+    def stash_climb_invite_token!(token)
+      value = token.to_s
+      return if value.blank?
+
+      session[ClimbTogether::INVITE_TOKEN_SESSION_KEY] = value
+    end
+
+    def clear_climb_invite_token!
+      session.delete(ClimbTogether::INVITE_TOKEN_SESSION_KEY)
+    end
+
+    def climb_invite_resume_path
+      token = session[ClimbTogether::INVITE_TOKEN_SESSION_KEY].to_s
+      return if token.blank?
+
+      climb_invite_path(token)
+    end
+
 
     def terminate_session
       clear_client_session!

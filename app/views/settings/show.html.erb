@@ -113,6 +113,36 @@
         </section>
       <% end %>
 
+      <section class="lp-you-card" id="you-climb-together">
+        <% if @climb_partner %>
+          <div class="lp-you-row lp-you-row--static" id="you-row-climb-together">
+            <span class="lp-you-row__label">
+              <%= t("climb_together.you.partnered", name: @climb_partner.display_name) %>
+            </span>
+          </div>
+        <% else %>
+          <div data-controller="climb-together-invite share"
+               data-share-text-value="<%= t('climb_together.share.text') %>"
+               data-share-url-value="<%= absolute_url(climb_invite_path(@climb_invite.token)) %>"
+               data-share-title-value="<%= t('climb_together.share.title') %>">
+            <button type="button"
+                    class="lp-you-row lp-you-row--climb"
+                    id="you-row-climb-together"
+                    data-action="click->climb-together-invite#open">
+              <span class="lp-you-row__stack">
+                <span class="lp-you-row__label"><%= t("climb_together.you.row_title") %></span>
+                <span class="lp-you-row__hint"><%= t("climb_together.you.row_hint") %></span>
+              </span>
+              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            </button>
+            <%= render "shared/climb_together_sheet" %>
+            <%= render "shared/share_sheet",
+                  title: t("climb_together.share.title"),
+                  subtitle: t("climb_together.share.subtitle") %>
+          </div>
+        <% end %>
+      </section>
+
       <section class="lp-you-card"
                data-controller="share"
                data-share-text-value="<%= invite_share_message_body %>"

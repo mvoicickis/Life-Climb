@@ -1362,6 +1362,34 @@ ru:
     open: "Открыть →"
     write: "Написать →"
     footnote: "Откроет WhatsApp или почту с коротким стартовым сообщением. Отправь, когда будешь готов."
+  # TODO: translate
+  climb_together:
+    you:
+      row_title: "Climb with someone"
+      row_hint: "Invite a friend. See each other’s wins."
+      partnered: "Climbing with %{name}"
+    sheet:
+      title: "Climb together"
+      body: "See each other’s wins and cheer them on."
+      send: "Send invite link"
+      not_now: "Not now"
+    share:
+      title: "Climb together"
+      subtitle: "Send your invite link."
+      text: "Climb with me on Life Climb 🏔️"
+    accept:
+      title: "Climb together"
+      kicker: "Invite"
+      wants_to_climb: "%{name} wants to climb with you"
+      note: "You each keep your own mountain. You’ll see each other’s wins and can cheer them on."
+      cta: "Climb together"
+      not_now: "Not now"
+    closed:
+      title: "This invite isn’t open anymore."
+      body: "Ask your friend for a new invite link."
+      cta: "Back home"
+    flash:
+      accepted: "You’re climbing with %{name} now 🎉"
   share:
     title: "Поделись прогрессом"
     subtitle: "Один тап — и ты вдохновляешь кого-то ещё."

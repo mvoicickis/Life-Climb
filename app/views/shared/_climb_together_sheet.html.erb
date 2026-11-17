@@ -1,0 +1,48 @@
+<%# Climb together invite sheet on You — confirm, then open the share sheet. %>
+<div data-climb-together-invite-target="dialog"
+     class="share-sheet climb-together-sheet"
+     hidden
+     aria-hidden="true"
+     role="presentation">
+  <div data-climb-together-invite-target="backdrop"
+       class="share-sheet__backdrop"
+       data-action="click->climb-together-invite#closeOnBackdrop"></div>
+
+  <div data-climb-together-invite-target="panel"
+       class="share-sheet__panel climb-together-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="climb-together-sheet-title"
+       tabindex="-1">
+    <div class="share-sheet__handle" aria-hidden="true"></div>
+
+    <div class="share-sheet__header">
+      <div>
+        <h2 id="climb-together-sheet-title" class="share-sheet__title">
+          <%= t("climb_together.sheet.title") %>
+        </h2>
+      </div>
+      <button type="button"
+              class="share-sheet__close"
+              data-action="click->climb-together-invite#close"
+              aria-label="<%= t('climb_together.sheet.not_now') %>">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <p class="climb-together-sheet__body"><%= t("climb_together.sheet.body") %></p>
+
+    <div class="climb-together-sheet__actions">
+      <button type="button"
+              class="climb-together-sheet__send"
+              data-action="click->climb-together-invite#send">
+        <%= t("climb_together.sheet.send") %>
+      </button>
+      <button type="button"
+              class="climb-together-sheet__cancel"
+              data-action="click->climb-together-invite#close">
+        <%= t("climb_together.sheet.not_now") %>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<% content_for :title, t("climb_together.accept.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<%
+  home_path = authenticated? ? dashboard_path : root_path
+  inviter_name = @inviter&.display_name
+%>
+
+<div class="lp-climb-accept">
+  <div class="lp-climb-accept__photo" aria-hidden="true">
+    <%= image_tag "today_background.webp", alt: "", decoding: "async" %>
+  </div>
+  <div class="lp-climb-accept__veil" aria-hidden="true"></div>
+
+  <div class="lp-climb-accept__card">
+    <% if @state == :open %>
+      <p class="lp-climb-accept__kicker"><%= t("climb_together.accept.kicker") %></p>
+      <h1 class="lp-climb-accept__title">
+        <%= t("climb_together.accept.wants_to_climb", name: inviter_name) %>
+      </h1>
+      <p class="lp-climb-accept__note"><%= t("climb_together.accept.note") %></p>
+
+      <%= button_to t("climb_together.accept.cta"),
+            accept_climb_invite_path(@token),
+            method: :post,
+            class: "lp-climb-accept__btn is-green",
+            form: { data: { turbo: false } } %>
+
+      <%= link_to t("climb_together.accept.not_now"),
+            home_path,
+            class: "lp-climb-accept__btn is-grey" %>
+    <% else %>
+      <h1 class="lp-climb-accept__title"><%= t("climb_together.closed.title") %></h1>
+      <p class="lp-climb-accept__note"><%= t("climb_together.closed.body") %></p>
+      <%= link_to t("climb_together.closed.cta"),
+            home_path,
+            class: "lp-climb-accept__btn is-green" %>
+    <% end %>
+  </div>
+</div>
