@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "today-partner-row" do %>
+  <%= render "dashboard/partner_row",
+        day: @partner_day_wins,
+        not_saved: @not_saved %>
+<% end %>

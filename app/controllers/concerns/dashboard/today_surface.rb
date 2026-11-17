@@ -70,6 +70,7 @@ module Dashboard
       end
 
       assign_battles_waiting_count!
+      @partner_day_wins = ClimbTogether::PartnerDayWins.call(viewer: current_user)
 
       @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)

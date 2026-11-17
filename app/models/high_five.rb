@@ -23,6 +23,15 @@ class HighFive < ApplicationRecord
     scope.exists?
   end
 
+  # Any cheer from +from_user+ to +to_user+ on +to_user+'s local day.
+  def self.exists_for_partner_day?(from_user:, to_user:, on:, time_zone:)
+    zone = Time.find_zone!(time_zone)
+    range = zone.local(on.year, on.month, on.day).all_day
+
+    where(from_user_id: from_user.id, to_user_id: to_user.id, created_at: range).exists?
+  end
+
+
   private
 
   def unique_for_local_day

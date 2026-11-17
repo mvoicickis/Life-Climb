@@ -3202,6 +3202,13 @@ en:
         bear: "Bear"
         fox: "Fox"
         wolf: "Wolf"
+    partner:
+      won_today:
+        one: "%{name} won %{count} battle today"
+        other: "%{name} won %{count} battles today"
+      cheered: "You cheered %{name} 🙌"
+      high_five_aria: "High-five %{name}"
+      not_saved: "Not saved"
     you:
       row_title: "Climb with someone"
       row_hint: "Invite a friend. See each other’s wins."
