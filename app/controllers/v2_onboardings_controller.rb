@@ -68,7 +68,7 @@ class V2OnboardingsController < ApplicationController
       end
       if (existing_journey = onboarding_bootstrap_journey_for(draft["goal"]))
         session.delete(:v2_onboarding)
-        redirect_to life_journey_path(existing_journey) and return
+        redirect_after_onboarding!(fallback: life_journey_path(existing_journey)) and return
       end
       session[:v2_onboarding] = draft.merge("camp_titles" => titles)
       track_onboarding_event!("onboarding_step_completed", step)
@@ -79,7 +79,7 @@ class V2OnboardingsController < ApplicationController
           camp_titles: titles
         )
         session.delete(:v2_onboarding)
-        redirect_to life_journey_path(result.journey)
+        redirect_after_onboarding!(fallback: life_journey_path(result.journey))
       rescue Onboarding::Bootstrap::Error => e
         redirect_to v2_onboarding_path(step: "camps"), alert: e.message
       end
@@ -124,10 +124,15 @@ class V2OnboardingsController < ApplicationController
 
   def redirect_completed_user!
     journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
-    if journey.present?
-      redirect_to life_journey_path(journey)
+    fallback = journey.present? ? life_journey_path(journey) : dashboard_path
+    redirect_after_onboarding!(fallback: fallback)
+  end
+
+  def redirect_after_onboarding!(fallback:)
+    if (path = climb_invite_resume_path)
+      redirect_to path
     else
-      redirect_to dashboard_path
+      redirect_to fallback
     end
   end
 

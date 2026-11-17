@@ -200,6 +200,33 @@
   font-weight: 700;
 }
 
+.lp-you-row--climb {
+  align-items: flex-start;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  min-height: var(--lp-tap);
+}
+
+.lp-you-row__stack {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.lp-you-row__hint {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--lp-muted);
+  overflow-wrap: anywhere;
+}
+
+.lp-you-row--climb .lp-you-row__chev {
+  margin-top: 0.1rem;
+}
+
 .lp-you-row__trail {
   flex-shrink: 0;
   display: flex;

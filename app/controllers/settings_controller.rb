@@ -9,6 +9,8 @@ class SettingsController < ApplicationController
       if @commitment_journey
         Goals::Current.goal_for(user: current_user, journey: @commitment_journey)
       end
+    @climb_partner = ClimbTogether::PartnerFor.call(user: current_user)
+    @climb_invite = ClimbTogether::Invite.call(user: current_user) unless @climb_partner
   end
 
   def edit_name
