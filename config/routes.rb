@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     resource :evening_nudge, only: :create, controller: "evening_nudges"
   end
   namespace :settings do
+    resource :avatar, only: :update, controller: "avatars"
     resource :notifications, only: %i[ show update ], controller: "notifications"
     resource :two_factor, only: %i[ show create destroy ], controller: "two_factors" do
       post :confirm

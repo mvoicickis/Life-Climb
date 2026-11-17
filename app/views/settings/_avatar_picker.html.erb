@@ -1,0 +1,90 @@
+<%# locals: user: %>
+<% user = local_assigns.fetch(:user) %>
+<div id="you-avatar"
+     class="lp-you-avatar"
+     data-controller="avatar-picker"
+     data-avatar-picker-not-saved-value="<%= t('climb_together.avatar.not_saved') %>">
+  <button type="button"
+          id="you-avatar-circle"
+          class="lp-you-avatar__button"
+          data-action="click->avatar-picker#open"
+          aria-label="<%= t('climb_together.avatar.aria_pick') %>">
+    <%= render "shared/avatar_circle", user: user %>
+  </button>
+
+  <p class="lp-you-avatar__error"
+     hidden
+     role="status"
+     data-avatar-picker-target="error"></p>
+
+  <div data-avatar-picker-target="dialog"
+       class="share-sheet avatar-picker-sheet"
+       hidden
+       aria-hidden="true"
+       role="presentation">
+    <div data-avatar-picker-target="backdrop"
+         class="share-sheet__backdrop"
+         data-action="click->avatar-picker#closeOnBackdrop"></div>
+
+    <div data-avatar-picker-target="panel"
+         class="share-sheet__panel avatar-picker-sheet__panel"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="avatar-picker-sheet-title"
+         tabindex="-1">
+      <div class="share-sheet__handle" aria-hidden="true"></div>
+
+      <div class="share-sheet__header">
+        <div>
+          <h2 id="avatar-picker-sheet-title" class="share-sheet__title">
+            <%= t("climb_together.avatar.pick") %>
+          </h2>
+        </div>
+        <button type="button"
+                class="share-sheet__close"
+                data-action="click->avatar-picker#close"
+                aria-label="<%= t('climb_together.avatar.close') %>">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="avatar-picker-sheet__grid" role="list">
+        <% User::AVATAR_KEYS.each do |key| %>
+          <% selected = user.avatar_key == key %>
+          <%= button_to settings_avatar_path,
+                method: :patch,
+                params: { user: { avatar_key: key } },
+                class: "avatar-picker-sheet__item#{' is-selected' if selected}",
+                form: {
+                  data: {
+                    turbo: true,
+                    action: "turbo:submit-end->avatar-picker#submitEnd"
+                  }
+                },
+                role: "listitem",
+                aria: { pressed: selected } do %>
+            <%= image_tag "avatars/#{key}.webp",
+                  class: "avatar-picker-sheet__img",
+                  alt: "",
+                  decoding: "async" %>
+            <span class="avatar-picker-sheet__label">
+              <%= t("climb_together.avatar.animals.#{key}") %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%= button_to t("climb_together.avatar.use_letter"),
+            settings_avatar_path,
+            method: :patch,
+            params: { user: { avatar_key: "" } },
+            class: "avatar-picker-sheet__letter",
+            form: {
+              data: {
+                turbo: true,
+                action: "turbo:submit-end->avatar-picker#submitEnd"
+              }
+            } %>
+    </div>
+  </div>
+</div>

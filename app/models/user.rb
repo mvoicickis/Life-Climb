@@ -59,17 +59,22 @@ class User < ApplicationRecord
   }
   validates :character, inclusion: { in: ->(_) { CHARACTERS } }, allow_nil: true,
             if: :validate_character_value?
+  validates :avatar_key, inclusion: { in: ->(_) { AVATAR_KEYS } }, allow_nil: true
   validates :planning_version, inclusion: { in: [ 1, 2 ] }
   validates :locale, inclusion: {
     in: ->(_) { I18n.available_locales.map(&:to_s) }
   }, allow_nil: true
   validates :theme, inclusion: { in: ->(_) { THEMES } }
 
+  before_validation :normalize_avatar_key
+
   # Current companion set. Legacy man/woman remain in DB until the user re-picks.
   CHARACTERS = %w[birdie bee bear fox horse raven].freeze
   # Onboarding / settings pickers — horse kept in CHARACTERS for existing users.
   PICKABLE_CHARACTERS = (CHARACTERS - %w[horse]).freeze
   LEGACY_CHARACTERS = %w[man woman].freeze
+  # Social Climb together avatar (You page / partner row) — not the mountain companion.
+  AVATAR_KEYS = %w[bird bear fox wolf].freeze
   THEMES = %w[light dark].freeze
   PREMIUM_ACCESS_STATUSES = %w[active trialing].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
@@ -170,6 +175,13 @@ class User < ApplicationRecord
     return nil if key.blank?
 
     "characters/#{key}.png"
+  end
+
+  def avatar_image
+    key = avatar_key.presence_in(AVATAR_KEYS)
+    return nil if key.blank?
+
+    "avatars/#{key}.webp"
   end
 
   def legacy_character?
@@ -412,5 +424,9 @@ class User < ApplicationRecord
     return true if CHARACTERS.include?(character.to_s)
 
     false
+  end
+
+  def normalize_avatar_key
+    self.avatar_key = avatar_key.presence
   end
 end

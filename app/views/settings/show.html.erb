@@ -3,7 +3,6 @@
 <% content_for :lp_hide_top_nav, true %>
 <% highlight = params[:highlight].to_s %>
 <% open_panel = highlight == "name" ? highlight : nil %>
-<% user_initial = current_user.name.to_s.strip.first&.upcase.presence || "?" %>
 
 <div class="lp-you"
      data-controller="you-page"
@@ -12,7 +11,7 @@
 
   <div class="lp-you__scroll">
     <header class="lp-you__profile<%= ' lp-you-row--flash' if highlight == 'name' %>">
-      <div class="lp-you__avatar-initial" aria-hidden="true"><%= user_initial %></div>
+      <%= render "settings/avatar_picker", user: current_user %>
       <div class="lp-you__profile-copy">
         <div class="lp-you__profile-line" <%= "hidden" if highlight == "name" %> data-you-page-target="nameButton">
           <p class="lp-you__name-text"><%= current_user.name.presence || t("settings.change_name") %></p>
