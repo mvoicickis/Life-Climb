@@ -4,7 +4,7 @@ require "test_helper"
 
 module ClimbTogether
   module HighFives
-    class CreateTest < ActiveSupport::TestCase
+    class CreateTest < ActiveJob::TestCase
       setup do
         @from = users(:one)
         @to = users(:two)
@@ -112,6 +112,91 @@ module ClimbTogether
           assert_equal 1, partner_count
           assert_equal 0, own_count
         end
+      end
+
+      test "cheer enqueues exactly one high_five push with title body url kind" do
+        @from.update!(avatar_key: nil)
+
+        travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
+          assert_enqueued_jobs 1, only: SendWebPushJob do
+            Create.call(from: @from, battle: @battle)
+          end
+
+          job = enqueued_jobs.find { |j| j["job_class"] == "SendWebPushJob" }
+          assert job
+          user_id, payload = ActiveJob::Arguments.deserialize(job["arguments"])
+          assert_equal @to.id, user_id
+          assert_equal "#{@from.display_name} 🙌", payload["title"]
+          assert_equal(
+            "#{@from.display_name} high-fived your battle: Partner battle",
+            payload["body"]
+          )
+          assert_equal "/dashboard", payload["url"]
+          assert_equal "high_five", payload["kind"]
+          assert_equal "high_five", payload["tag"]
+          refute payload.key?("icon")
+        end
+      end
+
+      test "repeat cheer same day enqueues no push" do
+        travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
+          Create.call(from: @from, battle: @battle)
+          clear_enqueued_jobs
+
+          assert_no_enqueued_jobs only: SendWebPushJob do
+            assert_raises(ClimbTogether::Error) do
+              Create.call(from: @from, battle: @battle)
+            end
+          end
+        end
+      end
+
+      test "push body truncates a long battle title" do
+        long = "A" * 80
+        @battle.update!(title: long)
+
+        travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
+          assert_enqueued_with(job: SendWebPushJob) do
+            Create.call(from: @from, battle: @battle)
+          end
+
+          job = enqueued_jobs.find { |j| j["job_class"] == "SendWebPushJob" }
+          _user_id, payload = ActiveJob::Arguments.deserialize(job["arguments"])
+          truncated = Notifications::PushGoalTitle.truncate(long, limit: 60)
+          assert_equal truncated, long[0, 60] + "…"
+          assert_includes payload["body"], truncated
+          refute_includes payload["body"], long
+        end
+      end
+
+      test "push icon uses sender animal avatar when set" do
+        @from.update!(avatar_key: "fox")
+
+        travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
+          Create.call(from: @from, battle: @battle)
+
+          job = enqueued_jobs.find { |j| j["job_class"] == "SendWebPushJob" }
+          _user_id, payload = ActiveJob::Arguments.deserialize(job["arguments"])
+          assert payload["icon"].present?
+          assert_match(%r{\Ahttps://}, payload["icon"])
+          assert_includes payload["icon"], "avatars/fox"
+        end
+      end
+
+      test "enqueue error does not break the cheer" do
+        original = SendWebPushJob.method(:perform_later)
+        SendWebPushJob.define_singleton_method(:perform_later) do |*_args|
+          raise StandardError, "queue down"
+        end
+
+        travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
+          assert_difference -> { HighFive.count }, 1 do
+            high_five = Create.call(from: @from, battle: @battle)
+            assert_equal @battle, high_five.strategy_goal
+          end
+        end
+      ensure
+        SendWebPushJob.define_singleton_method(:perform_later, original)
       end
     end
   end

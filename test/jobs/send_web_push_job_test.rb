@@ -193,6 +193,66 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal [], payload["actions"]
   end
 
+  test "high_five kind sends empty actions and preserves copy" do
+    delivered = SendWebPushJob.perform_now(
+      @user.id,
+      {
+        "title" => "Alex 🙌",
+        "body" => "Alex high-fived your battle: Read 10 pages",
+        "url" => "/dashboard",
+        "kind" => "high_five",
+        "tag" => "high_five"
+      }
+    )
+
+    assert delivered
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "Alex 🙌", payload["title"]
+    assert_equal "Alex high-fived your battle: Read 10 pages", payload["body"]
+    assert_equal "/dashboard", payload["url"]
+    assert_equal "high_five", payload["kind"]
+    assert_equal [], payload["actions"]
+  end
+
+  test "high_five kind is blocked during quiet hours" do
+    @user.create_notification_preference!(
+      time_zone: "Europe/Berlin",
+      quiet_hours_start: 22,
+      quiet_hours_end: 7
+    )
+
+    travel_to Time.find_zone!("Europe/Berlin").local(2026, 11, 17, 23, 0, 0) do
+      delivered = SendWebPushJob.perform_now(
+        @user.id,
+        { "title" => "Alex 🙌", "body" => "Cheered", "kind" => "high_five" }
+      )
+      refute delivered
+      assert_equal 0, @send_calls
+    end
+  end
+
+  test "high_five kind is blocked when frequency is off" do
+    @user.create_notification_preference!(frequency: "off")
+
+    delivered = SendWebPushJob.perform_now(
+      @user.id,
+      { "title" => "Alex 🙌", "body" => "Cheered", "kind" => "high_five" }
+    )
+    refute delivered
+    assert_equal 0, @send_calls
+  end
+
+  test "high_five kind is blocked when vacation is active" do
+    @user.create_notification_preference!(vacation_paused: true)
+
+    delivered = SendWebPushJob.perform_now(
+      @user.id,
+      { "title" => "Alex 🙌", "body" => "Cheered", "kind" => "high_five" }
+    )
+    refute delivered
+    assert_equal 0, @send_calls
+  end
+
   test "evening kind sends empty actions and preserves copy" do
     delivered = SendWebPushJob.perform_now(
       @user.id,

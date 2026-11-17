@@ -125,3 +125,6 @@ en:
       day_of_commitment: "Day %{n} of %{m}: %{rest}"
     evening_push:
       body: "One small step before bed."
+    high_five_push:
+      title: "%{name} 🙌"
+      body: "%{name} high-fived your battle: %{title}"
