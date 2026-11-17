@@ -89,7 +89,7 @@ en:
       mountain_tertiary: "Open Mountain →"
       add_another_battle: "Add another battle"
       add_battle:
-        placeholder: "Write one small thing to do today"
+        placeholder: "Battle for today"
         placeholder_all_clear: "Add another battle"
         submit: "Add battle"
         aria: "New battle"

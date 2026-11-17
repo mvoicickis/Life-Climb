@@ -648,7 +648,7 @@ de:
       mountain_tertiary: "Open Mountain →"  # TODO: translate
       add_another_battle: "Add another battle"  # TODO: translate
       add_battle:
-        placeholder: "Write one small thing to do today" # TODO: translate
+        placeholder: "Battle for today" # TODO: translate
         placeholder_all_clear: "Add another battle" # TODO: translate
         submit: "Add battle" # TODO: translate
         aria: "New battle" # TODO: translate
