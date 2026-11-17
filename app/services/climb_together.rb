@@ -5,4 +5,3 @@ module ClimbTogether
 
   INVITE_TOKEN_SESSION_KEY = :climb_invite_token
 end
-
