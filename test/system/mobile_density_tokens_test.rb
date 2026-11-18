@@ -65,18 +65,16 @@ class MobileDensityTokensTest < ApplicationSystemTestCase
     assert_no_selector ".lp-glass--pad"
     assert_selector ".lp-dash-nav.is-v4"
     assert_no_selector ".lp-dash-nav__fab"
-    card_gap = page.evaluate_script(<<~JS)
-      (() => {
-        const cards = document.querySelectorAll(".lp-you-card");
-        if (cards.length < 2) return null;
-        const a = cards[0].getBoundingClientRect();
-        const b = cards[1].getBoundingClientRect();
-        return b.top - a.bottom;
-      })()
-    JS
-    assert_in_delta 20.0, card_gap.to_f, 2.5, "You card groups should stay spaced (~20px)"
+    groups_gap = computed(".lp-you__groups", "row-gap")
+    assert_in_delta 20.0, groups_gap.to_f, 2.5, "You groups should stay spaced (~20px)"
+    assert_selector ".lp-you-group__title", minimum: 3
+    assert_selector ".lp-you-card--partner"
     row_label = computed(".lp-you-row__label", "font-size")
     assert row_label <= 17.0, "You row labels should stay readable, got #{row_label}px"
+    partner_h = page.evaluate_script(<<~JS)
+      document.querySelector('.lp-you-partner')?.getBoundingClientRect().height
+    JS
+    assert partner_h.to_f >= 44.0, "Climb together row must stay ≥44px, got #{partner_h}"
     page.save_screenshot("/opt/cursor/artifacts/screenshots/density-settings-mobile.png")
 
     visit life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id, focus_id: @section.id)
