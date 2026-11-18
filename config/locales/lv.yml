@@ -1485,6 +1485,12 @@ lv:
     title: "Tu"
     subtitle: "Veido Šodien tā, lai tas paliek vienkāršs un motivējošs."
     # TODO: translate
+    climbing_since: "Climbing since %{date}" # TODO: translate
+    profile_stats_label: "Finished progress" # TODO: translate
+    stats:
+      battles_won: "Battles won" # TODO: translate
+      camps_finished: "Camps finished" # TODO: translate
+      days_won: "Days won" # TODO: translate
     install_offer:
       row_label: "Add to home screen"
       browser_menu: "Your browser will offer this from its own menu."

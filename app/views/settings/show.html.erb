@@ -10,28 +10,59 @@
   <h1 class="lp-you-sr"><%= t("settings.title") %></h1>
 
   <div class="lp-you__scroll">
-    <header class="lp-you__profile<%= ' lp-you-row--flash' if highlight == 'name' %>">
-      <%= render "settings/avatar_picker", user: current_user %>
-      <div class="lp-you__profile-copy">
-        <div class="lp-you__profile-line" <%= "hidden" if highlight == "name" %> data-you-page-target="nameButton">
-          <p class="lp-you__name-text"><%= current_user.name.presence || t("settings.change_name") %></p>
-          <button type="button"
-                  class="lp-you__edit"
-                  data-action="click->you-page#editName">
-            <%= t("settings.edit") %>
-          </button>
-        </div>
-        <%= form_with model: current_user, url: settings_path, method: :patch,
-              html: { class: "lp-you__name-form", hidden: highlight != "name",
-                      data: { you_page_target: "nameForm", turbo: false } } do %>
-          <%= text_field_tag "user[name]", current_user.name,
-                class: "lp-you__name-input",
-                maxlength: 40,
-                autocomplete: "name",
-                data: { you_page_target: "nameInput", action: "keydown->you-page#nameKey" } %>
-        <% end %>
+    <div class="lp-you__hero">
+      <div class="lp-you__cover" aria-hidden="true">
+        <%= image_tag mountain_trail_photo_url(@commitment_journey),
+              class: "lp-you__cover-img",
+              alt: "",
+              decoding: "async" %>
       </div>
-    </header>
+
+      <header class="lp-you__profile is-hero<%= ' lp-you-row--flash' if highlight == 'name' %>">
+        <%= render "settings/avatar_picker", user: current_user, size: :lg %>
+
+        <div class="lp-you__profile-copy is-hero">
+          <div class="lp-you__profile-meta" <%= "hidden" if highlight == "name" %> data-you-page-target="nameButton">
+            <p class="lp-you__name-text is-hero"><%= current_user.name.presence || t("settings.change_name") %></p>
+            <p class="lp-you__since">
+              <span><%= t("settings.climbing_since", date: l(@climbing_since_on, format: "%B %Y")) %></span>
+              <button type="button"
+                      class="lp-you__edit"
+                      data-action="click->you-page#editName">
+                <%= t("settings.edit") %>
+              </button>
+            </p>
+          </div>
+          <%= form_with model: current_user, url: settings_path, method: :patch,
+                html: { class: "lp-you__name-form is-hero", hidden: highlight != "name",
+                        data: { you_page_target: "nameForm", turbo: false } } do %>
+            <%= text_field_tag "user[name]", current_user.name,
+                  class: "lp-you__name-input is-hero",
+                  maxlength: 40,
+                  autocomplete: "name",
+                  data: { you_page_target: "nameInput", action: "keydown->you-page#nameKey" } %>
+          <% end %>
+        </div>
+
+        <div class="lp-you__stats" aria-label="<%= t('settings.profile_stats_label') %>">
+          <div class="lp-you__stat">
+            <span class="lp-you__stat-icon" aria-hidden="true">⚔️</span>
+            <strong class="lp-you__stat-number"><%= @you_battles_won %></strong>
+            <span class="lp-you__stat-label"><%= t("settings.stats.battles_won") %></span>
+          </div>
+          <div class="lp-you__stat">
+            <span class="lp-you__stat-icon" aria-hidden="true">⛺</span>
+            <strong class="lp-you__stat-number"><%= @you_camps_finished %></strong>
+            <span class="lp-you__stat-label"><%= t("settings.stats.camps_finished") %></span>
+          </div>
+          <div class="lp-you__stat">
+            <span class="lp-you__stat-icon" aria-hidden="true">📅</span>
+            <strong class="lp-you__stat-number"><%= @you_days_won %></strong>
+            <span class="lp-you__stat-label"><%= t("settings.stats.days_won") %></span>
+          </div>
+        </div>
+      </header>
+    </div>
 
     <div class="lp-you__groups">
       <section class="lp-you-card"

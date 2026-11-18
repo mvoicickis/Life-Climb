@@ -24,10 +24,13 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
     assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
     assert_select ".lp-you"
-    assert_select ".lp-you__profile"
-    assert_select ".lp-you__avatar-initial", text: "O"
-    assert_select ".lp-you__name-text", text: /One/
-    assert_select "button.lp-you__edit", text: I18n.t("settings.edit")
+    assert_select ".lp-you__profile.is-hero"
+    assert_select ".lp-you__cover-img[src*='mountain_trail_day']"
+    assert_select "#you-avatar.lp-you-avatar.is-lg"
+    assert_select ".lp-you__avatar-initial.is-lg", text: "O"
+    assert_select ".lp-you__name-text.is-hero", text: /One/
+    assert_select ".lp-you__since button.lp-you__edit", text: I18n.t("settings.edit")
+    assert_select ".lp-you__stats .lp-you__stat", count: 3
     assert_select ".lp-dash-nav.is-v4"
     assert_select "a.lp-dash-nav__link[href=?]", dashboard_path
     assert_select "a.lp-dash-nav__link[href=?]", life_points_path
@@ -62,15 +65,146 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/data-controller="share"/, response.body)
   end
 
-  test "You profile shows long name with ellipsis class" do
+  test "You profile shows long name under the big avatar" do
     user = users(:one)
     user.update!(name: "Mareks Voicickis Extra Long Name")
     sign_in_as user
 
     get settings_path
     assert_response :success
-    assert_select ".lp-you__name-text", text: "Mareks Voicickis Extra Long Name"
-    assert_select ".lp-you__avatar-initial", text: "M"
+    assert_select ".lp-you__name-text.is-hero", text: "Mareks Voicickis Extra Long Name"
+    assert_select ".lp-you__avatar-initial.is-lg", text: "M"
+  end
+
+  test "You cover uses default mountain when there is no goal" do
+    user = users(:one)
+    user.life_journeys.destroy_all
+    user.strategy_goals.destroy_all
+    sign_in_as user
+
+    get settings_path
+    assert_response :success
+    assert_select ".lp-you__cover-img[src*='mountain_trail_day']"
+  end
+
+  test "You climbing since uses the user time zone month" do
+    user = users(:one)
+    zone = "Pacific/Kiritimati"
+    user.create_notification_preference!(time_zone: zone) unless user.notification_preference
+    user.notification_preference.update!(time_zone: zone)
+    # 2026-06-30 14:00 UTC → 2026-07-01 on Kiritimati (UTC+14)
+    user.update!(created_at: Time.utc(2026, 6, 30, 14, 0, 0))
+    sign_in_as user
+
+    get settings_path
+    assert_response :success
+    assert_select ".lp-you__since", text: /Climbing since July 2026/
+  end
+
+  test "You stats match Stats battle wins and finished camps" do
+    user = users(:one)
+    zone = "Europe/Berlin"
+    user.create_notification_preference!(time_zone: zone) unless user.notification_preference
+    user.notification_preference.update!(time_zone: zone)
+    sign_in_as user
+
+    travel_to Time.find_zone!(zone).local(2026, 8, 8, 12, 0, 0) do
+      seed_climb!(user, today_mission: "Day one battle")
+      journey = user.primary_focused_journey
+      camp = user.strategy_goals.where(horizon: "project", life_journey_id: journey.id).order(:id).last
+      day_one = user.strategy_goals.find_by!(horizon: "day", title: "Day one battle")
+      day_one.update!(completed_at: Time.find_zone!(zone).local(2026, 8, 6, 9, 0, 0))
+
+      day_two = add_todays_battle!(
+        user: user,
+        project: camp,
+        journey: journey,
+        title: "Day two battle"
+      )
+      day_two.update!(
+        scheduled_on: Date.new(2026, 8, 7),
+        completed_at: Time.find_zone!(zone).local(2026, 8, 7, 10, 0, 0)
+      )
+
+      camp.children.for_kind("day").find_each { |b| b.update!(completed_at: Time.current) unless b.completed_at? }
+      camp.complete!
+
+      wins = Stats::BattleWins.call(user: user)
+      camps = Stats::FinishedPathCamps.total_count(user: user)
+
+      get settings_path
+      assert_response :success
+      assert_select ".lp-you__stat-number", text: wins.all_time_total.to_s
+      assert_select ".lp-you__stat-number", text: camps.to_s
+      assert_select ".lp-you__stat-number", text: wins.days_won_total.to_s
+      assert_operator wins.days_won_total, :>=, 2
+    end
+  end
+
+  test "You stats show zeros for a brand new climber" do
+    user = User.create!(
+      name: "Fresh",
+      email_address: "fresh-you-#{SecureRandom.hex(3)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      planning_version: 2,
+      onboarding_completed_at: Time.current
+    )
+    sign_in_as user
+
+    get settings_path
+    assert_response :success
+    assert_select ".lp-you__stat-number", text: "0", count: 3
+  end
+
+  test "You profile query count stays flat as wins grow" do
+    user = users(:one)
+    zone = "Europe/Berlin"
+    user.create_notification_preference!(time_zone: zone) unless user.notification_preference
+    user.notification_preference.update!(time_zone: zone)
+    sign_in_as user
+
+    travel_to Time.find_zone!(zone).local(2026, 8, 10, 12, 0, 0) do
+      seed_climb!(user, today_mission: "Flat query battle")
+      battle = user.strategy_goals.find_by!(horizon: "day", title: "Flat query battle")
+      battle.update!(completed_at: Time.find_zone!(zone).local(2026, 8, 9, 9, 0, 0))
+
+      get settings_path # warm climb-invite / partner lookups
+      assert_response :success
+      one_count = count_you_queries { get settings_path }
+      assert_response :success
+
+      journey = user.primary_focused_journey
+      camp = user.strategy_goals.where(horizon: "project", life_journey_id: journey.id).order(:id).last
+      5.times do |index|
+        extra = add_todays_battle!(
+          user: user,
+          project: camp,
+          journey: journey,
+          title: "Extra win #{index}"
+        )
+        day = Date.new(2026, 8, 4) + index
+        extra.update!(
+          scheduled_on: day,
+          completed_at: Time.find_zone!(zone).local(day.year, day.month, day.day, 11, 0, 0)
+        )
+      end
+
+      many_count = count_you_queries { get settings_path }
+      assert_response :success
+      assert_equal one_count, many_count
+    end
+  end
+
+  test "inline name edit targets stay on the You header" do
+    user = users(:one)
+    sign_in_as user
+
+    get settings_path(highlight: "name")
+    assert_response :success
+    assert_select "[data-you-page-target=nameButton][hidden]"
+    assert_select "form.lp-you__name-form.is-hero:not([hidden])"
+    assert_select "[data-you-page-target=nameInput]"
   end
 
   test "admin sees admin row on You" do
@@ -193,5 +327,21 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-feedback-fab", count: 0
+  end
+
+  private
+
+  def count_you_queries
+    queries = 0
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      next if payload[:name] == "SCHEMA" || payload[:name] == "TRANSACTION"
+
+      queries += 1 if payload[:sql].present?
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      yield
+    end
+    queries
   end
 end

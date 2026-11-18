@@ -32,7 +32,8 @@ module Settings
       assert_equal "fox", @user.reload.avatar_key
       assert_match(/turbo-stream[^>]*action="replace"[^>]*target="you-avatar"/, response.body)
       assert_match(%r{avatars/fox[^"]*}, response.body)
-      assert_includes response.body, "lp-avatar-circle"
+      assert_includes response.body, "lp-avatar-circle is-lg"
+      assert_includes response.body, "lp-you-avatar is-lg"
       refute_includes response.body, "lp-avatar-circle--initial"
     end
 
@@ -41,7 +42,8 @@ module Settings
       get settings_path
 
       assert_response :success
-      assert_select "#you-avatar-circle img.lp-avatar-circle[src*='bear']"
+      assert_select "#you-avatar.lp-you-avatar.is-lg"
+      assert_select "#you-avatar-circle img.lp-avatar-circle.is-lg[src*='bear']"
       assert_select "#you-avatar-circle .lp-avatar-circle--initial", count: 0
       assert_select ".avatar-picker-sheet__item.is-selected img[src*='bear']"
     end
@@ -56,6 +58,7 @@ module Settings
       assert_response :success
       assert_nil @user.reload.avatar_key
       assert_includes response.body, "lp-avatar-circle--initial"
+      assert_includes response.body, "is-lg"
     end
 
     test "another user cannot change yours" do

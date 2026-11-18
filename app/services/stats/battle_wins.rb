@@ -31,12 +31,22 @@ module Stats
       )
     end
 
-    def all_time_total
-      to = local_today
-      from = @user.created_at.in_time_zone(time_zone).to_date
-      from = to if from > to
+    def all_time_counts
+      @all_time_counts ||= begin
+        to = local_today
+        from = @user.created_at.in_time_zone(time_zone).to_date
+        from = to if from > to
+        counts_by_date(from: from, to: to)
+      end
+    end
 
-      counts_by_date(from: from, to: to).values.sum
+    def all_time_total
+      all_time_counts.values.sum
+    end
+
+    # Local calendar days with at least one win — same sources as the Stats calendar.
+    def days_won_total
+      all_time_counts.count { |_date, wins| wins.to_i.positive? }
     end
 
     def this_week

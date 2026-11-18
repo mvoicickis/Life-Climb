@@ -1,7 +1,11 @@
-<%# locals: user: %>
-<% user = local_assigns.fetch(:user) %>
+<%# locals: user:, size: (optional :lg for You header) %>
+<%
+  user = local_assigns.fetch(:user)
+  size = local_assigns[:size]
+  size_class = size == :lg ? " is-lg" : ""
+%>
 <div id="you-avatar"
-     class="lp-you-avatar"
+     class="lp-you-avatar<%= size_class %>"
      data-controller="avatar-picker"
      data-avatar-picker-not-saved-value="<%= t('climb_together.avatar.not_saved') %>">
   <button type="button"
@@ -9,8 +13,16 @@
           class="lp-you-avatar__button"
           data-action="click->avatar-picker#open"
           aria-label="<%= t('climb_together.avatar.aria_pick') %>">
-    <%= render "shared/avatar_circle", user: user %>
+    <%= render "shared/avatar_circle", user: user, size: size %>
   </button>
+  <% if size == :lg %>
+    <span class="lp-you-avatar__pencil" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+      </svg>
+    </span>
+  <% end %>
 
   <p class="lp-you-avatar__error"
      hidden
