@@ -185,6 +185,7 @@ Rails.application.routes.draw do
     resource :ops, only: %i[ show update ], controller: "ops"
     resource :strategy, only: %i[ show create ], controller: "strategy"
     resources :feedbacks, only: %i[ index destroy ]
+    resources :testers, only: :index
     resources :users, only: %i[ index show edit update destroy ] do
       member do
         patch :promote
