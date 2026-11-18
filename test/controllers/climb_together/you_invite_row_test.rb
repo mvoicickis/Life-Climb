@@ -36,6 +36,8 @@ module ClimbTogether
 
       assert_response :success
       assert_select "#you-row-climb-together", text: /Climbing with #{Regexp.escape(@partner.display_name)}/
+      assert_select "a#you-row-climb-together[href=?]", climb_together_path
+      assert_select "#you-row-climb-together .lp-you-row__chev", text: "›"
       assert_select "[data-controller='climb-together-invite share']", count: 0
     end
 

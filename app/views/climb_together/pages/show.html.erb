@@ -1,0 +1,23 @@
+<% content_for :title, t("climb_together.side.title") %>
+<% content_for :lp_game, true %>
+<% content_for :lp_hide_top_nav, true %>
+
+<div class="lp-side" id="climb-together-side">
+  <header class="lp-side__head">
+    <%= link_to dashboard_path, class: "lp-side__back", aria: { label: t("climb_together.side.back") } do %>
+      ‹
+    <% end %>
+    <h1 class="lp-side__title"><%= t("climb_together.side.title") %></h1>
+  </header>
+
+  <div class="lp-side__pair">
+    <%= render "climb_together/pages/card", card: @side_by_side.you %>
+    <%= render "climb_together/pages/card", card: @side_by_side.partner %>
+  </div>
+
+  <div class="lp-side__footer">
+    <%= link_to t("climb_together.side.back_to_today"),
+          dashboard_path,
+          class: "lp-side__cta" %>
+  </div>
+</div>

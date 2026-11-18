@@ -1381,11 +1381,22 @@ ru:
         other: "%{name} won %{count} battles today"
       cheered: "You cheered %{name} 🙌"
       high_five_aria: "High-five %{name}"
+      open_side_aria: "Open side by side with %{name}"
       not_saved: "Not saved"
-    you:
+    you: # TODO: translate
       row_title: "Climb with someone"
       row_hint: "Invite a friend. See each other’s wins."
       partnered: "Climbing with %{name}"
+    side: # TODO: translate
+      title: "Climbing together"
+      you: "You"
+      camp_of: "Camp %{current} of %{total}"
+      picking_mountain: "Picking a mountain"
+      wins_this_week:
+        one: "%{count} win this week"
+        other: "%{count} wins this week"
+      back: "Back"
+      back_to_today: "Back to today"
     sheet:
       title: "Climb together"
       body: "See each other’s wins and cheer them on."
