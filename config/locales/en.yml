@@ -3771,6 +3771,20 @@ en:
       title: "Testers"
       lead: "Who needs a personal message."
       empty: "No testers yet."
+      climbers_label: "Daily climb goal"
+      climbers_today_label: "Today"
+      climbers_today_count: "%{count} / %{goal} climbed today"
+      climbers_today_admins:
+        one: "+%{count} admin"
+        other: "+%{count} admins"
+      climbers_prev: "Previous month"
+      climbers_next: "Next month"
+      climbers_day_aria:
+        one: "%{count} tester climbed on %{date}"
+        other: "%{count} testers climbed on %{date}"
+      climbers_goal_met:
+        one: "Goal met on %{count} day this month"
+        other: "Goal met on %{count} days this month"
       filter_label: "Tester filter"
       filter_needs_message: "Needs a message"
       filter_everyone: "Everyone"

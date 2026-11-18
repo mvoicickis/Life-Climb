@@ -17385,6 +17385,120 @@ button.lp-strategy-overflow {
   line-height: 1.5;
 }
 
+.lp-admin-climbers {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 28rem;
+  min-width: 0;
+  margin: 0 0 1.25rem;
+}
+
+.lp-admin-climbers__today {
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-paper-soft);
+  box-shadow: var(--lp-shadow-card);
+  padding: 1rem 1.1rem;
+  min-width: 0;
+}
+
+.lp-admin-climbers__today.is-goal-met {
+  background: color-mix(in srgb, var(--lp-green) 28%, var(--lp-surface));
+  border-color: color-mix(in srgb, var(--lp-green-deep) 35%, var(--lp-border));
+}
+
+.lp-admin-climbers__today.is-goal-partial {
+  background: color-mix(in srgb, var(--lp-amber) 26%, var(--lp-surface));
+  border-color: color-mix(in srgb, var(--lp-amber) 40%, var(--lp-border));
+}
+
+.lp-admin-climbers__today.is-goal-zero {
+  background: var(--lp-paper-soft);
+}
+
+.lp-admin-climbers__today-kicker {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp-admin-climbers__today-count {
+  margin: 0.35rem 0 0;
+  color: var(--lp-ink);
+  font-size: clamp(1.35rem, 5vw, 1.75rem);
+  font-weight: 900;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.lp-admin-climbers__today-admins {
+  margin: 0.35rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.lp-admin-climbers-cal {
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-surface);
+  box-shadow: var(--lp-shadow-card);
+  padding: 0.85rem 0.9rem 1rem;
+  min-width: 0;
+}
+
+.lp-admin-climbers-cal__grid {
+  gap: 0.35rem;
+}
+
+.lp-admin-climbers-cal__cell {
+  display: grid;
+  place-items: center;
+  min-height: 2.75rem;
+  min-width: 0;
+}
+
+.lp-admin-climbers-cal__cell.is-empty,
+.lp-admin-climbers-cal__cell.is-future {
+  background: transparent;
+}
+
+.lp-admin-climbers-cal__dot {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--lp-muted);
+  background: var(--lp-mist);
+  line-height: 1;
+}
+
+.lp-admin-climbers-cal__cell.is-goal-zero .lp-admin-climbers-cal__dot {
+  color: var(--lp-muted);
+  background: var(--lp-mist);
+}
+
+.lp-admin-climbers-cal__cell.is-goal-partial .lp-admin-climbers-cal__dot {
+  color: var(--lp-ink);
+  background: color-mix(in srgb, var(--lp-amber) 55%, var(--lp-mist));
+}
+
+.lp-admin-climbers-cal__cell.is-goal-met .lp-admin-climbers-cal__dot {
+  color: var(--lp-ink);
+  background: var(--lp-green);
+}
+
+.lp-admin-climbers-cal__cell.is-today .lp-admin-climbers-cal__dot {
+  box-shadow: inset 0 0 0 2px var(--lp-green-deep);
+}
+
 .lp-admin-testers__play-link {
   display: inline-flex;
   align-items: center;

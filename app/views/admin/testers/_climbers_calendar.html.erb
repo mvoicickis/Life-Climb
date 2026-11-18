@@ -1,0 +1,79 @@
+<%# locals: counts_by_day, calendar_month, berlin_today, filter %>
+<% current_month = berlin_today.beginning_of_month %>
+<% prev_month = calendar_month.prev_month %>
+<% next_month = calendar_month.next_month %>
+<% can_go_prev = calendar_month > Date.new(2020, 1, 1) %>
+<% can_go_next = next_month <= current_month %>
+<% weeks = climbers_calendar_weeks(
+      counts_by_day: counts_by_day,
+      month_start: calendar_month,
+      today: berlin_today
+    ) %>
+<% goal_met_days = climbers_goal_met_days(
+      counts_by_day: counts_by_day,
+      month_start: calendar_month,
+      today: berlin_today
+    ) %>
+<%= turbo_frame_tag "climbers_calendar" do %>
+  <section class="lp-stats-cal lp-admin-climbers-cal" aria-labelledby="admin-climbers-cal-title">
+    <div class="lp-stats-cal__head">
+      <% if can_go_prev %>
+        <%= link_to "‹",
+              climbers_calendar_nav_url(prev_month, filter: filter),
+              class: "lp-stats-cal__nav",
+              data: { turbo_frame: "climbers_calendar", turbo_action: "advance" },
+              aria: { label: t("admin.testers.climbers_prev") } %>
+      <% else %>
+        <span class="lp-stats-cal__nav is-disabled" aria-hidden="true">‹</span>
+      <% end %>
+      <h2 class="lp-stats-cal__month" id="admin-climbers-cal-title"><%= l(calendar_month, format: "%B %Y") %></h2>
+      <% if can_go_next %>
+        <%= link_to "›",
+              climbers_calendar_nav_url(next_month, filter: filter),
+              class: "lp-stats-cal__nav",
+              data: { turbo_frame: "climbers_calendar", turbo_action: "advance" },
+              aria: { label: t("admin.testers.climbers_next") } %>
+      <% else %>
+        <span class="lp-stats-cal__nav is-disabled" aria-hidden="true">›</span>
+      <% end %>
+    </div>
+
+    <div class="lp-stats-cal__weekdays" aria-hidden="true">
+      <% 7.times do |i| %>
+        <span><%= l(Date.new(2024, 1, 1) + i, format: "%a").first(1) %></span>
+      <% end %>
+    </div>
+
+    <div class="lp-stats-cal__grid lp-admin-climbers-cal__grid" role="grid" aria-labelledby="admin-climbers-cal-title">
+      <% weeks.each do |week| %>
+        <% week.each do |cell| %>
+          <% if cell.nil? %>
+            <span class="lp-admin-climbers-cal__cell is-empty" role="gridcell" aria-hidden="true"></span>
+          <% elsif cell[:future] %>
+            <span class="lp-admin-climbers-cal__cell is-future" role="gridcell" aria-label="<%= l(cell[:date], format: :long) %>"></span>
+          <% else %>
+            <%= tag.span class: [
+                  "lp-admin-climbers-cal__cell",
+                  climbers_tier_class(cell[:tier]),
+                  ("is-today" if cell[:today])
+                ].compact.join(" "),
+                role: "gridcell",
+                aria: {
+                  label: t(
+                    "admin.testers.climbers_day_aria",
+                    count: cell[:testers],
+                    date: l(cell[:date], format: :long)
+                  )
+                } do %>
+              <span class="lp-admin-climbers-cal__dot"><%= cell[:testers] %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <p class="lp-stats-cal__summary" id="admin-climbers-goal-met">
+      <%= t("admin.testers.climbers_goal_met", count: goal_met_days) %>
+    </p>
+  </section>
+<% end %>
