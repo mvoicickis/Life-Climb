@@ -4374,8 +4374,8 @@ html[data-theme="dark"] {
 .lp-side-mtn__wins {
   margin: 0;
   font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--lp-green-deep);
+  font-weight: 600;
+  color: var(--lp-ink);
   line-height: 1.3;
 }
 
