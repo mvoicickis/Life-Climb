@@ -1,0 +1,77 @@
+<% content_for :title, t("admin.testers.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.testers.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.testers.lead") %></p>
+  </div>
+</header>
+
+<% if @rows.empty? %>
+  <p class="lp-admin__lead"><%= t("admin.testers.empty") %></p>
+<% else %>
+  <div class="lp-admin-testers" id="admin-testers">
+    <% @rows.each do |row| %>
+      <article class="lp-admin-tester<%= " has-reason" if row.reason.present? %>"
+               data-user-id="<%= row.user.id %>"
+               data-reason="<%= row.reason_key %>">
+        <header class="lp-admin-tester__head">
+          <div class="lp-admin-tester__who">
+            <p class="lp-admin-tester__name"><%= row.user.display_name %></p>
+            <%= mail_to row.user.email_address,
+                  row.user.email_address,
+                  class: "lp-admin-tester__email",
+                  aria: { label: t("admin.testers.email_aria", name: row.user.display_name) } %>
+          </div>
+          <% if row.reason.present? %>
+            <span class="lp-admin-tester__reason"><%= row.reason %></span>
+          <% end %>
+        </header>
+
+        <dl class="lp-admin-tester__grid">
+          <div>
+            <dt><%= t("admin.testers.signed_up") %></dt>
+            <dd><%= l(row.signed_up_at.to_date, format: :long) %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.onboarding") %></dt>
+            <dd><%= row.onboarding_done ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.first_win") %></dt>
+            <dd><%= row.first_win_at ? l(row.first_win_at.to_date, format: :long) : t("admin.testers.dash") %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.last_win") %></dt>
+            <dd><%= row.last_win_at ? l(row.last_win_at.to_date, format: :long) : t("admin.testers.dash") %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.wins_this_week") %></dt>
+            <dd><%= row.wins_this_week %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.last_opened") %></dt>
+            <dd>
+              <% if row.days_since_open.nil? %>
+                <%= t("admin.testers.dash") %>
+              <% elsif row.days_since_open.zero? %>
+                <%= t("admin.testers.opened_today") %>
+              <% else %>
+                <%= t("admin.testers.days_ago", count: row.days_since_open) %>
+              <% end %>
+            </dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.push") %></dt>
+            <dd><%= row.push_on ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+          </div>
+          <div>
+            <dt><%= t("admin.testers.partner") %></dt>
+            <dd><%= row.partner ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+          </div>
+        </dl>
+      </article>
+    <% end %>
+  </div>
+<% end %>

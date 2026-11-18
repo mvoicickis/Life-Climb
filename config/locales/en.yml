@@ -3748,6 +3748,7 @@ en:
     access_denied: "Access denied."
     nav:
       dashboard: "Dashboard"
+      testers: "Testers"
       users: "Users"
       statistics: "Statistics"
       feedback: "Feedback"
@@ -3755,6 +3756,32 @@ en:
       ops: "Ops"
       strategy: "AI Strategist"
       app: "Back to app"
+    testers:
+      title: "Testers"
+      lead: "Who needs a personal message."
+      empty: "No testers yet."
+      signed_up: "Signed up"
+      onboarding: "Onboarding"
+      first_win: "First win"
+      last_win: "Last win"
+      wins_this_week: "Wins this week"
+      last_opened: "Last opened"
+      push: "Push"
+      partner: "Partner"
+      yes: "Yes"
+      no: "No"
+      dash: "—"
+      email_aria: "Email %{name}"
+      opened_today: "Today"
+      days_ago:
+        one: "%{count} day ago"
+        other: "%{count} days ago"
+      reason:
+        onboarding: "Didn't finish onboarding"
+        never_won: "Never won a battle"
+        stale:
+          one: "No win for %{count} day"
+          other: "No win for %{count} days"
     dashboard:
       title: "Dashboard"
       lead: "Who signed up, where they drop off, and who needs a follow-up."

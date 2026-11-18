@@ -26,6 +26,7 @@
         </div>
         <nav class="lp-admin__nav" aria-label="Admin">
           <%= link_to t("admin.nav.dashboard"), admin_root_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "dashboard"}" %>
+          <%= link_to t("admin.nav.testers"), admin_testers_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "testers"}" %>
           <%= link_to t("admin.nav.users"), admin_users_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "users"}" %>
           <%= link_to t("admin.nav.statistics"), admin_statistics_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "statistics"}" %>
           <%= link_to t("admin.nav.feedback"), admin_feedbacks_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "feedbacks"}" %>
