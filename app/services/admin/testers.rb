@@ -6,9 +6,13 @@ module Admin
   class Testers
     STALE_AFTER_DAYS = 3
     RECURRING_REPEATS = Battles::WinsOnLocalDate::RECURRING_REPEATS
+    FILTER_NEEDS_MESSAGE = "needs_message"
+    FILTER_EVERYONE = "everyone"
+    FILTERS = [ FILTER_NEEDS_MESSAGE, FILTER_EVERYONE ].freeze
 
     Row = Data.define(
       :user,
+      :contact,
       :signed_up_at,
       :onboarding_done,
       :first_win_at,
@@ -23,12 +27,19 @@ module Admin
       :days_since_last_win
     )
 
-    def self.call
-      new.call
+    def self.call(filter: FILTER_NEEDS_MESSAGE)
+      new(filter: filter).call
+    end
+
+    def initialize(filter: FILTER_NEEDS_MESSAGE)
+      @filter = FILTERS.include?(filter.to_s) ? filter.to_s : FILTER_NEEDS_MESSAGE
     end
 
     def call
-      sort_rows(build_rows)
+      rows = sort_rows(build_rows)
+      return rows if @filter == FILTER_EVERYONE
+
+      rows.select { |row| needs_message?(row) }
     end
 
     private
@@ -38,6 +49,7 @@ module Admin
       return [] if users.empty?
 
       user_ids = users.map(&:id)
+      contacts = TesterContact.where(user_id: user_ids).index_by(&:user_id)
       first_wins = merge_times(
         one_shot_battles(user_ids).group(:user_id).minimum(:completed_at),
         recurring_todos(user_ids).group(:user_id).minimum(:completed_at),
@@ -67,6 +79,7 @@ module Admin
 
         Row.new(
           user: user,
+          contact: contacts[user.id],
           signed_up_at: user.created_at,
           onboarding_done: user.onboarding_completed_at.present?,
           first_win_at: first_win_at,
@@ -81,6 +94,15 @@ module Admin
           days_since_last_win: days_since_last_win
         )
       end
+    end
+
+    def needs_message?(row)
+      return false if row.reason_key.blank?
+
+      contact = row.contact
+      return true if contact.nil?
+
+      !contact.contacted_recently?
     end
 
     def one_shot_battles(user_ids)
