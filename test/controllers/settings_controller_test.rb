@@ -109,6 +109,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     travel_to Time.find_zone!(zone).local(2026, 8, 8, 12, 0, 0) do
+      user.update!(created_at: Time.find_zone!(zone).local(2026, 8, 1, 8, 0, 0))
       seed_climb!(user, today_mission: "Day one battle")
       journey = user.primary_focused_journey
       camp = user.strategy_goals.where(horizon: "project", life_journey_id: journey.id).order(:id).last
