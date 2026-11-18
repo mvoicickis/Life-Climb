@@ -26,6 +26,23 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  margin-top: 0.35rem;
+}
+
+.lp-you-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.lp-you-group__title {
+  margin: 0 0 0 0.35rem;
+  color: var(--lp-muted);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 /* Profile header — cover + big avatar + stats */
@@ -55,11 +72,13 @@
 }
 
 .lp-you__cover-img {
+  /* Wider than the banner so the peak (~54% of the photo) lands near 80% / right third. */
   display: block;
-  width: 100%;
+  width: 148%;
+  max-width: none;
   height: 100%;
   object-fit: cover;
-  object-position: 80% 20%;
+  object-position: 0% 20%;
 }
 
 .lp-you__profile {
@@ -364,9 +383,41 @@
 /* Grouped cards */
 .lp-you-card {
   background: var(--lp-surface);
-  border-radius: 0.625rem;
+  border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 0 0 0.5px var(--lp-border);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card, 0 14px 36px color-mix(in srgb, var(--lp-ink) 8%, transparent));
+}
+
+.lp-you-card--partner {
+  margin-bottom: 0.15rem;
+}
+
+.lp-you-partner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0 1rem;
+  border: 0;
+  background: none;
+  color: var(--lp-ink);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.lp-you-partner__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-you-card.is-open .lp-you-langs {
@@ -411,16 +462,15 @@
 .lp-you-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem;
-  min-height: 3rem;
+  gap: 0.75rem;
+  min-height: 3.5rem;
   padding: 0 1rem;
   width: 100%;
   border: 0;
   background: none;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--lp-ink);
   text-align: left;
   text-decoration: none;
@@ -428,12 +478,18 @@
   min-width: 0;
 }
 
-.lp-you-card > .lp-you-row + .lp-you-row,
-.lp-you-card > .lp-you-row + .lp-you-row--install,
-.lp-you-card > .lp-you-row--install + .lp-you-row,
-.lp-you-card > form + .lp-you-row,
-.lp-you-card > .lp-you-row + form {
-  border-top: 0.5px solid var(--lp-border);
+/* ~ so sr helper buttons between rows still get soft dividers */
+.lp-you-card > .lp-you-row ~ .lp-you-row,
+.lp-you-card > .lp-you-row ~ .lp-you-row--install,
+.lp-you-card > .lp-you-row--install ~ .lp-you-row,
+.lp-you-card > #you-reminders ~ .lp-you-row,
+.lp-you-card > form ~ .lp-you-row,
+.lp-you-card > .lp-you-row ~ form,
+.lp-you-card > form ~ form,
+#you-reminders > .lp-you-row ~ .lp-you-row,
+#you-reminders > .lp-you-row ~ .lp-you-row--install,
+#you-reminders > .lp-you-row--install ~ .lp-you-row {
+  border-top: 1px solid var(--lp-border);
 }
 
 .lp-you-card > form {
@@ -445,37 +501,23 @@
   cursor: default;
 }
 
+.lp-you-row__icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--lp-paper-soft);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
 .lp-you-row__label {
   flex: 1;
   min-width: 0;
-  font-weight: 700;
-}
-
-.lp-you-row--climb {
-  align-items: flex-start;
-  padding-top: 0.7rem;
-  padding-bottom: 0.7rem;
-  min-height: var(--lp-tap);
-}
-
-.lp-you-row__stack {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.lp-you-row__hint {
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--lp-muted);
+  font-weight: 800;
   overflow-wrap: anywhere;
-}
-
-.lp-you-row--climb .lp-you-row__chev {
-  margin-top: 0.1rem;
 }
 
 .lp-you-row__trail {
@@ -516,27 +558,66 @@
 .lp-you-row__tap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem;
-  min-height: 3rem;
+  gap: 0.75rem;
+  min-height: 3.5rem;
   width: 100%;
   padding: 0 1rem;
   border: 0;
   background: none;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--lp-ink);
   text-align: left;
   cursor: pointer;
   min-width: 0;
 }
 
-.lp-you-row--signout {
-  justify-content: center;
-  color: var(--lp-muted);
-  font-weight: 700;
+.lp-you-signout-form {
+  margin: 0.65rem 0 0;
   width: 100%;
+}
+
+.lp-you-signout,
+.lp-you-row--signout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.5rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 1rem;
+  background: var(--lp-surface);
+  color: var(--lp-muted);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: var(--lp-shadow-card, 0 14px 36px color-mix(in srgb, var(--lp-ink) 8%, transparent));
+  cursor: pointer;
+}
+
+.lp-you__delete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.lp-you__delete-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--lp-tap, 2.75rem);
+  padding: 0 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--lp-muted);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  cursor: pointer;
 }
 
 /* Reminders toggle — only green accent on You */
@@ -565,7 +646,7 @@
   height: 1.375rem;
   border-radius: 50%;
   background: var(--lp-surface);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--lp-ink) 20%, transparent);
   transition: left 0.18s ease;
   pointer-events: none;
 }

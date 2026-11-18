@@ -65,8 +65,45 @@
     </div>
 
     <div class="lp-you__groups">
-      <section class="lp-you-card"
-               id="you-reminders"
+      <section class="lp-you-card lp-you-card--partner" id="you-climb-together">
+        <% if @climb_partner %>
+          <%= link_to climb_together_path, class: "lp-you-partner", id: "you-row-climb-together" do %>
+            <%= render "shared/avatar_circle", user: @climb_partner, size: :sm %>
+            <span class="lp-you-partner__label">
+              <%= t("climb_together.you.partnered", name: @climb_partner.display_name) %>
+            </span>
+            <span class="lp-you-row__chev" aria-hidden="true">›</span>
+          <% end %>
+        <% else %>
+          <div data-controller="climb-together-invite share"
+               data-share-text-value="<%= t('climb_together.share.text') %>"
+               data-share-url-value="<%= absolute_url(climb_invite_path(@climb_invite.token)) %>"
+               data-share-title-value="<%= t('climb_together.share.title') %>">
+            <button type="button"
+                    class="lp-you-partner"
+                    id="you-row-climb-together"
+                    data-action="click->climb-together-invite#open">
+              <span class="lp-you-row__icon" aria-hidden="true">🤝</span>
+              <span class="lp-you-partner__label"><%= t("climb_together.you.row_title") %></span>
+              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            </button>
+            <%= render "shared/climb_together_sheet" %>
+            <%= render "shared/share_sheet",
+                  title: t("climb_together.share.title"),
+                  subtitle: t("climb_together.share.subtitle") %>
+          </div>
+        <% end %>
+      </section>
+
+      <div class="lp-you-group">
+        <h2 class="lp-you-group__title"><%= t("settings.groups.app") %></h2>
+        <section class="lp-you-card"
+                 <% unless play_app? %>
+                 data-controller="billing-checkout"
+                 data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
+                 data-billing-checkout-portal-url-value="<%= billing_portal_path %>"
+                 <% end %>>
+          <div id="you-reminders"
                data-controller="push-reminders"
                data-push-reminders-vapid-url-value="<%= push_config_path(format: :json) %>"
                data-push-reminders-subscribe-url-value="<%= push_subscription_path %>"
@@ -78,187 +115,171 @@
                data-denied-message="<%= t('settings.reminders_denied') %>"
                data-unsupported-message="<%= t('settings.reminders_unsupported') %>"
                data-error-message="<%= t('settings.reminders_error') %>">
-        <div class="lp-you-row lp-you-row--static">
-          <span class="lp-you-row__label"><%= t("settings.reminders_title") %></span>
-          <button type="button"
-                  class="lp-you-switch"
-                  role="switch"
-                  aria-checked="false"
-                  aria-label="<%= t('settings.reminders_title') %>"
-                  data-push-reminders-target="switch"
-                  data-action="click->push-reminders#toggleSwitch">
-            <span class="lp-you-switch__knob"></span>
-          </button>
-        </div>
-        <button type="button" class="lp-you-sr" data-push-reminders-target="enable" data-action="click->push-reminders#enable">
-          <%= t("settings.reminders_enable") %>
-        </button>
-        <button type="button" class="lp-you-sr" hidden data-push-reminders-target="disable" data-action="click->push-reminders#disable">
-          <%= t("settings.reminders_disable") %>
-        </button>
-        <% unless play_app? || current_user.install_offer_installed_at? %>
-          <div id="you-row-install-offer"
-               class="lp-you-row lp-you-row--install"
-               data-controller="pwa-install"
-               data-pwa-install-surface-value="settings"
-               data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
-               data-pwa-install-installed-url-value="<%= install_offer_path %>"
-               data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
-            <button type="button"
-                    class="lp-you-row__tap"
-                    data-pwa-install-target="row"
-                    data-action="click->pwa-install#install">
-              <span class="lp-you-row__label"><%= t("settings.install_offer.row_label") %></span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            <div class="lp-you-row lp-you-row--static">
+              <span class="lp-you-row__icon" aria-hidden="true">🔔</span>
+              <span class="lp-you-row__label"><%= t("settings.reminders_title") %></span>
+              <button type="button"
+                      class="lp-you-switch"
+                      role="switch"
+                      aria-checked="false"
+                      aria-label="<%= t('settings.reminders_title') %>"
+                      data-push-reminders-target="switch"
+                      data-action="click->push-reminders#toggleSwitch">
+                <span class="lp-you-switch__knob"></span>
+              </button>
+            </div>
+            <button type="button" class="lp-you-sr" data-push-reminders-target="enable" data-action="click->push-reminders#enable">
+              <%= t("settings.reminders_enable") %>
             </button>
-            <p class="lp-you-sr" data-pwa-install-target="message"></p>
+            <button type="button" class="lp-you-sr" hidden data-push-reminders-target="disable" data-action="click->push-reminders#disable">
+              <%= t("settings.reminders_disable") %>
+            </button>
+            <% unless play_app? || current_user.install_offer_installed_at? %>
+              <div id="you-row-install-offer"
+                   class="lp-you-row lp-you-row--install"
+                   data-controller="pwa-install"
+                   data-pwa-install-surface-value="settings"
+                   data-pwa-install-dismiss-url-value="<%= install_offer_path %>"
+                   data-pwa-install-installed-url-value="<%= install_offer_path %>"
+                   data-pwa-install-browser-menu-message-value="<%= t('settings.install_offer.browser_menu') %>">
+                <button type="button"
+                        class="lp-you-row__tap"
+                        data-pwa-install-target="row"
+                        data-action="click->pwa-install#install">
+                  <span class="lp-you-row__icon" aria-hidden="true">📲</span>
+                  <span class="lp-you-row__label"><%= t("settings.install_offer.row_label") %></span>
+                  <span class="lp-you-row__chev" aria-hidden="true">›</span>
+                </button>
+                <p class="lp-you-sr" data-pwa-install-target="message"></p>
+              </div>
+            <% end %>
+            <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
           </div>
-        <% end %>
-        <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
-      </section>
-
-      <% unless play_app? %>
-        <section class="lp-you-card"
-                 data-controller="billing-checkout"
-                 data-billing-checkout-checkout-url-value="<%= billing_checkout_path %>"
-                 data-billing-checkout-portal-url-value="<%= billing_portal_path %>">
-          <%= link_to pricing_path, class: "lp-you-row" do %>
-            <span class="lp-you-row__label"><%= t("pricing.premium_title") %></span>
-            <span class="lp-you-row__trail">
-              <span class="lp-you-row__value is-strong">
-                <%= current_user.premium? ? t("pricing.already_premium") : t("pricing.upgrade_cta") %>
+          <% unless play_app? %>
+            <%= link_to pricing_path, class: "lp-you-row" do %>
+              <span class="lp-you-row__icon" aria-hidden="true">⭐</span>
+              <span class="lp-you-row__label"><%= t("pricing.premium_title") %></span>
+              <span class="lp-you-row__trail">
+                <span class="lp-you-row__value is-strong">
+                  <%= current_user.premium? ? t("pricing.already_premium") : t("pricing.upgrade_cta") %>
+                </span>
+                <span class="lp-you-row__chev" aria-hidden="true">›</span>
               </span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
-            </span>
-          <% end %>
-          <% if current_user.stripe_customer_id.present? && StripeConfig.configured? %>
-            <button type="button"
-                    class="lp-you-row"
-                    data-action="billing-checkout#portal"
-                    data-billing-checkout-target="button">
-              <span class="lp-you-row__label"><%= t("pricing.manage_billing") %></span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
-            </button>
+            <% end %>
+            <% if current_user.stripe_customer_id.present? && StripeConfig.configured? %>
+              <button type="button"
+                      class="lp-you-row"
+                      data-action="billing-checkout#portal"
+                      data-billing-checkout-target="button">
+                <span class="lp-you-row__icon" aria-hidden="true">💳</span>
+                <span class="lp-you-row__label"><%= t("pricing.manage_billing") %></span>
+                <span class="lp-you-row__chev" aria-hidden="true">›</span>
+              </button>
+            <% end %>
           <% end %>
         </section>
-      <% end %>
+      </div>
 
-      <section class="lp-you-card" id="you-climb-together">
-        <% if @climb_partner %>
-          <%= link_to climb_together_path, class: "lp-you-row", id: "you-row-climb-together" do %>
-            <span class="lp-you-row__label">
-              <%= t("climb_together.you.partnered", name: @climb_partner.display_name) %>
-            </span>
+      <div class="lp-you-group">
+        <h2 class="lp-you-group__title"><%= t("settings.groups.friends") %></h2>
+        <section class="lp-you-card"
+                 data-controller="share"
+                 data-share-text-value="<%= invite_share_message_body %>"
+                 data-share-url-value="<%= share_landing_url %>"
+                 data-share-title-value="<%= t('share.invite.title') %>">
+          <button type="button" class="lp-you-row" data-action="click->share#open">
+            <span class="lp-you-row__icon" aria-hidden="true">💌</span>
+            <span class="lp-you-row__label"><%= t("settings.invite_short") %></span>
+            <span class="lp-you-row__chev" aria-hidden="true">›</span>
+          </button>
+          <%= link_to new_feedback_path, class: "lp-you-row", id: "you-row-feedback" do %>
+            <span class="lp-you-row__icon" aria-hidden="true">💬</span>
+            <span class="lp-you-row__label"><%= t("settings.send_feedback") %></span>
             <span class="lp-you-row__chev" aria-hidden="true">›</span>
           <% end %>
-        <% else %>
-          <div data-controller="climb-together-invite share"
-               data-share-text-value="<%= t('climb_together.share.text') %>"
-               data-share-url-value="<%= absolute_url(climb_invite_path(@climb_invite.token)) %>"
-               data-share-title-value="<%= t('climb_together.share.title') %>">
-            <button type="button"
-                    class="lp-you-row lp-you-row--climb"
-                    id="you-row-climb-together"
-                    data-action="click->climb-together-invite#open">
-              <span class="lp-you-row__stack">
-                <span class="lp-you-row__label"><%= t("climb_together.you.row_title") %></span>
-                <span class="lp-you-row__hint"><%= t("climb_together.you.row_hint") %></span>
-              </span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
-            </button>
-            <%= render "shared/climb_together_sheet" %>
-            <%= render "shared/share_sheet",
-                  title: t("climb_together.share.title"),
-                  subtitle: t("climb_together.share.subtitle") %>
-          </div>
-        <% end %>
-      </section>
+          <%= render "shared/share_sheet",
+                title: t("share.invite.title"),
+                subtitle: t("share.invite.subtitle") %>
+        </section>
+      </div>
 
-      <section class="lp-you-card"
-               data-controller="share"
-               data-share-text-value="<%= invite_share_message_body %>"
-               data-share-url-value="<%= share_landing_url %>"
-               data-share-title-value="<%= t('share.invite.title') %>">
-        <button type="button" class="lp-you-row" data-action="click->share#open">
-          <span class="lp-you-row__label"><%= t("settings.invite_short") %></span>
-          <span class="lp-you-row__chev" aria-hidden="true">›</span>
-        </button>
-        <%= link_to new_feedback_path, class: "lp-you-row", id: "you-row-feedback" do %>
-          <span class="lp-you-row__label"><%= t("settings.send_feedback") %></span>
-          <span class="lp-you-row__chev" aria-hidden="true">›</span>
-        <% end %>
-        <%= render "shared/share_sheet",
-              title: t("share.invite.title"),
-              subtitle: t("share.invite.subtitle") %>
-      </section>
-
-      <section class="lp-you-card">
-        <%= link_to new_password_path, class: "lp-you-row" do %>
-          <span class="lp-you-row__label"><%= t("settings.change_password") %></span>
-          <span class="lp-you-row__chev" aria-hidden="true">›</span>
-        <% end %>
-        <% if current_user.privileged_for_2fa? && !impersonating? %>
-          <%= link_to settings_two_factor_path, class: "lp-you-row", id: "you-two-factor" do %>
-            <span class="lp-you-row__label"><%= t("settings.two_step_login") %></span>
-            <span class="lp-you-row__trail">
-              <span class="lp-you-row__value">
-                <%= current_user.otp_enabled? ? t("two_factor.status_on") : t("two_factor.status_off") %>
-              </span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
-            </span>
+      <div class="lp-you-group">
+        <h2 class="lp-you-group__title"><%= t("settings.groups.account") %></h2>
+        <section class="lp-you-card">
+          <%= link_to new_password_path, class: "lp-you-row" do %>
+            <span class="lp-you-row__icon" aria-hidden="true">🔑</span>
+            <span class="lp-you-row__label"><%= t("settings.change_password") %></span>
+            <span class="lp-you-row__chev" aria-hidden="true">›</span>
           <% end %>
-        <% end %>
+          <% if current_user.privileged_for_2fa? && !impersonating? %>
+            <%= link_to settings_two_factor_path, class: "lp-you-row", id: "you-two-factor" do %>
+              <span class="lp-you-row__icon" aria-hidden="true">🛡️</span>
+              <span class="lp-you-row__label"><%= t("settings.two_step_login") %></span>
+              <span class="lp-you-row__trail">
+                <span class="lp-you-row__value">
+                  <%= current_user.otp_enabled? ? t("two_factor.status_on") : t("two_factor.status_off") %>
+                </span>
+                <span class="lp-you-row__chev" aria-hidden="true">›</span>
+              </span>
+            <% end %>
+          <% end %>
+        </section>
         <%= button_to session_path,
               method: :delete,
-              class: "lp-you-row lp-you-row--signout lp-you-signout",
-              form: { data: { turbo: false, action: "submit->offline-page-cache#clearBeforeSignOut" } } do %>
+              class: "lp-you-signout lp-you-row--signout",
+              form: { class: "lp-you-signout-form", data: { turbo: false, action: "submit->offline-page-cache#clearBeforeSignOut" } } do %>
           <%= t("nav.sign_out") %>
         <% end %>
-      </section>
-
-      <% unless impersonating? %>
-        <section class="lp-you-card"
-                 data-controller="delete-account"
-                 data-delete-account-open-value="<%= @account_delete_open %>">
-          <button type="button"
-                  class="lp-you-row lp-you-row--muted"
-                  data-action="click->delete-account#open">
-            <span class="lp-you-row__label"><%= t("account_delete.open") %></span>
-          </button>
-          <%= render "shared/delete_account_sheet",
-                open: @account_delete_open,
-                error_key: @account_delete_sheet_error %>
-        </section>
-      <% end %>
+      </div>
 
       <% if (current_user.admin? && !impersonating?) || (developer? && !impersonating?) %>
-        <section class="lp-you-card">
-          <% if current_user.admin? && !impersonating? %>
-            <%= link_to admin_root_path, class: "lp-you-row" do %>
-              <span class="lp-you-row__label"><%= t("nav.admin") %></span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+        <div class="lp-you-group" id="you-admin-group">
+          <h2 class="lp-you-group__title"><%= t("settings.groups.admin") %></h2>
+          <section class="lp-you-card">
+            <% if current_user.admin? && !impersonating? %>
+              <%= link_to admin_root_path, class: "lp-you-row" do %>
+                <span class="lp-you-row__icon" aria-hidden="true">⚙️</span>
+                <span class="lp-you-row__label"><%= t("nav.admin") %></span>
+                <span class="lp-you-row__chev" aria-hidden="true">›</span>
+              <% end %>
             <% end %>
-          <% end %>
-          <% if developer? && !impersonating? %>
-            <%= button_to restart_new_player_experience_developer_tools_path,
-                  method: :post,
-                  class: "lp-you-row",
-                  form: {
-                    data: {
-                      turbo_confirm: t("developer.tools.restart_npe_confirm"),
-                      action: "submit->offline-page-cache#clearBeforeRestart"
-                    }
-                  } do %>
-              <span class="lp-you-row__label"><%= t("developer.tools.restart_npe") %></span>
-              <span class="lp-you-row__chev" aria-hidden="true">›</span>
+            <% if developer? && !impersonating? %>
+              <%= button_to restart_new_player_experience_developer_tools_path,
+                    method: :post,
+                    class: "lp-you-row",
+                    form: {
+                      data: {
+                        turbo_confirm: t("developer.tools.restart_npe_confirm"),
+                        action: "submit->offline-page-cache#clearBeforeRestart"
+                      }
+                    } do %>
+                <span class="lp-you-row__icon" aria-hidden="true">↻</span>
+                <span class="lp-you-row__label"><%= t("developer.tools.restart_npe") %></span>
+                <span class="lp-you-row__chev" aria-hidden="true">›</span>
+              <% end %>
             <% end %>
-          <% end %>
-        </section>
+          </section>
+        </div>
       <% end %>
     </div>
 
     <% if developer? && !impersonating? %>
       <p class="lp-you-sr"><%= t("developer.tools.title") %></p>
+    <% end %>
+
+    <% unless impersonating? %>
+      <div class="lp-you__delete"
+           data-controller="delete-account"
+           data-delete-account-open-value="<%= @account_delete_open %>">
+        <button type="button"
+                class="lp-you__delete-link"
+                data-action="click->delete-account#open">
+          <%= t("account_delete.open") %>
+        </button>
+        <%= render "shared/delete_account_sheet",
+              open: @account_delete_open,
+              error_key: @account_delete_sheet_error %>
+      </div>
     <% end %>
 
     <p class="lp-you-foot">

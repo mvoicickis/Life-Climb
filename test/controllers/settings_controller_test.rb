@@ -49,7 +49,14 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-language", count: 0
     assert_select "#you-reminders[data-controller=?]", "push-reminders"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#enable"
+    assert_select "#you-reminders button[data-action=?]", "click->push-reminders#toggleSwitch"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest", count: 0
+    assert_select "#you-climb-together"
+    assert_select "#you-row-climb-together"
+    assert_select ".lp-you-group__title", text: "App"
+    assert_select ".lp-you-group__title", text: "Friends"
+    assert_select ".lp-you-group__title", text: "Account"
+    assert_select "#you-admin-group", count: 0
     assert_select "a#you-row-notifications", count: 0
     assert_select "a[href=?]", support_path, count: 0
     assert_select "a[href=?]", pricing_path
@@ -58,7 +65,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", about_path, count: 0
     assert_select "form[action=?]", session_path
     assert_select "form[action=?][data-action=?]", session_path, "submit->offline-page-cache#clearBeforeSignOut"
-    assert_select ".lp-you-row--signout", text: /Sign out/i
+    assert_select ".lp-you-signout.lp-you-row--signout", text: /Sign out/i
+    assert_select ".lp-you__delete-link[data-action=?]", "click->delete-account#open"
+    assert_select "[data-delete-account-target=dialog]"
     assert_select ".lp-feedback-fab", count: 0
     assert_select "a[href=?]", admin_root_path, count: 0
     assert_select "form[action=?]", restart_new_player_experience_developer_tools_path, count: 0
@@ -213,8 +222,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     get settings_path
     assert_response :success
+    assert_select "#you-admin-group .lp-you-group__title", text: "Admin"
     assert_select "a[href=?]", admin_root_path
     assert_select "#you-two-factor"
+    assert_select "#you-two-factor .lp-you-row__value", text: /On|Off/
   end
 
   test "developer sees restart NPE on You" do
