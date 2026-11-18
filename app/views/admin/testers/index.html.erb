@@ -36,7 +36,7 @@
           </div>
           <div>
             <dt><%= t("admin.testers.onboarding") %></dt>
-            <dd><%= row.onboarding_done ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+            <dd><%= row.onboarding_done ? t("admin.testers.done") : t("admin.testers.not_done") %></dd>
           </div>
           <div>
             <dt><%= t("admin.testers.first_win") %></dt>
@@ -64,11 +64,11 @@
           </div>
           <div>
             <dt><%= t("admin.testers.push") %></dt>
-            <dd><%= row.push_on ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+            <dd><%= row.push_on ? t("admin.testers.done") : t("admin.testers.not_done") %></dd>
           </div>
           <div>
             <dt><%= t("admin.testers.partner") %></dt>
-            <dd><%= row.partner ? t("admin.testers.yes") : t("admin.testers.no") %></dd>
+            <dd><%= row.partner ? t("admin.testers.done") : t("admin.testers.not_done") %></dd>
           </div>
         </dl>
       </article>
