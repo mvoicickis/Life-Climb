@@ -8,6 +8,31 @@
   </div>
 </header>
 
+<section class="lp-admin-climbers" aria-label="<%= t('admin.testers.climbers_label') %>">
+  <% today_testers = @today_counts[:testers].to_i %>
+  <% today_admins = @today_counts[:admins].to_i %>
+  <% today_tier = Admin::Testers.goal_tier(today_testers) %>
+  <div class="lp-admin-climbers__today <%= climbers_tier_class(today_tier) %>" id="admin-climbers-today">
+    <p class="lp-admin-climbers__today-kicker"><%= t("admin.testers.climbers_today_label") %></p>
+    <p class="lp-admin-climbers__today-count">
+      <%= t("admin.testers.climbers_today_count",
+            count: today_testers,
+            goal: Admin::Testers::DAILY_CLIMBERS_GOAL) %>
+    </p>
+    <% if today_admins.positive? %>
+      <p class="lp-admin-climbers__today-admins">
+        <%= t("admin.testers.climbers_today_admins", count: today_admins) %>
+      </p>
+    <% end %>
+  </div>
+
+  <%= render "admin/testers/climbers_calendar",
+        counts_by_day: @climbers_by_day,
+        calendar_month: @climbers_month,
+        berlin_today: @berlin_today,
+        filter: @filter %>
+</section>
+
 <div class="lp-admin__toolbar" role="navigation" aria-label="<%= t('admin.testers.filter_label') %>">
   <%= link_to t("admin.testers.filter_needs_message"),
         admin_testers_path(filter: Admin::Testers::FILTER_NEEDS_MESSAGE),

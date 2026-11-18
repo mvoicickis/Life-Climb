@@ -136,5 +136,96 @@ module Admin
                       text: /Last contacted:.*pinged/
       end
     end
+
+    test "admin sees today box and climbers calendar" do
+      zone = Testers::DAY_ZONE
+      travel_to Time.find_zone!(zone).local(2026, 11, 18, 12, 0, 0) do
+        seed_climb!(@user, today_mission: "Today climb")
+        battle = @user.strategy_goals.battles.order(:id).last
+        battle.update!(
+          completed_at: Time.find_zone!(zone).local(2026, 11, 18, 9, 0, 0),
+          repeat: nil
+        )
+        sign_in_as @admin
+
+        get admin_testers_path
+
+        assert_response :success
+        assert_select "#admin-climbers-today.is-goal-partial"
+        assert_select "#admin-climbers-today .lp-admin-climbers__today-count",
+                      text: /1 \/ 12 climbed today/
+        assert_select "turbo-frame#climbers_calendar"
+        assert_select "#admin-climbers-goal-met", text: /Goal met on 0 days this month/
+        assert_select ".lp-admin-climbers-cal__cell.is-today .lp-admin-climbers-cal__dot", text: "1"
+      end
+    end
+
+    test "today box turns green at the goal and shows admin extras" do
+      zone = Testers::DAY_ZONE
+      travel_to Time.find_zone!(zone).local(2026, 11, 18, 12, 0, 0) do
+        Testers::DAILY_CLIMBERS_GOAL.times do |index|
+          climber = User.create!(
+            email_address: "goal-#{index}-#{SecureRandom.hex(3)}@example.com",
+            name: "Goal #{index}",
+            password: "password12345",
+            password_confirmation: "password12345",
+            onboarding_completed_at: 1.week.ago
+          )
+          seed_climb!(climber, today_mission: "Goal battle #{index}")
+          climber.strategy_goals.battles.order(:id).last.update!(
+            completed_at: Time.find_zone!(zone).local(2026, 11, 18, 10, 0, 0),
+            repeat: nil
+          )
+        end
+        seed_climb!(@admin, today_mission: "Admin climb")
+        @admin.strategy_goals.battles.order(:id).last.update!(
+          completed_at: Time.find_zone!(zone).local(2026, 11, 18, 11, 0, 0),
+          repeat: nil
+        )
+        sign_in_as @admin
+
+        get admin_testers_path
+
+        assert_select "#admin-climbers-today.is-goal-met"
+        assert_select "#admin-climbers-today .lp-admin-climbers__today-count",
+                      text: /12 \/ 12 climbed today/
+        assert_select "#admin-climbers-today .lp-admin-climbers__today-admins", text: /\+1 admin/
+        assert_select "#admin-climbers-goal-met", text: /Goal met on 1 day this month/
+      end
+    end
+
+    test "month nav stays inside climbers frame and blocks future months" do
+      zone = Testers::DAY_ZONE
+      travel_to Time.find_zone!(zone).local(2026, 11, 18, 12, 0, 0) do
+        sign_in_as @admin
+
+        get admin_testers_path(climbers_month: "2026-10")
+        assert_response :success
+        assert_select "#admin-climbers-cal-title", text: /October 2026/
+        assert_select "a.lp-stats-cal__nav[href*=?]", "climbers_month=2026-11"
+
+        get admin_testers_path(climbers_month: "2026-12")
+        assert_response :success
+        assert_select "#admin-climbers-cal-title", text: /November 2026/
+        assert_select "a.lp-stats-cal__nav[aria-label=?]", I18n.t("admin.testers.climbers_next"), count: 0
+
+        get admin_testers_path(climbers_month: "2026-10"),
+            headers: { "Turbo-Frame" => "climbers_calendar" }
+        assert_response :success
+        assert_select "turbo-frame#climbers_calendar"
+        assert_select "#admin-climbers-today", count: 0
+        assert_select "#admin-testers", count: 0
+      end
+    end
+
+    test "non admin cannot see climbers tracker" do
+      sign_in_as @user
+      get admin_testers_path
+
+      assert_redirected_to dashboard_path
+      follow_redirect!
+      assert_select "#admin-climbers-today", count: 0
+      assert_select "turbo-frame#climbers_calendar", count: 0
+    end
   end
 end

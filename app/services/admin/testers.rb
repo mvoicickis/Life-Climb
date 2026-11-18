@@ -5,6 +5,8 @@ module Admin
   # Product wins only (Battles::WinsOnLocalDate sources) — never the broader funnel.
   class Testers
     STALE_AFTER_DAYS = 3
+    DAILY_CLIMBERS_GOAL = 12
+    DAY_ZONE = "Europe/Berlin"
     RECURRING_REPEATS = Battles::WinsOnLocalDate::RECURRING_REPEATS
     FILTER_NEEDS_MESSAGE = "needs_message"
     FILTER_EVERYONE = "everyone"
@@ -33,6 +35,24 @@ module Admin
       new(filter: filter).call
     end
 
+    # Berlin calendar day → { testers:, admins: } unique climber counts.
+    # Two win queries for the month + one privileged-id query; bucketed in Ruby.
+    def self.counts_by_day(month:)
+      new.counts_by_day(month: month)
+    end
+
+    def self.berlin_today
+      Time.find_zone!(DAY_ZONE).today
+    end
+
+    def self.goal_tier(testers_count)
+      n = testers_count.to_i
+      return :zero if n <= 0
+      return :partial if n < DAILY_CLIMBERS_GOAL
+
+      :met
+    end
+
     def initialize(filter: FILTER_NEEDS_MESSAGE)
       @filter = FILTERS.include?(filter.to_s) ? filter.to_s : FILTER_NEEDS_MESSAGE
     end
@@ -44,7 +64,60 @@ module Admin
       rows.select { |row| needs_message?(row) }
     end
 
+    def counts_by_day(month:)
+      month_start = month.to_date.beginning_of_month
+      month_end = month_start.end_of_month
+      zone = Time.find_zone!(DAY_ZONE)
+      range_start = zone.local(month_start.year, month_start.month, month_start.day).beginning_of_day
+      range_end = zone.local(month_end.year, month_end.month, month_end.day).end_of_day
+
+      privileged_ids = User.privileged.pluck(:id).to_set
+      buckets = Hash.new { |hash, date| hash[date] = { testers: Set.new, admins: Set.new } }
+
+      one_shot_battles_scope
+        .where(completed_at: range_start..range_end)
+        .pluck(:user_id, :completed_at)
+        .each do |user_id, completed_at|
+          date = completed_at.in_time_zone(zone).to_date
+          next if date < month_start || date > month_end
+
+          key = privileged_ids.include?(user_id) ? :admins : :testers
+          buckets[date][key] << user_id
+        end
+
+      recurring_todos_scope
+        .where(scheduled_on: month_start..month_end)
+        .pluck(:user_id, :scheduled_on)
+        .each do |user_id, scheduled_on|
+          date = scheduled_on.to_date
+          next if date < month_start || date > month_end
+
+          key = privileged_ids.include?(user_id) ? :admins : :testers
+          buckets[date][key] << user_id
+        end
+
+      result = {}
+      month_start.upto(month_end) do |date|
+        bucket = buckets[date]
+        result[date] = { testers: bucket[:testers].size, admins: bucket[:admins].size }
+      end
+      result
+    end
+
     private
+
+    def one_shot_battles_scope
+      StrategyGoal.battles
+        .where.not(repeat: RECURRING_REPEATS)
+        .where.not(completed_at: nil)
+    end
+
+    def recurring_todos_scope
+      DailyTodo.where.not(completed_at: nil)
+        .joins(:strategy_goal)
+        .where(strategy_goals: { repeat: RECURRING_REPEATS })
+    end
+
 
     def build_rows
       users = User.excluding_privileged.order(:id).to_a
