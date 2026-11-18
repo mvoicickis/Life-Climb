@@ -1261,6 +1261,11 @@ de:
       row_label: "Add to home screen"
       browser_menu: "Your browser will offer this from its own menu."
     edit: "Edit" # TODO: translate
+    groups:
+      app: "App" # TODO: translate
+      friends: "Friends" # TODO: translate
+      account: "Account" # TODO: translate
+      admin: "Admin" # TODO: translate
     send_feedback: "Send feedback" # TODO: translate
     two_step_login: "Two-step login" # TODO: translate
     language_title: "Sprache"

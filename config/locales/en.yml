@@ -2996,6 +2996,11 @@ en:
       camps_finished: "Camps finished"
       days_won: "Days won"
     edit: "Edit"
+    groups:
+      app: "App"
+      friends: "Friends"
+      account: "Account"
+      admin: "Admin"
     send_feedback: "Send feedback"
     two_step_login: "Two-step login"
     language_title: "Language"

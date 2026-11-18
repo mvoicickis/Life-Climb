@@ -18,7 +18,9 @@ module ClimbTogether
       get settings_path
 
       assert_response :success
-      assert_select "#you-row-climb-together", text: /Climb with someone/
+      assert_select "#you-climb-together #you-row-climb-together.lp-you-partner", text: /Climb with someone/
+      assert_select "#you-row-climb-together .lp-you-row__icon", text: "🤝"
+      assert_select "#you-row-climb-together .lp-you-partner__label", text: /Climb with someone/
       assert_select "[data-controller='climb-together-invite share']"
       assert_select "#climb-together-sheet-title", text: "Climb together"
 
@@ -35,10 +37,25 @@ module ClimbTogether
       get settings_path
 
       assert_response :success
+      assert_select "#you-climb-together a#you-row-climb-together.lp-you-partner[href=?]", climb_together_path
       assert_select "#you-row-climb-together", text: /Climbing with #{Regexp.escape(@partner.display_name)}/
-      assert_select "a#you-row-climb-together[href=?]", climb_together_path
+      assert_select "#you-row-climb-together .lp-avatar-circle.is-sm"
+      assert_select "#you-row-climb-together .lp-you-partner__label", text: /Climbing with/
       assert_select "#you-row-climb-together .lp-you-row__chev", text: "›"
       assert_select "[data-controller='climb-together-invite share']", count: 0
+    end
+
+    test "long partner name truncates on one line" do
+      @partner.update!(name: "Alexandria Maximiliane With A Very Long Climbing Name")
+      invite = Invite.call(user: @user)
+      Accept.call(user: @partner, token: invite.token)
+
+      get settings_path
+
+      assert_response :success
+      assert_select "#you-row-climb-together .lp-you-partner__label",
+                    text: /Climbing with Alexandria Maximiliane With A Very Long Climbing Name/
+      assert_match(/lp-you-partner__label/, response.body)
     end
 
     private
