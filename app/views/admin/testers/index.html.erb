@@ -8,12 +8,23 @@
   </div>
 </header>
 
+<div class="lp-admin__toolbar" role="navigation" aria-label="<%= t('admin.testers.filter_label') %>">
+  <%= link_to t("admin.testers.filter_needs_message"),
+        admin_testers_path(filter: Admin::Testers::FILTER_NEEDS_MESSAGE),
+        class: @filter == Admin::Testers::FILTER_NEEDS_MESSAGE ? "lp-admin__btn" : "lp-admin__ghost" %>
+  <%= link_to t("admin.testers.filter_everyone"),
+        admin_testers_path(filter: Admin::Testers::FILTER_EVERYONE),
+        class: @filter == Admin::Testers::FILTER_EVERYONE ? "lp-admin__btn" : "lp-admin__ghost" %>
+</div>
+
 <% if @rows.empty? %>
   <p class="lp-admin__lead"><%= t("admin.testers.empty") %></p>
 <% else %>
   <div class="lp-admin-testers" id="admin-testers">
     <% @rows.each do |row| %>
+      <% contact = row.contact %>
       <article class="lp-admin-tester<%= " has-reason" if row.reason.present? %>"
+               id="tester-<%= row.user.id %>"
                data-user-id="<%= row.user.id %>"
                data-reason="<%= row.reason_key %>">
         <header class="lp-admin-tester__head">
@@ -28,6 +39,42 @@
             <span class="lp-admin-tester__reason"><%= row.reason %></span>
           <% end %>
         </header>
+
+        <div class="lp-admin-tester__contact">
+          <p class="lp-admin-tester__reach">
+            <span class="lp-admin-tester__reach-label"><%= t("admin.testers.reach_on") %></span>
+            <% if contact&.channel.present? %>
+              <span class="lp-admin-tester__channel"><%= t("admin.testers.channels.#{contact.channel}") %></span>
+              <% reach_url = admin_tester_reach_url(contact, user: row.user) %>
+              <% reach_label = contact.details.presence || contact.mailto_address(fallback_email: row.user.email_address) %>
+              <% if reach_url.present? && reach_label.present? %>
+                <%= link_to reach_label,
+                      reach_url,
+                      class: "lp-admin-tester__reach-link",
+                      target: (reach_url.start_with?("https://") ? "_blank" : nil),
+                      rel: (reach_url.start_with?("https://") ? "noopener noreferrer" : nil) %>
+              <% elsif contact.details.present? %>
+                <span class="lp-admin-tester__reach-text"><%= contact.details %></span>
+              <% end %>
+            <% else %>
+              <span class="lp-admin-tester__reach-text"><%= t("admin.testers.dash") %></span>
+            <% end %>
+          </p>
+
+          <p class="lp-admin-tester__last-contact">
+            <% if contact&.last_contacted_on.present? %>
+              <%= t("admin.testers.last_contacted_line",
+                    date: l(contact.last_contacted_on, format: :long),
+                    note: contact.note.presence || t("admin.testers.dash")) %>
+            <% else %>
+              <%= t("admin.testers.not_contacted") %>
+            <% end %>
+          </p>
+
+          <%= link_to t("admin.testers.edit_contact"),
+                edit_admin_tester_contact_path(row.user),
+                class: "lp-admin-tester__edit" %>
+        </div>
 
         <dl class="lp-admin-tester__grid">
           <div>

@@ -17453,6 +17453,71 @@ button.lp-strategy-overflow {
   overflow-wrap: anywhere;
 }
 
+.lp-admin-tester__contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.lp-admin-tester__reach,
+.lp-admin-tester__last-contact {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
+  min-width: 0;
+  width: 100%;
+}
+
+.lp-admin-tester__reach-label {
+  font-weight: 700;
+  color: var(--lp-muted);
+  margin-right: 0.25rem;
+}
+
+.lp-admin-tester__channel {
+  font-weight: 800;
+  margin-right: 0.35rem;
+}
+
+.lp-admin-tester__reach-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--lp-tap);
+  padding: 0.2rem 0;
+  font-weight: 800;
+  color: var(--lp-green-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  overflow-wrap: anywhere;
+}
+
+.lp-admin-tester__reach-text {
+  font-weight: 800;
+}
+
+.lp-admin-tester__last-contact {
+  color: var(--lp-muted);
+  font-weight: 700;
+}
+
+.lp-admin-tester__edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--lp-tap);
+  padding: 0.25rem 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
 .lp-admin-tester__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -10,10 +10,11 @@ module Admin
       @other = users(:two)
       ClimbPartnership.delete_all
       PushSubscription.delete_all
+      TesterContact.delete_all
     end
 
     test "excludes admin and developer accounts" do
-      rows = Testers.call
+      rows = Testers.call(filter: Testers::FILTER_EVERYONE)
       ids = rows.map { |row| row.user.id }
 
       assert_includes ids, @user.id
@@ -88,7 +89,7 @@ module Admin
           onboarding_completed_at: 2.weeks.ago
         )
 
-        rows = Testers.call
+        rows = Testers.call(filter: Testers::FILTER_EVERYONE)
         names = rows.map { |row| row.user.name }
         assert_operator names.index("Needs onboarding"), :<, names.index("Never won")
         assert_operator names.index("Never won"), :<, names.index("Stale win")
@@ -116,9 +117,74 @@ module Admin
       end
     end
 
+    test "needs message filter keeps reason rows not contacted recently" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: nil, name: "Needs ping")
+        @other.update!(onboarding_completed_at: 2.weeks.ago, name: "Fresh win")
+        plant_one_shot_win!(@other, completed_at: 1.day.ago)
+
+        contacted = User.create!(
+          email_address: "contacted-tester-#{SecureRandom.hex(4)}@example.com",
+          name: "Contacted today",
+          password: "password12345",
+          password_confirmation: "password12345",
+          onboarding_completed_at: nil
+        )
+        TesterContact.create!(
+          user: contacted,
+          channel: "email",
+          last_contacted_on: Date.current,
+          note: "said hi",
+          updated_by: @admin
+        )
+
+        stale_contact = User.create!(
+          email_address: "stale-contact-#{SecureRandom.hex(4)}@example.com",
+          name: "Contacted long ago",
+          password: "password12345",
+          password_confirmation: "password12345",
+          onboarding_completed_at: nil
+        )
+        TesterContact.create!(
+          user: stale_contact,
+          channel: "email",
+          last_contacted_on: 4.days.ago.to_date,
+          note: "old note",
+          updated_by: @admin
+        )
+
+        needs = Testers.call(filter: Testers::FILTER_NEEDS_MESSAGE).map { |row| row.user.name }
+        everyone = Testers.call(filter: Testers::FILTER_EVERYONE).map { |row| row.user.name }
+
+        assert_includes needs, "Needs ping"
+        assert_includes needs, "Contacted long ago"
+        assert_not_includes needs, "Contacted today"
+        assert_not_includes needs, "Fresh win"
+        assert_includes everyone, "Contacted today"
+        assert_includes everyone, "Fresh win"
+      end
+    end
+
+    test "loads contacts in one batched query" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: nil)
+        TesterContact.create!(
+          user: @user,
+          channel: "whatsapp",
+          details: "353872346580",
+          note: "hi",
+          updated_by: @admin
+        )
+
+        row = row_for(@user)
+        assert_equal "whatsapp", row.contact.channel
+        assert_equal "353872346580", row.contact.details
+      end
+    end
+
     test "query count stays flat for 1 vs 20 users" do
       travel_to Time.zone.parse("2026-11-18 12:00:00") do
-        one_count = count_queries { Testers.call }
+        one_count = count_queries { Testers.call(filter: Testers::FILTER_EVERYONE) }
 
         18.times do |index|
           User.create!(
@@ -130,16 +196,16 @@ module Admin
           )
         end
 
-        twenty_count = count_queries { Testers.call }
+        twenty_count = count_queries { Testers.call(filter: Testers::FILTER_EVERYONE) }
         assert_equal one_count, twenty_count
-        assert_operator one_count, :<=, 12
+        assert_operator one_count, :<=, 13
       end
     end
 
     private
 
     def row_for(user)
-      Testers.call.find { |row| row.user.id == user.id }
+      Testers.call(filter: Testers::FILTER_EVERYONE).find { |row| row.user.id == user.id }
     end
 
     def plant_one_shot_win!(user, completed_at:)

@@ -18,6 +18,18 @@ module AdminHelper
     user.onboarding_completed? ? t("admin.users.onboarding_done") : t("admin.users.onboarding_pending")
   end
 
+  # Tap target for tester outreach. WhatsApp and email only — Messenger/other stay plain text.
+  def admin_tester_reach_url(contact, user:)
+    return nil if contact.blank? || contact.channel.blank?
+
+    case contact.channel
+    when "whatsapp"
+      contact.whatsapp_url
+    when "email"
+      contact.mailto_url(fallback_email: user.email_address)
+    end
+  end
+
   def admin_funnel_activity_status(last_seen_at)
     return { level: :muted, label: t("admin.funnel.status_never") } if last_seen_at.blank?
 

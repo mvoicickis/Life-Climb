@@ -1,0 +1,60 @@
+<% content_for :title, t("admin.testers.edit_contact") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= @user.email_address %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.testers.edit_contact") %></h1>
+    <p class="lp-admin__lead"><%= @user.display_name %></p>
+  </div>
+  <%= link_to t("admin.testers.back"), admin_testers_path(filter: Admin::Testers::FILTER_EVERYONE, anchor: "tester-#{@user.id}"), class: "lp-admin__ghost" %>
+</header>
+
+<%= form_with model: @contact,
+      url: admin_tester_contact_path(@user),
+      method: :patch,
+      class: "lp-admin__panel lp-admin__form" do |f| %>
+  <% if @contact.errors.any? %>
+    <div class="lp-admin__flash is-alert">
+      <%= @contact.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.testers.channel") %></span>
+    <%= f.select :channel,
+          TesterContact::CHANNELS.map { |key| [ t("admin.testers.channels.#{key}"), key ] },
+          { include_blank: t("admin.testers.channel_blank") },
+          class: "lp-input",
+          required: true %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.testers.details") %></span>
+    <%= f.text_field :details,
+          class: "lp-input",
+          maxlength: TesterContact::DETAILS_MAX,
+          autocomplete: "off",
+          placeholder: t("admin.testers.details_placeholder") %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.testers.last_contacted") %></span>
+    <%= f.date_field :last_contacted_on, class: "lp-input", value: @contact.last_contacted_on || Date.current %>
+  </label>
+
+  <label class="lp-admin__field">
+    <span><%= t("admin.testers.note") %></span>
+    <%= f.text_field :note,
+          class: "lp-input",
+          maxlength: TesterContact::NOTE_MAX,
+          autocomplete: "off",
+          placeholder: t("admin.testers.note_placeholder") %>
+  </label>
+
+  <div class="lp-admin__btn-row">
+    <%= f.submit t("admin.testers.save_contact"), class: "lp-admin__btn" %>
+    <%= link_to t("admin.testers.cancel"),
+          admin_testers_path(filter: Admin::Testers::FILTER_EVERYONE, anchor: "tester-#{@user.id}"),
+          class: "lp-admin__ghost" %>
+  </div>
+<% end %>

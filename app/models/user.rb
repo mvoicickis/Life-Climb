@@ -40,6 +40,7 @@ class User < ApplicationRecord
   has_many :high_fives_received, class_name: "HighFive",
            foreign_key: :to_user_id, inverse_of: :to_user, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
+  has_one :tester_contact, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
 

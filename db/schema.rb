@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_17_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_153000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -544,6 +544,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_213000) do
     t.index ["stripe_event_id"], name: "index_stripe_webhook_events_on_stripe_event_id", unique: true
   end
 
+  create_table "tester_contacts", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "channel"
+    t.string "details"
+    t.date "last_contacted_on"
+    t.string "note"
+    t.integer "updated_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["updated_by_id"], name: "index_tester_contacts_on_updated_by_id"
+    t.index ["user_id"], name: "index_tester_contacts_on_user_id", unique: true
+  end
+
   create_table "today_actions", force: :cascade do |t|
     t.integer "building_id", null: false
     t.datetime "completed_at"
@@ -684,6 +697,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_213000) do
   add_foreign_key "strategy_quantity_logs", "strategy_goals"
   add_foreign_key "strategy_quantity_logs", "strategy_goals", column: "source_day_id"
   add_foreign_key "strategy_quantity_logs", "users"
+  add_foreign_key "tester_contacts", "users"
+  add_foreign_key "tester_contacts", "users", column: "updated_by_id"
   add_foreign_key "today_actions", "buildings"
   add_foreign_key "today_actions", "users"
   add_foreign_key "user_events", "users"
