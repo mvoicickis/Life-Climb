@@ -3763,6 +3763,7 @@ en:
       filter_label: "Tester filter"
       filter_needs_message: "Needs a message"
       filter_everyone: "Everyone"
+      play_testers_list: "Play testers list ↗"
       signed_up: "Signed up"
       onboarding: "Onboarding"
       first_win: "First win"

@@ -38,6 +38,9 @@ module Admin
         assert_select ".lp-admin-tester__reason", text: I18n.t("admin.testers.reason.onboarding")
         assert_select ".lp-admin__nav-link.is-active", text: I18n.t("admin.nav.testers")
         assert_select "a.lp-admin__btn", text: I18n.t("admin.testers.filter_needs_message")
+        assert_select "a.lp-admin-testers__play-link[href=?][target=_blank][rel=noopener]",
+                      Testers::PLAY_TESTERS_URL,
+                      text: I18n.t("admin.testers.play_testers_list")
       end
     end
 

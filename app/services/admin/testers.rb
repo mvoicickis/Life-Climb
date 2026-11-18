@@ -9,6 +9,8 @@ module Admin
     FILTER_NEEDS_MESSAGE = "needs_message"
     FILTER_EVERYONE = "everyone"
     FILTERS = [ FILTER_NEEDS_MESSAGE, FILTER_EVERYONE ].freeze
+    PLAY_TESTERS_URL =
+      "https://play.google.com/console/u/0/developers/7962663201417265259/app/4975708625747728285/tracks/4699763347313539783?tab=testers"
 
     Row = Data.define(
       :user,

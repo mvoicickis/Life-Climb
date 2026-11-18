@@ -15,6 +15,11 @@
   <%= link_to t("admin.testers.filter_everyone"),
         admin_testers_path(filter: Admin::Testers::FILTER_EVERYONE),
         class: @filter == Admin::Testers::FILTER_EVERYONE ? "lp-admin__btn" : "lp-admin__ghost" %>
+  <%= link_to t("admin.testers.play_testers_list"),
+        Admin::Testers::PLAY_TESTERS_URL,
+        class: "lp-admin-testers__play-link",
+        target: "_blank",
+        rel: "noopener" %>
 </div>
 
 <% if @rows.empty? %>
