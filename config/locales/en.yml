@@ -2989,6 +2989,12 @@ en:
     make_yours_title: "Make it yours"
     make_yours_hint: "Adjust the pieces you feel every day."
     change_name: "Your name"
+    climbing_since: "Climbing since %{date}"
+    profile_stats_label: "Finished progress"
+    stats:
+      battles_won: "Battles won"
+      camps_finished: "Camps finished"
+      days_won: "Days won"
     edit: "Edit"
     send_feedback: "Send feedback"
     two_step_login: "Two-step login"

@@ -11,6 +11,7 @@ class SettingsController < ApplicationController
       end
     @climb_partner = ClimbTogether::PartnerFor.call(user: current_user)
     @climb_invite = ClimbTogether::Invite.call(user: current_user) unless @climb_partner
+    load_you_profile_stats!
   end
 
   def edit_name
@@ -112,6 +113,10 @@ class SettingsController < ApplicationController
     else
       @home_habits = current_user.home_board_habits
       @all_habits = current_user.habits.active.ordered
+      @commitment_journey = current_user.primary_focused_journey
+      @climb_partner = ClimbTogether::PartnerFor.call(user: current_user)
+      @climb_invite = ClimbTogether::Invite.call(user: current_user) unless @climb_partner
+      load_you_profile_stats!
       :show
     end
   end
@@ -125,5 +130,15 @@ class SettingsController < ApplicationController
     when "today" then dashboard_path
     else settings_path(highlight: "commitment")
     end
+  end
+
+  def load_you_profile_stats!
+    wins = Stats::BattleWins.call(user: current_user)
+    @you_battles_won = wins.all_time_total
+    @you_days_won = wins.days_won_total
+    @you_camps_finished = Stats::FinishedPathCamps.total_count(user: current_user)
+
+    zone = Battles::WinsOnLocalDate.time_zone_for(current_user)
+    @climbing_since_on = current_user.created_at.in_time_zone(zone).to_date
   end
 end

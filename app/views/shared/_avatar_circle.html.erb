@@ -1,8 +1,13 @@
-<%# locals: user:, size: (optional :sm) %>
+<%# locals: user:, size: (optional :sm or :lg) %>
 <%
   user = local_assigns.fetch(:user)
   size = local_assigns[:size]
-  size_class = size == :sm ? " is-sm" : ""
+  size_class =
+    case size
+    when :sm then " is-sm"
+    when :lg then " is-lg"
+    else ""
+    end
   image = user.avatar_image
   initial = user.name.to_s.strip.first&.upcase.presence || "?"
 %>

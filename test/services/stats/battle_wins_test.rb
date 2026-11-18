@@ -245,5 +245,41 @@ module Stats
         assert_predicate week[:days].last, :sunday?
       end
     end
+
+    test "days_won_total counts local days with any win once" do
+      travel_to Time.find_zone!(@zone).local(2026, 8, 8, 12, 0, 0) do
+        @user.update!(created_at: Time.find_zone!(@zone).local(2026, 8, 1, 8, 0, 0))
+        seed_climb!(@user, today_mission: "First day")
+        journey = @user.primary_focused_journey
+        camp = @user.strategy_goals.where(horizon: "project", life_journey_id: journey.id).order(:id).last
+        first = @user.strategy_goals.find_by!(horizon: "day", title: "First day")
+        first.update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 6, 9, 0, 0))
+
+        @user.strategy_goals.create!(
+          life_area: journey.life_area,
+          life_journey: journey,
+          parent: camp,
+          horizon: "day",
+          title: "Second day",
+          scheduled_on: Date.new(2026, 8, 7),
+          position: 1,
+          completed_at: Time.find_zone!(@zone).local(2026, 8, 7, 10, 0, 0)
+        )
+        @user.strategy_goals.create!(
+          life_area: journey.life_area,
+          life_journey: journey,
+          parent: camp,
+          horizon: "day",
+          title: "Same day again",
+          scheduled_on: Date.new(2026, 8, 7),
+          position: 2,
+          completed_at: Time.find_zone!(@zone).local(2026, 8, 7, 18, 0, 0)
+        )
+
+        stats = BattleWins.call(user: @user)
+        assert_equal 3, stats.all_time_total
+        assert_equal 2, stats.days_won_total
+      end
+    end
   end
 end
