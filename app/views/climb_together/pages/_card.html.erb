@@ -1,0 +1,34 @@
+<%# locals: card: %>
+<% card = local_assigns.fetch(:card) %>
+<article class="lp-side-mtn" aria-label="<%= card.name %>">
+  <div class="lp-side-mtn__photo" aria-hidden="true">
+    <% if card.journey.present? && !card.picking_mountain %>
+      <%= image_tag mountain_trail_photo_url(card.journey), alt: "", decoding: "async" %>
+    <% end %>
+  </div>
+  <div class="lp-side-mtn__body">
+    <div class="lp-side-mtn__who">
+      <span class="lp-side-mtn__avatar" aria-hidden="true">
+        <%= render "shared/avatar_circle", user: card.user, size: :sm %>
+      </span>
+      <p class="lp-side-mtn__name"><%= card.name %></p>
+    </div>
+
+    <% if card.picking_mountain %>
+      <p class="lp-side-mtn__camp"><%= t("climb_together.side.picking_mountain") %></p>
+    <% else %>
+      <% if card.camp_of.present? %>
+        <p class="lp-side-mtn__camp"><%= card.camp_of %></p>
+      <% end %>
+      <% if card.camp_name.present? %>
+        <p class="lp-side-mtn__camp-name"><%= card.camp_name %></p>
+      <% end %>
+    <% end %>
+
+    <% if card.wins_this_week.to_i.positive? %>
+      <p class="lp-side-mtn__wins">
+        <%= t("climb_together.side.wins_this_week", count: card.wins_this_week) %>
+      </p>
+    <% end %>
+  </div>
+</article>

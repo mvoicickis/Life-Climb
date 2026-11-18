@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get "/.well-known/assetlinks.json", to: "play/asset_links#show", as: :play_asset_links
   get "/climb/:token", to: "climb_together/invites#show", as: :climb_invite
   post "/climb/:token/accept", to: "climb_together/invites#accept", as: :accept_climb_invite
+  get "/climb_together", to: "climb_together/pages#show", as: :climb_together
   post "/climb_together/high_five", to: "climb_together/high_fives#create", as: :climb_together_high_five
   resource :dashboard, only: :show, controller: "dashboard" do
     resource :quick_battles, only: :create, controller: "dashboard/quick_battles"

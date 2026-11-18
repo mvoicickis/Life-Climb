@@ -3944,10 +3944,13 @@ html[data-theme="dark"] {
   color: inherit;
 }
 
-button.lp-partner-row {
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
+.lp-partner-row__cheer-wrap {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
 .lp-partner-row__avatar {
@@ -4228,6 +4231,198 @@ button.lp-partner-row {
 .lp-climb-accept__btn.is-grey {
   background: color-mix(in srgb, var(--lp-mist) 70%, var(--lp-surface));
   color: var(--lp-muted);
+}
+
+/* Climb together — side by side */
+.lp-side {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--lp-paper);
+  padding: 0.75rem 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+}
+
+.lp-side__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  min-width: 0;
+}
+
+.lp-side__back {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--lp-tap);
+  min-height: var(--lp-tap);
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+  text-decoration: none;
+  padding: 0.35rem 0.15rem;
+}
+
+.lp-side__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  flex: 1;
+  min-width: 0;
+  color: var(--lp-ink);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.lp-side__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.lp-side-mtn {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  overflow: hidden;
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-side-mtn__photo {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--lp-mist);
+}
+
+.lp-side-mtn__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lp-side-mtn__body {
+  padding: 0.55rem 0.6rem 0.7rem;
+  min-width: 0;
+}
+
+.lp-side-mtn__who {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  margin-bottom: 0.25rem;
+}
+
+.lp-side-mtn__avatar {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+}
+
+.lp-side-mtn__avatar .lp-avatar-circle {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.7rem;
+}
+
+.lp-side-mtn__name {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  color: var(--lp-ink);
+}
+
+.lp-side-mtn__camp {
+  margin: 0 0 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.lp-side-mtn__camp-name {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.lp-side-mtn__wins {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--lp-green-deep);
+  line-height: 1.3;
+}
+
+.lp-side__footer {
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.lp-side__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--lp-tap);
+  padding: 0.7rem 1rem;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  box-shadow: var(--lp-shadow-cta);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+}
+
+.lp-partner-row__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lp-partner-row__cheer-form {
+  margin: 0;
+  flex: none;
+}
+
+button.lp-partner-row__cheer {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .delete-account-sheet__panel {

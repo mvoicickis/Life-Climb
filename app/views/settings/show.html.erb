@@ -114,11 +114,12 @@
 
       <section class="lp-you-card" id="you-climb-together">
         <% if @climb_partner %>
-          <div class="lp-you-row lp-you-row--static" id="you-row-climb-together">
+          <%= link_to climb_together_path, class: "lp-you-row", id: "you-row-climb-together" do %>
             <span class="lp-you-row__label">
               <%= t("climb_together.you.partnered", name: @climb_partner.display_name) %>
             </span>
-          </div>
+            <span class="lp-you-row__chev" aria-hidden="true">›</span>
+          <% end %>
         <% else %>
           <div data-controller="climb-together-invite share"
                data-share-text-value="<%= t('climb_together.share.text') %>"

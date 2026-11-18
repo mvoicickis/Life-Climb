@@ -8,33 +8,28 @@
   <% if show %>
     <% partner = day.partner %>
     <% if day.cheered %>
-      <div class="lp-partner-row" role="status">
-        <span class="lp-partner-row__avatar" aria-hidden="true">
-          <%= render "shared/avatar_circle", user: partner, size: :sm %>
-        </span>
-        <span class="lp-partner-row__copy">
-          <p class="lp-partner-row__text is-muted">
-            <%= t("climb_together.partner.cheered", name: partner.display_name) %>
-          </p>
-        </span>
+      <div class="lp-partner-row is-cheered" role="status">
+        <%= link_to climb_together_path,
+              class: "lp-partner-row__link",
+              aria: { label: t("climb_together.partner.open_side_aria", name: partner.display_name) } do %>
+          <span class="lp-partner-row__avatar" aria-hidden="true">
+            <%= render "shared/avatar_circle", user: partner, size: :sm %>
+          </span>
+          <span class="lp-partner-row__copy">
+            <p class="lp-partner-row__text is-muted">
+              <%= t("climb_together.partner.cheered", name: partner.display_name) %>
+            </p>
+          </span>
+        <% end %>
         <span class="lp-partner-row__cheer is-done" aria-hidden="true">🙌</span>
       </div>
     <% else %>
-      <div data-controller="partner-high-five"
+      <div class="lp-partner-row"
+           data-controller="partner-high-five"
            data-partner-high-five-not-saved-value="<%= t('climb_together.partner.not_saved') %>">
-        <%= button_to climb_together_high_five_path,
-              method: :post,
-              class: "lp-partner-row",
-              form: {
-                class: "lp-partner-row-form",
-                data: {
-                  turbo: true,
-                  action: "turbo:submit-end->partner-high-five#submitEnd"
-                }
-              },
-              aria: {
-                label: t("climb_together.partner.high_five_aria", name: partner.display_name)
-              } do %>
+        <%= link_to climb_together_path,
+              class: "lp-partner-row__link",
+              aria: { label: t("climb_together.partner.open_side_aria", name: partner.display_name) } do %>
           <span class="lp-partner-row__avatar" aria-hidden="true">
             <%= render "shared/avatar_circle", user: partner, size: :sm %>
           </span>
@@ -43,14 +38,30 @@
               <%= t("climb_together.partner.won_today", name: partner.display_name, count: day.count) %>
             </p>
           </span>
-          <span class="lp-partner-row__cheer" aria-hidden="true">🙌</span>
         <% end %>
-        <p class="lp-partner-row__error<%= ' is-visible' if not_saved %>"
-           role="status"
-           <%= "hidden" unless not_saved %>
-           data-partner-high-five-target="error">
-          <%= t("climb_together.partner.not_saved") %>
-        </p>
+        <div class="lp-partner-row__cheer-wrap">
+          <%= button_to climb_together_high_five_path,
+                method: :post,
+                class: "lp-partner-row__cheer",
+                form: {
+                  class: "lp-partner-row-form lp-partner-row__cheer-form",
+                  data: {
+                    turbo: true,
+                    action: "turbo:submit-end->partner-high-five#submitEnd"
+                  }
+                },
+                aria: {
+                  label: t("climb_together.partner.high_five_aria", name: partner.display_name)
+                } do %>
+            🙌
+          <% end %>
+          <p class="lp-partner-row__error<%= ' is-visible' if not_saved %>"
+             role="status"
+             <%= "hidden" unless not_saved %>
+             data-partner-high-five-target="error">
+            <%= t("climb_together.partner.not_saved") %>
+          </p>
+        </div>
       </div>
     <% end %>
   <% end %>
