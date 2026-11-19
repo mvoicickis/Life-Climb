@@ -104,6 +104,38 @@ function playBuffer(name, volume) {
   return true
 }
 
+function beep({ type = "sine", freq = 440, dur = 0.2, vol = 0.12, slideTo = null } = {}) {
+  const audio = ensureContext()
+  if (!audio) return
+  try {
+    const osc = audio.createOscillator()
+    const gain = audio.createGain()
+    osc.type = type
+    osc.frequency.value = freq
+    gain.gain.value = 0.0001
+    osc.connect(gain)
+    gain.connect(audio.destination)
+    const now = audio.currentTime
+    gain.gain.exponentialRampToValueAtTime(vol, now + 0.02)
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + dur)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur)
+    osc.start(now)
+    osc.stop(now + dur + 0.02)
+  } catch (_err) {
+    // optional
+  }
+}
+
+// Mockup WIN DING: two rising triangle notes. Peak vols scale with the
+// volume setting so default 0.4 matches the mockup's 0.1 / 0.08.
+function playWinDing(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "triangle", freq: 440, dur: 0.18, vol: 0.1 * scale })
+  window.setTimeout(() => {
+    beep({ type: "triangle", freq: 587, dur: 0.16, vol: 0.08 * scale })
+  }, 70)
+}
+
 function playWinSynth({ boss = false, volume = DEFAULT_VOLUME } = {}) {
   const audio = ensureContext()
   if (!audio) return
@@ -165,8 +197,12 @@ export function play(name, { volume = DEFAULT_VOLUME, boss = false } = {}) {
 
   if (playBuffer(name, vol)) return
 
-  if (name === "win" || name === "win_boss") {
-    playWinSynth({ boss: boss || name === "win_boss", volume: vol })
+  if (name === "win") {
+    playWinDing(vol)
+    return
+  }
+  if (name === "win_boss") {
+    playWinSynth({ boss: true, volume: vol })
     return
   }
   if (name === "strategy" || name === "strategy_boss") {
