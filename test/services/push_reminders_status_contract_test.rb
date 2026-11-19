@@ -50,7 +50,7 @@ class PushRemindersStatusContractTest < ActiveSupport::TestCase
   end
 
   test "existing hooks stay wired" do
-    assert_includes @controller, 'static targets = ['
+    assert_includes @controller, "static targets = ["
     assert_includes @controller, '"enable"'
     assert_includes @controller, '"disable"'
     assert_includes @controller, '"switch"'
