@@ -127,7 +127,7 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-other-mountains-button__badge", text: "1"
 
-    %w[purpose money learning relationships family home community creativity].each_with_index do |area_key, i|
+    %w[purpose money learning relationships family home community].each_with_index do |area_key, i|
       seed_second_journey!(title: "Climb #{i + 2}", area_key: area_key, battle_title: "Battle #{i + 2}")
     end
     warm_today_lookups!
