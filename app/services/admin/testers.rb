@@ -5,6 +5,7 @@ module Admin
   # Product wins only (Battles::WinsOnLocalDate sources) — never the broader funnel.
   class Testers
     STALE_AFTER_DAYS = 3
+    PUSH_OK_WITHIN = 7.days
     DAILY_CLIMBERS_GOAL = 12
     DAY_ZONE = "Europe/Berlin"
     RECURRING_REPEATS = Battles::WinsOnLocalDate::RECURRING_REPEATS
@@ -24,7 +25,7 @@ module Admin
       :wins_this_week,
       :last_opened_on,
       :days_since_open,
-      :push_on,
+      :push_status,
       :partner,
       :reason_key,
       :reason,
@@ -139,17 +140,19 @@ module Admin
         one_shot_battles(user_ids).where(completed_at: week_range).group(:user_id).count,
         recurring_todos(user_ids).where(completed_at: week_range).group(:user_id).count
       )
-      push_ids = PushSubscription.where(user_id: user_ids).distinct.pluck(:user_id).to_set
+      push_statuses = push_statuses_by_user(user_ids)
       partner_ids = partner_user_ids(user_ids)
 
       users.map do |user|
         first_win_at = first_wins[user.id]
         last_win_at = last_wins[user.id]
         days_since_last_win = days_since(last_win_at&.to_date)
+        push_status = push_statuses[user.id] || :off
         reason_key = reason_key_for(
           onboarding_done: user.onboarding_completed_at.present?,
           last_win_at: last_win_at,
-          days_since_last_win: days_since_last_win
+          days_since_last_win: days_since_last_win,
+          push_status: push_status
         )
 
         Row.new(
@@ -162,7 +165,7 @@ module Admin
           wins_this_week: week_wins[user.id].to_i,
           last_opened_on: user.last_opened_on,
           days_since_open: days_since(user.last_opened_on),
-          push_on: push_ids.include?(user.id),
+          push_status: push_status,
           partner: partner_ids.include?(user.id),
           reason_key: reason_key,
           reason: reason_label(reason_key, days_since_last_win),
@@ -240,16 +243,44 @@ module Admin
       ids
     end
 
+    # One query: user_id + delivery stamps. Status folded in Ruby.
+    def push_statuses_by_user(user_ids)
+      rows = PushSubscription.where(user_id: user_ids)
+        .pluck(:user_id, :last_success_at, :last_error_at)
+      by_user = Hash.new { |hash, key| hash[key] = [] }
+      rows.each { |user_id, success_at, error_at| by_user[user_id] << [ success_at, error_at ] }
+
+      statuses = {}
+      user_ids.each do |user_id|
+        statuses[user_id] = push_status_for(by_user[user_id])
+      end
+      statuses
+    end
+
+    def push_status_for(subscriptions)
+      return :off if subscriptions.blank?
+
+      cutoff = Time.current - PUSH_OK_WITHIN
+      ok = subscriptions.any? do |success_at, error_at|
+        next false if success_at.blank? || success_at < cutoff
+        next true if error_at.blank?
+
+        error_at <= success_at
+      end
+      ok ? :ok : :broken
+    end
+
     def days_since(date)
       return nil if date.blank?
 
       (Date.current - date).to_i
     end
 
-    def reason_key_for(onboarding_done:, last_win_at:, days_since_last_win:)
+    def reason_key_for(onboarding_done:, last_win_at:, days_since_last_win:, push_status:)
       return :onboarding unless onboarding_done
       return :never_won if last_win_at.blank?
       return :stale if days_since_last_win.to_i >= STALE_AFTER_DAYS
+      return :push_broken if push_status == :broken
 
       nil
     end
@@ -262,6 +293,8 @@ module Admin
         I18n.t("admin.testers.reason.never_won")
       when :stale
         I18n.t("admin.testers.reason.stale", count: days_since_last_win.to_i)
+      when :push_broken
+        I18n.t("admin.testers.reason.push_broken")
       end
     end
 
@@ -273,7 +306,7 @@ module Admin
         [
           rank,
           (rank == 2 ? -stale_days : 0),
-          (rank == 3 ? last_win_sort : 0),
+          (rank >= 3 ? last_win_sort : 0),
           -row.signed_up_at.to_i,
           row.user.id
         ]
@@ -285,7 +318,8 @@ module Admin
       when :onboarding then 0
       when :never_won then 1
       when :stale then 2
-      else 3
+      when :push_broken then 3
+      else 4
       end
     end
   end
