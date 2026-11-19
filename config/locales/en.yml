@@ -63,6 +63,12 @@ en:
         label: "Your goal"
         camp_bar: "Camp progress"
         won: "%{count} won"
+      other_mountains:
+        title: "Other mountains today"
+        open: "Other mountains today"
+        battles:
+          one: "1 battle"
+          other: "%{count} battles"
       day_n: "Day %{count}"
       risk_cleared: "Nothing left today."
       # TODO: translate for lv/de/es/ru

@@ -440,6 +440,15 @@ module ApplicationHelper
     strategy_goal&.title.presence || journey&.title || t("dash.active_goal_fallback")
   end
 
+  # Tiny thumb for the Today other-mountains dropdown (custom mountain_photo only).
+  def other_mountain_thumb_url(journey)
+    return nil unless journey&.mountain_photo&.attached?
+
+    url_for(journey.mountain_photo.variant(resize_to_limit: [ 72, 72 ]))
+  rescue StandardError
+    url_for(journey.mountain_photo)
+  end
+
   # Photo Today inline add row — off during first-camp reveal (Mountain link / empty CTA stay).
   # Shown when a camp exists, or a goal exists so PathProject.ensure! can use the holding camp.
   def today_inline_add_battle?(journey: nil)

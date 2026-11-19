@@ -1616,11 +1616,14 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal {
+  position: relative;
+  z-index: 30;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.45rem 0.75rem 0.5rem;
   min-width: 0;
+  overflow: visible;
   transition: padding 0.18s ease, gap 0.18s ease;
 }
 
@@ -1643,7 +1646,21 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   gap: 0.25rem;
 }
 
+.lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lp-space-2);
+  max-height: 2.75rem;
+  opacity: 1;
+  overflow: visible;
+  transition: max-height 0.18s ease, opacity 0.18s ease, margin 0.18s ease;
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: 0.68rem;
   font-weight: 800;
@@ -1651,29 +1668,27 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   text-transform: uppercase;
   color: var(--lp-muted);
   line-height: 1.2;
-  max-height: 1.2em;
-  opacity: 1;
-  overflow: hidden;
-  transition: max-height 0.18s ease, opacity 0.18s ease, margin 0.18s ease;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-kicker {
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-kicker-row {
   max-height: 0;
   opacity: 0;
   margin: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /* First paint after turbo header replace — no expand→collapse animation. */
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition,
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-v2-header--compact,
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-goal-kicker {
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-goal-kicker-row {
   transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal,
   .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker-row {
     transition: none;
   }
 }
@@ -2677,4 +2692,271 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-ack {
   margin: 0;
+}
+
+/* Shared planet icon (Today button + Mountain My world pill). Two-tone tokens only. */
+.lp-planet-icon {
+  display: block;
+  overflow: visible;
+}
+
+.lp-planet-icon .planet-globe {
+  fill: var(--lp-muted);
+}
+
+.lp-planet-icon .planet-ring {
+  fill: none;
+  stroke: var(--lp-ink);
+}
+
+.lp-planet-icon .planet-shine {
+  fill: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+}
+
+/* Other mountains on Today — planet button + frosted dropdown. */
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button {
+  position: relative;
+  display: grid;
+  flex: none;
+  width: var(--lp-tap);
+  min-height: var(--lp-tap);
+  place-items: center;
+  margin: calc(var(--lp-space-2) * -1) 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face {
+  position: relative;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 72%, var(--lp-border));
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-surface) 58%, transparent);
+  backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
+  color: var(--lp-muted);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face::after {
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid color-mix(in srgb, var(--lp-surface) 86%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--lp-surface) 58%, transparent);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face .lp-planet-icon {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  place-items: center;
+  padding: 0 0.2rem;
+  border: 2px solid var(--lp-surface);
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-ink);
+  color: var(--lp-surface);
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-scroll__pad:has(.lp-other-mountains-dropdown:not([hidden]))::after {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--lp-ink) 13%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown {
+  position: absolute;
+  top: calc(100% + var(--lp-space-2));
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: var(--lp-space-2);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  border-radius: 1.125rem;
+  background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  backdrop-filter: blur(calc(var(--lp-rpg-glass-blur) + 0.65rem)) saturate(1.3);
+  -webkit-backdrop-filter: blur(calc(var(--lp-rpg-glass-blur) + 0.65rem)) saturate(1.3);
+  box-shadow: var(--lp-rpg-glass-shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.96) translateY(-0.35rem);
+  transform-origin: calc(100% - 1.4rem) top;
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out,
+    visibility 180ms;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown[hidden] {
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.96) translateY(-0.35rem);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown:not([hidden]) {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown::before {
+  position: absolute;
+  top: -0.38rem;
+  right: calc(var(--lp-space-3) + 1rem);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  border-left: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown__title {
+  position: relative;
+  margin: 0;
+  padding: var(--lp-space-1) var(--lp-space-2) var(--lp-space-2);
+  color: var(--lp-ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row-form {
+  margin: 0;
+  width: 100%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row {
+  display: flex;
+  min-width: 0;
+  min-height: 3.5rem;
+  width: 100%;
+  align-items: center;
+  gap: var(--lp-space-2);
+  padding: 0 var(--lp-space-2);
+  border: 0;
+  border-bottom: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: transparent;
+  color: var(--lp-ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms ease-out, transform 120ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row:active {
+  background: color-mix(in srgb, var(--lp-muted) 12%, transparent);
+  transform: scale(0.985);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-list li:last-child .lp-other-mountains-row {
+  border-bottom: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__thumb {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-paper);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__icon {
+  display: grid;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-paper-soft);
+  color: var(--lp-muted);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__count {
+  flex: none;
+  color: var(--lp-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+  padding: 0.25rem var(--lp-space-1);
+  border: 1px solid color-mix(in srgb, var(--lp-muted) 16%, var(--lp-border));
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-muted) 10%, var(--lp-surface));
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__chevron {
+  flex: none;
+  color: var(--lp-muted);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown,
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown[hidden],
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown:not([hidden]),
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row {
+    transition: none;
+  }
 }

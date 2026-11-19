@@ -1985,10 +1985,11 @@
   color: inherit;
 }
 
-.lp-trail.is-v4 .lp-trail__my-world-corner__face svg {
+.lp-trail.is-v4 .lp-trail__my-world-corner__face .lp-planet-icon {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
 }
 
 .lp-trail.is-v4 .lp-trail__my-world-corner__label {
