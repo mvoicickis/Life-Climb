@@ -47,11 +47,13 @@ module TodayV2TestHelper
   def assert_battle_row!(title:, camp: nil, todo: nil)
     if integration_test?
       assert_select "#today-battlefield-rows .lp-today-v2-row__title", text: title
-      assert_select "#today-battlefield-rows .lp-today-v2-row__camp", text: /#{Regexp.escape(camp)}/ if camp
+      # PR1 Look: camp labels removed from battle rows (camp: kept for call-site compat).
+      assert_select "#today-battlefield-rows .lp-today-v2-row__camp", count: 0
+      assert_select "#today-battlefield-rows .lp-today-v2-row__camp-inline", count: 0
       assert_select "#today-battlefield-rows .lp-today-v2-row[data-todo-id=?]", todo.id.to_s if todo
     else
       assert_selector "#today-battlefield-rows .lp-today-v2-row__title", text: title
-      assert_selector "#today-battlefield-rows .lp-today-v2-row__camp-inline", text: /#{Regexp.escape(camp)}/ if camp
+      assert_no_selector "#today-battlefield-rows .lp-today-v2-row__camp-inline"
       assert_selector "#today-battlefield-rows .lp-today-v2-row[data-todo-id='#{todo.id}']" if todo
     end
   end

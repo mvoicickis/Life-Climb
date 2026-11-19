@@ -5,85 +5,35 @@
 <% camp_won = camp&.dig(:won).to_i %>
 <% camp_total = camp&.dig(:total).to_i %>
 <% camp_percent = camp&.dig(:percent).to_i %>
-<% other_mountains = @other_mountains %>
-<% show_other_mountains = other_mountains.present? && other_mountains.total.positive? %>
+<% camp_current = camp&.dig(:camp_current).to_i %>
+<% camp_count = camp&.dig(:camp_count).to_i %>
 
-<div class="lp-today-group-card lp-today-group-card--goal<%= " has-other-mountains" if show_other_mountains %>"
-     data-controller="today-goal-card<%= " dropdown" if show_other_mountains %>">
+<div class="lp-today-group-card lp-today-group-card--goal"
+     data-controller="today-goal-card">
   <header class="lp-today-v2-header lp-today-v2-header--compact" aria-label="<%= t('dash.battlefield.goal_card.label') %>">
     <div class="lp-today-goal-kicker-row">
       <p class="lp-today-goal-kicker"><%= t("dash.battlefield.goal_card.label") %></p>
-      <% if show_other_mountains %>
-        <button type="button"
-                class="lp-other-mountains-button lp-pressable"
-                data-dropdown-target="button"
-                data-action="click->dropdown#toggle"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                aria-label="<%= t('dash.battlefield.other_mountains.open') %>">
-          <span class="lp-other-mountains-button__face" aria-hidden="true">
-            <%= render "shared/planet_icon" %>
-          </span>
-          <span class="lp-other-mountains-button__badge"><%= other_mountains.total %></span>
-        </button>
-      <% end %>
     </div>
     <p class="lp-today-v2-header__name" title="<%= goal_title %>"><%= goal_title %></p>
 
     <% if camp.present? %>
       <p class="lp-today-goal-camp" title="<%= camp_title %>"><%= camp_title %></p>
       <div class="lp-today-camp-bar-row">
-        <div class="lp-today-camp-bar"
-             role="progressbar"
-             aria-valuemin="0"
-             aria-valuemax="<%= [ camp_total, 100 ].max %>"
-             aria-valuenow="<%= camp_won %>"
-             aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
-          <span class="lp-today-camp-bar__fill" style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
-        </div>
+        <p class="lp-today-camp-of">
+          <%= t("dash.battlefield.goal_card.camp_of", current: camp_current, total: camp_count) %>
+        </p>
         <p class="lp-today-camp-won"<%= " hidden" unless camp_won.positive? %>>
           <%= t("dash.battlefield.goal_card.won", count: camp_won) %>
         </p>
       </div>
+      <div class="lp-today-camp-bar"
+           role="progressbar"
+           aria-valuemin="0"
+           aria-valuemax="<%= [ camp_total, 100 ].max %>"
+           aria-valuenow="<%= camp_won %>"
+           aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
+        <span class="lp-today-camp-bar__fill" style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
+      </div>
     <% end %>
   </header>
-
-  <% if show_other_mountains %>
-    <div class="lp-other-mountains-dropdown"
-         data-dropdown-target="menu"
-         role="menu"
-         aria-label="<%= t('dash.battlefield.other_mountains.title') %>"
-         hidden>
-      <p class="lp-other-mountains-dropdown__title"><%= t("dash.battlefield.other_mountains.title") %></p>
-      <ul class="lp-other-mountains-list">
-        <% other_mountains.journeys.each do |entry| %>
-          <% journey = @other_mountain_journeys[entry.journey_id] %>
-          <li>
-            <%= button_to today_focus_path(journey_id: entry.journey_id),
-                  method: :patch,
-                  class: "lp-other-mountains-row lp-pressable",
-                  form: { class: "lp-other-mountains-row-form" },
-                  role: "menuitem" do %>
-              <% if entry.custom_photo? && journey.present? %>
-                <span class="lp-other-mountains-row__thumb">
-                  <%= image_tag other_mountain_thumb_url(journey), alt: "", aria: { hidden: true } %>
-                </span>
-              <% else %>
-                <span class="lp-other-mountains-row__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 19L9.5 8.5L13 14L16 10L21 19Z"/>
-                  </svg>
-                </span>
-              <% end %>
-              <span class="lp-other-mountains-row__name"><%= entry.title %></span>
-              <span class="lp-other-mountains-row__count">
-                <%= t("dash.battlefield.other_mountains.battles", count: entry.open_count) %>
-              </span>
-              <span class="lp-other-mountains-row__chevron" aria-hidden="true">›</span>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
 </div>

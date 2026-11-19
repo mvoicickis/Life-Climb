@@ -10,7 +10,7 @@ class HighFive < ApplicationRecord
   validate :unique_for_local_day
 
   # Existing cheer from +from_user+ for this battle (+ optional todo) on +on+ in +time_zone+.
-  def self.exists_for_local_day?(from_user:, strategy_goal:, daily_todo:, on:, time_zone:)
+  def self.exists_for_local_day?(from_user:, strategy_goal:, daily_todo:, on:, time_zone:, excluding_id: nil)
     zone = Time.find_zone!(time_zone)
     range = zone.local(on.year, on.month, on.day).all_day
 
@@ -20,6 +20,7 @@ class HighFive < ApplicationRecord
     else
       scope.where(daily_todo_id: nil)
     end
+    scope = scope.where.not(id: excluding_id) if excluding_id.present?
     scope.exists?
   end
 
@@ -31,6 +32,24 @@ class HighFive < ApplicationRecord
     where(from_user_id: from_user.id, to_user_id: to_user.id, created_at: range).exists?
   end
 
+  # Latest unseen cheer the +to_user+ received on their local day (for Today top-bar morph).
+  def self.unseen_received_today(to_user:)
+    zone_name = Battles::WinsOnLocalDate.time_zone_for(to_user)
+    on = Battles::WinsOnLocalDate.local_today_for(to_user)
+    zone = Time.find_zone!(zone_name)
+    range = zone.local(on.year, on.month, on.day).all_day
+
+    where(to_user_id: to_user.id, created_at: range, seen_at: nil)
+      .includes(:from_user)
+      .order(created_at: :desc)
+      .first
+  end
+
+  def mark_seen!
+    return if seen_at.present?
+
+    update!(seen_at: Time.current)
+  end
 
   private
 
@@ -49,7 +68,8 @@ class HighFive < ApplicationRecord
       strategy_goal: strategy_goal,
       daily_todo: daily_todo,
       on: on,
-      time_zone: zone
+      time_zone: zone,
+      excluding_id: id
     )
 
     errors.add(:base, "already high-fived this battle today")

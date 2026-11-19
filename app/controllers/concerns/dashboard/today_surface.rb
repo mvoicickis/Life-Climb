@@ -72,6 +72,7 @@ module Dashboard
       assign_battles_waiting_count!
       assign_other_mountains!
       @partner_day_wins = ClimbTogether::PartnerDayWins.call(viewer: current_user)
+      @today_cheer = HighFive.unseen_received_today(to_user: current_user)
 
       @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
       @habits = current_user.habits.active.on_home.ordered.includes(:daily_logs, :completions)

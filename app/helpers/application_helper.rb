@@ -288,24 +288,59 @@ module ApplicationHelper
   # Soft emoji sigil from unit + name keywords — no DB column yet.
   # More specific categories win (language before generic "study").
   def habit_sigil(habit)
+    case habit_sigil_icon(habit)
+    when "users" then "🗣"
+    when "sprout" then "🥾"
+    when "bolt" then "💪"
+    when "self" then "🧘"
+    when "drop" then "💧"
+    when "moon" then "🛏"
+    when "flag" then "✍️"
+    when "book" then "📖"
+    when "coin" then "💰"
+    when "clock" then "⏱"
+    else "✦"
+    end
+  end
+
+  # Line-icon name for Today Habits (maps to shared/lp_icon).
+  def habit_sigil_icon(habit)
     name = habit.name.to_s.downcase
     unit = habit.unit.to_s.downcase
     blob = "#{unit} #{name}"
 
-    return "🗣" if name.match?(/german|spanish|french|italian|language|duolingo|\bduo\b|speak|vocab|anki/) ||
-                   unit.match?(/duo|word|phrase|lesson|flashcard/)
-    return "🥾" if blob.match?(/step|walk|hike|run|jog|mile|km\b/)
-    return "💪" if blob.match?(/rep|push.?up|pull.?up|squat|lift|workout|exercise|gym|plank|burpee/)
-    return "🧘" if blob.match?(/meditat|breath|mindful|yoga|zen/)
-    return "💧" if blob.match?(/water|hydrat|glass of|\bdrink\b/)
-    return "🛏" if blob.match?(/sleep|bedtime|\brest\b|\bnaps?\b/)
-    return "✍️" if blob.match?(/writ|journal|essay|draft|blog/)
-    return "📖" if blob.match?(/page|read|book|\bstudy\b/)
-    return "💰" if blob.match?(/money|€|\$|£|spend|budget|save/)
-    return "⏱" if unit.match?(/\bmins?\b|\bminutes?\b|\bhours?\b/) ||
-                   name.match?(/\bminute|\bhour\b|\btimer\b/)
+    return "users" if name.match?(/german|spanish|french|italian|language|duolingo|\bduo\b|speak|vocab|anki/) ||
+                      unit.match?(/duo|word|phrase|lesson|flashcard/)
+    return "sprout" if blob.match?(/step|walk|hike|run|jog|mile|km\b/)
+    return "bolt" if blob.match?(/rep|push.?up|pull.?up|squat|lift|workout|exercise|gym|plank|burpee/)
+    return "self" if blob.match?(/meditat|breath|mindful|yoga|zen/)
+    return "drop" if blob.match?(/water|hydrat|glass|cup|\bdrink\b/)
+    return "moon" if blob.match?(/sleep|bedtime|\brest\b|\bnaps?\b/)
+    return "flag" if blob.match?(/writ|journal|essay|draft|blog/)
+    return "book" if blob.match?(/page|read|book|\bstudy\b/)
+    return "coin" if blob.match?(/money|€|\$|£|spend|budget|save/)
+    return "clock" if unit.match?(/\bmins?\b|\bminutes?\b|\bhours?\b/) ||
+                      name.match?(/\bminute|\bhour\b|\btimer\b/)
 
-    "✦"
+    "check"
+  end
+
+  def today_greeting_for(user)
+    zone = Time.find_zone!(Battles::WinsOnLocalDate.time_zone_for(user))
+    hour = Time.current.in_time_zone(zone).hour
+    name = user.display_name
+    key =
+      case hour
+      when 5..11 then "dash.today_bar.greeting_morning"
+      when 12..16 then "dash.today_bar.greeting_afternoon"
+      else "dash.today_bar.greeting_evening"
+      end
+    I18n.t(key, name: name)
+  end
+
+  def today_local_date_label(user)
+    zone = Time.find_zone!(Battles::WinsOnLocalDate.time_zone_for(user))
+    Time.current.in_time_zone(zone).to_date.strftime("%A, %-d %b")
   end
 
   def home_grid_style(count)

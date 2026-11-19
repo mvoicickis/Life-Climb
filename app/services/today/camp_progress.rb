@@ -42,16 +42,36 @@ module Today
           ((won.to_f / total) * 100).round
         end
 
+      path_camps = path_camps_for(@goal)
+      camp_count = [ path_camps.size, 1 ].max
+      camp_index = path_camps.index { |row| row.id == camp.id }
+      camp_current =
+        if camp_index
+          camp_index + 1
+        else
+          [ path_camps.count(&:completed?) + 1, camp_count ].min
+        end
+
       {
         camp_id: camp.id,
         camp_title: camp.title,
         won: won,
         total: total,
-        percent: percent
+        percent: percent,
+        camp_current: camp_current,
+        camp_count: camp_count
       }
     end
 
     private
+
+    # Same camp list as ClimbTogether::SideBySide — project camps under plans.
+    def path_camps_for(goal)
+      plans = goal.children.for_kind("plan").not_holding.ordered.includes(:children)
+      plans.flat_map do |plan|
+        plan.children.select { |child| child.project? && !child.holding? }
+      end
+    end
 
     # Same win sources as Stats::BattleWins#by_camp — batched, no per-battle queries.
     def wins_for(battle_ids)

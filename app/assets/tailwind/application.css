@@ -3542,17 +3542,33 @@
   --lp-type-ui-lg: clamp(0.92rem, 1.8vw + 0.35rem, 1.05rem);
   --lp-type-ui-md: clamp(0.84rem, 1.4vw + 0.35rem, 0.94rem);
   --lp-type-ui-sm: clamp(0.72rem, 1.1vw + 0.3rem, 0.82rem);
+  /* Today premium fixed type scale (PR1 Look) */
+  --lp-type-13: 13px;
+  --lp-type-15: 15px;
+  --lp-type-17: 17px;
+  --lp-type-28: 28px;
+  --lp-type-96: 96px;
+  --lp-weight-600: 600;
+  --lp-weight-800: 800;
+  --lp-weight-900: 900;
   --lp-space-1: 0.35rem;
   --lp-space-2: 0.55rem;
   --lp-space-3: 0.75rem;
   --lp-space-4: 1rem;
+  --lp-space-8: 8px;
+  --lp-space-16: 16px;
+  --lp-space-24: 24px;
+  --lp-space-32: 32px;
   --lp-pad-card: 0.75rem 0.85rem;
   --lp-pad-row-y: 0.65rem;
   --lp-tap: 2.75rem;
-  --lp-radius-card: 1.25rem;
+  --lp-radius-card: 1.25rem; /* 20px */
   --lp-radius-field: 0.85rem;
+  --lp-radius-btn: 16px;
   --lp-radius-pill: 999px;
+  --lp-shadow-flat: none;
   --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
+  --lp-shadow-floating: 0 18px 40px rgba(15, 23, 42, 0.14);
   --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
   /* Motion / feel foundation */
   --lp-motion-fast: 120ms;
@@ -3778,6 +3794,73 @@ html[data-theme="dark"] {
 }
 
 /* Universal press — transform only; pair with touch-action: manipulation */
+
+/* Today premium 3D buttons — opt-in under .lp-dash.is-today-v2 */
+.lp-dash.is-today-v2 .lp-btn-3d {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 52px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: var(--lp-radius-btn);
+  font-family: var(--lp-font-ui);
+  font-size: var(--lp-type-15);
+  font-weight: var(--lp-weight-800);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform var(--lp-motion-fast) var(--lp-ease-spring),
+    box-shadow var(--lp-motion-fast) var(--lp-ease-spring);
+  -webkit-tap-highlight-color: transparent;
+}
+.lp-dash.is-today-v2 .lp-btn-3d.is-green {
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-green-deep) 82%, var(--lp-ink));
+}
+.lp-dash.is-today-v2 .lp-btn-3d.is-white {
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  border: 1.5px solid var(--lp-border);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-border) 70%, var(--lp-ink));
+}
+.lp-dash.is-today-v2 .lp-btn-3d.is-grey {
+  background: color-mix(in srgb, var(--lp-border) 55%, var(--lp-paper));
+  color: var(--lp-ink);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-muted) 35%, var(--lp-border));
+}
+.lp-dash.is-today-v2 .lp-btn-3d:active,
+.lp-dash.is-today-v2 .lp-btn-3d.is-pressed {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 transparent;
+}
+.lp-dash.is-today-v2 .lp-btn-3d:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+.lp-dash.is-today-v2 .lp-btn-3d.is-sm {
+  min-height: var(--lp-tap);
+  min-width: var(--lp-tap);
+  padding: 8px;
+  border-radius: var(--lp-radius-pill);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: var(--lp-type-15);
+}
+.lp-dash.is-today-v2 .lp-btn-3d.is-pill {
+  border-radius: var(--lp-radius-pill);
+  min-height: 44px;
+  padding: 8px 14px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--lp-type-15);
+}
+
 .lp-pressable,
 .lp-you-row:not(.lp-you-row--static),
 .lp-you-partner,

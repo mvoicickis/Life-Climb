@@ -98,7 +98,7 @@ class TodayThreeSectionsTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__title",
                   todo.id.to_s, text: "Purple Volume"
     assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__camp",
-                  todo.id.to_s, text: /Purple Volume/
+                  todo.id.to_s, count: 0
     assert_select ".lp-dash-quest-next__step", count: 0
     assert_select ".lp-dash-quest-sheet", count: 0
   end

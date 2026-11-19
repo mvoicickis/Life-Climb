@@ -250,6 +250,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_220000) do
     t.integer "to_user_id", null: false
     t.integer "strategy_goal_id", null: false
     t.integer "daily_todo_id"
+    t.datetime "seen_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["daily_todo_id"], name: "index_high_fives_on_daily_todo_id"

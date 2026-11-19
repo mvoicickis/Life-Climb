@@ -37,24 +37,24 @@ class TodayProjectColourTest < ActionDispatch::IntegrationTest
     @holding_todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Call the dentist")
   end
 
-  test "tagged project paints stripe and camp pill with project name" do
+  test "tagged project paints stripe without a camp label" do
     get dashboard_path
     assert_response :success
 
     assert_select ".lp-today-v2-row[data-todo-id=?]", @tagged_todo.id.to_s do
       assert_select ".lp-today-v2-row__title", text: "Ship auth"
-      assert_select ".lp-today-v2-row__camp", text: /Auth/
+      assert_select ".lp-today-v2-row__camp", count: 0
       assert_select ".lp-today-v2-row__stripe", count: 1
     end
   end
 
-  test "untagged project shows camp pill without a colour stripe class" do
+  test "untagged project shows title without a camp label" do
     get dashboard_path
     assert_response :success
 
     assert_select ".lp-today-v2-row[data-todo-id=?]", @untagged_todo.id.to_s do
       assert_select ".lp-today-v2-row__title", text: "Write docs"
-      assert_select ".lp-today-v2-row__camp", text: /Untagged work/
+      assert_select ".lp-today-v2-row__camp", count: 0
     end
     assert_select ".lp-dash-tcard.has-color[data-todo-id=?]", @untagged_todo.id.to_s, count: 0
   end

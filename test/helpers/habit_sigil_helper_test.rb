@@ -19,4 +19,11 @@ class HabitSigilHelperTest < ActionView::TestCase
     assert_equal "✍️", habit_sigil(HabitStub.new(name: "Journal", unit: "entries"))
     assert_equal "✦", habit_sigil(HabitStub.new(name: "Mystery", unit: "units"))
   end
+
+  test "habit_sigil_icon maps to lp_icon names" do
+    assert_equal "book", habit_sigil_icon(HabitStub.new(name: "Study", unit: "pages"))
+    assert_equal "drop", habit_sigil_icon(HabitStub.new(name: "Water", unit: "cups"))
+    assert_equal "bolt", habit_sigil_icon(HabitStub.new(name: "Push-Ups", unit: "reps"))
+    assert_equal "check", habit_sigil_icon(HabitStub.new(name: "Mystery", unit: "units"))
+  end
 end

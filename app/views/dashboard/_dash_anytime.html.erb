@@ -1,39 +1,53 @@
-<%# RPG habit slots — one quick-add + ⋯ sheet.
+<%# RPG habit slots — collapsible Habits card.
     locals: habits %>
 <% habits = Array(local_assigns.fetch(:habits) { @habits || [] }) %>
 <% local_day = current_user.local_today %>
 <% basics_all_done = habits.present? && habits.all? { |h| h.survived_today?(local_day) } %>
 <% battles_all_clear = @battlefield_health&.all_clear? %>
 <% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
-<% done_n = habits.count { |h| h.survived_today?(local_day) } %>
-<section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>" aria-label="<%= t('dash.anytime.title') %>">
+<% count = basics_survived_count(habits) %>
+<section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>"
+         aria-label="<%= t('dash.anytime.title') %>"
+         data-controller="today-habits">
   <div class="lp-today-group-card">
-    <div class="lp-today-group-card__head">
-      <h2><%= t("dash.anytime.title") %></h2>
-      <% if habits.any? %>
-        <%= render "dashboard/dash_anytime_survived_count", habits: habits %>
+    <button type="button"
+            class="lp-dash-anytime__toggle"
+            data-today-habits-trigger
+            data-action="click->today-habits#toggle"
+            aria-expanded="false">
+      <h2 class="lp-dash-anytime__title">
+        <%= t("dash.anytime.collapsed_title", done: count[:done_n], total: count[:total]) %>
+      </h2>
+      <span class="lp-dash-anytime__chev" data-today-habits-target="chevron" aria-hidden="true">›</span>
+    </button>
+    <%= tag.em(
+          id: "basics_survived_count",
+          class: "lp-dash-anytime__count",
+          hidden: true) do %>
+      <%= count[:done_n] %>/<%= count[:total] %>
+    <% end %>
+
+    <div class="lp-dash-anytime__body" data-today-habits-target="body" hidden>
+      <% if basics_all_done && battles_all_clear %>
+        <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
+      <% elsif habits.blank? %>
+        <% if @today_photo_basics %>
+          <% basics_add_href = @journey ? life_journey_path(@journey, open_base: 1) : new_life_journey_path %>
+          <%= link_to t("dash.anytime.add_basic"),
+                basics_add_href,
+                class: "lp-dash-anytime__add-basic" %>
+        <% else %>
+          <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
+        <% end %>
+      <% else %>
+        <ul class="lp-dash-anytime__list lp-today-group-list">
+          <% habits.each do |habit| %>
+            <%= render "dashboard/dash_habit_slot",
+                  habit: habit,
+                  photo_today: @today_photo_basics %>
+          <% end %>
+        </ul>
       <% end %>
     </div>
-
-    <% if basics_all_done && battles_all_clear %>
-      <%= render "dashboard/dash_battlefield_inline_ack", variant: :basics %>
-    <% elsif habits.blank? %>
-      <% if @today_photo_basics %>
-        <% basics_add_href = @journey ? life_journey_path(@journey, open_base: 1) : new_life_journey_path %>
-        <%= link_to t("dash.anytime.add_basic"),
-              basics_add_href,
-              class: "lp-dash-anytime__add-basic" %>
-      <% else %>
-        <p class="lp-dash-anytime__empty"><%= t("dash.anytime.empty") %></p>
-      <% end %>
-    <% else %>
-      <ul class="lp-dash-anytime__list lp-today-group-list">
-        <% habits.each do |habit| %>
-          <%= render "dashboard/dash_habit_slot",
-                habit: habit,
-                photo_today: @today_photo_basics %>
-        <% end %>
-      </ul>
-    <% end %>
   </div>
 </section>
