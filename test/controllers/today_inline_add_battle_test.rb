@@ -92,7 +92,7 @@ class TodayInlineAddBattleTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body, "today-battlefield-count"
     assert_includes response.body, "today-battlefield-header"
-    assert_match(/width: /, response.body)
+    assert_match(/--lp-fill:/, response.body)
 
     camp_after = Today::CampProgress.call(
       user: @user, journey: @journey, goal: Goals::Current.goal_for(user: @user, journey: @journey)
