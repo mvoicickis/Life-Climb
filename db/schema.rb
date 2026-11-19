@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_19_233000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -250,9 +250,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_220000) do
     t.integer "to_user_id", null: false
     t.integer "strategy_goal_id", null: false
     t.integer "daily_todo_id"
-    t.datetime "seen_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "seen_at"
     t.index ["daily_todo_id"], name: "index_high_fives_on_daily_todo_id"
     t.index ["from_user_id", "strategy_goal_id", "daily_todo_id", "created_at"], name: "index_high_fives_on_from_battle_todo_and_created"
     t.index ["from_user_id"], name: "index_high_fives_on_from_user_id"
@@ -429,14 +429,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_220000) do
     t.string "auth", null: false
     t.datetime "created_at", null: false
     t.text "endpoint", null: false
-    t.string "last_error"
-    t.datetime "last_error_at"
     t.datetime "last_seen_at"
-    t.datetime "last_success_at"
     t.string "p256dh", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.integer "user_id", null: false
+    t.datetime "last_success_at"
+    t.datetime "last_error_at"
+    t.string "last_error"
     t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
