@@ -57,9 +57,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#toggleDeniedHelp"
     assert_select "#you-reminders [data-push-reminders-target=?]", "openChrome"
     assert_select "#you-reminders [data-push-reminders-target=?]", "fixStepApps"
-    assert_match(/data-off-phone-message="#{Regexp.escape(I18n.t('settings.reminders_off_phone'))}"/, response.body)
-    assert_match(/data-blocked-phone-message="#{Regexp.escape(I18n.t('settings.reminders_blocked_phone'))}"/, response.body)
-    assert_match(/data-unsupported-chrome-message="#{Regexp.escape(I18n.t('settings.reminders_unsupported_chrome'))}"/, response.body)
+    assert_match(/data-off-phone-message="#{Regexp.escape(ERB::Util.html_escape(I18n.t("settings.reminders_off_phone")))}"/, response.body)
+    assert_match(/data-blocked-phone-message="#{Regexp.escape(ERB::Util.html_escape(I18n.t("settings.reminders_blocked_phone")))}"/, response.body)
+    assert_match(/data-unsupported-chrome-message="#{Regexp.escape(ERB::Util.html_escape(I18n.t("settings.reminders_unsupported_chrome")))}"/, response.body)
     assert_select "#you-climb-together"
     assert_select "#you-row-climb-together"
     assert_select ".lp-you-group__title", text: "App"
