@@ -132,4 +132,3 @@ class SendWebPushJob < ApplicationJob
     false
   end
 end
-
