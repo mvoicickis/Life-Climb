@@ -65,28 +65,62 @@ class PushSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "auth-key", sub.auth
   end
 
-  test "create reassigns endpoint from another user" do
+  test "create reassigns endpoint from another user and refreshes last_seen_at" do
     other = PushSubscription.create!(
       user: users(:two),
       endpoint: "https://push.example/shared-device",
       p256dh: "old",
-      auth: "old"
+      auth: "old",
+      last_seen_at: 2.days.ago
     )
 
-    post push_subscription_path,
-         params: {
-           subscription: {
-             endpoint: "https://push.example/shared-device",
-             p256dh: "new-pk",
-             auth: "new-auth"
-           }
-         },
-         as: :json
+    travel_to Time.zone.parse("2026-11-19 15:00:00 UTC") do
+      post push_subscription_path,
+           params: {
+             subscription: {
+               endpoint: "https://push.example/shared-device",
+               p256dh: "new-pk",
+               auth: "new-auth"
+             }
+           },
+           as: :json
 
-    assert_response :ok
-    other.reload
-    assert_equal @user.id, other.user_id
-    assert_equal "new-pk", other.p256dh
+      assert_response :ok
+      other.reload
+      assert_equal @user.id, other.user_id
+      assert_equal "new-pk", other.p256dh
+      assert_equal "new-auth", other.auth
+      assert_equal Time.zone.parse("2026-11-19 15:00:00 UTC"), other.last_seen_at
+    end
+  end
+
+  test "create upsert refreshes last_seen_at for the same user" do
+    sub = PushSubscription.create!(
+      user: @user,
+      endpoint: "https://push.example/same-device",
+      p256dh: "old-pk",
+      auth: "old-auth",
+      last_seen_at: 3.days.ago
+    )
+
+    travel_to Time.zone.parse("2026-11-19 16:00:00 UTC") do
+      assert_no_difference -> { PushSubscription.count } do
+        post push_subscription_path,
+             params: {
+               subscription: {
+                 endpoint: "https://push.example/same-device",
+                 p256dh: "fresh-pk",
+                 auth: "fresh-auth"
+               }
+             },
+             as: :json
+      end
+
+      assert_response :ok
+      sub.reload
+      assert_equal "fresh-pk", sub.p256dh
+      assert_equal Time.zone.parse("2026-11-19 16:00:00 UTC"), sub.last_seen_at
+    end
   end
 
   test "destroy removes subscription by endpoint" do

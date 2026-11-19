@@ -8,6 +8,7 @@ import {
   getPushSubscriptionState,
   isIos,
   prefetchPushResources,
+  repairPushSubscriptionIfNeeded,
   requestNotificationPermission
 } from "push_subscription"
 
@@ -56,7 +57,13 @@ export default class extends Controller {
     this._celebrateHandler = (event) => this.onCelebrate(event.detail || {})
     document.addEventListener("battle-day:celebrate", this._celebrateHandler)
     this.syncPushEndpointFields()
-    this.syncStandaloneSubscription()
+    repairPushSubscriptionIfNeeded({
+      vapidUrl: this.vapidUrlValue,
+      subscribeUrl: this.offerUrl(this.subscribeUrlValue),
+      timeZone: detectedBrowserTimeZone()
+    }).then((result) => {
+      if (result?.ok) this.syncPushEndpointFields()
+    }).catch(() => {})
     if (this.showOnConnectValue) {
       this.prepareOffer()
     }
@@ -81,29 +88,6 @@ export default class extends Controller {
     document.querySelectorAll(".js-push-endpoint-field").forEach((input) => {
       input.value = endpoint
     })
-  }
-
-  async syncStandaloneSubscription() {
-    if (!isStandalonePwa()) return
-
-    const state = await getPushSubscriptionState()
-    if (state.subscribed) return
-    if (state.permission === "denied") return
-    if (state.permission !== "granted") return
-
-    try {
-      const result = await enablePushSubscription({
-        vapidUrl: this.vapidUrlValue,
-        subscribeUrl: this.offerUrl(this.subscribeUrlValue),
-        timeZone: detectedBrowserTimeZone()
-      })
-      if (result.ok) {
-        await this.syncPushEndpointFields()
-        await this.markShown()
-      }
-    } catch (error) {
-      console.error(error)
-    }
   }
 
   async prefetchForOffer() {

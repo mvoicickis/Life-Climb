@@ -47,6 +47,24 @@ export async function fetchJson(url, options = {}) {
   return payload
 }
 
+async function postSubscriptionToServer(subscription, subscribeUrl, timeZone = "") {
+  const keys = subscription.toJSON().keys || {}
+  const body = {
+    subscription: {
+      endpoint: subscription.endpoint,
+      p256dh: keys.p256dh,
+      auth: keys.auth
+    }
+  }
+  const zone = timeZone.toString().trim()
+  if (zone) body.time_zone = zone
+
+  await fetchJson(subscribeUrl, {
+    method: "POST",
+    body: JSON.stringify(body)
+  })
+}
+
 export async function getPushSubscriptionState() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     return { subscribed: false, permission: Notification.permission }
@@ -92,22 +110,7 @@ export async function completePushSubscription({
     applicationServerKey: urlBase64ToUint8Array(publicKey)
   })
 
-  const keys = subscription.toJSON().keys || {}
-  const body = {
-    subscription: {
-      endpoint: subscription.endpoint,
-      p256dh: keys.p256dh,
-      auth: keys.auth
-    }
-  }
-  const zone = timeZone.toString().trim()
-  if (zone) body.time_zone = zone
-
-  await fetchJson(subscribeUrl, {
-    method: "POST",
-    body: JSON.stringify(body)
-  })
-
+  await postSubscriptionToServer(subscription, subscribeUrl, timeZone)
   return { ok: true, permission: "granted" }
 }
 
@@ -155,4 +158,57 @@ export async function disablePushSubscription({ unsubscribeUrl }) {
 
   await fetchJson(url, { method: "DELETE" })
   return { ok: true }
+}
+
+const PUSH_REPAIR_SESSION_KEY = "lp_push_repaired"
+
+function pushRepairAlreadyRan() {
+  try {
+    return typeof sessionStorage !== "undefined" && sessionStorage.getItem(PUSH_REPAIR_SESSION_KEY) === "1"
+  } catch (_error) {
+    return false
+  }
+}
+
+function markPushRepairRan() {
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(PUSH_REPAIR_SESSION_KEY, "1")
+    }
+  } catch (_error) {
+    /* private mode / blocked storage — still continue this call */
+  }
+}
+
+// Quiet upsert on app open: keep the server endpoint in step with this browser.
+// Never prompts. At most once per tab session. Never throws to the page.
+export async function repairPushSubscriptionIfNeeded({ vapidUrl, subscribeUrl, timeZone = "" }) {
+  try {
+    if (!canEnablePushHere()) return { ok: false, skipped: "unsupported" }
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") {
+      return { ok: false, skipped: "permission" }
+    }
+    if (pushRepairAlreadyRan()) return { ok: false, skipped: "already" }
+
+    markPushRepairRan()
+
+    const registration = await navigator.serviceWorker.ready
+    let subscription = await registration.pushManager.getSubscription()
+
+    if (!subscription) {
+      const { publicKey } = await fetchJson(vapidUrl)
+      if (!publicKey) return { ok: false, skipped: "no_vapid" }
+
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey)
+      })
+    }
+
+    await postSubscriptionToServer(subscription, subscribeUrl, timeZone)
+    return { ok: true, endpoint: subscription.endpoint }
+  } catch (error) {
+    console.error(error)
+    return { ok: false, error }
+  }
 }

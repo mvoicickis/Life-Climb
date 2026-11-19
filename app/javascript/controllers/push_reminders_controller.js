@@ -3,7 +3,8 @@ import { detectedBrowserTimeZone } from "browser_timezone"
 import {
   disablePushSubscription,
   enablePushSubscription,
-  getPushSubscriptionState
+  getPushSubscriptionState,
+  repairPushSubscriptionIfNeeded
 } from "push_subscription"
 
 // Settings/You — enable Web Push reminders and send a manual test notification.
@@ -18,6 +19,11 @@ export default class extends Controller {
 
   connect() {
     this.refreshState()
+    repairPushSubscriptionIfNeeded({
+      vapidUrl: this.vapidUrlValue,
+      subscribeUrl: this.subscribeUrlValue,
+      timeZone: detectedBrowserTimeZone()
+    }).then(() => this.refreshState()).catch(() => {})
   }
 
   async enable(event) {
