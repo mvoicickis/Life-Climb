@@ -17566,6 +17566,37 @@ button.lp-strategy-overflow {
   overflow-wrap: anywhere;
 }
 
+.lp-admin-tester__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lp-admin-tester__push {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.lp-admin-tester__push.is-ok {
+  color: var(--lp-muted);
+}
+
+.lp-admin-tester__push.is-broken {
+  color: var(--lp-amber);
+}
+
+.lp-admin-tester__push.is-off {
+  color: var(--lp-muted-dark);
+}
+
 .lp-admin-tester__reason {
   display: inline-flex;
   align-items: center;

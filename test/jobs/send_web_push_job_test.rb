@@ -40,24 +40,62 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_includes @last_kwargs[:message], "Hi"
   end
 
-  test "destroys expired subscriptions" do
+  test "success stamps last_success_at" do
+    assert_nil @subscription.last_success_at
+    SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+    assert @subscription.reload.last_success_at.present?
+  end
+
+  test "destroys expired subscriptions and logs" do
     WebPush.define_singleton_method(:payload_send) do |**_kwargs|
       raise WebPush::ExpiredSubscription.new(FakeResponse.new("gone", "#<Fake 410>"), "push.example")
     end
 
-    assert_difference -> { PushSubscription.count }, -1 do
-      SendWebPushJob.perform_now(@user.id, { "title" => "Hi" })
+    logs = capture_logs do
+      assert_difference -> { PushSubscription.count }, -1 do
+        SendWebPushJob.perform_now(@user.id, { "title" => "Hi" })
+      end
     end
+
+    assert_match(
+      /\[SendWebPushJob\] expired user=#{@user.id} sub=#{@subscription.id} reason=WebPush::ExpiredSubscription/,
+      logs
+    )
   end
 
-  test "destroys invalid subscriptions" do
+  test "destroys invalid subscriptions and logs" do
     WebPush.define_singleton_method(:payload_send) do |**_kwargs|
       raise WebPush::InvalidSubscription.new(FakeResponse.new("not found", "#<Fake 404>"), "push.example")
     end
 
-    assert_difference -> { PushSubscription.count }, -1 do
-      SendWebPushJob.perform_now(@user.id, { "title" => "Hi" })
+    logs = capture_logs do
+      assert_difference -> { PushSubscription.count }, -1 do
+        SendWebPushJob.perform_now(@user.id, { "title" => "Hi" })
+      end
     end
+
+    assert_match(
+      /\[SendWebPushJob\] expired user=#{@user.id} sub=#{@subscription.id} reason=WebPush::InvalidSubscription/,
+      logs
+    )
+  end
+
+  test "other errors stamp last_error fields and log" do
+    WebPush.define_singleton_method(:payload_send) do |**_kwargs|
+      raise StandardError, "upstream timeout"
+    end
+
+    logs = capture_logs do
+      SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
+    end
+
+    @subscription.reload
+    assert @subscription.last_error_at.present?
+    assert_equal "StandardError: upstream timeout", @subscription.last_error
+    assert_match(
+      /\[SendWebPushJob\] error user=#{@user.id} sub=#{@subscription.id} StandardError: upstream timeout/,
+      logs
+    )
   end
 
   test "no-ops when user is missing" do
@@ -325,5 +363,17 @@ class SendWebPushJobTest < ActiveJob::TestCase
 
     delivered = SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "test" })
     refute delivered
+  end
+
+  private
+
+  def capture_logs
+    io = StringIO.new
+    previous = Rails.logger
+    Rails.logger = Logger.new(io)
+    yield
+    io.string
+  ensure
+    Rails.logger = previous
   end
 end

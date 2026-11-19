@@ -36,11 +36,37 @@ module Admin
         assert_select ".lp-admin-tester__name", text: @user.display_name
         assert_select "a.lp-admin-tester__email[href=?]", "mailto:#{@user.email_address}"
         assert_select ".lp-admin-tester__reason", text: I18n.t("admin.testers.reason.onboarding")
+        assert_select ".lp-admin-tester__push.is-off",
+                      text: I18n.t("admin.testers.push_label", status: I18n.t("admin.testers.push_status.off"))
         assert_select ".lp-admin__nav-link.is-active", text: I18n.t("admin.nav.testers")
         assert_select "a.lp-admin__btn", text: I18n.t("admin.testers.filter_needs_message")
         assert_select "a.lp-admin-testers__play-link[href=?][target=_blank][rel=noopener]",
                       Testers::PLAY_TESTERS_URL,
                       text: I18n.t("admin.testers.play_testers_list")
+      end
+    end
+
+    test "tester card shows push broken label and reason" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago)
+        seed_climb!(@user, today_mission: "Push check")
+        @user.strategy_goals.battles.order(:id).last.update!(completed_at: 1.day.ago, repeat: nil)
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/card-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          last_error_at: 1.hour.ago,
+          last_error: "StandardError: boom"
+        )
+        sign_in_as @admin
+
+        get admin_testers_path
+
+        assert_select "#tester-#{@user.id} .lp-admin-tester__push.is-broken",
+                      text: I18n.t("admin.testers.push_label", status: I18n.t("admin.testers.push_status.broken"))
+        assert_select "#tester-#{@user.id} .lp-admin-tester__reason",
+                      text: I18n.t("admin.testers.reason.push_broken")
       end
     end
 

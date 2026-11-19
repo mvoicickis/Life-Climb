@@ -3812,6 +3812,11 @@ en:
       wins_this_week: "Wins this week"
       last_opened: "Last opened"
       push: "Push"
+      push_label: "Push: %{status}"
+      push_status:
+        ok: "ok"
+        broken: "broken"
+        "off": "off"
       partner: "Partner"
       done: "Yes"
       not_done: "No"
@@ -3847,6 +3852,7 @@ en:
         stale:
           one: "No win for %{count} day"
           other: "No win for %{count} days"
+        push_broken: "Push broken"
     dashboard:
       title: "Dashboard"
       lead: "Who signed up, where they drop off, and who needs a follow-up."
