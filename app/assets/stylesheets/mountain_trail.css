@@ -820,7 +820,7 @@
   position: absolute;
   inset: 0;
   background: rgba(18, 32, 26, 0.35);
-  animation: lp-trail-toast-in 0.16s ease both;
+  animation: lp-trail-toast-in var(--lp-motion-fast) var(--lp-ease-out) both;
 }
 
 .lp-trail-sheet__panel {
@@ -837,7 +837,7 @@
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -12px 40px rgba(18, 32, 26, 0.35);
   transform: translateY(0);
-  animation: lp-trail-sheet-up 0.28s cubic-bezier(0.22, 0.9, 0.28, 1) both;
+  animation: lp-trail-sheet-up var(--lp-motion-slow) var(--lp-ease-out) both;
   color: #f7ead9;
   overflow: hidden;
 }
@@ -998,6 +998,20 @@
   .lp-trail-sheet__panel {
     animation: none !important;
   }
+}
+
+/* Low-power devices: same ambient kill as reduced motion (mist/haze/clouds/embers/pulses). */
+html.lp-low-power .lp-trail__mist,
+html.lp-low-power .lp-trail__ember,
+html.lp-low-power .lp-trail__haze-band,
+html.lp-low-power .lp-trail-base__fire,
+html.lp-low-power .lp-trail-glow,
+html.lp-low-power .lp-trail__flag,
+html.lp-low-power .lp-trail-camp.is-current .lp-trail-camp__tent,
+html.lp-low-power .lp-trail-camp.is-current .lp-trail-camp__fire,
+html.lp-low-power .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__tent,
+html.lp-low-power .lp-trail.is-v4 .lp-trail-camp.is-current .lp-trail-camp__fire {
+  animation: none !important;
 }
 
 
@@ -2392,7 +2406,7 @@ body.is-trail-camp-sheet-keyboard-open .lp-trail.is-v4 .lp-trail-sheet.is-open {
   flex-shrink: 0;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  transition: transform .3s cubic-bezier(.2,.9,.3,1.15);
+  transition: transform var(--lp-motion-slow) var(--lp-ease-out);
   box-shadow: none;
 }
 

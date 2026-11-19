@@ -48,6 +48,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "html[data-theme=light]"
     assert_select "#you-language", count: 0
     assert_select "#you-reminders[data-controller=?]", "push-reminders"
+    assert_select "#you-sound[data-controller=?]", "sound-setting"
+    assert_select "#you-sound .lp-you-row__label", text: I18n.t("settings.sound_title")
+    assert_select "#you-sound button[role=switch][data-action=?]", "click->sound-setting#toggle"
+    assert_select "meta[name=lp-sound-enabled][content=?]", "true"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#enable"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#toggleSwitch"
     assert_select "#you-reminders button[data-action=?]", "click->push-reminders#sendTest", count: 0
@@ -348,6 +352,20 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-feedback-fab", count: 0
+  end
+
+  test "sound toggle saves sound_enabled via json" do
+    user = users(:one)
+    assert user.sound_enabled?
+    sign_in_as user
+
+    patch settings_path(format: :json), params: { user: { sound_enabled: "0" } }
+    assert_response :success
+    assert_equal false, user.reload.sound_enabled?
+
+    patch settings_path(format: :json), params: { user: { sound_enabled: "1" } }
+    assert_response :success
+    assert_equal true, user.reload.sound_enabled?
   end
 
   private

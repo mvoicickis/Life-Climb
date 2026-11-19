@@ -8,6 +8,7 @@ import {
   habitTodayRowState,
   ROW_STATE_CLASSES
 } from "lib/basic_today_save_queue"
+import { haptic } from "lib/lp_feedback"
 
 export default class extends Controller {
   static targets = [
@@ -57,7 +58,7 @@ export default class extends Controller {
       void popEl.offsetWidth
       popEl.classList.add("is-total-pop")
     }
-    navigator.vibrate?.(10)
+    haptic(10)
   }
 
   retrySave(event) {

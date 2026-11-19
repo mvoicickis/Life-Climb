@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { burst, sound } from "lib/lp_feedback"
 
 // SP / AP juice + camp nudge + optional soft chime on Mountain.
 export default class extends Controller {
@@ -24,8 +25,8 @@ export default class extends Controller {
     }
     if (this.hasCampTarget) this.campTarget.classList.add("is-nudge")
     this.floatPoints()
-    this.burst()
-    this.chime()
+    burst(this.element, { density: "strategy", boss: this.bossValue })
+    sound(this.bossValue ? "strategy_boss" : "strategy", { boss: this.bossValue })
     window.setTimeout(() => {
       this.spBadgeTarget?.classList.remove("is-sp-pop")
       this.progressBarTarget?.classList.remove("is-surge", "is-bounce")
@@ -54,44 +55,5 @@ export default class extends Controller {
 
   spLabel() {
     return "planning"
-  }
-
-  burst() {
-    const root = document.createElement("div")
-    root.className = this.bossValue ? "lp-strategy-confetti is-boss" : "lp-strategy-confetti"
-    root.setAttribute("aria-hidden", "true")
-    const count = this.bossValue ? 22 : 12
-    for (let i = 0; i < count; i += 1) {
-      const bit = document.createElement("span")
-      bit.style.setProperty("--x", `${(Math.random() * 160) - 80}px`)
-      bit.style.setProperty("--d", `${380 + Math.random() * 650}ms`)
-      root.appendChild(bit)
-    }
-    this.element.appendChild(root)
-    window.setTimeout(() => root.remove(), 1200)
-  }
-
-  chime() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    try {
-      const Ctx = window.AudioContext || window.webkitAudioContext
-      if (!Ctx) return
-      const ctx = new Ctx()
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.type = "sine"
-      osc.frequency.value = this.bossValue ? 523.25 : 392
-      gain.gain.value = 0.0001
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      const now = ctx.currentTime
-      gain.gain.exponentialRampToValueAtTime(0.05, now + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28)
-      osc.start(now)
-      osc.stop(now + 0.3)
-      window.setTimeout(() => ctx.close(), 400)
-    } catch (_err) {
-      // Audio is optional juice — ignore blocked autoplay.
-    }
   }
 }

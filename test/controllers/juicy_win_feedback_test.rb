@@ -74,7 +74,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__tick-slot .lp-today-v2-row__box",
+    assert_select ".lp-today-v2-row.lp-pressable[data-todo-id=?] .lp-today-v2-row__tick-slot .lp-today-v2-row__box",
                   todo.id
   end
 

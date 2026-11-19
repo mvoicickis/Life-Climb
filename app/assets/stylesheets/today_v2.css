@@ -129,7 +129,11 @@ body:has(.lp-dash.is-today-v2) {
   display: block;
   height: 100%;
   border-radius: 99px;
-  transition: width 0.4s ease, background 0.4s ease;
+  transform-origin: left center;
+  transition:
+    transform var(--lp-motion-slow) var(--lp-ease-out),
+    width var(--lp-motion-slow) var(--lp-ease-out),
+    background var(--lp-motion-slow) var(--lp-ease-out);
 }
 
 .lp-today-v2-hp-bar__fill.is-safe {
@@ -271,13 +275,16 @@ body:has(.lp-dash.is-today-v2) {
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  transition:
+    background var(--lp-motion-fast) var(--lp-ease-out),
+    border-color var(--lp-motion-fast) var(--lp-ease-out),
+    transform var(--lp-motion-fast) var(--lp-ease-out);
 }
 
 .lp-today-v2-row__box.is-won {
   background: var(--lp-green);
   border-color: var(--lp-green);
-  animation: todayTickPop 280ms ease;
+  animation: todayTickPop var(--lp-motion-base) var(--lp-ease-out);
 }
 
 @keyframes todayTickPop {
@@ -1745,8 +1752,12 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 .lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill {
   display: block;
   height: 100%;
+  width: 100%;
   border-radius: inherit;
   background: var(--lp-green-deep);
+  transform-origin: left center;
+  transform: scaleX(var(--lp-fill, 0));
+  transition: transform var(--lp-motion-slow) var(--lp-ease-out);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-camp-won {
@@ -2827,8 +2838,8 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   pointer-events: none;
   /* No scale transform: it breaks backdrop-filter sampling on Android Chrome. */
   transition:
-    opacity 180ms ease-out,
-    visibility 180ms;
+    opacity var(--lp-motion-base) var(--lp-ease-out),
+    visibility var(--lp-motion-base);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -2908,13 +2919,15 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  transition: background 120ms ease-out, transform 120ms ease-out;
+  transition:
+    background var(--lp-motion-fast) var(--lp-ease-out),
+    transform var(--lp-motion-fast) var(--lp-ease-out);
   -webkit-tap-highlight-color: transparent;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row:active {
   background: color-mix(in srgb, var(--lp-muted) 12%, transparent);
-  transform: scale(0.985);
+  transform: scale(var(--lp-press-scale));
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-list li:last-child .lp-other-mountains-row {

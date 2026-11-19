@@ -15,7 +15,7 @@
       <p class="lp-today-goal-kicker"><%= t("dash.battlefield.goal_card.label") %></p>
       <% if show_other_mountains %>
         <button type="button"
-                class="lp-other-mountains-button"
+                class="lp-other-mountains-button lp-pressable"
                 data-dropdown-target="button"
                 data-action="click->dropdown#toggle"
                 aria-haspopup="menu"
@@ -39,7 +39,7 @@
              aria-valuemax="<%= [ camp_total, 100 ].max %>"
              aria-valuenow="<%= camp_won %>"
              aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
-          <span class="lp-today-camp-bar__fill" style="width: <%= camp_percent %>%"></span>
+          <span class="lp-today-camp-bar__fill" style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
         </div>
         <p class="lp-today-camp-won"<%= " hidden" unless camp_won.positive? %>>
           <%= t("dash.battlefield.goal_card.won", count: camp_won) %>
@@ -61,7 +61,7 @@
           <li>
             <%= button_to today_focus_path(journey_id: entry.journey_id),
                   method: :patch,
-                  class: "lp-other-mountains-row",
+                  class: "lp-other-mountains-row lp-pressable",
                   form: { class: "lp-other-mountains-row-form" },
                   role: "menuitem" do %>
               <% if entry.custom_photo? && journey.present? %>

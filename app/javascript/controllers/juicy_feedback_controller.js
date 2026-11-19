@@ -8,6 +8,7 @@ import {
   turboSubmitOk,
   winSubmitHostFromForm
 } from "lib/battle_win_feedback"
+import { burst, haptic, markTapBurst, prefersReducedMotion } from "lib/lp_feedback"
 
 // Click-time bounce + flat particle burst + optional "+N Battle strength" float.
 // When suppressReloadCelebrate is true (battle Win), defer strength float until
@@ -50,12 +51,15 @@ export default class extends Controller {
     const host = this.element.closest(".lp-dash-tcard, .lp-dash-checklist__obj, .lp-today-v2-row") || this.element
     const amount = this.resolvedAmount(host)
     const popAmount = this.resolvedPopAmount()
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const reduceMotion = prefersReducedMotion()
     const battleWin = this.deferRewardValue
+
+    if (battleWin) haptic(12)
 
     if (!reduceMotion) {
       this.bounce(host)
-      this.burst(host)
+      burst(host, { density: "juicy" })
+      if (battleWin) markTapBurst()
       if (popAmount > 0) this.floatHabitPop(host, popAmount)
     }
     if (!battleWin && amount > 0) this.floatAp(host, amount)
@@ -151,25 +155,6 @@ export default class extends Controller {
     void host.offsetWidth
     host.classList.add("is-juicy")
     window.setTimeout(() => host.classList.remove("is-juicy"), 700)
-  }
-
-  burst(host) {
-    const root = document.createElement("div")
-    root.className = "lp-juicy-burst"
-    root.setAttribute("aria-hidden", "true")
-    const colors = [ "#57d35b", "#f59e0b", "#38bdf8", "#f472b6", "#a3e635" ]
-    for (let i = 0; i < 12; i += 1) {
-      const bit = document.createElement("span")
-      const angle = (Math.PI * 2 * i) / 12
-      const dist = 28 + Math.random() * 36
-      bit.style.setProperty("--x", `${Math.cos(angle) * dist}px`)
-      bit.style.setProperty("--y", `${Math.sin(angle) * dist}px`)
-      bit.style.setProperty("--d", `${380 + Math.random() * 220}ms`)
-      bit.style.background = colors[i % colors.length]
-      root.appendChild(bit)
-    }
-    host.appendChild(root)
-    window.setTimeout(() => root.remove(), 800)
   }
 
   floatAp(host, amount) {

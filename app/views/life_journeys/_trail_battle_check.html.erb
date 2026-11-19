@@ -4,7 +4,7 @@
 <% qty_project = battle.quantified_path_project %>
 <% if qty_project %>
   <button type="button"
-          class="lp-trail-battles__tick"
+          class="lp-trail-battles__tick lp-pressable"
           data-action="click->trail-canvas#openLog"
           data-project-id="<%= qty_project.id %>"
           data-battle-id="<%= battle.id %>"
@@ -21,7 +21,7 @@
   <%= button_to battle_win_path(battle),
         method: :post,
         params: { source: "camp_sheet" },
-        class: "lp-trail-battles__tick",
+        class: "lp-trail-battles__tick lp-pressable",
         form: {
           class: "lp-trail-battles__tick-form",
           data: {

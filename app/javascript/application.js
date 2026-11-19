@@ -4,10 +4,16 @@ import "trail_turbo_streams"
 import "controllers"
 import { ensureCapture } from "pwa_install_prompt"
 import { startNavTransition } from "nav_transition"
+import "lib/lp_sound"
 
 // Capture beforeinstallprompt early so Settings and Today share one deferred event.
 ensureCapture()
 startNavTransition()
+
+// Cheap Android: skip ambient mountain motion when cores are scarce.
+if ((navigator.hardwareConcurrency || 8) <= 4) {
+  document.documentElement.classList.add("lp-low-power")
+}
 
 // PWA Phase B — register only on secure contexts (HTTPS or localhost).
 if ("serviceWorker" in navigator) {
