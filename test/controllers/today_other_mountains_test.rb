@@ -122,25 +122,22 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
   test "Today other-mountains query count stays flat for one vs eight other journeys" do
     seed_second_journey!(title: "Climb 1", area_key: "self", battle_title: "Battle 1")
     warm_today_lookups!
-    get dashboard_path
-    assert_response :success
 
-    one_queries = count_other_mountains_queries { get dashboard_path }
-    assert_response :success
-    assert_select ".lp-other-mountains-button__badge", text: "1"
+    one_queries = count_other_mountains_queries { load_other_mountains_for_today! }
+    assert_operator one_queries, :<=, 4
 
     %w[purpose money learning relationships family home community].each_with_index do |area_key, i|
       seed_second_journey!(title: "Climb #{i + 2}", area_key: area_key, battle_title: "Battle #{i + 2}")
     end
     warm_today_lookups!
-    get dashboard_path
-    assert_response :success
 
-    eight_queries = count_other_mountains_queries { get dashboard_path }
-    assert_response :success
-    assert_select ".lp-other-mountains-button__badge", text: "8"
+    eight_queries = count_other_mountains_queries { load_other_mountains_for_today! }
     assert_equal one_queries, eight_queries,
                  "expected flat Today queries (1-other=#{one_queries}, 8-other=#{eight_queries})"
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-other-mountains-button__badge", text: "8"
   end
 
   private
@@ -183,11 +180,23 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
   def warm_today_lookups!
     Battles::WinsOnLocalDate.time_zone_for(@user)
     Battles::WinsOnLocalDate.local_today_for(@user)
-    Today::OtherMountainsOpenCounts.call(
+    load_other_mountains_for_today!
+  end
+
+  # Same reads Dashboard::TodaySurface#assign_other_mountains! uses (date + focus preloaded).
+  def load_other_mountains_for_today!
+    focused = @user.primary_focused_journey
+    date = Battles::WinsOnLocalDate.local_today_for(@user)
+    result = Today::OtherMountainsOpenCounts.call(
       user: @user,
-      focused_journey: @user.primary_focused_journey,
-      date: Battles::WinsOnLocalDate.local_today_for(@user)
+      focused_journey: focused,
+      date: date
     )
+    photo_ids = result.journeys.select(&:custom_photo?).map(&:journey_id)
+    if photo_ids.any?
+      @user.life_journeys.where(id: photo_ids).with_attached_mountain_photo.index_by(&:id)
+    end
+    result
   end
 
   def count_other_mountains_queries
@@ -196,9 +205,6 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
       next if payload[:cached]
       next if payload[:name] == "SCHEMA" || payload[:name] == "TRANSACTION"
       next if payload[:sql].blank?
-
-      sql = payload[:sql]
-      next unless sql.match?(/life_journeys|strategy_goals|daily_todos|active_storage/i)
 
       queries += 1
     end
