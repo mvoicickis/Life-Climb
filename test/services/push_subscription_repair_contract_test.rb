@@ -37,11 +37,11 @@ class PushSubscriptionRepairContractTest < ActiveSupport::TestCase
     refute_includes connect, "isStandalonePwa()"
   end
 
-  test "You push-reminders connect calls repair" do
+  test "You push-reminders refreshState repairs when granted without a subscription" do
     assert_includes @reminders, "repairPushSubscriptionIfNeeded"
-    connect = @reminders[/connect\(\)\s*\{[\s\S]*?\n  \}/]
-    assert connect.present?
-    assert_includes connect, "repairPushSubscriptionIfNeeded"
-    assert_includes connect, "this.refreshState()"
+    refresh = @reminders[/async refreshState\(\)\s*\{[\s\S]*?\n  \}/]
+    assert refresh.present?
+    assert_includes refresh, "repairPushSubscriptionIfNeeded"
+    assert_includes refresh, 'state.permission === "granted" && !state.subscribed'
   end
 end

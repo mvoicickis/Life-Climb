@@ -1263,6 +1263,16 @@ es:
       battles_won: "Battles won" # TODO: translate
       camps_finished: "Camps finished" # TODO: translate
       days_won: "Days won" # TODO: translate
+    reminders_setting_up: "Setting up reminders…" # TODO: translate
+    reminders_off_phone: "Notifications are off on this phone" # TODO: translate
+    reminders_turn_on: "Turn on" # TODO: translate
+    reminders_blocked_phone: "Notifications are blocked on this phone" # TODO: translate
+    reminders_how_to_fix: "How to fix" # TODO: translate
+    reminders_fix_step_apps: "Phone Settings → Apps → %{browser} → Notifications → On" # TODO: translate
+    reminders_fix_step_battery: "Battery → Unrestricted" # TODO: translate
+    reminders_unsupported_chrome: "This browser can't send reminders. Open Life Climb in Chrome for reminders." # TODO: translate
+    reminders_open_chrome: "Open in Chrome" # TODO: translate
+    reminders_browser_fallback: "your browser" # TODO: translate
     install_offer:
       row_label: "Add to home screen"
       browser_menu: "Your browser will offer this from its own menu."

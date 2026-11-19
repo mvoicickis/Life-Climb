@@ -114,7 +114,14 @@
                data-disabled-message="<%= t('settings.reminders_disabled') %>"
                data-denied-message="<%= t('settings.reminders_denied') %>"
                data-unsupported-message="<%= t('settings.reminders_unsupported') %>"
-               data-error-message="<%= t('settings.reminders_error') %>">
+               data-error-message="<%= t('settings.reminders_error') %>"
+               data-setting-up-message="<%= t('settings.reminders_setting_up') %>"
+               data-off-phone-message="<%= t('settings.reminders_off_phone') %>"
+               data-blocked-phone-message="<%= t('settings.reminders_blocked_phone') %>"
+               data-unsupported-chrome-message="<%= t('settings.reminders_unsupported_chrome') %>"
+               data-fix-step-apps="<%= t('settings.reminders_fix_step_apps') %>"
+               data-fix-step-battery="<%= t('settings.reminders_fix_step_battery') %>"
+               data-browser-fallback="<%= t('settings.reminders_browser_fallback') %>">
             <div class="lp-you-row lp-you-row--static">
               <span class="lp-you-row__icon" aria-hidden="true">🔔</span>
               <span class="lp-you-row__label"><%= t("settings.reminders_title") %></span>
@@ -127,6 +134,32 @@
                       data-action="click->push-reminders#toggleSwitch">
                 <span class="lp-you-switch__knob"></span>
               </button>
+            </div>
+            <div class="lp-you-reminders-hint" data-push-reminders-target="hint" hidden>
+              <p class="lp-you-reminders-hint__text" data-push-reminders-target="hintText"></p>
+              <button type="button"
+                      class="lp-you-reminders-hint__action"
+                      data-push-reminders-target="turnOn"
+                      data-action="click->push-reminders#turnOn"
+                      hidden>
+                <%= t("settings.reminders_turn_on") %>
+              </button>
+              <button type="button"
+                      class="lp-you-reminders-hint__action"
+                      data-push-reminders-target="howToFix"
+                      data-action="click->push-reminders#toggleDeniedHelp"
+                      hidden>
+                <%= t("settings.reminders_how_to_fix") %>
+              </button>
+              <a class="lp-you-reminders-hint__action"
+                 data-push-reminders-target="openChrome"
+                 hidden>
+                <%= t("settings.reminders_open_chrome") %>
+              </a>
+              <ol class="lp-you-reminders-hint__steps" data-push-reminders-target="deniedSteps" hidden>
+                <li data-push-reminders-target="fixStepApps"></li>
+                <li data-push-reminders-target="fixStepBattery"></li>
+              </ol>
             </div>
             <button type="button" class="lp-you-sr" data-push-reminders-target="enable" data-action="click->push-reminders#enable">
               <%= t("settings.reminders_enable") %>
