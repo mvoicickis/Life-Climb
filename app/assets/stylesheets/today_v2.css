@@ -1627,6 +1627,11 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transition: padding 0.18s ease, gap 0.18s ease;
 }
 
+/* Open menu: keep the goal card (and dropdown) above Battles / Habits / dim. */
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal:has(.lp-other-mountains-dropdown:not([hidden])) {
+  z-index: 50;
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed {
   gap: 0.25rem;
   padding-top: 0.35rem;
@@ -2713,9 +2718,10 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   fill: color-mix(in srgb, var(--lp-surface) 92%, transparent);
 }
 
-/* Other mountains on Today — planet button + frosted dropdown. */
+/* Other mountains on Today — frosted planet button + near-solid dropdown. */
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button {
   position: relative;
+  z-index: 2;
   display: grid;
   flex: none;
   width: var(--lp-tap);
@@ -2730,6 +2736,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Frosted glass face — translucent white + blur, soft border/shadow (not a solid disc). */
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face {
   position: relative;
   display: grid;
@@ -2739,9 +2746,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--lp-surface) 72%, var(--lp-border));
   border-radius: var(--lp-radius-pill);
-  background: color-mix(in srgb, var(--lp-surface) 58%, transparent);
-  backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
-  -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
+  background: color-mix(in srgb, var(--lp-surface) 52%, transparent);
   color: var(--lp-muted);
   box-shadow: var(--lp-shadow-card);
 }
@@ -2756,6 +2761,19 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   pointer-events: none;
 }
 
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face {
+    backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
+    -webkit-backdrop-filter: blur(var(--lp-rpg-glass-blur)) saturate(1.2);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face {
+    background: color-mix(in srgb, var(--lp-surface) 88%, var(--lp-paper));
+  }
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-button__face .lp-planet-icon {
   width: 1.45rem;
   height: 1.45rem;
@@ -2765,6 +2783,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 1;
   display: grid;
   min-width: 1.15rem;
   height: 1.15rem;
@@ -2779,10 +2798,11 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   line-height: 1;
 }
 
+/* Dim sits above page cards, below the open goal card / dropdown. */
 .lp-dash.is-today-v2.is-today-photo .lp-today-scroll__pad:has(.lp-other-mountains-dropdown:not([hidden]))::after {
   position: absolute;
   inset: 0;
-  z-index: 20;
+  z-index: 40;
   background: color-mix(in srgb, var(--lp-ink) 13%, transparent);
   content: "";
   pointer-events: none;
@@ -2793,23 +2813,30 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   top: calc(100% + var(--lp-space-2));
   left: 0;
   right: 0;
-  z-index: 40;
+  z-index: 60;
   padding: var(--lp-space-2);
   border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
   border-radius: 1.125rem;
-  background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
-  backdrop-filter: blur(calc(var(--lp-rpg-glass-blur) + 0.65rem)) saturate(1.3);
-  -webkit-backdrop-filter: blur(calc(var(--lp-rpg-glass-blur) + 0.65rem)) saturate(1.3);
-  box-shadow: var(--lp-rpg-glass-shadow);
+  /* Opaque by default — nothing behind may stay readable without blur. */
+  background: var(--lp-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: var(--lp-shadow-card);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: scale(0.96) translateY(-0.35rem);
-  transform-origin: calc(100% - 1.4rem) top;
+  /* No scale transform: it breaks backdrop-filter sampling on Android Chrome. */
   transition:
     opacity 180ms ease-out,
-    transform 180ms ease-out,
     visibility 180ms;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown {
+    background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  }
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown[hidden] {
@@ -2817,14 +2844,12 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: scale(0.96) translateY(-0.35rem);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown:not([hidden]) {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: scale(1) translateY(0);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown::before {
@@ -2835,9 +2860,15 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   height: 0.75rem;
   border-top: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
   border-left: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
-  background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  background: var(--lp-surface);
   content: "";
   transform: rotate(45deg);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown::before {
+    background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
+  }
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown__title {
@@ -2954,8 +2985,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 
 @media (prefers-reduced-motion: reduce) {
   .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown,
-  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown[hidden],
-  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown:not([hidden]),
   .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row {
     transition: none;
   }
