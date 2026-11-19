@@ -428,7 +428,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_220000) do
     t.string "auth", null: false
     t.datetime "created_at", null: false
     t.text "endpoint", null: false
+    t.string "last_error"
+    t.datetime "last_error_at"
     t.datetime "last_seen_at"
+    t.datetime "last_success_at"
     t.string "p256dh", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"

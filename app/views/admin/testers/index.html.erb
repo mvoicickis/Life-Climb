@@ -65,9 +65,14 @@
                   class: "lp-admin-tester__email",
                   aria: { label: t("admin.testers.email_aria", name: row.user.display_name) } %>
           </div>
-          <% if row.reason.present? %>
-            <span class="lp-admin-tester__reason"><%= row.reason %></span>
-          <% end %>
+          <div class="lp-admin-tester__badges">
+            <span class="lp-admin-tester__push is-<%= row.push_status %>">
+              <%= t("admin.testers.push_label", status: t("admin.testers.push_status.#{row.push_status}")) %>
+            </span>
+            <% if row.reason.present? %>
+              <span class="lp-admin-tester__reason"><%= row.reason %></span>
+            <% end %>
+          </div>
         </header>
 
         <div class="lp-admin-tester__contact">
@@ -141,7 +146,11 @@
           </div>
           <div>
             <dt><%= t("admin.testers.push") %></dt>
-            <dd><%= row.push_on ? t("admin.testers.done") : t("admin.testers.not_done") %></dd>
+            <dd>
+              <span class="lp-admin-tester__push is-<%= row.push_status %>">
+                <%= t("admin.testers.push_label", status: t("admin.testers.push_status.#{row.push_status}")) %>
+              </span>
+            </dd>
           </div>
           <div>
             <dt><%= t("admin.testers.partner") %></dt>

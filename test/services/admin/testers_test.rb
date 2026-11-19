@@ -55,7 +55,7 @@ module Admin
       end
     end
 
-    test "no reason when won yesterday" do
+    test "no reason when won yesterday and push is healthy or off" do
       travel_to Time.zone.parse("2026-11-18 12:00:00") do
         @user.update!(onboarding_completed_at: 2.weeks.ago)
         plant_one_shot_win!(@user, completed_at: 1.day.ago)
@@ -63,6 +63,95 @@ module Admin
         row = row_for(@user)
         assert_nil row.reason_key
         assert_nil row.reason
+        assert_equal :off, row.push_status
+      end
+    end
+
+    test "push status ok when recent success and no newer error" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago)
+        plant_one_shot_win!(@user, completed_at: 1.day.ago)
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/ok-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          last_success_at: 2.days.ago,
+          last_error_at: 5.days.ago,
+          last_error: "StandardError: old"
+        )
+
+        row = row_for(@user)
+        assert_equal :ok, row.push_status
+        assert_nil row.reason_key
+      end
+    end
+
+    test "push status broken when latest is an error" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago)
+        plant_one_shot_win!(@user, completed_at: 1.day.ago)
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/err-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          last_success_at: 2.days.ago,
+          last_error_at: 1.hour.ago,
+          last_error: "StandardError: boom"
+        )
+
+        row = row_for(@user)
+        assert_equal :broken, row.push_status
+        assert_equal :push_broken, row.reason_key
+        assert_equal I18n.t("admin.testers.reason.push_broken"), row.reason
+      end
+    end
+
+    test "push status broken when no success in 7 days" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago)
+        plant_one_shot_win!(@user, completed_at: 1.day.ago)
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/stale-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          last_success_at: 10.days.ago
+        )
+
+        row = row_for(@user)
+        assert_equal :broken, row.push_status
+        assert_equal :push_broken, row.reason_key
+      end
+    end
+
+    test "push status off when no subscriptions" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago)
+        plant_one_shot_win!(@user, completed_at: 1.day.ago)
+
+        row = row_for(@user)
+        assert_equal :off, row.push_status
+        assert_nil row.reason_key
+      end
+    end
+
+    test "needs message filter includes push broken" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(onboarding_completed_at: 2.weeks.ago, name: "Push broken user")
+        plant_one_shot_win!(@user, completed_at: 1.day.ago)
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/needs-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          last_error_at: 1.hour.ago,
+          last_error: "StandardError: boom"
+        )
+
+        needs = Testers.call(filter: Testers::FILTER_NEEDS_MESSAGE).map { |row| row.user.name }
+        assert_includes needs, "Push broken user"
       end
     end
 
@@ -106,13 +195,14 @@ module Admin
           user: @user,
           endpoint: "https://push.example/testers-#{@user.id}",
           p256dh: "p256dh-key",
-          auth: "auth-key"
+          auth: "auth-key",
+          last_success_at: 1.day.ago
         )
         invite = ClimbTogether::Invite.call(user: @user)
         ClimbTogether::Accept.call(user: @other, token: invite.token)
 
         row = row_for(@user)
-        assert row.push_on
+        assert_equal :ok, row.push_status
         assert row.partner
       end
     end

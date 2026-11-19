@@ -112,12 +112,23 @@ class SendWebPushJob < ApplicationJob
         private_key: VapidConfig.private_key
       }
     )
+    subscription.update_columns(last_success_at: Time.current)
     true
-  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
+  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+    Rails.logger.info(
+      "[SendWebPushJob] expired user=#{subscription.user_id} sub=#{subscription.id} reason=#{e.class}"
+    )
     subscription.destroy
     false
   rescue StandardError => e
-    Rails.logger.warn("[SendWebPushJob] #{e.class}: #{e.message}")
+    short = e.message.to_s.truncate(180)
+    subscription.update_columns(
+      last_error_at: Time.current,
+      last_error: "#{e.class}: #{short}".truncate(255)
+    )
+    Rails.logger.warn(
+      "[SendWebPushJob] error user=#{subscription.user_id} sub=#{subscription.id} #{e.class}: #{short}"
+    )
     false
   end
 end
