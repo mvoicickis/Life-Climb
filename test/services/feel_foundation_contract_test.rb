@@ -73,6 +73,18 @@ class FeelFoundationContractTest < ActiveSupport::TestCase
     assert_includes @sound, "DEFAULT_VOLUME = 0.4"
     assert_includes @sound, "export function play"
     assert_includes @sound, "export function setEnabled"
+    assert_match(/if \(!soundEnabled\(\) \|\| prefersReducedMotion\(\)\) return/, @sound)
+  end
+
+  test "play win builds mockup WIN DING oscillator sequence" do
+    assert_includes @sound, "function playWinDing"
+    assert_includes @sound, 'beep({ type: "triangle", freq: 440, dur: 0.18, vol: 0.1 * scale })'
+    assert_includes @sound, 'beep({ type: "triangle", freq: 587, dur: 0.16, vol: 0.08 * scale })'
+    assert_match(/setTimeout\(\(\) => \{\s*beep\(\{ type: "triangle", freq: 587/, @sound)
+    assert_includes @sound, "}, 70)"
+    assert_match(/if \(name === "win"\) \{\s*playWinDing\(vol\)/, @sound)
+    # Sound off / reduced motion short-circuits before any oscillator work.
+    refute_match(/if \(name === "win"\)[\s\S]*playWinDing[\s\S]*if \(!soundEnabled/, @sound)
   end
 
   test "reduced motion skips burst and you flash" do
