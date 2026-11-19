@@ -16,7 +16,12 @@ export default class extends Controller {
   }
 
   connect() {
-    this._reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    this._reduced =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      document.documentElement.classList.contains("lp-low-power") ||
+      (navigator.hardwareConcurrency || 8) <= 4
+    if (this._reduced) document.documentElement.classList.add("lp-low-power")
+
     if (this.builtinPhotosValue) {
       if (this._reduced) {
         this.applyBuiltinPhotosStatic()

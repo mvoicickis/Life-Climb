@@ -1507,6 +1507,9 @@ lv:
     reminders_unsupported_chrome: "This browser can't send reminders. Open Life Climb in Chrome for reminders." # TODO: translate
     reminders_open_chrome: "Open in Chrome" # TODO: translate
     reminders_browser_fallback: "your browser" # TODO: translate
+    sound_title: "Sound" # TODO: translate
+    sound_updated: "Sound updated." # TODO: translate
+    sound_not_saved: "Not saved. Tap to try again." # TODO: translate
     install_offer:
       row_label: "Add to home screen"
       browser_menu: "Your browser will offer this from its own menu."

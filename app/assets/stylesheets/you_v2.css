@@ -739,6 +739,12 @@
   100% { box-shadow: 0 0 0 8px transparent; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .lp-you-row--flash {
+    animation: none;
+  }
+}
+
 /* Premium pricing page */
 .lp-pricing {
   --pricing-ink: var(--lp-ink, #0f172a);

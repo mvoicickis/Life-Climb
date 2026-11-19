@@ -17,6 +17,6 @@ export default class extends Controller {
 
   dismiss() {
     this.element.classList.remove("is-show")
-    window.setTimeout(() => this.element.remove(), 280)
+    window.setTimeout(() => this.element.remove(), 320)
   }
 }

@@ -10,7 +10,7 @@
 
 <% mountain_link = capture do %>
   <% if strategy_journey %>
-    <%= link_to life_journey_path(strategy_journey), class: "lp-dash-nav__link #{'is-active' if active == 'mountain'}" do %>
+    <%= link_to life_journey_path(strategy_journey), class: "lp-dash-nav__link lp-pressable #{'is-active' if active == 'mountain'}" do %>
       <span class="lp-dash-nav__icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
@@ -20,7 +20,7 @@
       <span><%= t("dash.nav.mountain") %></span>
     <% end %>
   <% else %>
-    <%= link_to new_life_journey_path, class: "lp-dash-nav__link #{'is-active' if active == 'mountain'}" do %>
+    <%= link_to new_life_journey_path, class: "lp-dash-nav__link lp-pressable #{'is-active' if active == 'mountain'}" do %>
       <span class="lp-dash-nav__icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 19 L9.5 8.5 L13 14 L16 10 L21 19 Z"/>
@@ -33,7 +33,7 @@
 <% end %>
 
 <% today_link = capture do %>
-  <%= link_to dashboard_path, class: "lp-dash-nav__link #{'is-active' if active == 'today'}" do %>
+  <%= link_to dashboard_path, class: "lp-dash-nav__link lp-pressable #{'is-active' if active == 'today'}" do %>
     <span class="lp-dash-nav__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="8.5"/>
@@ -45,7 +45,7 @@
 <% end %>
 
 <% journey_link = capture do %>
-  <%= link_to life_points_path, class: "lp-dash-nav__link #{'is-active' if active == 'journey'}" do %>
+  <%= link_to life_points_path, class: "lp-dash-nav__link lp-pressable #{'is-active' if active == 'journey'}" do %>
     <span class="lp-dash-nav__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 17 L9 11 L13 14.5 L20 7"/>
@@ -57,7 +57,7 @@
 <% end %>
 
 <% you_link = capture do %>
-  <%= link_to settings_path, class: "lp-dash-nav__link #{'is-active' if active == 'you'}" do %>
+  <%= link_to settings_path, class: "lp-dash-nav__link lp-pressable #{'is-active' if active == 'you'}" do %>
     <span class="lp-dash-nav__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="8" r="3.2"/>
@@ -74,7 +74,7 @@
   <div class="lp-dash-nav__fab-slot">
     <% if show_plant_fab %>
       <button type="button"
-              class="lp-dash-nav__fab"
+              class="lp-dash-nav__fab lp-pressable"
               aria-label="<%= t('strategy.rpg.trail.plant_project') %>">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">
           <path d="M12 5v14M5 12h14"/>

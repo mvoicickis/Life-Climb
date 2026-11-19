@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { syncAppBadge } from "app_badge"
+import { burst, consumeTapBurst, sound } from "lib/lp_feedback"
 
 // Subtle juice for Complete Battle — confetti, ring close, AP float, camp nudge.
 export default class extends Controller {
@@ -32,14 +33,6 @@ export default class extends Controller {
     }
 
     if (!suppress && (this.celebrateValue || this.apGainedValue > 0)) {
-      console.log("[lp-push-offer-debug] battle-day#connect page-load celebrate", {
-        celebrate: this.celebrateValue,
-        apGained: this.apGainedValue,
-        boss: this.bossValue,
-        winNumber: this.winNumberValue,
-        pushOfferEligible: this.pushOfferEligibleValue,
-        suppress
-      })
       this.triggerWin({
         celebrate: this.celebrateValue,
         apGained: this.apGainedValue,
@@ -72,12 +65,8 @@ export default class extends Controller {
       pushOfferEligible: Boolean(pushOfferEligible),
       dispatch
     }
-    console.log("[lp-push-offer-debug] battle-day#triggerWin entry", detail)
 
-    if (!detail.celebrate && !(detail.apGained > 0)) {
-      console.log("[lp-push-offer-debug] battle-day#triggerWin early return (no celebrate and no AP)")
-      return
-    }
+    if (!detail.celebrate && !(detail.apGained > 0)) return
 
     this.celebrateValue = detail.celebrate
     this.apGainedValue = detail.apGained
@@ -86,22 +75,18 @@ export default class extends Controller {
     this.pushOfferEligibleValue = detail.pushOfferEligible
 
     if (dispatch) {
-      const eventDetail = {
-        source: this,
-        celebrate: this.celebrateValue,
-        apGained: this.apGainedValue,
-        boss: this.bossValue,
-        winNumber: this.winNumberValue,
-        pushOfferEligible: this.pushOfferEligibleValue
-      }
-      console.log("[lp-push-offer-debug] battle-day#triggerWin dispatch battle-day:celebrate", eventDetail)
       document.dispatchEvent(
         new CustomEvent("battle-day:celebrate", {
-          detail: eventDetail
+          detail: {
+            source: this,
+            celebrate: this.celebrateValue,
+            apGained: this.apGainedValue,
+            boss: this.bossValue,
+            winNumber: this.winNumberValue,
+            pushOfferEligible: this.pushOfferEligibleValue
+          }
         })
       )
-    } else {
-      console.log("[lp-push-offer-debug] battle-day#triggerWin skip dispatch (stream replay)")
     }
 
     window.requestAnimationFrame(() => this.celebrate())
@@ -110,13 +95,14 @@ export default class extends Controller {
   celebrate() {
     this.element.classList.add("is-celebrating")
     if (this.bossValue) this.element.classList.add("is-boss")
-    this.burst()
+    const tapBurst = consumeTapBurst()
+    if (!tapBurst) burst(this.element, { density: "dash", boss: this.bossValue })
     this.nudgeReward()
     this.nudgeGoal()
     this.closeRing()
     this.nudgeCamp()
     this.floatAp()
-    this.chime()
+    sound(this.bossValue ? "win_boss" : "win", { boss: this.bossValue })
     window.setTimeout(() => {
       this.element.classList.remove("is-celebrating", "is-boss")
     }, this.bossValue ? 1800 : 1400)
@@ -160,45 +146,5 @@ export default class extends Controller {
       this.goalPctTarget?.classList.remove("is-glow")
       this.momentumTarget?.classList.remove("is-glow")
     }, 900)
-  }
-
-  burst() {
-    const root = document.createElement("div")
-    root.className = this.bossValue ? "lp-dash-confetti is-boss" : "lp-dash-confetti"
-    root.setAttribute("aria-hidden", "true")
-    const count = this.bossValue ? 28 : 18
-    for (let i = 0; i < count; i += 1) {
-      const bit = document.createElement("span")
-      bit.style.setProperty("--x", `${(Math.random() * 180) - 90}px`)
-      bit.style.setProperty("--d", `${420 + Math.random() * 780}ms`)
-      bit.style.setProperty("--h", `${85 + Math.random() * 45}`)
-      root.appendChild(bit)
-    }
-    this.element.appendChild(root)
-    window.setTimeout(() => root.remove(), 1300)
-  }
-
-  chime() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    try {
-      const Ctx = window.AudioContext || window.webkitAudioContext
-      if (!Ctx) return
-      const ctx = new Ctx()
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.type = "triangle"
-      osc.frequency.value = this.bossValue ? 587.33 : 440
-      gain.gain.value = 0.0001
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      const now = ctx.currentTime
-      gain.gain.exponentialRampToValueAtTime(0.04, now + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25)
-      osc.start(now)
-      osc.stop(now + 0.28)
-      window.setTimeout(() => ctx.close(), 400)
-    } catch (_err) {
-      // optional
-    }
   }
 }

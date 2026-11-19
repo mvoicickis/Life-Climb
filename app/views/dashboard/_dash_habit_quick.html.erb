@@ -2,7 +2,7 @@
 <% quick = local_assigns.fetch(:quick) { habit.quick_add_value } %>
 <div id="<%= dom_id(habit, :today_quick) %>" class="lp-dash-habit__quick-wrap">
   <button type="button"
-          class="lp-dash-habit__qb is-big"
+          class="lp-dash-habit__qb is-big lp-pressable"
           aria-label="<%= t("dash.anytime.quick_add", n: number_with_delimiter(quick), unit: habit.unit) %>"
           data-controller="pressable"
           data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release click->basic-today-client#addQuick">

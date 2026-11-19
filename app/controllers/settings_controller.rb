@@ -23,7 +23,11 @@ class SettingsController < ApplicationController
   def update
     if current_user.update(settings_params)
       current_user.mark_companion_pick_done! if updating?(:character) && current_user.character_chosen?
-      redirect_to settings_path(highlight: highlight_key), notice: update_notice
+      if updating?(:sound_enabled) && request.format.json?
+        render json: { ok: true, sound_enabled: current_user.sound_enabled? }
+      else
+        redirect_to settings_path(highlight: highlight_key), notice: update_notice
+      end
     else
       render update_error_template, status: :unprocessable_entity
     end
@@ -80,7 +84,7 @@ class SettingsController < ApplicationController
   private
 
   def settings_params
-    params.require(:user).permit(:home_stat_count, :character, :name)
+    params.require(:user).permit(:home_stat_count, :character, :name, :sound_enabled)
   end
 
   def update_notice
@@ -90,6 +94,8 @@ class SettingsController < ApplicationController
       t("settings.character_updated")
     elsif updating?(:home_stat_count)
       t("settings.today_count_updated")
+    elsif updating?(:sound_enabled)
+      t("settings.sound_updated")
     else
       "Today board updated."
     end
@@ -102,6 +108,8 @@ class SettingsController < ApplicationController
       "character"
     elsif updating?(:home_stat_count)
       "today_count"
+    elsif updating?(:sound_enabled)
+      "sound"
     end
   end
 

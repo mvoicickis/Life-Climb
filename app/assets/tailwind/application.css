@@ -43,9 +43,11 @@
     gap: 0.55rem;
   }
 
-  .home-card:hover {
-    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    .home-card:hover {
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+      transform: translateY(-2px);
+    }
   }
 
   .home-card:active {
@@ -238,9 +240,11 @@
     transition: transform 160ms ease, box-shadow 160ms ease;
   }
 
-  .today-fab:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 16px 34px rgba(34, 197, 94, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+  @media (hover: hover) {
+    .today-fab:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 16px 34px rgba(34, 197, 94, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+    }
   }
 
   .today-fab:focus-visible {
@@ -1535,7 +1539,9 @@
     color: #0f172a;
   }
 
-  .lp-landing-cta:hover { transform: translateY(-1px); }
+  @media (hover: hover) {
+    .lp-landing-cta:hover { transform: translateY(-1px); }
+  }
   .lp-landing-cta--pulse:hover,
   .lp-landing-cta--nav:hover { background: var(--lp-forest-deep); }
   .lp-landing-cta--ghost:hover {
@@ -1639,9 +1645,11 @@
     transition: transform 160ms ease, box-shadow 160ms ease;
   }
 
-  .lp-landing-chip:hover {
+  @media (hover: hover) {
+    .lp-landing-chip:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  }
   }
 
   .lp-landing-chip--self { background: rgba(16, 184, 145, 0.14); color: #0f766e; }
@@ -2835,7 +2843,9 @@
   min-height: 9rem;
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.studio-trophy:hover { transform: translateY(-3px); }
+@media (hover: hover) {
+  .studio-trophy:hover { transform: translateY(-3px); }
+}
 .studio-trophy__title {
   font-family: var(--studio-serif);
   font-size: 1.45rem;
@@ -3349,9 +3359,11 @@
 .studio-trophy {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.studio-trophy:hover {
+@media (hover: hover) {
+  .studio-trophy:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 28px rgba(28, 36, 33, 0.08);
+}
 }
 
 /* ——— Ideal vs Present + closer meter ——— */
@@ -3542,6 +3554,14 @@
   --lp-radius-pill: 999px;
   --lp-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.08);
   --lp-shadow-cta: 0 10px 24px rgba(87, 211, 91, 0.28);
+  /* Motion / feel foundation */
+  --lp-motion-fast: 120ms;
+  --lp-motion-base: 200ms;
+  --lp-motion-slow: 320ms;
+  --lp-motion-celebrate: 500ms;
+  --lp-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --lp-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --lp-press-scale: 0.97;
   --lp-frost: var(--lp-surface);
   --lp-tick-ring: color-mix(in srgb, var(--lp-ink) 35%, transparent);
   /* Today section accents — same hues in both themes */
@@ -3755,6 +3775,64 @@ html[data-theme="dark"] {
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
+}
+
+/* Universal press — transform only; pair with touch-action: manipulation */
+.lp-pressable,
+.lp-you-row:not(.lp-you-row--static),
+.lp-you-partner,
+.lp-you-row__tap,
+.lp-you-signout,
+.lp-trail-sheet__back,
+.lp-trail-sheet__menu-btn,
+.lp-trail-sheet__close,
+.lp-trail-battles__composer-trigger,
+.lp-trail-battles__submit {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--lp-motion-fast) var(--lp-ease-out);
+  transform: translateZ(0);
+}
+
+.lp-pressable:active,
+.lp-pressable.is-pressed,
+.lp-you-row:not(.lp-you-row--static):active,
+.lp-you-partner:active,
+.lp-you-row__tap:active,
+.lp-you-signout:active,
+.lp-trail-sheet__back:active,
+.lp-trail-sheet__menu-btn:active,
+.lp-trail-sheet__close:active,
+.lp-trail-battles__composer-trigger:active,
+.lp-trail-battles__submit:active {
+  transform: scale(var(--lp-press-scale));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-pressable,
+  .lp-pressable:active,
+  .lp-pressable.is-pressed,
+  .lp-you-row:not(.lp-you-row--static),
+  .lp-you-row:not(.lp-you-row--static):active,
+  .lp-you-partner,
+  .lp-you-partner:active,
+  .lp-you-row__tap,
+  .lp-you-row__tap:active,
+  .lp-you-signout,
+  .lp-you-signout:active,
+  .lp-trail-sheet__back,
+  .lp-trail-sheet__back:active,
+  .lp-trail-sheet__menu-btn,
+  .lp-trail-sheet__menu-btn:active,
+  .lp-trail-sheet__close,
+  .lp-trail-sheet__close:active,
+  .lp-trail-battles__composer-trigger,
+  .lp-trail-battles__composer-trigger:active,
+  .lp-trail-battles__submit,
+  .lp-trail-battles__submit:active {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 /* Today already clears the fixed nav via .lp-main:has(.lp-dash) — avoid double void. */
@@ -6258,8 +6336,9 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
 
 /* Click-time Win juice (juicy_feedback_controller) */
 .lp-dash-tcard.is-juicy,
-.lp-dash-checklist__obj.is-juicy {
-  animation: lp-juicy-bounce 500ms ease;
+.lp-dash-checklist__obj.is-juicy,
+.lp-today-v2-row.is-juicy {
+  animation: lp-juicy-bounce var(--lp-motion-celebrate) var(--lp-ease-out);
 }
 
 @keyframes lp-juicy-bounce {
@@ -7432,10 +7511,12 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
 }
 
-.lp-dash-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(87, 211, 91, 0.28);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42);
+@media (hover: hover) {
+  .lp-dash-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(87, 211, 91, 0.28);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42);
+  }
 }
 
 .lp-dash-card__head {
@@ -7789,7 +7870,8 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-radius: inherit;
   background: linear-gradient(90deg, #22c55e, var(--lp-neon));
   box-shadow: 0 0 14px var(--lp-neon-glow);
-  transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: left center;
+  transition: transform 700ms var(--lp-ease-out), width 700ms var(--lp-ease-out);
 }
 
 .lp-dash-bar__fill.is-glow {
@@ -7873,8 +7955,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   transform: scale(1.05);
 }
 
-.lp-dash-check:hover {
+@media (hover: hover) {
+  .lp-dash-check:hover {
   transform: scale(1.06);
+}
 }
 
 .lp-dash-check.is-locked {
@@ -7884,8 +7968,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   border-style: dashed;
 }
 
-.lp-dash-check.is-locked:hover {
+@media (hover: hover) {
+  .lp-dash-check.is-locked:hover {
   transform: none;
+}
 }
 
 .lp-dash-checklist {
@@ -8991,10 +9077,12 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   font-weight: 800;
 }
 
-.lp-dash-cta:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35), 0 16px 36px rgba(34, 197, 94, 0.32);
+@media (hover: hover) {
+  .lp-dash-cta:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35), 0 16px 36px rgba(34, 197, 94, 0.32);
+  }
 }
 
 .lp-dash-cta--soft:hover {
@@ -9441,9 +9529,11 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, opacity 160ms ease;
 }
 
-.lp-adventure__category:hover {
+@media (hover: hover) {
+  .lp-adventure__category:hover {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--lp-lime) 45%, var(--lp-border));
+}
 }
 
 .lp-adventure__category:has(input:checked),
@@ -10327,8 +10417,10 @@ input[type="number"].lp-rpg-input::-webkit-inner-spin-button {
   animation: lp-how-strike-invite 1.8s ease-in-out infinite;
 }
 
-.lp-adventure__how-strike-chip:hover {
+@media (hover: hover) {
+  .lp-adventure__how-strike-chip:hover {
   transform: translateY(-1px);
+}
 }
 
 .lp-adventure__how-strike-chip.is-struck {
@@ -13028,8 +13120,10 @@ button.lp-progress-heat__cell {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
-.lp-progress-badge:hover {
+@media (hover: hover) {
+  .lp-progress-badge:hover {
   transform: none;
+}
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -13957,10 +14051,12 @@ button.lp-progress-heat__cell {
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
-a.lp-strategy-siblings__chip:hover {
+@media (hover: hover) {
+  a.lp-strategy-siblings__chip:hover {
   background: color-mix(in srgb, var(--lp-level) 16%, var(--lp-paper));
   border-color: color-mix(in srgb, var(--lp-level) 55%, var(--lp-border));
   transform: translateY(-1px);
+}
 }
 
 .lp-strategy-siblings__chip.is-current {
@@ -19978,7 +20074,9 @@ button.lp-basic-sheet__edit-row {
   color: #f4f7f9;
   transform: translateY(120%);
   opacity: 0;
-  transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+  transition:
+    transform var(--lp-motion-slow) var(--lp-ease-out),
+    opacity var(--lp-motion-slow) var(--lp-ease-out);
 }
 .lp-toast.is-show {
   transform: translateY(0);
@@ -21788,9 +21886,11 @@ button.lp-basic-sheet__edit-row {
   color: inherit;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
-.lp-rpg-plan:hover {
+@media (hover: hover) {
+  .lp-rpg-plan:hover {
   border-color: rgba(87, 211, 91, 0.28);
   transform: translateY(-1px);
+}
 }
 .lp-rpg-plan.is-focus {
   border-color: rgba(87, 211, 91, 0.65);
@@ -21904,7 +22004,9 @@ button.lp-basic-sheet__edit-row {
   min-height: 7.5rem;
   transition: border-color 160ms ease, transform 160ms ease;
 }
-.lp-rpg-project:hover { border-color: rgba(87, 211, 91, 0.35); transform: translateY(-1px); }
+@media (hover: hover) {
+  .lp-rpg-project:hover { border-color: rgba(87, 211, 91, 0.35); transform: translateY(-1px); }
+}
 .lp-rpg-project.is-focus {
   border-color: rgba(87, 211, 91, 0.55);
   box-shadow: 0 0 0 1px rgba(87, 211, 91, 0.25);
@@ -22271,8 +22373,10 @@ button.lp-basic-sheet__edit-row {
       background-color 180ms ease;
   }
 
-  .lp-rpg-project:hover {
+  @media (hover: hover) {
+    .lp-rpg-project:hover {
     transform: none;
+  }
   }
 
   .lp-rpg-project.is-focus {
@@ -28292,23 +28396,23 @@ a.lp-rpg-camp-row {
 }
 html[data-lp-nav="forward"] ::view-transition-old(lp-surface) {
   animation:
-    lp-vt-old-forward 0.46s cubic-bezier(.22, .9, .28, 1) both,
-    lp-vt-fade-out 0.3s ease both;
+    lp-vt-old-forward var(--lp-motion-slow) var(--lp-ease-out) both,
+    lp-vt-fade-out var(--lp-motion-base) ease both;
 }
 html[data-lp-nav="forward"] ::view-transition-new(lp-surface) {
   animation:
-    lp-vt-new-forward 0.46s cubic-bezier(.22, .9, .28, 1) both,
-    lp-vt-fade-in 0.3s ease both;
+    lp-vt-new-forward var(--lp-motion-slow) var(--lp-ease-out) both,
+    lp-vt-fade-in var(--lp-motion-base) ease both;
 }
 html[data-lp-nav="back"] ::view-transition-old(lp-surface) {
   animation:
-    lp-vt-old-back 0.46s cubic-bezier(.22, .9, .28, 1) both,
-    lp-vt-fade-out 0.3s ease both;
+    lp-vt-old-back var(--lp-motion-slow) var(--lp-ease-out) both,
+    lp-vt-fade-out var(--lp-motion-base) ease both;
 }
 html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   animation:
-    lp-vt-new-back 0.46s cubic-bezier(.22, .9, .28, 1) both,
-    lp-vt-fade-in 0.3s ease both;
+    lp-vt-new-back var(--lp-motion-slow) var(--lp-ease-out) both,
+    lp-vt-fade-in var(--lp-motion-base) ease both;
 }
 @keyframes lp-vt-old-forward {
   to { transform: translateX(-26%); }

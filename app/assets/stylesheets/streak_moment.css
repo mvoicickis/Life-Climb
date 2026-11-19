@@ -386,18 +386,19 @@
 .lp-streak-moment__fill {
   display: block;
   height: 100%;
-  width: 0;
+  width: var(--streak-fill, 0%);
   border-radius: var(--lp-radius-pill);
   background: var(--lp-green);
   transform-origin: left center;
+  transform: scaleX(0);
 }
 
 .lp-streak-moment.is-done .lp-streak-moment__fill {
-  width: var(--streak-fill, 0%);
+  transform: scaleX(1);
 }
 
 .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__fill {
-  animation: lp-streak-fill-in 700ms var(--lp-ease-out, ease) 200ms both;
+  animation: lp-streak-fill-in 700ms var(--lp-ease-out) 200ms both;
 }
 
 .lp-streak-moment__did-it {
@@ -588,8 +589,8 @@
 }
 
 @keyframes lp-streak-fill-in {
-  from { width: 0; }
-  to { width: var(--streak-fill, 0%); }
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @keyframes lp-streak-confetti-fall {
@@ -601,7 +602,7 @@
 @media (prefers-reduced-motion: reduce) {
   .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__fill {
     animation: none;
-    width: var(--streak-fill, 0%);
+    transform: scaleX(1);
   }
 
   .lp-streak-moment.is-goal.is-animating:not(.is-done) .lp-streak-moment__confetti span {

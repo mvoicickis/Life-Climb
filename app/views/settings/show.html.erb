@@ -67,7 +67,7 @@
     <div class="lp-you__groups">
       <section class="lp-you-card lp-you-card--partner" id="you-climb-together">
         <% if @climb_partner %>
-          <%= link_to climb_together_path, class: "lp-you-partner", id: "you-row-climb-together" do %>
+          <%= link_to climb_together_path, class: "lp-you-partner lp-pressable", id: "you-row-climb-together" do %>
             <%= render "shared/avatar_circle", user: @climb_partner, size: :sm %>
             <span class="lp-you-partner__label">
               <%= t("climb_together.you.partnered", name: @climb_partner.display_name) %>
@@ -80,7 +80,7 @@
                data-share-url-value="<%= absolute_url(climb_invite_path(@climb_invite.token)) %>"
                data-share-title-value="<%= t('climb_together.share.title') %>">
             <button type="button"
-                    class="lp-you-partner"
+                    class="lp-you-partner lp-pressable"
                     id="you-row-climb-together"
                     data-action="click->climb-together-invite#open">
               <span class="lp-you-row__icon" aria-hidden="true">🤝</span>
@@ -188,8 +188,26 @@
             <% end %>
             <p class="lp-you-sr" hidden data-push-reminders-target="message"></p>
           </div>
+          <div id="you-sound"
+               class="lp-you-row lp-you-row--static"
+               data-controller="sound-setting"
+               data-sound-setting-url-value="<%= settings_path(format: :json) %>"
+               data-sound-setting-enabled-value="<%= current_user.sound_enabled? %>"
+               data-sound-setting-not-saved-value="<%= t('settings.sound_not_saved') %>">
+            <span class="lp-you-row__icon" aria-hidden="true">🔊</span>
+            <span class="lp-you-row__label"><%= t("settings.sound_title") %></span>
+            <button type="button"
+                    class="lp-you-switch<%= ' is-on' if current_user.sound_enabled? %>"
+                    role="switch"
+                    aria-checked="<%= current_user.sound_enabled? %>"
+                    aria-label="<%= t('settings.sound_title') %>"
+                    data-sound-setting-target="switch"
+                    data-action="click->sound-setting#toggle">
+              <span class="lp-you-switch__knob"></span>
+            </button>
+          </div>
           <% unless play_app? %>
-            <%= link_to pricing_path, class: "lp-you-row" do %>
+            <%= link_to pricing_path, class: "lp-you-row lp-pressable" do %>
               <span class="lp-you-row__icon" aria-hidden="true">⭐</span>
               <span class="lp-you-row__label"><%= t("pricing.premium_title") %></span>
               <span class="lp-you-row__trail">

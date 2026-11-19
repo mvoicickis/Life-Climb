@@ -24,7 +24,7 @@
   end
   camp_style = battlefield_camp_style(project)
   camp_label = project&.title.presence || t("dash.battlefield.no_camp")
-  row_classes = [ "lp-today-v2-row" ]
+  row_classes = [ "lp-today-v2-row", "lp-pressable" ]
   row_classes << "is-struck" if row_state.in?(%i[pending_won won])
   row_classes << "is-pending-won" if row_state == :pending_won
   row_classes << "is-won-row" if row_state == :won
