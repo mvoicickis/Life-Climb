@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v12"
+const CACHE_VERSION = "v13"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const PAGE_CACHE_NAME = `${CACHE_NAME}-pages`
 const OFFLINE_URL = "/offline.html"
@@ -30,9 +30,19 @@ const ACTION_PATHS = {
   snooze: "/notifications/snooze"
 }
 
+const HIGH_FIVE_VIBRATE = [80, 40, 80, 40, 160]
+const NO_ACTIONS_KINDS = new Set(["morning", "evening", "high_five"])
+
 // Intensity from push JSON (NotificationPreference). iOS/WebKit ignores
 // silent / vibrate / requireInteraction — options are dropped, not errors.
-function intensityOptions(intensity) {
+function intensityOptions(intensity, kind) {
+  if (kind === "high_five") {
+    return {
+      silent: false,
+      vibrate: HIGH_FIVE_VIBRATE
+    }
+  }
+
   switch (intensity) {
     case "gentle":
       return {
@@ -52,16 +62,40 @@ function intensityOptions(intensity) {
   }
 }
 
+// Returns an actions array, or null when the notification should omit actions.
 function notificationActions(data) {
-  if (Array.isArray(data.actions)) return data.actions
+  if (Array.isArray(data.actions)) {
+    return data.actions.length > 0 ? data.actions : null
+  }
+  if (NO_ACTIONS_KINDS.has(String(data.kind || ""))) return null
   return DEFAULT_ACTIONS
+}
+
+// Notification badge option must be an image URL — never a numeric app-badge count.
+function notificationBadgeIcon(data) {
+  if (typeof data.badgeIcon === "string" && data.badgeIcon.length > 0) {
+    return data.badgeIcon
+  }
+  if (typeof data.badge === "string" && data.badge.length > 0) {
+    return data.badge
+  }
+  return "/icon-192.png"
+}
+
+function appBadgeCountFromPayload(data) {
+  const raw = data.badgeCount !== undefined && data.badgeCount !== null
+    ? data.badgeCount
+    : data.badge
+  if (typeof raw === "number" && Number.isFinite(raw)) return raw
+  if (typeof raw === "string" && /^\d+$/.test(raw)) return Number.parseInt(raw, 10)
+  return null
 }
 
 async function syncAppBadgeFromPayload(data) {
   try {
-    if (data.badge === undefined || data.badge === null) return
-    const count = Number.parseInt(String(data.badge), 10)
-    if (!Number.isFinite(count) || count <= 0) {
+    const count = appBadgeCountFromPayload(data)
+    if (count === null) return
+    if (count <= 0) {
       if (typeof navigator.clearAppBadge === "function") {
         await navigator.clearAppBadge()
       }
@@ -144,20 +178,42 @@ self.addEventListener("push", (event) => {
     data = { body: event.data ? event.data.text() : "LifePoints" }
   }
 
+  const kind = String(data.kind || "")
   const title = data.title || "LifePoints"
   const options = {
     body: data.body || "",
     icon: data.icon || "/icon-192.png",
-    badge: data.badge || "/icon-192.png",
-    actions: notificationActions(data),
+    badge: notificationBadgeIcon(data),
     data: {
       url: data.url || "/dashboard",
       token: data.token || ""
     },
-    ...intensityOptions(data.intensity)
+    ...intensityOptions(data.intensity, kind)
   }
-  if (data.tag) options.tag = data.tag
+
+  const actions = notificationActions(data)
+  if (actions) options.actions = actions
+
+  if (data.tag) {
+    options.tag = data.tag
+    options.renotify = data.renotify !== false
+  }
   if (data.image) options.image = data.image
+
+  if (kind === "high_five") {
+    options.silent = false
+    options.vibrate = Array.isArray(data.vibrate) && data.vibrate.length
+      ? data.vibrate
+      : HIGH_FIVE_VIBRATE
+    options.renotify = true
+  } else if (data.silent === false) {
+    options.silent = false
+  } else if (data.silent === true) {
+    options.silent = true
+  }
+  if (kind !== "high_five" && Array.isArray(data.vibrate) && data.vibrate.length) {
+    options.vibrate = data.vibrate
+  }
 
   event.waitUntil(
     (async () => {

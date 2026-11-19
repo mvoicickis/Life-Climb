@@ -3,6 +3,9 @@
 class SendWebPushJob < ApplicationJob
   queue_as :default
 
+  HIGH_FIVE_VIBRATE = [ 80, 40, 80, 40, 160 ].freeze
+  NO_ACTIONS_KINDS = %w[morning evening high_five].freeze
+
   # payload: { "title" => "...", "body" => "...", "url" => "/dashboard", "kind" => "test" }
   # Returns true when at least one subscription received the push.
   def perform(user_id, payload)
@@ -33,10 +36,16 @@ class SendWebPushJob < ApplicationJob
 
   def enrich_message!(user, message)
     preference = user.notification_preference
-    message["intensity"] = preference&.intensity.presence || "normal"
-
     kind = message["kind"].to_s
-    unless kind.in?(%w[morning evening high_five])
+
+    message["intensity"] =
+      if kind == "high_five"
+        "normal"
+      else
+        preference&.intensity.presence || "normal"
+      end
+
+    unless kind.in?(NO_ACTIONS_KINDS)
       if Notifications::PhraseBank::TRIGGERS.include?(kind)
         category = Onboarding::Categories.resolve_for(user: user, explicit: message["category"])
         locale = :en
@@ -50,10 +59,18 @@ class SendWebPushJob < ApplicationJob
 
     message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
 
-    if kind.in?(%w[morning evening high_five])
-      message["actions"] = []
+    # Never send actions: [] — omit the key so the SW does not pass an empty array.
+    message.delete("actions")
+
+    if kind == "high_five"
+      message["silent"] = false
+      message["vibrate"] = HIGH_FIVE_VIBRATE.dup
+      message["renotify"] = true
+      message["tag"] = message["tag"].presence || "high_five"
       return
     end
+
+    return if kind.in?(%w[morning evening])
 
     I18n.with_locale(:en) do
       action_day = morning_action_day(user, kind)

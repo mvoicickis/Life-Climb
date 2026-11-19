@@ -184,16 +184,21 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal %w[quick_add mark_done], payload["actions"].map { |a| a["action"] }
   end
 
-  test "morning kind sends empty actions" do
+  test "morning kind omits actions key" do
     @user.daily_todos.delete_all
     refute @user.daily_todos.for_day(Date.current).exists?
 
     SendWebPushJob.perform_now(@user.id, { "title" => "Hi", "kind" => "morning" })
     payload = JSON.parse(@last_kwargs[:message])
-    assert_equal [], payload["actions"]
+    refute payload.key?("actions")
   end
 
-  test "high_five kind sends empty actions and preserves copy" do
+  # Phone check after deploy: open the installed PWA once (picks up SW v13), then
+  # from a partner cheer Karen — she should get a heads-up with sound/vibrate. A
+  # Settings test push should still look the same as before.
+  test "high_five kind is visible with tag renotify vibrate and no actions" do
+    @user.create_notification_preference!(intensity: "gentle")
+
     delivered = SendWebPushJob.perform_now(
       @user.id,
       {
@@ -201,7 +206,8 @@ class SendWebPushJobTest < ActiveJob::TestCase
         "body" => "Alex high-fived your battle: Read 10 pages",
         "url" => "/dashboard",
         "kind" => "high_five",
-        "tag" => "high_five"
+        "tag" => "high_five",
+        "icon" => "https://example.test/avatars/fox.png"
       }
     )
 
@@ -211,7 +217,30 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal "Alex high-fived your battle: Read 10 pages", payload["body"]
     assert_equal "/dashboard", payload["url"]
     assert_equal "high_five", payload["kind"]
-    assert_equal [], payload["actions"]
+    assert_equal "high_five", payload["tag"]
+    assert_equal true, payload["renotify"]
+    assert_equal false, payload["silent"]
+    assert_equal "normal", payload["intensity"]
+    assert_equal [ 80, 40, 80, 40, 160 ], payload["vibrate"]
+    assert_equal "https://example.test/avatars/fox.png", payload["icon"]
+    assert_match(/\.png\z/, payload["icon"])
+    refute payload.key?("actions")
+  end
+
+  test "test kind still gets default actions and preference intensity" do
+    @user.create_notification_preference!(intensity: "gentle")
+    @user.daily_todos.delete_all
+
+    SendWebPushJob.perform_now(
+      @user.id,
+      { "title" => "Life Climb", "body" => "Push works.", "url" => "/dashboard", "kind" => "test" }
+    )
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "gentle", payload["intensity"]
+    assert_equal %w[quick_add snooze], payload["actions"].map { |a| a["action"] }
+    refute payload.key?("renotify")
+    refute payload.key?("vibrate")
+    refute payload.key?("silent")
   end
 
   test "high_five kind is blocked during quiet hours" do
@@ -269,7 +298,7 @@ class SendWebPushJobTest < ActiveJob::TestCase
     assert_equal "Get my driving license", payload["title"]
     assert_equal "https://lifeclimb.app/images/push_mountain.webp", payload["image"]
     assert_equal "One small step before bed.", payload["body"]
-    assert_equal [], payload["actions"]
+    refute payload.key?("actions")
   end
 
   test "morning kind preserves title and body" do
@@ -286,7 +315,7 @@ class SendWebPushJobTest < ActiveJob::TestCase
     payload = JSON.parse(@last_kwargs[:message])
     assert_equal "Get my driving license", payload["title"]
     assert_equal "You wanted this. Go get it.", payload["body"]
-    assert_equal [], payload["actions"]
+    refute payload.key?("actions")
   end
 
   test "returns false when all subscriptions fail" do

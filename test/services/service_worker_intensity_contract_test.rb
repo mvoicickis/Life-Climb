@@ -24,10 +24,16 @@ class ServiceWorkerIntensityContractTest < ActiveSupport::TestCase
   test "normal path omits intensity options via empty default return" do
     assert_includes @source, "default:"
     assert_match(/return \{\s*\}/, @source)
-    assert_includes @source, "...intensityOptions(data.intensity)"
+    assert_includes @source, "...intensityOptions(data.intensity, kind)"
+  end
+
+  test "high_five intensity path is never silent" do
+    assert_includes @source, 'if (kind === "high_five")'
+    assert_includes @source, "silent: false"
+    assert_includes @source, "HIGH_FIVE_VIBRATE"
   end
 
   test "cache version bumped for intensity options" do
-    assert_match(/CACHE_VERSION = "v12"/, @source)
+    assert_match(/CACHE_VERSION = "v13"/, @source)
   end
 end

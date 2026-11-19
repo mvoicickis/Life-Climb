@@ -62,7 +62,7 @@ module Notifications
         assert_equal "/dashboard", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
-        assert_equal [], @last_payload["actions"]
+        refute @last_payload.key?("actions")
         assert_equal Date.new(2026, 8, 6), @pref.reload.last_evening_nudge_sent_on
       end
     end
