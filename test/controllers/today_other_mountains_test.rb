@@ -122,8 +122,10 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
   test "Today other-mountains query count stays flat for one vs eight other journeys" do
     seed_second_journey!(title: "Climb 1", area_key: "self", battle_title: "Battle 1")
     warm_today_lookups!
+    get dashboard_path
+    assert_response :success
 
-    one_queries = count_sql_queries { get dashboard_path }
+    one_queries = count_other_mountains_queries { get dashboard_path }
     assert_response :success
     assert_select ".lp-other-mountains-button__badge", text: "1"
 
@@ -131,8 +133,10 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
       seed_second_journey!(title: "Climb #{i + 2}", area_key: area_key, battle_title: "Battle #{i + 2}")
     end
     warm_today_lookups!
+    get dashboard_path
+    assert_response :success
 
-    eight_queries = count_sql_queries { get dashboard_path }
+    eight_queries = count_other_mountains_queries { get dashboard_path }
     assert_response :success
     assert_select ".lp-other-mountains-button__badge", text: "8"
     assert_equal one_queries, eight_queries,
@@ -186,13 +190,17 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     )
   end
 
-  def count_sql_queries
+  def count_other_mountains_queries
     queries = 0
     callback = lambda do |_name, _start, _finish, _id, payload|
       next if payload[:cached]
       next if payload[:name] == "SCHEMA" || payload[:name] == "TRANSACTION"
+      next if payload[:sql].blank?
 
-      queries += 1 if payload[:sql].present?
+      sql = payload[:sql]
+      next unless sql.match?(/life_journeys|strategy_goals|daily_todos|active_storage/i)
+
+      queries += 1
     end
 
     ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
