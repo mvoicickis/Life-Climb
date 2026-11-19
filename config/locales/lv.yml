@@ -830,6 +830,12 @@ lv:
         label: "Your goal"  # TODO: translate
         camp_bar: "Camp progress"  # TODO: translate
         won: "%{count} won"  # TODO: translate
+      other_mountains:
+        title: "Other mountains today"  # TODO: translate
+        open: "Other mountains today"  # TODO: translate
+        battles:
+          one: "1 battle"  # TODO: translate
+          other: "%{count} battles"  # TODO: translate
       risk_open:
         one: "1 cīņa gaida"
         other: "%{count} cīņas gaida"

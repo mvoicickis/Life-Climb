@@ -70,6 +70,7 @@ module Dashboard
       end
 
       assign_battles_waiting_count!
+      assign_other_mountains!
       @partner_day_wins = ClimbTogether::PartnerDayWins.call(viewer: current_user)
 
       @timeline = Today::Timeline.build(user: current_user, todos: @open_todos)
@@ -160,6 +161,21 @@ module Dashboard
             life_area: @journey.life_area,
             on: Date.current
           )
+        end
+    end
+
+    def assign_other_mountains!
+      @other_mountains = Today::OtherMountainsOpenCounts.call(
+        user: current_user,
+        focused_journey: @journey,
+        date: Battles::WinsOnLocalDate.local_today_for(current_user)
+      )
+      photo_ids = @other_mountains.journeys.select(&:custom_photo?).map(&:journey_id)
+      @other_mountain_journeys =
+        if photo_ids.any?
+          current_user.life_journeys.where(id: photo_ids).with_attached_mountain_photo.index_by(&:id)
+        else
+          {}
         end
     end
 

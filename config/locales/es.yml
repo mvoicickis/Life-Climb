@@ -641,6 +641,12 @@ es:
         label: "Your goal"  # TODO: translate
         camp_bar: "Camp progress"  # TODO: translate
         won: "%{count} won"  # TODO: translate
+      other_mountains:
+        title: "Other mountains today"  # TODO: translate
+        open: "Other mountains today"  # TODO: translate
+        battles:
+          one: "1 battle"  # TODO: translate
+          other: "%{count} battles"  # TODO: translate
       risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
       risk_open:
         one: "1 battle waiting"  # TODO: translate

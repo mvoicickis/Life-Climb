@@ -46,7 +46,7 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
   test "collapsed CSS folds the kicker and respects reduced motion" do
     assert_match(/\.lp-today-group-card--goal\.is-collapsed/, @css)
     assert_match(
-      /\.lp-today-group-card--goal\.is-collapsed\s+\.lp-today-goal-kicker\s*\{[^}]*max-height:\s*0/m,
+      /\.lp-today-group-card--goal\.is-collapsed\s+\.lp-today-goal-kicker-row\s*\{[^}]*max-height:\s*0/m,
       @css
     )
     assert_includes @css, "is-no-transition"
