@@ -169,7 +169,7 @@ module ClimbTogether
         end
       end
 
-      test "push icon uses sender animal avatar when set" do
+      test "push icon uses sender animal PNG avatar when set" do
         @from.update!(avatar_key: "fox")
 
         travel_to Time.find_zone!(@zone).local(2026, 11, 17, 14, 0, 0) do
@@ -180,6 +180,8 @@ module ClimbTogether
           assert payload["icon"].present?
           assert_match(%r{\Ahttps://}, payload["icon"])
           assert_includes payload["icon"], "avatars/fox"
+          assert_match(/fox.*\.png/, payload["icon"])
+          refute_match(/\.webp/, payload["icon"])
         end
       end
 

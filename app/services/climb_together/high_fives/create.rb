@@ -87,7 +87,7 @@ module ClimbTogether
       end
 
       def sender_avatar_icon_url
-        asset = @from.avatar_image
+        asset = @from.avatar_push_image
         return nil if asset.blank?
 
         path = ActionController::Base.helpers.asset_path(asset)

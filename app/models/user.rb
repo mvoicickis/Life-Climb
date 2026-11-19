@@ -185,6 +185,14 @@ class User < ApplicationRecord
     "avatars/#{key}.webp"
   end
 
+  # PNG for Web Push notification icons (Android rejects WebP for showNotification).
+  def avatar_push_image
+    key = avatar_key.presence_in(AVATAR_KEYS)
+    return nil if key.blank?
+
+    "avatars/#{key}.png"
+  end
+
   def legacy_character?
     LEGACY_CHARACTERS.include?(character.to_s)
   end

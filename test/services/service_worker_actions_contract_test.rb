@@ -10,7 +10,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   test "defines quick_add mark_done and snooze action paths" do
     assert_includes @source, 'action: "quick_add"'
     assert_includes @source, 'action: "snooze"'
-    assert_includes @source, "actions: notificationActions(data)"
+    assert_includes @source, "notificationActions(data)"
     assert_includes @source, 'quick_add: "/notifications/quick_add"'
     assert_includes @source, 'mark_done: "/notifications/mark_done"'
     assert_includes @source, 'snooze: "/notifications/snooze"'
@@ -25,21 +25,39 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
     assert_includes @source, "syncAppBadgeFromPayload"
     assert_includes @source, "navigator.setAppBadge"
     assert_includes @source, "navigator.clearAppBadge"
-    assert_includes @source, "if (data.tag) options.tag = data.tag"
+    assert_includes @source, "if (data.tag) {"
+    assert_includes @source, "options.renotify = data.renotify !== false"
     assert_includes @source, "if (data.image) options.image = data.image"
   end
 
-  test "notificationActions honors empty actions array for morning push" do
-    assert_includes @source, "if (Array.isArray(data.actions)) return data.actions"
-    refute_match(/data\.actions\.length > 0/, @source)
+  test "notificationActions omits empty arrays and no-action kinds" do
+    assert_includes @source, "data.actions.length > 0 ? data.actions : null"
+    assert_includes @source, 'NO_ACTIONS_KINDS'
+    assert_includes @source, '"high_five"'
+    assert_includes @source, "if (actions) options.actions = actions"
+  end
+
+  test "notification badge icon never uses a numeric app badge count" do
+    assert_includes @source, "notificationBadgeIcon"
+    assert_includes @source, "appBadgeCountFromPayload"
+    assert_includes @source, 'typeof data.badge === "string"'
+    assert_includes @source, "badge: notificationBadgeIcon(data)"
+  end
+
+  test "high_five forces audible renotify vibrate in the push handler" do
+    assert_includes @source, 'kind === "high_five"'
+    assert_includes @source, "options.silent = false"
+    assert_includes @source, "options.renotify = true"
+    assert_includes @source, "HIGH_FIVE_VIBRATE"
+    assert_includes @source, "[80, 40, 80, 40, 160]"
   end
 
   test "notificationclick clears app badge before opening app" do
     assert_includes @source, "clearAppBadgeSafe"
   end
 
-  test "cache version bumped for offline page cache" do
-    assert_includes @source, 'CACHE_VERSION = "v12"'
+  test "cache version bumped for high_five push visibility" do
+    assert_includes @source, 'CACHE_VERSION = "v13"'
     assert_includes @source, "PAGE_CACHE_NAME"
     assert_includes @source, "-pages"
   end
