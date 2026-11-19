@@ -11,6 +11,25 @@ export function isAndroid() {
   return /Android/i.test(navigator.userAgent)
 }
 
+// Short browser label for phone-settings help copy.
+export function detectPushBrowserName(ua = typeof navigator !== "undefined" ? navigator.userAgent : "") {
+  const s = String(ua || "")
+  if (/Edg\//i.test(s)) return "Edge"
+  if (/OPR\/|Opera/i.test(s)) return "Opera"
+  if (/SamsungBrowser/i.test(s)) return "Samsung Internet"
+  if (/Firefox|FxiOS/i.test(s)) return "Firefox"
+  if (/Brave/i.test(s)) return "Brave"
+  try {
+    if (typeof navigator !== "undefined" && navigator.brave && typeof navigator.brave.isBrave === "function") {
+      return "Brave"
+    }
+  } catch (_error) {
+    /* ignore */
+  }
+  if (/Chrome|CriOS|Chromium/i.test(s)) return "Chrome"
+  return "your browser"
+}
+
 export function canEnablePushHere() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false
   if (isIos() && !isStandalonePwa()) return false

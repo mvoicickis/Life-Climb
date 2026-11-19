@@ -655,6 +655,61 @@
   left: calc(100% - 1.375rem - 2px);
 }
 
+.lp-you-reminders-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0 0.85rem 0.75rem;
+  min-width: 0;
+}
+
+.lp-you-reminders-hint[hidden] {
+  display: none;
+}
+
+.lp-you-reminders-hint__text {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.lp-you-reminders-hint__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lp-ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-you-reminders-hint__action[hidden] {
+  display: none;
+}
+
+.lp-you-reminders-hint__steps {
+  margin: 0.15rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--lp-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.lp-you-reminders-hint__steps[hidden] {
+  display: none;
+}
+
 .lp-you-foot {
   text-align: center;
   padding: 1.25rem 0.5rem 0.25rem;
