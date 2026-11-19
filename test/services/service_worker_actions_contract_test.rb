@@ -32,7 +32,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
 
   test "notificationActions omits empty arrays and no-action kinds" do
     assert_includes @source, "data.actions.length > 0 ? data.actions : null"
-    assert_includes @source, 'NO_ACTIONS_KINDS'
+    assert_includes @source, "NO_ACTIONS_KINDS"
     assert_includes @source, '"high_five"'
     assert_includes @source, "if (actions) options.actions = actions"
   end
