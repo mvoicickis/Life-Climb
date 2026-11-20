@@ -1,4 +1,4 @@
-<%# locals: counts_by_day, calendar_month, berlin_today, filter %>
+<%# locals: counts_by_day, calendar_month, berlin_today, filter, device %>
 <% current_month = berlin_today.beginning_of_month %>
 <% prev_month = calendar_month.prev_month %>
 <% next_month = calendar_month.next_month %>
@@ -19,7 +19,7 @@
     <div class="lp-stats-cal__head">
       <% if can_go_prev %>
         <%= link_to "‹",
-              climbers_calendar_nav_url(prev_month, filter: filter),
+              climbers_calendar_nav_url(prev_month, filter: filter, device: device),
               class: "lp-stats-cal__nav",
               data: { turbo_frame: "climbers_calendar", turbo_action: "advance" },
               aria: { label: t("admin.testers.climbers_prev") } %>
@@ -29,7 +29,7 @@
       <h2 class="lp-stats-cal__month" id="admin-climbers-cal-title"><%= l(calendar_month, format: "%B %Y") %></h2>
       <% if can_go_next %>
         <%= link_to "›",
-              climbers_calendar_nav_url(next_month, filter: filter),
+              climbers_calendar_nav_url(next_month, filter: filter, device: device),
               class: "lp-stats-cal__nav",
               data: { turbo_frame: "climbers_calendar", turbo_action: "advance" },
               aria: { label: t("admin.testers.climbers_next") } %>

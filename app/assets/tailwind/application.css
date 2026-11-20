@@ -17538,6 +17538,14 @@ button.lp-strategy-overflow {
   font-weight: 700;
 }
 
+.lp-admin-climbers__today-android,
+.lp-admin-climbers__today-play {
+  margin: 0.35rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .lp-admin-climbers-cal {
   border: 1px solid var(--lp-border);
   border-radius: var(--lp-radius-card);
@@ -17645,6 +17653,15 @@ button.lp-strategy-overflow {
   font-weight: 800;
   color: var(--lp-ink);
   line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.lp-admin-tester__device {
+  margin: 0.2rem 0 0;
+  color: var(--lp-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
   overflow-wrap: anywhere;
 }
 

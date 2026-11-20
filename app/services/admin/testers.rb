@@ -12,6 +12,23 @@ module Admin
     FILTER_NEEDS_MESSAGE = "needs_message"
     FILTER_EVERYONE = "everyone"
     FILTERS = [ FILTER_NEEDS_MESSAGE, FILTER_EVERYONE ].freeze
+    DEVICE_FILTER_ALL = "all"
+    DEVICE_FILTER_ANDROID = "android"
+    DEVICE_FILTER_IPHONE = "iphone"
+    DEVICE_FILTER_COMPUTER = "computer"
+    DEVICE_FILTER_PLAY = "play"
+    DEVICE_FILTERS = [
+      DEVICE_FILTER_ALL,
+      DEVICE_FILTER_ANDROID,
+      DEVICE_FILTER_IPHONE,
+      DEVICE_FILTER_COMPUTER,
+      DEVICE_FILTER_PLAY
+    ].freeze
+    DEVICE_ORDER = [
+      DeviceFromUserAgent::DEVICE_ANDROID,
+      DeviceFromUserAgent::DEVICE_IPHONE,
+      DeviceFromUserAgent::DEVICE_COMPUTER
+    ].freeze
     PLAY_TESTERS_URL =
       "https://play.google.com/console/u/0/developers/7962663201417265259/app/4975708625747728285/tracks/4699763347313539783?tab=testers"
 
@@ -29,17 +46,23 @@ module Admin
       :partner,
       :reason_key,
       :reason,
-      :days_since_last_win
+      :days_since_last_win,
+      :primary_device,
+      :devices
     )
 
-    def self.call(filter: FILTER_NEEDS_MESSAGE)
-      new(filter: filter).call
+    def self.call(filter: FILTER_NEEDS_MESSAGE, device: DEVICE_FILTER_ALL)
+      new(filter: filter, device: device).call
     end
 
     # Berlin calendar day → { testers:, admins: } unique climber counts.
     # Two win queries for the month + one privileged-id query; bucketed in Ruby.
     def self.counts_by_day(month:)
       new.counts_by_day(month: month)
+    end
+
+    def self.device_dashboard_stats(berlin_today:)
+      new.device_dashboard_stats(berlin_today: berlin_today)
     end
 
     def self.berlin_today
@@ -54,15 +77,32 @@ module Admin
       :met
     end
 
-    def initialize(filter: FILTER_NEEDS_MESSAGE)
+    def initialize(filter: FILTER_NEEDS_MESSAGE, device: DEVICE_FILTER_ALL)
       @filter = FILTERS.include?(filter.to_s) ? filter.to_s : FILTER_NEEDS_MESSAGE
+      @device = DEVICE_FILTERS.include?(device.to_s) ? device.to_s : DEVICE_FILTER_ALL
     end
 
     def call
       rows = sort_rows(build_rows)
+      rows = rows.select { |row| matches_device_filter?(row) } unless @device == DEVICE_FILTER_ALL
       return rows if @filter == FILTER_EVERYONE
 
       rows.select { |row| needs_message?(row) }
+    end
+
+    def device_dashboard_stats(berlin_today:)
+      tester_ids = User.excluding_privileged.pluck(:id)
+      profiles = device_profiles_for(tester_ids)
+      climber_ids = tester_climber_ids_for_day(berlin_today)
+      android_today = climber_ids.count do |user_id|
+        profiles.dig(user_id, :primary) == DeviceFromUserAgent::DEVICE_ANDROID
+      end
+      play_count = User.excluding_privileged.where.not(play_app_seen_at: nil).count
+
+      {
+        android_climbed_today: android_today,
+        play_app_testers: play_count
+      }
     end
 
     def counts_by_day(month:)
@@ -119,13 +159,13 @@ module Admin
         .where(strategy_goals: { repeat: RECURRING_REPEATS })
     end
 
-
     def build_rows
       users = User.excluding_privileged.order(:id).to_a
       return [] if users.empty?
 
       user_ids = users.map(&:id)
       contacts = TesterContact.where(user_id: user_ids).index_by(&:user_id)
+      device_profiles = device_profiles_for(user_ids)
       first_wins = merge_times(
         one_shot_battles(user_ids).group(:user_id).minimum(:completed_at),
         recurring_todos(user_ids).group(:user_id).minimum(:completed_at),
@@ -144,6 +184,7 @@ module Admin
       partner_ids = partner_user_ids(user_ids)
 
       users.map do |user|
+        profile = device_profiles[user.id] || { primary: nil, devices: [] }
         first_win_at = first_wins[user.id]
         last_win_at = last_wins[user.id]
         days_since_last_win = days_since(last_win_at&.to_date)
@@ -169,8 +210,97 @@ module Admin
           partner: partner_ids.include?(user.id),
           reason_key: reason_key,
           reason: reason_label(reason_key, days_since_last_win),
-          days_since_last_win: days_since_last_win
+          days_since_last_win: days_since_last_win,
+          primary_device: profile[:primary],
+          devices: profile[:devices]
         )
+      end
+    end
+
+    def device_profiles_for(user_ids)
+      return {} if user_ids.blank?
+
+      latest_session = {}
+      device_sets = Hash.new { |hash, key| hash[key] = Set.new }
+
+      Session.where(user_id: user_ids)
+        .where.not(user_agent: [ nil, "" ])
+        .pluck(:user_id, :user_agent, :updated_at)
+        .each do |user_id, user_agent, updated_at|
+          device = DeviceFromUserAgent.call(user_agent)
+          device_sets[user_id] << device if device.present?
+
+          current = latest_session[user_id]
+          next if current.present? && updated_at <= current[:updated_at]
+
+          latest_session[user_id] = { user_agent: user_agent, updated_at: updated_at }
+        end
+
+      latest_push = {}
+      PushSubscription.where(user_id: user_ids)
+        .where.not(user_agent: [ nil, "" ])
+        .pluck(:user_id, :user_agent, :updated_at)
+        .each do |user_id, user_agent, updated_at|
+          device = DeviceFromUserAgent.call(user_agent)
+          next if device.blank?
+
+          device_sets[user_id] << device
+
+          current = latest_push[user_id]
+          next if current.present? && updated_at <= current[:updated_at]
+
+          latest_push[user_id] = { user_agent: user_agent, updated_at: updated_at }
+        end
+
+      profiles = {}
+      user_ids.each do |user_id|
+        primary = if latest_session[user_id]
+          DeviceFromUserAgent.call(latest_session[user_id][:user_agent])
+        elsif latest_push[user_id]
+          DeviceFromUserAgent.call(latest_push[user_id][:user_agent])
+        end
+        devices = DEVICE_ORDER.select { |device| device_sets[user_id].include?(device) }
+        profiles[user_id] = {
+          primary: primary,
+          devices: devices
+        }
+      end
+      profiles
+    end
+
+    def tester_climber_ids_for_day(date)
+      zone = Time.find_zone!(DAY_ZONE)
+      privileged_ids = User.privileged.pluck(:id).to_set
+      ids = Set.new
+      range_start = zone.local(date.year, date.month, date.day).beginning_of_day
+      range_end = zone.local(date.year, date.month, date.day).end_of_day
+
+      one_shot_battles_scope.where(completed_at: range_start..range_end).pluck(:user_id).each do |user_id|
+        next if privileged_ids.include?(user_id)
+
+        ids << user_id
+      end
+
+      recurring_todos_scope.where(scheduled_on: date).pluck(:user_id).each do |user_id|
+        next if privileged_ids.include?(user_id)
+
+        ids << user_id
+      end
+      ids
+    end
+
+    def matches_device_filter?(row)
+      case @device
+      when DEVICE_FILTER_ANDROID
+        row.primary_device == DeviceFromUserAgent::DEVICE_ANDROID
+      when DEVICE_FILTER_IPHONE
+        row.primary_device == DeviceFromUserAgent::DEVICE_IPHONE
+      when DEVICE_FILTER_COMPUTER
+        row.primary_device == DeviceFromUserAgent::DEVICE_COMPUTER
+      when DEVICE_FILTER_PLAY
+        row.user.play_app_seen_at.present?
+      else
+        true
       end
     end
 
