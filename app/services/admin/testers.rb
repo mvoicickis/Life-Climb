@@ -221,24 +221,20 @@ module Admin
       return {} if user_ids.blank?
 
       latest_session = {}
+      device_sets = Hash.new { |hash, key| hash[key] = Set.new }
+
       Session.where(user_id: user_ids)
         .where.not(user_agent: [ nil, "" ])
         .pluck(:user_id, :user_agent, :updated_at)
         .each do |user_id, user_agent, updated_at|
+          device = DeviceFromUserAgent.call(user_agent)
+          device_sets[user_id] << device if device.present?
+
           current = latest_session[user_id]
           next if current.present? && updated_at <= current[:updated_at]
 
           latest_session[user_id] = { user_agent: user_agent, updated_at: updated_at }
         end
-
-      device_sets = Hash.new { |hash, key| hash[key] = Set.new }
-
-      latest_session.each do |user_id, row|
-        device = DeviceFromUserAgent.call(row[:user_agent])
-        next if device.blank?
-
-        device_sets[user_id] << device
-      end
 
       latest_push = {}
       PushSubscription.where(user_id: user_ids)

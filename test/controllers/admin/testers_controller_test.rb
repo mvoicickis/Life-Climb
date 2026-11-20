@@ -274,7 +274,8 @@ module Admin
         assert_select ".lp-admin-climbers__today-android", text: /Android climbed today: 1 \/ 12/
         assert_select "#tester-#{@user.id} .lp-admin-tester__device",
                       text: /🤖 Android.*Play app/
-        assert_select "a.lp-admin__btn", text: I18n.t("admin.testers.device_filter.android")
+        assert_select "a[href*='device=android']",
+                      text: I18n.t("admin.testers.device_filter.android")
       end
     end
 
