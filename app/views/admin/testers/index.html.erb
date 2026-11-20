@@ -24,27 +24,44 @@
         <%= t("admin.testers.climbers_today_admins", count: today_admins) %>
       </p>
     <% end %>
+    <p class="lp-admin-climbers__today-android">
+      <%= t("admin.testers.climbers_android_today",
+            count: @android_climbed_today,
+            goal: Admin::Testers::DAILY_CLIMBERS_GOAL) %>
+    </p>
+    <p class="lp-admin-climbers__today-play">
+      <%= t("admin.testers.play_app_testers", count: @play_app_testers) %>
+    </p>
   </div>
 
   <%= render "admin/testers/climbers_calendar",
         counts_by_day: @climbers_by_day,
         calendar_month: @climbers_month,
         berlin_today: @berlin_today,
-        filter: @filter %>
+        filter: @filter,
+        device: @device %>
 </section>
 
 <div class="lp-admin__toolbar" role="navigation" aria-label="<%= t('admin.testers.filter_label') %>">
   <%= link_to t("admin.testers.filter_needs_message"),
-        admin_testers_path(filter: Admin::Testers::FILTER_NEEDS_MESSAGE),
+        testers_index_path(filter: Admin::Testers::FILTER_NEEDS_MESSAGE, device: @device, climbers_month: @climbers_month),
         class: @filter == Admin::Testers::FILTER_NEEDS_MESSAGE ? "lp-admin__btn" : "lp-admin__ghost" %>
   <%= link_to t("admin.testers.filter_everyone"),
-        admin_testers_path(filter: Admin::Testers::FILTER_EVERYONE),
+        testers_index_path(filter: Admin::Testers::FILTER_EVERYONE, device: @device, climbers_month: @climbers_month),
         class: @filter == Admin::Testers::FILTER_EVERYONE ? "lp-admin__btn" : "lp-admin__ghost" %>
   <%= link_to t("admin.testers.play_testers_list"),
         Admin::Testers::PLAY_TESTERS_URL,
         class: "lp-admin-testers__play-link",
         target: "_blank",
         rel: "noopener" %>
+</div>
+
+<div class="lp-admin__toolbar" role="navigation" aria-label="<%= t('admin.testers.device_filter_label') %>">
+  <% Admin::Testers::DEVICE_FILTERS.each do |device_key| %>
+    <%= link_to t("admin.testers.device_filter.#{device_key}"),
+          testers_index_path(filter: @filter, device: device_key, climbers_month: @climbers_month),
+          class: testers_device_filter_class(device_key, @device) %>
+  <% end %>
 </div>
 
 <% if @rows.empty? %>
@@ -64,6 +81,7 @@
                   row.user.email_address,
                   class: "lp-admin-tester__email",
                   aria: { label: t("admin.testers.email_aria", name: row.user.display_name) } %>
+            <p class="lp-admin-tester__device"><%= tester_device_line(row) %></p>
           </div>
           <div class="lp-admin-tester__badges">
             <span class="lp-admin-tester__push is-<%= row.push_status %>">

@@ -288,7 +288,112 @@ module Admin
 
         twenty_count = count_queries { Testers.call(filter: Testers::FILTER_EVERYONE) }
         assert_equal one_count, twenty_count
-        assert_operator one_count, :<=, 13
+        assert_operator one_count, :<=, 15
+      end
+    end
+
+    test "primary device uses the latest session user agent" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        desktop_ua =
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Safari/537.36"
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1", updated_at: 2.days.ago)
+        @user.sessions.create!(user_agent: desktop_ua, ip_address: "127.0.0.1", updated_at: Time.current)
+
+        row = row_for(@user)
+        assert_equal Admin::DeviceFromUserAgent::DEVICE_COMPUTER, row.primary_device
+        assert_includes row.devices, Admin::DeviceFromUserAgent::DEVICE_ANDROID
+        assert_includes row.devices, Admin::DeviceFromUserAgent::DEVICE_COMPUTER
+      end
+    end
+
+    test "push user agent is primary when sessions have no user agent" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        PushSubscription.create!(
+          user: @user,
+          endpoint: "https://push.example/device-ua-#{@user.id}",
+          p256dh: "p256dh-key",
+          auth: "auth-key",
+          user_agent: android_ua
+        )
+
+        row = row_for(@user)
+        assert_equal Admin::DeviceFromUserAgent::DEVICE_ANDROID, row.primary_device
+      end
+    end
+
+    test "device filter keeps only matching primary devices" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        iphone_ua =
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " \
+          "Version/17.0 Mobile/15E148 Safari/604.1"
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1")
+        @other.sessions.create!(user_agent: iphone_ua, ip_address: "127.0.0.1")
+
+        android_rows = Testers.call(filter: Testers::FILTER_EVERYONE, device: Testers::DEVICE_FILTER_ANDROID)
+        ids = android_rows.map { |row| row.user.id }
+        assert_includes ids, @user.id
+        assert_not_includes ids, @other.id
+      end
+    end
+
+    test "device filter combines with needs message" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        iphone_ua =
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " \
+          "Version/17.0 Mobile/15E148 Safari/604.1"
+        @user.update!(onboarding_completed_at: nil)
+        @other.update!(onboarding_completed_at: nil)
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1")
+        @other.sessions.create!(user_agent: iphone_ua, ip_address: "127.0.0.1")
+
+        rows = Testers.call(filter: Testers::FILTER_NEEDS_MESSAGE, device: Testers::DEVICE_FILTER_ANDROID)
+        ids = rows.map { |row| row.user.id }
+        assert_includes ids, @user.id
+        assert_not_includes ids, @other.id
+      end
+    end
+
+    test "play device filter lists only play app testers" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        @user.update!(play_app_seen_at: 1.day.ago)
+        @other.update!(play_app_seen_at: nil)
+
+        rows = Testers.call(filter: Testers::FILTER_EVERYONE, device: Testers::DEVICE_FILTER_PLAY)
+        ids = rows.map { |row| row.user.id }
+        assert_includes ids, @user.id
+        assert_not_includes ids, @other.id
+      end
+    end
+
+    test "android climbed today counts primary android testers only" do
+      zone = Testers::DAY_ZONE
+      travel_to Time.find_zone!(zone).local(2026, 11, 18, 12, 0, 0) do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        iphone_ua =
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " \
+          "Version/17.0 Mobile/15E148 Safari/604.1"
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1")
+        @other.sessions.create!(user_agent: iphone_ua, ip_address: "127.0.0.1")
+        plant_one_shot_win!(@user, completed_at: Time.find_zone!(zone).local(2026, 11, 18, 9, 0, 0))
+        plant_one_shot_win!(@other, completed_at: Time.find_zone!(zone).local(2026, 11, 18, 10, 0, 0))
+
+        stats = Testers.device_dashboard_stats(berlin_today: Date.new(2026, 11, 18))
+        assert_equal 1, stats[:android_climbed_today]
       end
     end
 

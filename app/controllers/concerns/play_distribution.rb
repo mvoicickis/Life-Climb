@@ -9,6 +9,7 @@ module PlayDistribution
 
   included do
     before_action :remember_play_distribution
+    before_action :stamp_play_app_seen_once
     helper_method :play_app?
   end
 
@@ -22,6 +23,17 @@ module PlayDistribution
     return unless params[:distribution] == PLAY_DISTRIBUTION_VALUE || android_app_referrer?
 
     set_play_distribution_cookie!
+  end
+
+  def stamp_play_app_seen_once
+    return unless play_app?
+    return unless authenticated?
+    return if respond_to?(:impersonating?, true) && impersonating?
+
+    user = current_user
+    return if user.blank? || user.play_app_seen_at.present?
+
+    user.update_columns(play_app_seen_at: Time.current, updated_at: Time.current)
   end
 
   def set_play_distribution_cookie!

@@ -253,5 +253,50 @@ module Admin
       assert_select "#admin-climbers-today", count: 0
       assert_select "turbo-frame#climbers_calendar", count: 0
     end
+
+    test "tester card shows device line and android goal copy" do
+      zone = Testers::DAY_ZONE
+      travel_to Time.find_zone!(zone).local(2026, 11, 18, 12, 0, 0) do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        @user.update!(onboarding_completed_at: nil, play_app_seen_at: 1.day.ago)
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1")
+        seed_climb!(@user, today_mission: "Android climb")
+        @user.strategy_goals.battles.order(:id).last.update!(
+          completed_at: Time.find_zone!(zone).local(2026, 11, 18, 9, 0, 0),
+          repeat: nil
+        )
+        sign_in_as @admin
+
+        get admin_testers_path(filter: Testers::FILTER_EVERYONE)
+
+        assert_select ".lp-admin-climbers__today-android", text: /Android climbed today: 1 \/ 12/
+        assert_select "#tester-#{@user.id} .lp-admin-tester__device",
+                      text: /🤖 Android.*Play app/
+        assert_select "a.lp-admin__btn", text: I18n.t("admin.testers.device_filter.android")
+      end
+    end
+
+    test "android device filter hides non android testers" do
+      travel_to Time.zone.parse("2026-11-18 12:00:00") do
+        android_ua =
+          "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " \
+          "Chrome/120.0.0.0 Mobile Safari/537.36"
+        iphone_ua =
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " \
+          "Version/17.0 Mobile/15E148 Safari/604.1"
+        @user.update!(onboarding_completed_at: nil)
+        users(:two).update!(onboarding_completed_at: nil)
+        @user.sessions.create!(user_agent: android_ua, ip_address: "127.0.0.1")
+        users(:two).sessions.create!(user_agent: iphone_ua, ip_address: "127.0.0.1")
+        sign_in_as @admin
+
+        get admin_testers_path(filter: Testers::FILTER_EVERYONE, device: Testers::DEVICE_FILTER_ANDROID)
+
+        assert_select "#tester-#{@user.id}"
+        assert_select "#tester-#{users(:two).id}", count: 0
+      end
+    end
   end
 end

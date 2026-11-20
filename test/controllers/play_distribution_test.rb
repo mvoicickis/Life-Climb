@@ -103,4 +103,30 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
     assert_nil response.cookies["lp_distribution"]
     assert_select "a[href=?]", pricing_path
   end
+
+  test "android-app referer stamps play_app_seen_at once for signed in user" do
+    sign_in_as @user
+    assert_nil @user.play_app_seen_at
+
+    get settings_path, headers: { "HTTP_REFERER" => "android-app://app.lifeclimb/" }
+    assert_response :success
+    @user.reload
+    assert @user.play_app_seen_at.present?
+    first_stamp = @user.play_app_seen_at
+
+    get dashboard_path
+    @user.reload
+    assert_equal first_stamp, @user.play_app_seen_at
+  end
+
+  test "play cookie stamps play_app_seen_at on next signed in request" do
+    sign_in_as @user
+    assert_nil @user.play_app_seen_at
+
+    cookies[:lp_distribution] = "play"
+    get dashboard_path
+
+    @user.reload
+    assert @user.play_app_seen_at.present?
+  end
 end

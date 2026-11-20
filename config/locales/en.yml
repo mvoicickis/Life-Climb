@@ -3807,6 +3807,29 @@ en:
       filter_label: "Tester filter"
       filter_needs_message: "Needs a message"
       filter_everyone: "Everyone"
+      device_filter_label: "Device filter"
+      device_filter:
+        all: "All"
+        android: "Android"
+        iphone: "iPhone/iPad"
+        computer: "Computer"
+        play: "Play app"
+      climbers_android_today: "Android climbed today: %{count} / %{goal}"
+      play_app_testers:
+        one: "Play app testers: %{count}"
+        other: "Play app testers: %{count}"
+      device:
+        unknown: "—"
+        play_app: " · Play app"
+        also: " · also %{label}"
+        label:
+          android: "🤖 Android"
+          iphone: "🍎 iPhone/iPad"
+          computer: "💻 Computer"
+        short:
+          android: "Android"
+          iphone: "iPhone/iPad"
+          computer: "Computer"
       play_testers_list: "Play testers list ↗"
       signed_up: "Signed up"
       onboarding: "Onboarding"
