@@ -15,6 +15,16 @@
     <% else %>
       <meta name="lp-sound-enabled" content="true">
     <% end %>
+    <%
+      lp_sound_urls = {}
+      %w[win all_won streak_whoosh streak_tick cheer tap].each do |name|
+        file = Rails.root.join("app/assets/sounds/#{name}.mp3")
+        next unless file.exist?
+
+        lp_sound_urls[name] = asset_path("sounds/#{name}.mp3")
+      end
+    %>
+    <meta name="lp-sound-urls" content="<%= lp_sound_urls.to_json %>">
     <%= render "shared/social_meta" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
