@@ -13,7 +13,7 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     @todo = @user.daily_todos.for_day(Date.current).find_by!(title: "Ship auth")
   end
 
-  test "today photo background and frosted group cards render" do
+  test "today photo background frosted cards and top bar render" do
     get dashboard_path
     assert_response :success
 
@@ -21,7 +21,24 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select "img.lp-today-photo-bg__img[src*='today_background']", count: 1
     assert_select ".lp-today-group-card", minimum: 2
     assert_select ".lp-today-v2-header--compact", count: 1
+    assert_select "#today-top-bar.lp-today-top", count: 1
+    assert_select "#today-top-bar .lp-avatar-circle, #today-top-bar .lp-avatar-circle--initial", minimum: 1
+    assert_select "#today-top-bar .lp-today-top__hi", minimum: 1
+    assert_select "#today-top-bar .lp-today-top__date", minimum: 1
     assert_select ".lp-today-v2-header__avatar", count: 0
+    assert_select "#today-battlefield-header .lp-other-mountains-button", count: 0
+    assert_select ".lp-today-scroll__pad", count: 1
+    assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
+  end
+
+  test "battle rows have no camp label and use 3d tick markup" do
+    get dashboard_path
+    assert_response :success
+
+    assert_select "#today-battlefield-rows .lp-today-v2-row__title", minimum: 1
+    assert_select "#today-battlefield-rows .lp-today-v2-row__camp", count: 0
+    assert_select "#today-battlefield-rows .lp-today-v2-row__camp-inline", count: 0
+    assert_select "#today-battlefield-rows .lp-today-v2-row__box", minimum: 1
   end
 
   test "battle count hidden at zero done" do
@@ -41,7 +58,6 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     journey = @user.primary_focused_journey
     camp = Strategy::PathProject.resolve(user: @user, journey: journey)
     assert camp.present?
-    # Keep a second open battle so winning one does not finish the camp.
     camp.children.create!(
       user: @user,
       life_area: journey.life_area,
@@ -55,6 +71,7 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#today-battlefield-header .lp-today-goal-camp", text: camp.title
+    assert_select "#today-battlefield-header .lp-today-camp-of", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.0']", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
@@ -80,50 +97,38 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
+    assert_select "#today-battlefield-add-host .lp-today-add-battle__expand", count: 1
     assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", count: 0
   end
 
-  test "quantity basic hides unit meta at zero" do
+  test "quantity basic shows goal until logged then amount" do
     enable_habits!
     @user.habits.destroy_all
     habit = @user.habits.create!(
-      name: "Study PDC",
-      unit: "pages",
+      name: "Water",
+      unit: "cups",
       points: 5,
       frequency: "daily",
       active: true,
       show_on_home: true,
-      quantity_checkin: true
+      quantity_checkin: true,
+      goal: 8
     )
 
     get dashboard_path
     assert_response :success
 
     assert_select "#today_habit_#{habit.id}.is-quantity", count: 1
-    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /pages/, count: 0
-  end
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /8 cups/
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /0 of/, count: 0
 
-  test "quantity basic shows unit meta above zero" do
-    enable_habits!
-    @user.habits.destroy_all
-    habit = @user.habits.create!(
-      name: "Study PDC",
-      unit: "pages",
-      points: 5,
-      frequency: "daily",
-      active: true,
-      show_on_home: true,
-      quantity_checkin: true
-    )
     habit.daily_logs.create!(user: @user, logged_on: Date.current, amount: 3)
-
     get dashboard_path
     assert_response :success
-
-    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /3 pages/
+    assert_select "#today_habit_#{habit.id} .lp-dash-tcard__meta", text: /3 of 8 cups/
   end
 
-  test "basics count hidden when none done" do
+  test "habits card is collapsed by default and keeps count host" do
     enable_habits!
     @user.habits.destroy_all
     @user.habits.create!(
@@ -133,6 +138,19 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
 
     get dashboard_path
     assert_response :success
-    assert_select ".lp-dash-anytime__count[hidden]", count: 1
+    assert_select ".lp-dash-anytime[data-controller~='today-habits']", count: 1
+    assert_select ".lp-dash-anytime__body[hidden]", count: 1
+    assert_select "#basics_survived_count", count: 1
+  end
+
+  test "all won line and won fold stay inside battles card" do
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+    assert_response :ok
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-field .lp-today-all-clear", text: /All won today/
+    assert_select "#today-battlefield-field #today-battlefield-won-shell", count: 1
+    assert_select "#today-battlefield-won-list .lp-today-v2-row", minimum: 1
   end
 end

@@ -1634,8 +1634,8 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transition: padding 0.18s ease, gap 0.18s ease;
 }
 
-/* Open menu: keep the goal card (and dropdown) above Battles / Habits / dim. */
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal:has(.lp-other-mountains-dropdown:not([hidden])) {
+/* Open menu: keep the top-bar dropdown above Battles / Habits / dim. */
+.lp-dash.is-today-v2.is-today-photo .lp-today-top:has(.lp-other-mountains-dropdown:not([hidden])) {
   z-index: 50;
 }
 
@@ -3000,5 +3000,354 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown,
   .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row {
     transition: none;
+  }
+}
+
+
+/* ——— Today premium PR1 Look ——— */
+.lp-dash.is-today-v2.is-today-photo .lp-today-top {
+  position: relative;
+  z-index: 14;
+  display: flex;
+  align-items: center;
+  gap: var(--lp-space-16);
+  min-height: 72px;
+  margin: 0 0 var(--lp-space-16);
+  padding: 12px;
+  border-radius: var(--lp-radius-card);
+  background: color-mix(in srgb, var(--lp-surface) 88%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  box-shadow: var(--lp-shadow-card);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  overflow: hidden;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__greet,
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 220ms var(--lp-ease-out), opacity 220ms var(--lp-ease-out);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__greet { transform: translateY(0); opacity: 1; }
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering { animation: lp-today-top-glow 700ms var(--lp-ease-out); }
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__greet {
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__cheer {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 120ms;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-leaving .lp-today-top__cheer {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
+  transition-delay: 0ms;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-leaving .lp-today-top__greet {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 120ms;
+}
+@keyframes lp-today-top-glow {
+  0% { box-shadow: var(--lp-shadow-card); }
+  35% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-green) 45%, transparent), 0 0 22px color-mix(in srgb, var(--lp-green) 35%, transparent); }
+  100% { box-shadow: var(--lp-shadow-card); }
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__avatar .lp-avatar-circle,
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-avatar .lp-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  box-shadow: 0 0 0 4px var(--lp-surface), 0 6px 14px color-mix(in srgb, var(--lp-ink) 12%, transparent);
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.2);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__copy {
+  flex: 1;
+  min-width: 0;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__hi {
+  margin: 0;
+  font-size: var(--lp-type-15);
+  font-weight: var(--lp-weight-800);
+  line-height: 1.2;
+  color: var(--lp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__date {
+  margin: 2px 0 0;
+  font-size: var(--lp-type-13);
+  font-weight: var(--lp-weight-600);
+  color: var(--lp-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-avatar {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-badge {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  background: var(--lp-surface);
+  box-shadow: 0 0 0 2px var(--lp-surface);
+  transform: scale(0);
+  opacity: 0;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering:not(.is-leaving) .lp-today-top__cheer-badge {
+  animation: lp-today-badge-pop 320ms var(--lp-ease-spring) 200ms forwards;
+}
+@keyframes lp-today-badge-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top .lp-other-mountains-button.lp-btn-3d {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  min-height: var(--lp-tap);
+  min-width: var(--lp-tap);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top .lp-other-mountains-button.lp-btn-3d:active,
+.lp-dash.is-today-v2.is-today-photo .lp-today-top .lp-other-mountains-button.lp-btn-3d.is-pressed {
+  transform: translateY(3px);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-top .lp-other-mountains-button.lp-btn-3d:active .lp-other-mountains-button__face,
+.lp-dash.is-today-v2.is-today-photo .lp-today-top .lp-other-mountains-button.lp-btn-3d.is-pressed .lp-other-mountains-button__face {
+  box-shadow: 0 0 0 transparent;
+  transform: translateY(1px);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown--top {
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  min-width: min(100%, 280px);
+  z-index: 20;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card {
+  background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 65%, var(--lp-border));
+  border-radius: var(--lp-radius-card);
+  box-shadow: var(--lp-shadow-card);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
+  font-size: var(--lp-type-13);
+  font-weight: var(--lp-weight-800);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__name {
+  font-size: var(--lp-type-17);
+  font-weight: var(--lp-weight-900);
+  line-height: 1.2;
+  color: var(--lp-ink);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-goal-camp {
+  font-size: var(--lp-type-15);
+  font-weight: var(--lp-weight-800);
+  color: var(--lp-muted);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 10px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-of {
+  margin: 0;
+  font-size: var(--lp-type-13);
+  font-weight: var(--lp-weight-800);
+  color: var(--lp-muted);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-won {
+  margin: 0;
+  font-size: var(--lp-type-28);
+  font-weight: var(--lp-weight-900);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--lp-ink);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar {
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--lp-border) 70%, var(--lp-paper));
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill {
+  display: block;
+  height: 100%;
+  width: calc(var(--lp-fill, 0) * 100%);
+  border-radius: inherit;
+  background: var(--lp-green);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row {
+  min-height: 60px;
+  padding: 10px 12px;
+  border-radius: var(--lp-radius-field);
+  gap: 12px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__title,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__title-btn {
+  font-size: var(--lp-type-17);
+  font-weight: var(--lp-weight-800);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__camp,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__camp-inline {
+  display: none !important;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__box {
+  width: 28px;
+  height: 28px;
+  border-width: 2.5px;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--lp-muted) 28%, transparent);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__box.is-won {
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--lp-green-deep) 70%, var(--lp-ink));
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__check:active .lp-today-v2-row__box,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__check.is-pressed .lp-today-v2-row__box {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 transparent;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-all-clear {
+  margin: 8px 0 0;
+  font-size: var(--lp-type-15);
+  font-weight: var(--lp-weight-800);
+  color: var(--lp-green-deep);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-won {
+  margin-top: 8px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-add-battle__expand {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: var(--lp-type-15);
+  font-weight: var(--lp-weight-800);
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-add-battle__row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-add-battle__field {
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  font-size: 16px;
+  border-radius: var(--lp-radius-btn);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-add-battle__add {
+  flex: none;
+  min-width: 5.5rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__title {
+  margin: 0;
+  font-size: var(--lp-type-17);
+  font-weight: var(--lp-weight-900);
+  color: var(--lp-ink);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__chev {
+  font-size: 1.25rem;
+  color: var(--lp-muted);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__body {
+  margin-top: 8px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__sig {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--lp-green) 16%, var(--lp-surface));
+  color: var(--lp-green-deep);
+  font-size: 0;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__sig .lp-icon {
+  width: 18px;
+  height: 18px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__qb.is-big {
+  min-height: 44px;
+  min-width: 3.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top__greet,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-badge {
+    transition: none !important;
+    animation: none !important;
+  }
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__cheer-badge {
+    opacity: 1;
+    transform: scale(1);
   }
 }

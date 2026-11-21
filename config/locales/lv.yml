@@ -824,12 +824,19 @@ lv:
       menu_undo: "Undo last add"
     battle_next_kicker: "Forši — turi kāpienu."
     battle_next_coaching: "Viens ātrs jautājums zemāk tur kalnu godīgu."
+    today_bar:
+      greeting_morning: "Good morning, %{name}" # TODO: translate
+      greeting_afternoon: "Good afternoon, %{name}" # TODO: translate
+      greeting_evening: "Good evening, %{name}" # TODO: translate
+      cheered: "%{name} cheered you 🙌" # TODO: translate
+      just_now: "just now" # TODO: translate
     battlefield:
       progress_label: "Cīņas padarītas"
       goal_card:
         label: "Your goal"  # TODO: translate
         camp_bar: "Camp progress"  # TODO: translate
         won: "%{count} won"  # TODO: translate
+        camp_of: "Camp %{current} of %{total}" # TODO: translate
       other_mountains:
         title: "Other mountains today"  # TODO: translate
         open: "Other mountains today"  # TODO: translate
@@ -844,9 +851,10 @@ lv:
       add_battle:
         placeholder: "Battle for today" # TODO: translate
         placeholder_all_clear: "Add another battle" # TODO: translate
-        submit: "Add battle" # TODO: translate
+        submit: "ADD" # TODO: translate
+        expand: "+ Add a battle" # TODO: translate
         aria: "New battle" # TODO: translate
-        all_clear: "All battles won" # TODO: translate
+        all_clear: "All won today ✓" # TODO: translate
         day_full: "Today is full. Win a battle, then add another." # TODO: translate
       win_state:
         day_won:
@@ -1004,6 +1012,7 @@ lv:
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
       title: "Ikdienas soļi"
+      collapsed_title: "Habits · %{done}/%{total}" # TODO: translate
       hint: "Pieraksti tik reižu, cik vēlies"
       empty: "Šodien vēl nav ikdienas soļu — pievieno Bāzes nometnē."
       add_basic: "+ Add a habit" # TODO: translate
@@ -1019,6 +1028,7 @@ lv:
       save_total: "Saglabāt kopsummu"
       enter_exact: "Ievadi precīzu skaitu"
       uses_steps: "Izmanto +%{a} un +%{b}"
+      goal_only: "%{target} %{unit}" # TODO: translate
       amount_of_target: "%{amount} no %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "Šo pierakstu neizdevās saglabāt"
@@ -1631,7 +1641,7 @@ lv:
       won_today:
         one: "%{name} won %{count} battle today"
         other: "%{name} won %{count} battles today"
-      cheered: "You cheered %{name} 🙌"
+      cheered: "You cheered %{name} ✓" # TODO: translate
       high_five_aria: "High-five %{name}"
       open_side_aria: "Open side by side with %{name}"
       not_saved: "Not saved"

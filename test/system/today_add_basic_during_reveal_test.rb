@@ -44,6 +44,7 @@ class TodayAddBasicDuringRevealTest < ApplicationSystemTestCase
     assert_today_v2_shell!
 
     visit dashboard_path
+    expand_today_habits!
     add_label = I18n.t("dash.anytime.add_basic")
     assert_selector "a.lp-dash-anytime__add-basic", text: add_label, wait: 8
 

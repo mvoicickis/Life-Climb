@@ -252,6 +252,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_140000) do
     t.integer "daily_todo_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "seen_at"
     t.index ["daily_todo_id"], name: "index_high_fives_on_daily_todo_id"
     t.index ["from_user_id", "strategy_goal_id", "daily_todo_id", "created_at"], name: "index_high_fives_on_from_battle_todo_and_created"
     t.index ["from_user_id"], name: "index_high_fives_on_from_user_id"
@@ -428,14 +429,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_140000) do
     t.string "auth", null: false
     t.datetime "created_at", null: false
     t.text "endpoint", null: false
-    t.string "last_error"
-    t.datetime "last_error_at"
     t.datetime "last_seen_at"
-    t.datetime "last_success_at"
     t.string "p256dh", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.integer "user_id", null: false
+    t.datetime "last_success_at"
+    t.datetime "last_error_at"
+    t.string "last_error"
     t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
@@ -635,8 +636,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_140000) do
     t.date "streak_commitment_started_on"
     t.integer "streak_commit_declines", default: 0, null: false
     t.string "avatar_key"
-    t.datetime "play_app_seen_at"
     t.boolean "sound_enabled", default: true, null: false
+    t.datetime "play_app_seen_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"

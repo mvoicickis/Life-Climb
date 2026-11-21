@@ -1,0 +1,90 @@
+<%# Frosted Today top bar — avatar, local greeting/date, planet + other-mountains dropdown. %>
+<%
+  other_mountains = @other_mountains
+  show_other_mountains = other_mountains.present? && other_mountains.total.positive?
+  cheer = @today_cheer
+  cheer_from = cheer&.from_user
+%>
+<header class="lp-today-top"
+        id="today-top-bar"
+        data-controller="today-top-bar<%= " dropdown" if show_other_mountains %>"
+        <% if cheer.present? && cheer_from.present? %>
+        data-today-top-bar-cheer-id-value="<%= cheer.id %>"
+        data-today-top-bar-seen-url-value="<%= today_cheer_seen_path(id: cheer.id) %>"
+        data-today-top-bar-auto-cheer-value="true"
+        <% end %>>
+  <div class="lp-today-top__stage">
+    <div class="lp-today-top__greet" data-today-top-bar-target="greet">
+      <span class="lp-today-top__avatar" aria-hidden="true">
+        <%= render "shared/avatar_circle", user: current_user, size: :sm %>
+      </span>
+      <div class="lp-today-top__copy">
+        <p class="lp-today-top__hi"><%= today_greeting_for(current_user) %></p>
+        <p class="lp-today-top__date"><%= today_local_date_label(current_user) %></p>
+      </div>
+    </div>
+    <div class="lp-today-top__cheer" data-today-top-bar-target="cheer" aria-live="polite">
+      <% if cheer_from.present? %>
+        <span class="lp-today-top__cheer-avatar">
+          <%= render "shared/avatar_circle", user: cheer_from, size: :sm %>
+          <span class="lp-today-top__cheer-badge" aria-hidden="true">🙌</span>
+        </span>
+        <div class="lp-today-top__copy">
+          <p class="lp-today-top__hi"><%= t("dash.today_bar.cheered", name: cheer_from.display_name) %></p>
+          <p class="lp-today-top__date"><%= t("dash.today_bar.just_now") %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if show_other_mountains %>
+    <button type="button"
+            class="lp-other-mountains-button lp-btn-3d is-white is-sm lp-pressable"
+            data-dropdown-target="button"
+            data-action="click->dropdown#toggle"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            aria-label="<%= t('dash.battlefield.other_mountains.open') %>">
+      <span class="lp-other-mountains-button__face" aria-hidden="true">
+        <%= render "shared/planet_icon" %>
+      </span>
+      <span class="lp-other-mountains-button__badge"><%= other_mountains.total %></span>
+    </button>
+    <div class="lp-other-mountains-dropdown lp-other-mountains-dropdown--top"
+         data-dropdown-target="menu"
+         role="menu"
+         aria-label="<%= t('dash.battlefield.other_mountains.title') %>"
+         hidden>
+      <p class="lp-other-mountains-dropdown__title"><%= t("dash.battlefield.other_mountains.title") %></p>
+      <ul class="lp-other-mountains-list">
+        <% other_mountains.journeys.each do |entry| %>
+          <% journey = @other_mountain_journeys[entry.journey_id] %>
+          <li>
+            <%= button_to today_focus_path(journey_id: entry.journey_id),
+                  method: :patch,
+                  class: "lp-other-mountains-row lp-pressable",
+                  form: { class: "lp-other-mountains-row-form" },
+                  role: "menuitem" do %>
+              <% if entry.custom_photo? && journey.present? %>
+                <span class="lp-other-mountains-row__thumb">
+                  <%= image_tag other_mountain_thumb_url(journey), alt: "", aria: { hidden: true } %>
+                </span>
+              <% else %>
+                <span class="lp-other-mountains-row__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 19L9.5 8.5L13 14L16 10L21 19Z"/>
+                  </svg>
+                </span>
+              <% end %>
+              <span class="lp-other-mountains-row__name"><%= entry.title %></span>
+              <span class="lp-other-mountains-row__count">
+                <%= t("dash.battlefield.other_mountains.battles", count: entry.open_count) %>
+              </span>
+              <span class="lp-other-mountains-row__chevron" aria-hidden="true">›</span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</header>

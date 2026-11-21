@@ -23,7 +23,6 @@
     win_form = row_state == :open
   end
   camp_style = battlefield_camp_style(project)
-  camp_label = project&.title.presence || t("dash.battlefield.no_camp")
   row_classes = [ "lp-today-v2-row", "lp-pressable" ]
   row_classes << "is-struck" if row_state.in?(%i[pending_won won])
   row_classes << "is-pending-won" if row_state == :pending_won
@@ -119,14 +118,6 @@
         </button>
       <% else %>
         <p class="lp-today-v2-row__title"><%= title %></p>
-      <% end %>
-
-      <% unless row_state == :won %>
-        <span class="lp-today-v2-row__camp-inline"><%= camp_label %></span>
-        <span class="lp-today-v2-row__camp"
-              style="color: <%= camp_style[:color] %>; background: <%= camp_style[:bg] %>">
-          <%= camp_label %>
-        </span>
       <% end %>
     </div>
   </div>

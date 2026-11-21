@@ -26,12 +26,13 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-group-card--goal.has-other-mountains"
-    assert_select ".lp-other-mountains-button[aria-label=?]", I18n.t("dash.battlefield.other_mountains.open")
-    assert_select ".lp-other-mountains-button__face", count: 1
-    assert_select ".lp-other-mountains-button__face .lp-planet-icon", count: 1
-    assert_select ".lp-other-mountains-button__badge", text: "3"
-    assert_select ".lp-other-mountains-dropdown[hidden][role=?]", "menu"
+    assert_select "#today-top-bar[data-controller~='dropdown']", count: 1
+    assert_select "#today-top-bar .lp-other-mountains-button[aria-label=?]", I18n.t("dash.battlefield.other_mountains.open")
+    assert_select "#today-top-bar .lp-other-mountains-button__face", count: 1
+    assert_select "#today-top-bar .lp-other-mountains-button__face .lp-planet-icon", count: 1
+    assert_select "#today-top-bar .lp-other-mountains-button__badge", text: "3"
+    assert_select "#today-top-bar .lp-other-mountains-dropdown[hidden][role=?]", "menu"
+    assert_select "#today-battlefield-header .lp-other-mountains-button", count: 0
     assert_select ".lp-other-mountains-dropdown__title", text: I18n.t("dash.battlefield.other_mountains.title")
     assert_select ".lp-other-mountains-row", count: 2
     assert_select ".lp-other-mountains-row__name", text: "Alpha peak"

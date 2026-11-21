@@ -15,19 +15,24 @@
       <span data-basic-today-client-target="metaOver" hidden></span>
     <% end %>
   <% elsif habit.quantity_checkin? && habit.stretch_goal? && ctx[:target].present? %>
-    <span data-basic-today-client-target="metaPrimary" hidden></span>
+    <span data-basic-today-client-target="metaPrimary"><%= t("dash.anytime.goal_only",
+          target: format_amount(ctx[:target]),
+          unit: habit.unit) %></span>
     <span data-basic-today-client-target="metaOver" hidden></span>
   <% elsif habit.quantity_checkin? && ctx[:amount].to_d.positive? %>
     <span data-basic-today-client-target="amountSpan"><%= format_amount(ctx[:amount]) %></span> <%= habit.unit %>
     <% if habit.standard? && habit.range_summary.present? %>
       · <%= habit.range_summary %>
     <% end %>
+  <% elsif habit.quantity_checkin? && habit.goal.present? %>
+    <span data-basic-today-client-target="amountSpan" hidden>0</span>
+    <span><%= t("dash.anytime.goal_only", target: format_amount(habit.goal), unit: habit.unit) %></span>
   <% elsif habit.quantity_checkin? %>
     <span data-basic-today-client-target="amountSpan" hidden>0</span>
   <% elsif habit.binary_checkin? %>
     <%= t("dash.anytime.binary_subtitle") %>
   <% end %>
-  <% if ctx[:show_pct] && !habit.binary_checkin? %>
-    · <span class="lp-dash-habit__pc lp-dash-habit__pct <%= 'is-zero' if habit.quantity_checkin? && ctx[:amount].to_d.zero? %>" data-basic-today-client-target="pct"><%= ctx[:progress] %>%</span>
+  <% if ctx[:show_pct] && !habit.binary_checkin? && ctx[:amount].to_d.positive? %>
+    · <span class="lp-dash-habit__pc lp-dash-habit__pct" data-basic-today-client-target="pct"><%= ctx[:progress] %>%</span>
   <% end %>
 <% end %>

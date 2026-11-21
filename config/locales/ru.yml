@@ -636,13 +636,19 @@ ru:
       menu_undo: "Undo last add"
     battle_next_kicker: "Отлично — продолжай подъём."
     battle_next_coaching: "Один быстрый вопрос ниже держит гору честной."
-    # TODO: translate
+    today_bar:
+      greeting_morning: "Good morning, %{name}" # TODO: translate
+      greeting_afternoon: "Good afternoon, %{name}" # TODO: translate
+      greeting_evening: "Good evening, %{name}" # TODO: translate
+      cheered: "%{name} cheered you 🙌" # TODO: translate
+      just_now: "just now" # TODO: translate
     battlefield:
       progress_label: "Battles done"  # TODO: translate
       goal_card:
         label: "Your goal"  # TODO: translate
         camp_bar: "Camp progress"  # TODO: translate
         won: "%{count} won"  # TODO: translate
+        camp_of: "Camp %{current} of %{total}" # TODO: translate
       other_mountains:
         title: "Other mountains today"  # TODO: translate
         open: "Other mountains today"  # TODO: translate
@@ -658,9 +664,10 @@ ru:
       add_battle:
         placeholder: "Battle for today" # TODO: translate
         placeholder_all_clear: "Add another battle" # TODO: translate
-        submit: "Add battle" # TODO: translate
+        submit: "ADD" # TODO: translate
+        expand: "+ Add a battle" # TODO: translate
         aria: "New battle" # TODO: translate
-        all_clear: "All battles won" # TODO: translate
+        all_clear: "All won today ✓" # TODO: translate
         day_full: "Today is full. Win a battle, then add another." # TODO: translate
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
@@ -789,6 +796,7 @@ ru:
     anytime:
       # TODO: translate
       title: "Habits"
+      collapsed_title: "Habits · %{done}/%{total}" # TODO: translate
       hint: "Log as many times as you like"
       empty: "No habits on Today yet — add one in Base Camp." # TODO: translate
       add_basic: "+ Add a habit" # TODO: translate
@@ -804,6 +812,7 @@ ru:
       save_total: "Save total"
       enter_exact: "Enter exact amount"
       uses_steps: "Uses +%{a} and +%{b}"
+      goal_only: "%{target} %{unit}" # TODO: translate
       amount_of_target: "%{amount} of %{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
@@ -1409,7 +1418,7 @@ ru:
       won_today:
         one: "%{name} won %{count} battle today"
         other: "%{name} won %{count} battles today"
-      cheered: "You cheered %{name} 🙌"
+      cheered: "You cheered %{name} ✓" # TODO: translate
       high_five_aria: "High-five %{name}"
       open_side_aria: "Open side by side with %{name}"
       not_saved: "Not saved"

@@ -57,11 +57,18 @@ en:
       final: "Final ascent"
       summit: "Summit reached"
     battle_title: "Today's battle"
+    today_bar:
+      greeting_morning: "Good morning, %{name}"
+      greeting_afternoon: "Good afternoon, %{name}"
+      greeting_evening: "Good evening, %{name}"
+      cheered: "%{name} cheered you 🙌"
+      just_now: "just now"
     battlefield:
       progress_label: "Battles done"
       goal_card:
         label: "Your goal"
         camp_bar: "Camp progress"
+        camp_of: "Camp %{current} of %{total}"
         won: "%{count} won"
       other_mountains:
         title: "Other mountains today"
@@ -97,9 +104,10 @@ en:
       add_battle:
         placeholder: "Battle for today"
         placeholder_all_clear: "Add another battle"
-        submit: "Add battle"
+        submit: "ADD"
+        expand: "+ Add a battle"
         aria: "New battle"
-        all_clear: "All battles won"
+        all_clear: "All won today ✓"
         day_full: "Today is full. Win a battle, then add another."
       win_state:
         day_won:
@@ -272,6 +280,7 @@ en:
     anytime:
       # Heading drafts: A (shipped) Basics · B Basics · C Anytime
       title: "Habits"
+      collapsed_title: "Habits · %{done}/%{total}"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
       binary_subtitle: "Every day"
@@ -290,6 +299,7 @@ en:
       enter_exact: "Enter exact amount"
       uses_steps: "Uses +%{a} and +%{b}"
       amount_of_target: "%{amount} of %{target} %{unit}"
+      goal_only: "%{target} %{unit}"
       over_by: "+%{amount}"
       log_failed_title: "That log didn’t save"
       edit_basic: "Edit habit"
@@ -3236,7 +3246,7 @@ en:
       won_today:
         one: "%{name} won %{count} battle today"
         other: "%{name} won %{count} battles today"
-      cheered: "You cheered %{name} 🙌"
+      cheered: "You cheered %{name} ✓"
       high_five_aria: "High-five %{name}"
       open_side_aria: "Open side by side with %{name}"
       not_saved: "Not saved"

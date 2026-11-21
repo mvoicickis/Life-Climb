@@ -34,8 +34,9 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
     fill_in "Password", with: "password12345"
     click_button "Sign in"
     assert_today_v2_shell!
-    assert_selector "#today_habit_#{@habit.id}"
     assert_selector ".lp-dash-anytime"
+    expand_today_habits!
+    assert_selector "#today_habit_#{@habit.id}"
 
     [ 375, 320 ].each do |width|
       page.driver.browser.manage.window.resize_to(width, 844)
@@ -45,6 +46,7 @@ class HabitOverflowMenuMobileTest < ApplicationSystemTestCase
       assert card.find(".lp-habits__name", text: "Push-Ups").visible?
 
       visit dashboard_path
+      expand_today_habits!
       assert_selector "#today_habit_#{@habit.id}"
       assert_selector ".lp-dash-habit__menu"
       find("#today_habit_#{@habit.id} .lp-dash-habit__menu:not(.lp-dash-habit__menu--edit) > summary").click

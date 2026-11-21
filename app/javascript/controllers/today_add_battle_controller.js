@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Photo Today — inline add row. Enter saves; Shift+Enter new line. One request at a time.
+// Photo Today — inline add row. Collapsed label expands to field + ADD.
 export default class extends Controller {
-  static targets = ["field", "submit", "fail"]
+  static targets = ["field", "submit", "fail", "expand", "composer"]
   static values = {
     url: String,
     notSaved: { type: String, default: "Not saved. Tap to try again." },
@@ -11,14 +11,30 @@ export default class extends Controller {
 
   connect() {
     this.saving = false
-    this.grow()
-    this.sync()
+    if (this.hasFieldTarget) {
+      this.grow()
+      this.sync()
+    }
+  }
+
+  expand(event) {
+    event?.preventDefault()
+    if (this.hasExpandTarget) this.expandTarget.hidden = true
+    if (this.hasComposerTarget) {
+      this.composerTarget.hidden = false
+      this.composerTarget.removeAttribute("hidden")
+    }
+    window.requestAnimationFrame(() => {
+      this.fieldTarget?.focus()
+      this.grow()
+      this.sync()
+    })
   }
 
   sync() {
+    if (!this.hasFieldTarget || !this.hasSubmitTarget) return
     const hasText = this.fieldTarget.value.trim().length > 0
     const ready = hasText || this.allClearValue
-    // Grey+disabled only while empty with open battles. All-clear keeps green invite.
     const disabled = this.saving || (!hasText && !this.allClearValue)
     this.submitTarget.classList.toggle("is-ready", ready)
     this.submitTarget.classList.toggle("is-muted", !ready)
@@ -27,6 +43,7 @@ export default class extends Controller {
   }
 
   grow() {
+    if (!this.hasFieldTarget) return
     const field = this.fieldTarget
     field.style.height = "auto"
     const max = parseFloat(getComputedStyle(field).maxHeight) || 140
@@ -46,6 +63,7 @@ export default class extends Controller {
 
   async save() {
     if (this.saving) return
+    if (!this.hasFieldTarget) return
 
     const title = this.fieldTarget.value.trim()
     if (!title) {
@@ -81,12 +99,10 @@ export default class extends Controller {
         window.Turbo.renderStreamMessage(html)
       }
 
-      // Stream replaces the add host — focus the new empty field for the next battle.
       window.requestAnimationFrame(() => {
-        const next = document.querySelector(
-          "#today-battlefield-add-host [data-today-add-battle-target='field']"
-        )
-        next?.focus()
+        const host = document.querySelector("#today-battlefield-add-host [data-controller~='today-add-battle']")
+        const expandBtn = host?.querySelector("[data-today-add-battle-target='expand']")
+        expandBtn?.click()
       })
     } catch (_err) {
       this.showFail()

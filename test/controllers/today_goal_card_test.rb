@@ -26,6 +26,7 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title
+    assert_select "#today-battlefield-header .lp-today-camp-of", text: /Camp \d+ of \d+/
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.5']", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won:not([hidden])", count: 1

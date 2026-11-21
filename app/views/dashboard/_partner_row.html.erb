@@ -21,7 +21,7 @@
             </p>
           </span>
         <% end %>
-        <span class="lp-partner-row__cheer is-done" aria-hidden="true">🙌</span>
+        <span class="lp-partner-row__cheer is-done lp-btn-3d is-grey is-sm" aria-hidden="true">🙌</span>
       </div>
     <% else %>
       <div class="lp-partner-row"
@@ -42,7 +42,7 @@
         <div class="lp-partner-row__cheer-wrap">
           <%= button_to climb_together_high_five_path,
                 method: :post,
-                class: "lp-partner-row__cheer lp-pressable",
+                class: "lp-partner-row__cheer lp-btn-3d is-white is-sm lp-pressable",
                 form: {
                   class: "lp-partner-row-form lp-partner-row__cheer-form",
                   data: {

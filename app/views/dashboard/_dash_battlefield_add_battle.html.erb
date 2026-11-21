@@ -18,7 +18,13 @@
          data-today-add-battle-url-value="<%= today_battles_path %>"
          data-today-add-battle-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
          data-today-add-battle-all-clear-value="<%= all_clear %>">
-      <div class="lp-today-add-battle__row">
+      <button type="button"
+              class="lp-today-add-battle__expand"
+              data-today-add-battle-target="expand"
+              data-action="click->today-add-battle#expand">
+        <%= t("dash.battlefield.add_battle.expand") %>
+      </button>
+      <div class="lp-today-add-battle__row" hidden data-today-add-battle-target="composer">
         <textarea class="lp-today-add-battle__field"
                   rows="1"
                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
@@ -31,12 +37,12 @@
                   data-today-add-battle-target="field"
                   data-action="input->today-add-battle#sync keydown->today-add-battle#keydown"></textarea>
         <button type="button"
-                class="lp-today-add-battle__add<%= all_clear ? " is-ready" : " is-muted" %>"
+                class="lp-today-add-battle__add lp-btn-3d is-green<%= all_clear ? " is-ready" : " is-muted" %>"
                 aria-label="<%= t('dash.battlefield.add_battle.submit') %>"
                 <%= "disabled" unless all_clear %>
                 data-today-add-battle-target="submit"
                 data-action="click->today-add-battle#save">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <%= t("dash.battlefield.add_battle.submit") %>
         </button>
       </div>
       <button type="button"

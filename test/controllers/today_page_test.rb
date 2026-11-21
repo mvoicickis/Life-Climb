@@ -91,7 +91,7 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-v2-field", count: 1
   end
 
-  test "today header shows avatar, active goal, and HP block" do
+  test "today top bar shows avatar greeting and goal card without header avatar" do
     user = users(:one)
     user.update!(
       name: "Alex Climber",
@@ -123,12 +123,17 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
+    assert_select "#today-top-bar.lp-today-top", count: 1
+    assert_select "#today-top-bar .lp-avatar-circle, #today-top-bar .lp-avatar-circle--initial", minimum: 1
+    assert_select "#today-top-bar .lp-today-top__hi", text: /Alex Climber/
     assert_select ".lp-today-v2-header--compact", count: 1
+    assert_select ".lp-today-v2-header__avatar", count: 0
     assert_select ".lp-today-v2-header__avatar-img", count: 0
     assert_select ".lp-today-v2-header__name", text: "Goal"
     assert_select ".lp-today-v2-header__meta", count: 0
     assert_select ".lp-today-goal-kicker", count: 1
     assert_select ".lp-today-goal-camp", text: "Project"
+    assert_select ".lp-today-camp-of", text: /Camp 1 of 1/
     assert_select ".lp-today-camp-bar", count: 1
     assert_select ".lp-today-v2-hp-bar", count: 0
     assert_select "img[src*='today_background']", count: 1

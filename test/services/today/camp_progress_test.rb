@@ -32,6 +32,8 @@ class Today::CampProgressTest < ActiveSupport::TestCase
     assert_equal 0, result[:won]
     assert_equal 0, result[:total]
     assert_equal 0, result[:percent]
+    assert_equal 1, result[:camp_current]
+    assert_operator result[:camp_count], :>=, 1
   end
 
   test "one of five battles won is 20 percent" do

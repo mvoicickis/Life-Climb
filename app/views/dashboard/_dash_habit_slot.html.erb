@@ -79,13 +79,17 @@
           <%= render "dashboard/dash_habit_today_meta", habit: habit %>
         </div>
         <% unless photo_today %>
-          <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true"><%= habit_sigil(habit) %></span>
+          <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true">
+            <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
+          </span>
         <% end %>
       <% end %>
     </div>
   <% else %>
     <div class="lp-dash-habit__r1">
-      <span class="lp-dash-habit__sig" aria-hidden="true"><%= habit_sigil(habit) %></span>
+      <span class="lp-dash-habit__sig" aria-hidden="true">
+        <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
+      </span>
       <div class="lp-dash-habit__nm">
         <% if habit.identity_label.present? %>
           <p class="lp-habit-identity"><%= habit.identity_label %></p>

@@ -35,6 +35,7 @@ class HabitIdentityMobileTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_today_v2_shell!
     assert_selector ".lp-dash-anytime"
+    expand_today_habits!
     assert_selector ".lp-habit-identity", text: "I am a reader"
     assert_selector ".lp-habit-identity", text: "I am someone who moves"
 
