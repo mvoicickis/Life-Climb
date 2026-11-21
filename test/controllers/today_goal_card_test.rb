@@ -102,7 +102,7 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     post complete_daily_todo_path(todo), as: :turbo_stream
     assert_response :ok
     assert_match %(target="today-battlefield-header"), response.body
-    assert_match(/lp-today-camp-bar__fill[^>]*--lp-fill: 0\.0/, response.body
+    assert_match(/lp-today-camp-bar__fill[^>]*--lp-fill: 0\.0/, response.body)
     assert_nil first.reload.completed_at
   end
 
