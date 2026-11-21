@@ -670,6 +670,7 @@ ru:
         aria: "New battle" # TODO: translate
         all_clear: "All won today ✓" # TODO: translate
         day_full: "Today is full. Win a battle, then add another." # TODO: translate
+      ready_title: "Ready for today?" # TODO: translate
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
         set_goal: "Set your goal" # TODO: translate
@@ -706,6 +707,14 @@ ru:
           kicker: "Next up"  # TODO: translate
           headline: "“%{title}” is scheduled"  # TODO: translate
           sub: "Coming %{date} — keep the climb alive until then."  # TODO: translate
+    finale: # TODO: translate
+      aria: "All battles won"
+      title: "ALL BATTLES WON!"
+      goal_line: "%{goal} moved forward 🏔️"
+      battles_today: "Battles today"
+      camp_of: "Camp %{current} of %{total}"
+      share: "Share my day"
+      continue: "Continue"
     # TODO: translate
     end_of_day:
       goal_label: "Your goal"
@@ -892,11 +901,16 @@ ru:
       fresh_start: "Новый подъём начинается"
     streak_moment: # TODO: translate
       days_in_a_row: "days in a row"
+      day_streak: "day streak"
       days_in_a_row_bang: "%{count} days in a row!"
       aria: "%{count} days in a row"
       last_7_days: "Last 7 days"  # TODO: translate
+      this_week: "This week"
       mountain_yours: "The mountain is yours to climb:"
       continue: "Continue"
+      show_it_off: "Show it off"
+      longest: "Your longest climb yet!"
+      share_text: "%{count} day streak on Life Climb — %{goal}"
       day_of: "Day %{n} of %{m}"
       you_did_it: "You did it."
       pick_next: "Pick your next climb"
