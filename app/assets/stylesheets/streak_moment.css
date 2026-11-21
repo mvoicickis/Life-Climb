@@ -1,4 +1,4 @@
-/* Today streak moment — opaque card over paper veil (mockup today-streak-moment). */
+/* Today streak moment — fireball show (mockup rounds 6–13). Fire tokens scoped here. */
 
 .lp-dash.is-today-v2.is-today-photo {
   position: relative;
@@ -12,296 +12,801 @@
 }
 
 .lp-streak-moment {
+  --lp-fire: #f97316;
+  --lp-fire-deep: #c2410c;
+  --lp-fire-glow: #fbbf24;
+  --lp-fire-pale: #fef3c7;
   position: absolute;
   inset: 0;
   z-index: 6;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  pointer-events: none;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: var(--lp-surface);
+  color: var(--lp-surface);
   overflow: hidden;
+  pointer-events: auto;
+  font-family: var(--lp-font-ui);
 }
 
-.lp-streak-moment__veil {
+.lp-streak-moment[hidden],
+.lp-streak-moment.is-queued[hidden] {
+  display: none;
+}
+
+.lp-streak-moment.is-shaking {
+  animation: lp-streak-shake 150ms linear;
+}
+
+@keyframes lp-streak-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.lp-streak-moment__flood {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 26%,
+    var(--lp-fire-glow) 0%,
+    var(--lp-fire) 38%,
+    var(--lp-fire-deep) 78%
+  );
+  opacity: 0;
+  transform: scale(0.15);
+  transition:
+    opacity 280ms var(--lp-ease-out),
+    transform 320ms var(--lp-ease-out);
+}
+
+.lp-streak-moment.is-impact .lp-streak-moment__flood,
+.lp-streak-moment.is-final .lp-streak-moment__flood {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lp-streak-moment__body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible;
+}
+
+.lp-streak-moment__hero {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin-top: 96px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: visible;
+}
+
+.lp-streak-moment__fireball {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 4.6rem;
+  height: 4.6rem;
+  margin: -2.3rem 0 0 -2.3rem;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--lp-fire-glow) 70%, transparent));
+}
+
+.lp-streak-moment.is-flying .lp-streak-moment__fireball {
+  animation: lp-streak-fireball-fly 400ms var(--lp-ease-out) forwards;
+}
+
+@keyframes lp-streak-fireball-fly {
+  0% {
+    opacity: 1;
+    transform: translate(-7.5rem, 9.5rem) scale(0.45) rotate(-28deg);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-1.4rem, 1.6rem) scale(1.08) rotate(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0);
+  }
+}
+
+.lp-streak-moment.is-avatar .lp-streak-moment__fireball {
+  opacity: 0;
+  animation: none;
+}
+
+.lp-streak-moment__fb-core {
+  fill: var(--lp-fire-pale);
+}
+
+.lp-streak-moment__fb-mid {
+  fill: var(--lp-fire-glow);
+}
+
+.lp-streak-moment__fb-rim {
+  fill: var(--lp-fire);
+}
+
+.lp-streak-moment__fb-trail {
+  stroke: var(--lp-fire-pale);
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+  opacity: 0.85;
+}
+
+.lp-streak-moment__impact-sparks {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--lp-paper) 75%, transparent);
-  pointer-events: auto;
+  pointer-events: none;
+  z-index: 5;
 }
 
-.lp-streak-moment__card {
+.lp-streak-moment__spark-bit {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--lp-fire-pale);
+  box-shadow: 0 0 8px var(--lp-fire-glow);
+  animation: lp-streak-spark-burst var(--d, 650ms) var(--lp-ease-out) forwards;
+}
+
+@keyframes lp-streak-spark-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0.15);
+    opacity: 0;
+  }
+}
+
+.lp-streak-moment__avatar-wrap {
   position: relative;
-  z-index: 1;
-  pointer-events: auto;
-  flex: 0 1 auto;
-  width: 100%;
-  min-width: 0;
-  max-width: calc(360px - 32px);
-  margin: 0;
-  padding: 24px;
-  border: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius-card);
-  background: var(--lp-surface);
-  box-shadow: var(--lp-shadow-card);
-  color: var(--lp-ink);
-  text-align: center;
-  overflow: hidden;
+  width: 168px;
+  height: 168px;
+  opacity: 0;
+  transform: scale(0.72);
+  z-index: 3;
+  box-shadow: 0 0 48px var(--lp-fire-glow);
+  border-radius: 999px;
+  overflow: visible;
 }
 
-.lp-streak-moment__badge {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-  margin: 0 auto;
-  padding: 16px 8px 8px;
+.lp-streak-moment.is-avatar .lp-streak-moment__avatar-wrap {
+  animation: lp-streak-avatar-land 0.45s var(--lp-ease-spring) forwards;
 }
 
-.lp-streak-moment__logo {
-  display: block;
-  flex: none;
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 42px;
-  object-fit: contain;
-  border: 0;
-  border-radius: 14px;
-  background: var(--lp-surface);
-  box-shadow: var(--lp-shadow-card);
+.lp-streak-moment.is-final .lp-streak-moment__avatar-wrap {
+  opacity: 1;
+  transform: scale(1);
+  animation: none;
 }
 
-.lp-streak-moment__num-halo {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  z-index: 0;
+@keyframes lp-streak-avatar-land {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.lp-streak-moment__num-halo::before {
-  content: "";
+.lp-streak-moment__fire {
+  --fire-size: 2.2;
+  --fire-y: 0px;
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 140px;
-  height: 140px;
-  margin: -70px 0 0 -70px;
+  z-index: 1;
+  pointer-events: none;
+  width: calc(168px * var(--fire-size));
+  height: calc(168px * var(--fire-size));
+  margin-left: calc(168px * var(--fire-size) / -2);
+  margin-top: calc(168px * var(--fire-size) / -2 + var(--fire-y));
+  transform: scale(0);
+  opacity: 0;
+  transform-origin: 50% 50%;
+}
+
+.lp-streak-moment.is-avatar .lp-streak-moment__fire {
+  animation: lp-streak-flame-ignite 520ms var(--lp-ease-spring) forwards;
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__fire {
+  transform: scale(1);
+  opacity: 1;
+  animation: none;
+}
+
+@keyframes lp-streak-flame-ignite {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.lp-streak-moment__glow {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--lp-green) 18%, transparent);
-  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--lp-fire-pale) 0%,
+    var(--lp-fire) 38%,
+    transparent 70%
+  );
+  transform-origin: 50% 50%;
+}
+
+.lp-streak-moment.is-avatar:not(.is-lottie) .lp-streak-moment__glow,
+.lp-streak-moment.is-final:not(.is-lottie) .lp-streak-moment__glow {
+  animation: lp-streak-glow-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes lp-streak-glow-pulse {
+  0%,
+  100% {
+    transform: scale(0.96);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.lp-streak-moment.is-lottie .lp-streak-moment__glow {
+  opacity: 0;
+  visibility: hidden;
+  animation: none;
+}
+
+.lp-streak-moment__lottie {
+  position: absolute;
+  inset: 0;
+  display: none;
   pointer-events: none;
 }
 
-.lp-streak-moment__num-roll {
+.lp-streak-moment.is-lottie .lp-streak-moment__lottie {
+  display: block;
+}
+
+.lp-streak-moment__lottie > * {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.lp-streak-moment__avatar {
   position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 5rem;
+  z-index: 2;
+  width: 168px;
+  height: 168px;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 4px var(--lp-surface),
+    0 10px 22px color-mix(in srgb, var(--lp-ink) 16%, transparent);
+}
+
+.lp-streak-moment__embers {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  bottom: 20%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lp-streak-moment__ember {
+  position: absolute;
+  left: 50%;
+  bottom: 35%;
+  width: var(--ember-size, 3px);
+  height: var(--ember-size, 3px);
+  border-radius: 999px;
+  background: var(--lp-fire-pale);
+  opacity: 0;
+  box-shadow: 0 0 5px color-mix(in srgb, var(--lp-fire-pale) 70%, transparent);
+  animation: lp-streak-ember-float 2s ease-in-out infinite;
+  animation-delay: var(--delay, 0ms);
+}
+
+.lp-streak-moment.is-avatar .lp-streak-moment__ember,
+.lp-streak-moment.is-final .lp-streak-moment__ember {
+  opacity: 0.95;
+}
+
+@keyframes lp-streak-ember-float {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--x, 0px)), -120px) scale(0.35);
+    opacity: 0;
+  }
+}
+
+.lp-streak-moment__meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  margin: 24px 0 0;
+  flex: none;
+}
+
+.lp-streak-moment__odometer {
+  position: relative;
+  width: 6.5rem;
+  height: 6.1rem;
   overflow: hidden;
 }
 
-.lp-streak-moment__num {
-  grid-area: 1 / 1;
+.lp-streak-moment__digit {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   margin: 0;
-  font-family: var(--lp-font-ui);
-  font-size: 5rem;
+  font-size: var(--lp-type-96);
   font-weight: 900;
   line-height: 1;
-  color: var(--lp-ink);
+  letter-spacing: -0.04em;
 }
 
-.lp-streak-moment__num.is-from {
-  display: none;
+.lp-streak-moment__digit.is-old {
+  color: color-mix(in srgb, var(--lp-fire-deep) 55%, transparent);
 }
 
-.lp-streak-moment__num.is-to {
-  opacity: 1;
-}
-
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__num.is-from {
-  display: block;
-  animation: lp-streak-num-out 420ms var(--lp-ease-out, ease) both;
-}
-
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__num.is-to {
+.lp-streak-moment__digit.is-new {
+  color: var(--lp-fire-pale);
+  transform: translateY(110%);
   opacity: 0;
-  transform: translateY(100%);
-  animation: lp-streak-num-in 420ms var(--lp-ease-out, ease) both;
+  text-shadow: 0 2px 0 color-mix(in srgb, var(--lp-fire-deep) 35%, transparent);
 }
 
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__logo {
-  animation: lp-juicy-bounce 500ms ease 360ms both;
+.lp-streak-moment.is-flipping .lp-streak-moment__digit.is-old {
+  animation: lp-streak-odo-out 0.42s var(--lp-ease-out) forwards;
 }
 
-.lp-streak-moment.is-done .lp-streak-moment__num.is-from {
-  display: none;
+.lp-streak-moment.is-flipping .lp-streak-moment__digit.is-new {
+  animation: lp-streak-odo-in 0.55s var(--lp-ease-spring) forwards;
+}
+
+@keyframes lp-streak-odo-out {
+  to {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
+}
+
+@keyframes lp-streak-odo-in {
+  0% {
+    transform: translateY(110%);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(-5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .lp-streak-moment__sub {
-  margin: 0;
-  font-size: 1.125rem;
+  margin: 8px 0 0;
+  font-size: 28px;
   font-weight: 800;
-  line-height: 1.3;
-  color: var(--lp-ink);
+  line-height: 1.1;
+  color: var(--lp-surface);
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.lp-streak-moment.is-titled .lp-streak-moment__sub {
+  animation: lp-streak-fade-up 0.4s var(--lp-ease-out) forwards;
+}
+
+@keyframes lp-streak-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .lp-streak-moment__week {
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
   width: 100%;
-  min-width: 0;
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
+  margin: 24px 0 0;
+  opacity: 0;
+  transform: translateY(12px);
+  flex: none;
 }
 
-.lp-streak-moment__day {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+.lp-streak-moment.is-week .lp-streak-moment__week {
+  animation: lp-streak-fade-up 0.35s var(--lp-ease-out) forwards;
+}
+
+.lp-streak-moment__week-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.lp-streak-moment__week-labels span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--lp-surface) 78%, transparent);
+}
+
+.lp-streak-moment__week-track {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
   align-items: center;
-  gap: 6px;
-  min-width: 0;
+  min-height: 2.15rem;
 }
 
-.lp-streak-moment__day-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--lp-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.lp-streak-moment__day-mark {
+.lp-streak-moment__pill {
   position: relative;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  border: 2px solid var(--lp-border);
-  background: var(--lp-surface);
+  display: grid;
+  grid-template-columns: repeat(var(--lp-streak-run, 1), 1fr);
+  align-items: center;
+  min-height: 2.15rem;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--lp-fire-pale);
+  overflow: hidden;
 }
 
-.lp-streak-moment__day-mark.is-won {
-  border-color: var(--lp-green-deep);
-  background: var(--lp-green);
+.lp-streak-moment__check {
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--lp-fire-deep);
 }
 
-.lp-streak-moment__day-mark.is-won::after {
-  content: "";
+.lp-streak-moment__today {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0 auto;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--lp-fire-deep);
+  position: relative;
+  z-index: 2;
+}
+
+.lp-streak-moment__today.is-pop {
+  background: var(--lp-fire);
+  color: var(--lp-surface);
+  animation: lp-streak-tick-pop var(--lp-motion-celebrate) var(--lp-ease-spring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-fire-glow) 55%, transparent);
+}
+
+@keyframes lp-streak-tick-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.lp-streak-moment__runner {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: -0.675rem;
+  margin-left: -0.675rem;
+  z-index: 3;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px var(--lp-fire));
+}
+
+.lp-streak-moment.is-running .lp-streak-moment__runner {
+  opacity: 1;
+  animation: lp-streak-flame-run 420ms var(--lp-ease-out) forwards;
+}
+
+@keyframes lp-streak-flame-run {
+  0% {
+    left: 10%;
+  }
+  100% {
+    left: 90%;
+  }
+}
+
+.lp-streak-moment__future {
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-fire-deep) 72%, var(--lp-fire));
+}
+
+.lp-streak-moment__day-sparks {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 0.34rem;
-  height: 0.62rem;
-  margin-top: -0.36rem;
-  margin-left: -0.18rem;
-  border: solid var(--lp-surface);
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 4;
 }
 
-.lp-streak-moment__day.is-today .lp-streak-moment__day-mark.is-won {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-green) 30%, transparent);
+.lp-streak-moment__day-sparks i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--lp-fire-pale);
+  animation: lp-streak-spark-burst 480ms var(--lp-ease-out) forwards;
 }
 
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day-mark.is-won {
-  animation: todayTickPop 280ms ease both;
+.lp-streak-moment__record {
+  margin: 16px 0 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--lp-surface) 88%, transparent);
+  opacity: 0;
+  transform: translateY(6px);
+  flex: none;
+  display: none;
 }
 
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(1) .lp-streak-moment__day-mark.is-won { animation-delay: 420ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(2) .lp-streak-moment__day-mark.is-won { animation-delay: 480ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(3) .lp-streak-moment__day-mark.is-won { animation-delay: 540ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(4) .lp-streak-moment__day-mark.is-won { animation-delay: 600ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(5) .lp-streak-moment__day-mark.is-won { animation-delay: 660ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(6) .lp-streak-moment__day-mark.is-won { animation-delay: 720ms; }
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day:nth-child(7) .lp-streak-moment__day-mark.is-won { animation-delay: 780ms; }
-
-.lp-streak-moment__goal {
-  margin-top: 16px;
-  min-width: 0;
-}
-
-.lp-streak-moment__goal-label {
+.lp-streak-moment[data-record="true"] .lp-streak-moment__record {
   display: block;
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.35;
-  color: var(--lp-muted);
 }
 
-.lp-streak-moment__goal-title {
-  display: -webkit-box;
-  max-width: 100%;
-  margin: 8px auto 0;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  font-size: 18px;
+.lp-streak-moment.is-record .lp-streak-moment__record {
+  animation: lp-streak-fade-up 0.4s var(--lp-ease-out) forwards;
+}
+
+.lp-streak-moment__meta {
+  margin: 16px 0 0;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.3;
-  color: var(--lp-ink);
-  overflow-wrap: anywhere;
+  color: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  opacity: 0;
+  transform: translateY(6px);
 }
 
-.lp-streak-moment__cta {
-  padding: 0;
-  margin-top: 24px;
+.lp-streak-moment.is-cta .lp-streak-moment__meta,
+.lp-streak-moment.is-final .lp-streak-moment__meta {
+  opacity: 1;
+  transform: none;
 }
 
-@keyframes lp-streak-num-out {
-  to { opacity: 0; transform: translateY(-110%); }
+.lp-streak-moment__track {
+  width: 100%;
+  max-width: 16rem;
+  height: 8px;
+  margin: 8px 0 0;
+  overflow: hidden;
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-fire-deep) 45%, transparent);
 }
 
-@keyframes lp-streak-num-in {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
+.lp-streak-moment__fill {
+  display: block;
+  height: 100%;
+  width: var(--streak-fill, 0%);
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-fire-pale);
+  transform-origin: left center;
+  transform: scaleX(0);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__num.is-from {
-    animation: lp-streak-fade-out 420ms ease both;
-  }
-
-  .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__num.is-to {
-    transform: none;
-    animation: lp-streak-fade-in 420ms ease both;
-  }
-
-  .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__logo,
-  .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__day-mark.is-won {
-    animation: lp-streak-fade-in 280ms ease both;
-  }
+.lp-streak-moment.is-final .lp-streak-moment__fill,
+.lp-streak-moment.is-cta .lp-streak-moment__fill {
+  transform: scaleX(1);
+  transition: transform 700ms var(--lp-ease-out);
 }
 
-@keyframes lp-streak-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.lp-streak-moment__did-it {
+  margin: 12px 0 0;
+  font-size: var(--lp-type-ui-lg);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--lp-surface);
+  opacity: 0;
 }
 
-@keyframes lp-streak-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+.lp-streak-moment.is-cta .lp-streak-moment__did-it,
+.lp-streak-moment.is-final .lp-streak-moment__did-it {
+  opacity: 1;
+}
+
+.lp-streak-moment__spacer {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.lp-streak-moment__actions {
+  position: relative;
+  z-index: 3;
+  flex: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(24px);
+  margin: 0;
+}
+
+.lp-streak-moment.is-cta .lp-streak-moment__actions {
+  animation: lp-streak-fade-up 0.4s var(--lp-ease-spring) forwards;
+}
+
+.lp-streak-moment__share {
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-surface);
+  color: var(--lp-fire);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-ink) 15%, transparent);
+}
+
+.lp-streak-moment__share:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 transparent;
+}
+
+.lp-streak-moment__continue {
+  border: 0;
+  background: transparent;
+  color: var(--lp-surface);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 12px;
+  min-height: 44px;
+  opacity: 0.92;
+}
+
+.lp-streak-moment.is-final {
+  background: var(--lp-fire);
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__fireball {
+  display: none;
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__digit.is-old {
+  display: none;
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__digit.is-new {
+  transform: none;
+  opacity: 1;
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__sub,
+.lp-streak-moment.is-final .lp-streak-moment__week,
+.lp-streak-moment.is-final .lp-streak-moment__actions {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-streak-moment.is-final[data-record="true"] .lp-streak-moment__record {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__today {
+  background: var(--lp-fire);
+  color: var(--lp-surface);
+}
+
+.lp-streak-moment.is-final .lp-streak-moment__runner {
+  display: none;
+}
+
+/* Commit / reminder cards sit over the flood as light cards */
+.lp-streak-moment.is-card-mode {
+  background: color-mix(in srgb, var(--lp-paper) 88%, transparent);
+  justify-content: center;
+}
+
+.lp-streak-moment.is-card-mode .lp-streak-moment__flood {
+  display: none;
 }
 
 .lp-streak-moment__panel {
   position: relative;
   z-index: 1;
   pointer-events: auto;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   width: 100%;
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp-streak-moment__panel.is-card {
+  flex: 0 1 auto;
   max-width: calc(360px - 32px);
+  margin: 0 auto;
 }
 
 .lp-streak-moment__panel .lp-streak-moment__card {
@@ -366,49 +871,6 @@
   color: var(--lp-muted);
 }
 
-.lp-streak-moment__meta {
-  margin: 16px 0 0;
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--lp-ink);
-}
-
-.lp-streak-moment__track {
-  width: auto;
-  height: 8px;
-  margin: 8px 0 0;
-  overflow: hidden;
-  border-radius: var(--lp-radius-pill);
-  background: var(--lp-border);
-}
-
-.lp-streak-moment__fill {
-  display: block;
-  height: 100%;
-  width: var(--streak-fill, 0%);
-  border-radius: var(--lp-radius-pill);
-  background: var(--lp-green);
-  transform-origin: left center;
-  transform: scaleX(0);
-}
-
-.lp-streak-moment.is-done .lp-streak-moment__fill {
-  transform: scaleX(1);
-}
-
-.lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__fill {
-  animation: lp-streak-fill-in 700ms var(--lp-ease-out) 200ms both;
-}
-
-.lp-streak-moment__did-it {
-  margin: 12px 0 0;
-  font-size: 1.125rem;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--lp-ink);
-}
-
 .lp-streak-moment__skip {
   display: flex;
   align-items: center;
@@ -425,24 +887,6 @@
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 0.15em;
-  cursor: pointer;
-}
-
-.lp-streak-moment__share {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: var(--lp-tap);
-  margin-top: 8px;
-  padding: 0 1rem;
-  border: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius-pill);
-  background: var(--lp-surface);
-  color: var(--lp-ink);
-  font-family: var(--lp-font-ui);
-  font-size: 1rem;
-  font-weight: 800;
   cursor: pointer;
 }
 
@@ -473,44 +917,6 @@
   text-align: center;
   overflow: hidden;
 }
-
-.lp-streak-moment__confetti {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.lp-streak-moment__confetti span {
-  position: absolute;
-  top: -8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  opacity: 0;
-}
-
-.lp-streak-moment__confetti span:nth-child(3n + 1) { background: var(--lp-green); }
-.lp-streak-moment__confetti span:nth-child(3n + 2) { background: var(--lp-green-deep); }
-.lp-streak-moment__confetti span:nth-child(3n) { background: var(--lp-border); }
-
-.lp-streak-moment.is-goal.is-animating:not(.is-done) .lp-streak-moment__confetti span {
-  animation: lp-streak-confetti-fall 1400ms ease both;
-}
-
-.lp-streak-moment__confetti span:nth-child(1) { left: 8%; animation-delay: 80ms; }
-.lp-streak-moment__confetti span:nth-child(2) { left: 18%; animation-delay: 160ms; }
-.lp-streak-moment__confetti span:nth-child(3) { left: 28%; animation-delay: 40ms; }
-.lp-streak-moment__confetti span:nth-child(4) { left: 38%; animation-delay: 220ms; }
-.lp-streak-moment__confetti span:nth-child(5) { left: 48%; animation-delay: 120ms; }
-.lp-streak-moment__confetti span:nth-child(6) { left: 58%; animation-delay: 200ms; }
-.lp-streak-moment__confetti span:nth-child(7) { left: 68%; animation-delay: 60ms; }
-.lp-streak-moment__confetti span:nth-child(8) { left: 78%; animation-delay: 180ms; }
-.lp-streak-moment__confetti span:nth-child(9) { left: 12%; animation-delay: 260ms; }
-.lp-streak-moment__confetti span:nth-child(10) { left: 42%; animation-delay: 300ms; }
-.lp-streak-moment__confetti span:nth-child(11) { left: 72%; animation-delay: 140ms; }
-.lp-streak-moment__confetti span:nth-child(12) { left: 88%; animation-delay: 100ms; }
 
 .lp-streak-moment__notif {
   display: flex;
@@ -588,25 +994,64 @@
   margin-top: 0;
 }
 
-@keyframes lp-streak-fill-in {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+.lp-streak-moment__goal-label {
+  display: block;
+  margin: 16px 0 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
 }
 
-@keyframes lp-streak-confetti-fall {
-  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
-  12% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(420px) rotate(180deg); }
+.lp-streak-moment__goal-title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--lp-ink);
+  overflow-wrap: anywhere;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-streak-moment.is-animating:not(.is-done) .lp-streak-moment__fill {
-    animation: none;
-    transform: scaleX(1);
+  .lp-streak-moment.is-shaking,
+  .lp-streak-moment.is-flying .lp-streak-moment__fireball,
+  .lp-streak-moment.is-avatar .lp-streak-moment__avatar-wrap,
+  .lp-streak-moment.is-flipping .lp-streak-moment__digit.is-old,
+  .lp-streak-moment.is-flipping .lp-streak-moment__digit.is-new,
+  .lp-streak-moment.is-running .lp-streak-moment__runner,
+  .lp-streak-moment__ember,
+  .lp-streak-moment__spark-bit,
+  .lp-streak-moment__fire,
+  .lp-streak-moment__glow,
+  .lp-streak-moment__today.is-pop {
+    animation: none !important;
   }
 
-  .lp-streak-moment.is-goal.is-animating:not(.is-done) .lp-streak-moment__confetti span {
-    animation: none;
-    opacity: 0;
+  .lp-streak-moment__flood {
+    transition: none !important;
+  }
+
+  .lp-streak-moment.is-final .lp-streak-moment__flood {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .lp-streak-moment__fire {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
+
+  .lp-streak-moment__glow {
+    transform: none !important;
+  }
+
+  .lp-streak-moment__ember {
+    display: none !important;
+  }
+
+  .lp-streak-moment.is-final .lp-streak-moment__fill {
+    transition: none;
+    transform: scaleX(1);
   }
 }

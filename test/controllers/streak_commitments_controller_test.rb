@@ -122,7 +122,7 @@ class StreakCommitmentsControllerTest < ActionDispatch::IntegrationTest
       get dashboard_path
       assert_response :success
       assert_select ".lp-streak-moment__did-it", count: 0
-      assert_select ".lp-streak-moment__sub", text: I18n.t("climb.streak_moment.days_in_a_row")
+      assert_select ".lp-streak-moment__sub", text: I18n.t("climb.streak_moment.day_streak")
     end
   end
 
