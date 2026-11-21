@@ -1,4 +1,5 @@
-<%# locals: habit, photo_today (optional) %>
+<%# locals: habit, photo_today (optional)
+    Layout (photo Today): icon | name+meta | action (tick on right for yes/no, +1+⋯ for countable). %>
 <% photo_today = local_assigns.fetch(:photo_today, false) %>
 <% local_day = current_user.local_today %>
 <% ctx = habit_today_amount_context(habit, on: local_day)
@@ -36,69 +37,48 @@
     data-basic-today-client-today-id-value="<%= dom_id(habit, :today) %>"
     data-basic-today-client-show-pct-value="<%= ctx[:show_pct] %>"
     <% end %>>
-  <% if binary %>
-    <div class="lp-dash-habit__r1 lp-dash-habit__r1--binary-tick">
-      <% if ctx[:done] %>
-        <% completion = habit.completion_for(local_day) %>
-        <span class="lp-today-v2-row__check lp-today-v2-row__check--display" aria-hidden="true">
-          <span class="lp-today-v2-row__tick-slot"><span class="lp-today-v2-row__box is-won"></span></span>
-        </span>
-        <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
-          <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
-        </span>
-        <div class="lp-dash-habit__nm">
-          <% if habit.identity_label.present? %>
-            <p class="lp-habit-identity"><%= habit.identity_label %></p>
-          <% end %>
-          <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
-          <%= render "dashboard/dash_habit_today_meta", habit: habit %>
-        </div>
-        <%= button_to t("dash.battlefield.undo"),
-              completion_path(completion),
-              method: :delete,
-              class: "lp-today-row__undo",
-              aria: { label: "#{t('dash.battlefield.undo')} #{habit.name}" },
-              form: {
-                class: "lp-today-v2-row__check-form",
-                data: { turbo: true, turbo_stream: true }
-              } %>
-      <% else %>
-        <%= button_to completions_path(habit_id: habit.id),
-              method: :post,
-              form: {
-                class: "lp-today-v2-row__check-form",
-                data: habit_win_form_data
-              },
-              class: "lp-today-v2-row__check",
-              aria: { label: t("dash.battlefield.win_battle", title: habit.name) } do %>
-          <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
-        <% end %>
-        <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
-          <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
-        </span>
-        <div class="lp-dash-habit__nm">
-          <% if habit.identity_label.present? %>
-            <p class="lp-habit-identity"><%= habit.identity_label %></p>
-          <% end %>
-          <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
-          <%= render "dashboard/dash_habit_today_meta", habit: habit %>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="lp-dash-habit__r1">
-      <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
-        <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
-      </span>
-      <div class="lp-dash-habit__nm">
-        <% if habit.identity_label.present? %>
-          <p class="lp-habit-identity"><%= habit.identity_label %></p>
-        <% end %>
-        <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
-        <%= render "dashboard/dash_habit_today_meta", habit: habit %>
-      </div>
+  <div class="lp-dash-habit__r1<%= ' lp-dash-habit__r1--binary-tick' if binary %>">
+    <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
+      <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
+    </span>
 
-      <div class="lp-dash-habit__act">
+    <div class="lp-dash-habit__nm">
+      <% if habit.identity_label.present? %>
+        <p class="lp-habit-identity"><%= habit.identity_label %></p>
+      <% end %>
+      <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
+      <%= render "dashboard/dash_habit_today_meta", habit: habit %>
+    </div>
+
+    <div class="lp-dash-habit__act">
+      <% if binary %>
+        <% if ctx[:done] %>
+          <% completion = habit.completion_for(local_day) %>
+          <span class="lp-today-v2-row__check lp-today-v2-row__check--display" aria-hidden="true">
+            <span class="lp-today-v2-row__tick-slot"><span class="lp-today-v2-row__box is-won"></span></span>
+          </span>
+          <%= button_to t("dash.battlefield.undo"),
+                completion_path(completion),
+                method: :delete,
+                class: "lp-today-row__undo",
+                aria: { label: "#{t('dash.battlefield.undo')} #{habit.name}" },
+                form: {
+                  class: "lp-today-v2-row__check-form",
+                  data: { turbo: true, turbo_stream: true }
+                } %>
+        <% else %>
+          <%= button_to completions_path(habit_id: habit.id),
+                method: :post,
+                form: {
+                  class: "lp-today-v2-row__check-form",
+                  data: habit_win_form_data
+                },
+                class: "lp-today-v2-row__check",
+                aria: { label: t("dash.battlefield.win_battle", title: habit.name) } do %>
+            <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
+          <% end %>
+        <% end %>
+      <% else %>
         <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
 
         <details class="lp-dash-habit__menu" data-tcard-menu-target="details">
@@ -137,9 +117,9 @@
                   sheet_target: true %>
           </details>
         </div>
-      </div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 
   <%= render "dashboard/dash_habit_today_segs", habit: habit %>
   <% if quantity %>

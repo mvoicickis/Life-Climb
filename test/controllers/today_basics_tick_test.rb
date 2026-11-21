@@ -22,23 +22,27 @@ class TodayBasicsTickTest < ActionDispatch::IntegrationTest
     )
   end
 
-  test "binary basic uses battle tick not I did it pill" do
+  test "binary basic uses battle tick on the right not I did it pill" do
     get dashboard_path
     assert_response :success
 
     row = "##{dom_id(@binary, :today)}"
-    assert_select "#{row}.is-binary-tick .lp-today-v2-row__check", count: 1
+    assert_select "#{row}.is-binary-tick .lp-dash-habit__act .lp-today-v2-row__check", count: 1
+    assert_select "#{row} .lp-dash-habit__r1 > .lp-today-v2-row__check", count: 0
+    assert_select "#{row} .lp-dash-habit__r1 > form.lp-today-v2-row__check-form", count: 0
     assert_select "#{row} .lp-dash-habit__qb.is-big", count: 0
     assert_select "#{row} form[data-juicy-feedback-win-not-saved-value=?]",
                   I18n.t("dash.battlefield.win_not_saved")
     assert_select "#{row} .lp-dash-habit__sig--tile", count: 1
     assert_select "##{dom_id(@binary, :today_segs)}", count: 1
 
-    assert_select "##{dom_id(@pages, :today)} .lp-dash-habit__qb.is-big", count: 1
-    assert_select "##{dom_id(@pages, :today)} .lp-dash-habit__sig--tile", count: 1
-    assert_select "##{dom_id(@pages, :today)} .lp-dash-habit__dots", count: 1
+    pages = "##{dom_id(@pages, :today)}"
+    assert_select "#{pages} .lp-dash-habit__act .lp-dash-habit__qb.is-big", count: 1
+    assert_select "#{pages} .lp-dash-habit__sig--tile", count: 1
+    assert_select "#{pages} .lp-dash-habit__act .lp-dash-habit__dots", count: 1
     assert_select "##{dom_id(@pages, :today_segs)}.lp-dash-habit__segs i", minimum: 1
   end
+
 
   test "binary basic meta omits percent chip" do
     post completions_path(habit_id: @binary.id)

@@ -289,9 +289,9 @@ module ApplicationHelper
   # More specific categories win (language before generic "study").
   def habit_sigil(habit)
     case habit_sigil_icon(habit)
-    when "users" then "🗣"
-    when "sprout" then "🥾"
-    when "bolt" then "💪"
+    when "speech" then "🗣"
+    when "footsteps" then "🥾"
+    when "dumbbell" then "💪"
     when "self" then "🧘"
     when "drop" then "💧"
     when "moon" then "🛏"
@@ -299,20 +299,21 @@ module ApplicationHelper
     when "book" then "📖"
     when "coin" then "💰"
     when "clock" then "⏱"
-    else "✦"
+    when "sprout" then "🌱"
+    else "🌱"
     end
   end
 
-  # Line-icon name for Today Habits (maps to shared/lp_icon).
+  # Line-icon name for Today Habits (maps to shared/lp_icon). Never "check".
   def habit_sigil_icon(habit)
     name = habit.name.to_s.downcase
     unit = habit.unit.to_s.downcase
     blob = "#{unit} #{name}"
 
-    return "users" if name.match?(/german|spanish|french|italian|language|duolingo|\bduo\b|speak|vocab|anki/) ||
-                      unit.match?(/duo|word|phrase|lesson|flashcard/)
-    return "sprout" if blob.match?(/step|walk|hike|run|jog|mile|km\b/)
-    return "bolt" if blob.match?(/rep|push.?up|pull.?up|squat|lift|workout|exercise|gym|plank|burpee/)
+    return "speech" if name.match?(/german|spanish|french|italian|language|duolingo|\bduo\b|speak|vocab|anki/) ||
+                       unit.match?(/duo|word|phrase|lesson|flashcard/)
+    return "footsteps" if blob.match?(/step|walk|hike|run|jog|mile|km\b/)
+    return "dumbbell" if blob.match?(/rep|push.?up|pull.?up|squat|lift|workout|exercise|gym|plank|burpee/)
     return "self" if blob.match?(/meditat|breath|mindful|yoga|zen/)
     return "drop" if blob.match?(/water|hydrat|glass|cup|\bdrink\b/)
     return "moon" if blob.match?(/sleep|bedtime|\brest\b|\bnaps?\b/)
@@ -322,7 +323,7 @@ module ApplicationHelper
     return "clock" if unit.match?(/\bmins?\b|\bminutes?\b|\bhours?\b/) ||
                       name.match?(/\bminute|\bhour\b|\btimer\b/)
 
-    "check"
+    "sprout"
   end
 
   def today_greeting_for(user)
