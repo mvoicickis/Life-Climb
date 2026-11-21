@@ -23,7 +23,7 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
     assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
-    assert_select ".lp-today-all-clear", text: I18n.t("dash.battlefield.add_battle.all_clear"), count: 1
+    assert_select ".lp-today-all-clear", count: 0
     assert_select ".lp-today-battlefield-end-day__btn", count: 0
   end
 
@@ -173,11 +173,11 @@ class TodayAllClearCtaTest < ActionDispatch::IntegrationTest
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
     assert_response :ok
-    assert_match "lp-today-all-clear", response.body
+    assert_match %(action="update" target="today-battlefield-all-clear-line"), response.body
 
     post complete_daily_todo_path(@todo), as: :turbo_stream
     assert_response :ok
     assert_match %(action="update" target="today-battlefield-end-day-host"), response.body
-    assert_no_match "lp-today-all-clear", response.body
+    assert_match %(action="update" target="today-battlefield-all-clear-line"), response.body
   end
 end

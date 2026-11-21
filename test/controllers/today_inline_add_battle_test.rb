@@ -149,7 +149,8 @@ class TodayInlineAddBattleTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-battlefield-add-host .lp-today-add-battle.is-all-clear", count: 1
     assert_select "#today-battlefield-end-day-host .lp-today-empty-cta__pill", count: 0
-    assert_select ".lp-today-all-clear", count: 1
+    assert_select ".lp-today-all-clear", count: 0
+    assert_select "#today-battlefield-all-clear-line", count: 1
   end
 
   test "day full returns an error and does not leave a silent battle" do
