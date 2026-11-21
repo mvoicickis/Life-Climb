@@ -43,10 +43,18 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     assert_match(/dataset\[PAD_FLAG\]\s*=\s*collapsed \? ["']true["'] : ["']false["']/, @source)
   end
 
-  test "collapsed CSS folds the kicker and respects reduced motion" do
+  test "collapsed CSS tightens the goal strip and camp bar fill uses ink" do
     assert_match(/\.lp-today-group-card--goal\.is-collapsed/, @css)
     assert_match(
-      /\.lp-today-group-card--goal\.is-collapsed\s+\.lp-today-goal-kicker-row\s*\{[^}]*max-height:\s*0/m,
+      /\.lp-today-group-card--goal\.is-collapsed\s+\.lp-today-goal-strip__title\s*\{[^}]*font-size:/m,
+      @css
+    )
+    assert_match(
+      /\.lp-today-group-card--goal \.lp-today-camp-bar__fill\s*\{[^}]*background:\s*var\(--lp-ink\)/m,
+      @css
+    )
+    assert_match(
+      /\.lp-today-group-card--goal \.lp-today-camp-bar\.is-glow\s*\{[^}]*var\(--lp-ink\)/m,
       @css
     )
     assert_includes @css, "is-no-transition"

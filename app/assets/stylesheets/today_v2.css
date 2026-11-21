@@ -1627,11 +1627,32 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   z-index: 30;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.45rem 0.75rem 0.5rem;
+  gap: 0;
+  padding: 0.35rem 0.5rem;
   min-width: 0;
   overflow: visible;
-  transition: padding 0.18s ease, gap 0.18s ease;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: padding var(--lp-motion-base) var(--lp-ease-out);
+}
+
+.lp-dash.is-today-v2.is-today-photo #today-battlefield-field .lp-today-group-card {
+  background: color-mix(in srgb, var(--lp-surface) var(--lp-card-surface-pct), transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo #today-battlefield-field .lp-today-group-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  }
 }
 
 /* Open menu: keep the top-bar dropdown above Battles / Habits / dim. */
@@ -1640,138 +1661,118 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed {
-  gap: 0.25rem;
-  padding-top: 0.35rem;
-  padding-bottom: 0.4rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact {
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-goal-strip {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 0;
-  min-width: 0;
-  transition: gap 0.18s ease;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-v2-header--compact {
-  gap: 0.25rem;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker-row {
-  display: flex;
-  min-width: 0;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--lp-space-2);
-  max-height: 2.75rem;
-  opacity: 1;
-  overflow: visible;
-  transition: max-height 0.18s ease, opacity 0.18s ease, margin 0.18s ease;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
-  flex: 1;
+  gap: 0.5rem;
+  margin: 0;
   min-width: 0;
-  margin: 0;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--lp-muted);
-  line-height: 1.2;
+  transition: gap var(--lp-motion-base) var(--lp-ease-out);
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-kicker-row {
-  max-height: 0;
-  opacity: 0;
-  margin: 0;
-  overflow: hidden;
-  pointer-events: none;
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-strip {
+  gap: 0.35rem;
 }
 
 /* First paint after turbo header replace — no expand→collapse animation. */
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition,
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-v2-header--compact,
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-goal-kicker-row {
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-no-transition .lp-today-goal-strip {
   transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-header--compact,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker-row {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-goal-strip {
     transition: none;
   }
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__name {
-  margin: 0;
-  min-width: 0;
-  max-width: 100%;
-  font-size: 1.15rem;
-  font-weight: 900;
-  line-height: 1.2;
-  color: var(--lp-ink);
-  white-space: normal;
-  overflow-wrap: anywhere;
-  overflow: visible;
-  text-overflow: unset;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-camp {
-  margin: 0;
-  min-width: 0;
-  max-width: 100%;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--lp-muted);
-  line-height: 1.25;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-width: 0;
-  width: 100%;
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar {
+.lp-dash.is-today-v2.is-today-photo .lp-today-goal-strip__title {
   flex: 1 1 auto;
   min-width: 0;
-  height: 0.28rem;
+  margin: 0;
+  font-size: var(--lp-type-17);
+  font-weight: var(--lp-weight-900);
+  line-height: 1.2;
+  color: var(--lp-ink);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  transition: font-size var(--lp-motion-base) var(--lp-ease-out);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-strip__title {
+  font-size: var(--lp-type-15);
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar {
+  flex: 0 1 4.5rem;
+  min-width: 2.5rem;
+  max-width: 5.5rem;
+  height: 0.35rem;
   border-radius: var(--lp-radius-pill);
-  background: var(--lp-border);
+  background: color-mix(in srgb, var(--lp-border) 70%, var(--lp-paper));
   overflow: hidden;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill {
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill {
   display: block;
   height: 100%;
   width: 100%;
   border-radius: inherit;
-  background: var(--lp-green-deep);
+  background: var(--lp-ink);
   transform-origin: left center;
   transform: scaleX(var(--lp-fill, 0));
   transition: transform var(--lp-motion-slow) var(--lp-ease-out);
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-won {
-  flex: none;
-  margin: 0;
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: var(--lp-muted);
-  line-height: 1;
-  white-space: nowrap;
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar.is-glow {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-ink) 18%, transparent);
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-won[hidden] {
-  display: none !important;
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill {
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill.is-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in srgb, var(--lp-surface) 55%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: lp-today-bar-shine 0.7s var(--lp-ease-out);
+}
+
+@keyframes lp-today-bar-shine {
+  to { transform: translateX(120%); }
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-goal-strip__camp-of,
+.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-of {
+  flex: none;
+  margin: 0;
+  font-size: var(--lp-type-13);
+  font-weight: var(--lp-weight-800);
+  color: var(--lp-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-risk {
@@ -2204,16 +2205,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 /* Photo Today — inline add battle row */
-.lp-dash.is-today-v2.is-today-photo .lp-today-all-clear {
-  margin: 0;
-  padding: 0.55rem 0.85rem 0.15rem;
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--lp-green-deep);
-  line-height: 1.3;
-  text-align: center;
-}
-
 .lp-dash.is-today-v2.is-today-photo .lp-today-add-battle {
   display: flex;
   flex-direction: column;
@@ -3202,89 +3193,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   z-index: 20;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card {
-  background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid color-mix(in srgb, var(--lp-surface) 65%, var(--lp-border));
-  border-radius: var(--lp-radius-card);
-  box-shadow: var(--lp-shadow-card);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-kicker {
-  font-size: var(--lp-type-13);
-  font-weight: var(--lp-weight-800);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lp-muted);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-v2-header__name {
-  font-size: var(--lp-type-17);
-  font-weight: var(--lp-weight-900);
-  line-height: 1.2;
-  color: var(--lp-ink);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-camp {
-  font-size: var(--lp-type-15);
-  font-weight: var(--lp-weight-800);
-  color: var(--lp-muted);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 8px 0 10px;
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-of {
-  margin: 0;
-  font-size: var(--lp-type-13);
-  font-weight: var(--lp-weight-800);
-  color: var(--lp-muted);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-won {
-  margin: 0;
-  font-size: var(--lp-type-28);
-  font-weight: var(--lp-weight-900);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--lp-ink);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar {
-  height: 14px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--lp-border) 70%, var(--lp-paper));
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill {
-  display: block;
-  height: 100%;
-  width: calc(var(--lp-fill, 0) * 100%);
-  border-radius: inherit;
-  background: var(--lp-green);
-  position: relative;
-  overflow: hidden;
-  transition: width var(--lp-motion-slow) var(--lp-ease-out);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar.is-glow {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-green) 35%, transparent);
-}
-.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill.is-shine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    color-mix(in srgb, var(--lp-surface) 55%, transparent) 50%,
-    transparent 70%
-  );
-  transform: translateX(-120%);
-  animation: lp-today-bar-shine 0.7s var(--lp-ease-out);
-}
-@keyframes lp-today-bar-shine {
-  to { transform: translateX(120%); }
-}
-
 .lp-today-plus-fly {
   position: absolute;
   z-index: 40;
@@ -3311,7 +3219,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 @media (prefers-reduced-motion: reduce) {
   .lp-today-plus-fly,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill.is-shine::after {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill.is-shine::after {
     animation: none !important;
   }
 }
@@ -3370,12 +3278,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   box-shadow: 0 0 0 color-mix(in srgb, var(--lp-green-deep) 82%, var(--lp-ink));
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-today-all-clear {
-  margin: 8px 0 0;
-  font-size: var(--lp-type-15);
-  font-weight: var(--lp-weight-800);
-  color: var(--lp-green-deep);
-}
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-won {
   margin-top: 8px;
   margin-bottom: 0;

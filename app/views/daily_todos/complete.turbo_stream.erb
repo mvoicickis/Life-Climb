@@ -54,11 +54,7 @@
   <div id="today-end-of-day-host"></div>
 <% end %>
 
-<%= turbo_stream.update "today-battlefield-all-clear-line" do %>
-  <%= render "dashboard/dash_battlefield_all_clear_line",
-        health: @battlefield_health,
-        journey: @journey %>
-<% end %>
+<%= turbo_stream.update "today-battlefield-all-clear-line" do %><% end %>
 
 <%= turbo_stream.update "today-battlefield-end-day-host" do %>
   <%= render "dashboard/dash_battlefield_all_clear_actions", health: @battlefield_health %>

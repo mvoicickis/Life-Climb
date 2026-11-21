@@ -15,7 +15,7 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert @camp.present?
   end
 
-  test "header shows camp name and won count when battles are won" do
+  test "header shows slim goal strip with camp bar when battles are won" do
     clear_camp_battles!
     first = add_camp_battle!("Fight one", position: 0)
     add_camp_battle!("Fight two", position: 1)
@@ -24,27 +24,28 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 1
-    assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title
+    assert_select "#today-battlefield-header .lp-today-goal-strip", count: 1
+    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 0
+    assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-of", text: /Camp \d+ of \d+/
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.5']", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-won:not([hidden])", count: 1
-    assert_match(/\b1\b/, css_select("#today-battlefield-header .lp-today-camp-won").text)
+    assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
     assert_select "#today-battlefield-header .lp-today-v2-hp-bar", count: 0
     assert_select "#today-battlefield-count", count: 1
   end
 
-  test "won label stays hidden at zero" do
+  test "open camp shows camp bar and camp of label" do
     clear_camp_battles!
     add_camp_battle!("Open fight", position: 0)
 
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title
+    assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-of", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
   end
 
   test "goal card carries the collapse controller for scroll pad" do
@@ -65,24 +66,21 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 1
+    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 0
     assert_select "#today-battlefield-header .lp-today-v2-header__name", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
   end
 
-  test "long goal and camp names stay inside the card" do
+  test "long goal title stays inside the strip" do
     long_goal = "Build a calm software studio that helps families every week"
-    long_camp = "Ship the first tiny paid tool for parents this season"
     @goal.update!(title: long_goal)
-    @camp.update!(title: long_camp)
 
     get dashboard_path
     assert_response :success
 
     assert_select "#today-battlefield-header .lp-today-v2-header__name[title=?]", long_goal
-    assert_select "#today-battlefield-header .lp-today-goal-camp[title=?]", long_camp
   end
 
   test "win and undo streams update camp bar percent" do
@@ -94,20 +92,17 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.0']", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
 
     post complete_daily_todo_path(todo), as: :turbo_stream
     assert_response :ok
     assert_match %(target="today-battlefield-header"), response.body
     assert_match(/lp-today-camp-bar__fill[^>]*--lp-fill: 0\.5/, response.body)
-    assert_match(/lp-today-camp-won(?![^>]*\bhidden\b)/, response.body)
     assert first.reload.completed_at.present?
 
     post complete_daily_todo_path(todo), as: :turbo_stream
     assert_response :ok
     assert_match %(target="today-battlefield-header"), response.body
     assert_match(/lp-today-camp-bar__fill[^>]*--lp-fill: 0\.0/, response.body)
-    assert_match(/lp-today-camp-won[^>]*\bhidden\b/, response.body)
     assert_nil first.reload.completed_at
   end
 
