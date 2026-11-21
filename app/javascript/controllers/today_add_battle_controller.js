@@ -11,10 +11,16 @@ export default class extends Controller {
 
   connect() {
     this.saving = false
+    this._onDocPointer = this.onDocPointer.bind(this)
+    document.addEventListener("pointerdown", this._onDocPointer, true)
     if (this.hasFieldTarget) {
       this.grow()
       this.sync()
     }
+  }
+
+  disconnect() {
+    document.removeEventListener("pointerdown", this._onDocPointer, true)
   }
 
   expand(event) {
@@ -29,6 +35,39 @@ export default class extends Controller {
       this.grow()
       this.sync()
     })
+  }
+
+  collapse() {
+    if (this.saving) return
+    if (this.hasFieldTarget && this.fieldTarget.value.trim().length > 0) return
+    if (this.hasComposerTarget) {
+      this.composerTarget.hidden = true
+      this.composerTarget.setAttribute("hidden", "")
+    }
+    if (this.hasExpandTarget) {
+      this.expandTarget.hidden = false
+      this.expandTarget.removeAttribute("hidden")
+    }
+    if (this.hasFieldTarget) this.fieldTarget.value = ""
+    this.hideFail()
+    this.sync()
+  }
+
+  blurField() {
+    // Defer so a tap on ADD still registers before collapse.
+    window.setTimeout(() => {
+      if (!this.element.contains(document.activeElement)) this.collapse()
+    }, 0)
+  }
+
+  onDocPointer(event) {
+    if (!this.isOpen()) return
+    if (this.element.contains(event.target)) return
+    this.collapse()
+  }
+
+  isOpen() {
+    return this.hasComposerTarget && !this.composerTarget.hidden
   }
 
   sync() {
@@ -51,6 +90,12 @@ export default class extends Controller {
   }
 
   keydown(event) {
+    if (event.key === "Escape") {
+      event.preventDefault()
+      if (this.hasFieldTarget) this.fieldTarget.value = ""
+      this.collapse()
+      return
+    }
     if (event.key !== "Enter" || event.shiftKey) return
     event.preventDefault()
     this.save()

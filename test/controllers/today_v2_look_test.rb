@@ -101,7 +101,24 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-battlefield-add-host .lp-today-add-battle", count: 1
     assert_select "#today-battlefield-add-host .lp-today-add-battle__expand", count: 1
+    assert_select "#today-battlefield-add-host [data-action*='blur->today-add-battle#blurField']", count: 1
     assert_select "a.lp-today-v2-mountain-link.is-add-on-mountain", count: 0
+  end
+
+  test "Today uses one SVG chevron for Habits and Won today" do
+    enable_habits!
+    @user.habits.destroy_all
+    @user.habits.create!(
+      name: "Water", unit: "cups", points: 5, frequency: "daily",
+      active: true, show_on_home: true, quantity_checkin: true, goal: 8
+    )
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    get dashboard_path
+    assert_response :success
+    assert_select ".lp-dash-anytime__chev.lp-chevron", count: 1
+    assert_select "#today-battlefield-won-shell .lp-today-v2-won__chev.lp-chevron", count: 1
+    assert_no_match(/[▾›◂]/, css_select(".lp-dash-anytime__chev, .lp-today-v2-won__chev").text)
   end
 
   test "quantity basic shows goal until logged then amount" do

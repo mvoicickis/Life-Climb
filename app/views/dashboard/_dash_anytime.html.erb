@@ -15,7 +15,7 @@
             data-action="click->today-habits#toggle"
             aria-expanded="false">
       <%= render "dashboard/dash_anytime_collapsed_title", habits: habits %>
-      <span class="lp-dash-anytime__chev" data-today-habits-target="chevron" aria-hidden="true">›</span>
+      <%= render "shared/chevron", class_name: "lp-chevron lp-dash-anytime__chev" %>
     </button>
     <%= render "dashboard/dash_anytime_survived_count", habits: habits %>
 

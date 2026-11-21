@@ -43,6 +43,9 @@
         <span class="lp-today-v2-row__check lp-today-v2-row__check--display" aria-hidden="true">
           <span class="lp-today-v2-row__tick-slot"><span class="lp-today-v2-row__box is-won"></span></span>
         </span>
+        <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
+          <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
+        </span>
         <div class="lp-dash-habit__nm">
           <% if habit.identity_label.present? %>
             <p class="lp-habit-identity"><%= habit.identity_label %></p>
@@ -70,6 +73,9 @@
               aria: { label: t("dash.battlefield.win_battle", title: habit.name) } do %>
           <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
         <% end %>
+        <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
+          <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
+        </span>
         <div class="lp-dash-habit__nm">
           <% if habit.identity_label.present? %>
             <p class="lp-habit-identity"><%= habit.identity_label %></p>
@@ -77,16 +83,11 @@
           <b id="<%= dom_id(habit, :today_title) %>" class="lp-dash-tcard__title"><%= habit.name %></b>
           <%= render "dashboard/dash_habit_today_meta", habit: habit %>
         </div>
-        <% unless photo_today %>
-          <span class="lp-dash-habit__sig lp-dash-habit__sig--trail" aria-hidden="true">
-            <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
-          </span>
-        <% end %>
       <% end %>
     </div>
   <% else %>
     <div class="lp-dash-habit__r1">
-      <span class="lp-dash-habit__sig" aria-hidden="true">
+      <span class="lp-dash-habit__sig<%= " lp-dash-habit__sig--tile" if photo_today %>" aria-hidden="true">
         <%= render "shared/lp_icon", name: habit_sigil_icon(habit), class_name: "lp-icon is-inline" %>
       </span>
       <div class="lp-dash-habit__nm">
