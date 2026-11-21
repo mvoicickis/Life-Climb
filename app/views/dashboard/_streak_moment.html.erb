@@ -25,6 +25,8 @@
      else
        t("climb.streak_moment.aria", count: moment.days)
      end %>
+<% streak_fire_path = Rails.root.join("app/assets/animations/streak_fire.json") %>
+<% streak_lottie_url = streak_fire_path.exist? ? asset_path("animations/streak_fire.json") : nil %>
 
 <div class="lp-streak-moment<%= ' is-goal' if kind == :goal %>"
      data-controller="streak-moment"
@@ -34,6 +36,7 @@
      data-streak-moment-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
      data-streak-moment-commit-cta-template-value="<%= t('climb.streak_moment.commit_to_template') %>"
      data-streak-moment-share-text-value="<%= moment.share_text %>"
+     <% if streak_lottie_url.present? %>data-streak-moment-lottie-url-value="<%= streak_lottie_url %>"<% end %>
      data-record="<%= moment.new_record ? 'true' : 'false' %>"
      role="dialog"
      aria-label="<%= aria %>"

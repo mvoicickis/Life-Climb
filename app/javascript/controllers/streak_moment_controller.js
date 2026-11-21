@@ -39,12 +39,14 @@ export default class extends Controller {
     declineUrl: String,
     notSaved: String,
     commitCtaTemplate: String,
-    shareText: String
+    shareText: String,
+    lottieUrl: { type: String, default: "" }
   }
 
   connect() {
     this._busy = false
     this._timers = []
+    this._lottie = null
     this.element.hidden = true
     this.element.classList.add("is-queued")
     enqueue("streak", {
@@ -65,6 +67,7 @@ export default class extends Controller {
 
   disconnect() {
     this.clearTimers()
+    this.destroyLottie()
     release("streak")
   }
 
@@ -72,6 +75,7 @@ export default class extends Controller {
     this.clearTimers()
     this.resetPhases()
     const reduce = prefersReducedMotion()
+    this.maybeLoadLottie(reduce)
     if (reduce) {
       this.showFinal()
       return
@@ -359,5 +363,58 @@ export default class extends Controller {
     if (!this.hasErrorTarget) return
     this.errorTarget.hidden = true
     this.errorTarget.textContent = ""
+  }
+
+  // Optional: only runs when data-streak-moment-lottie-url-value is set
+  // (partial checks app/assets/animations/streak_fire.json exists).
+  async maybeLoadLottie(reduce) {
+    const url = this.lottieUrlValue
+    if (!url || !this.hasLottieTarget || !this.hasFireTarget) return
+
+    try {
+      const [{ default: lottie }, res] = await Promise.all([
+        import("lottie-web"),
+        fetch(url, { credentials: "same-origin" })
+      ])
+      if (!res.ok) return
+      const data = await res.json()
+      this.destroyLottie()
+      this.element.classList.add("is-lottie")
+      this.fireTarget.style.setProperty("--fire-size", "1.6")
+      this.fireTarget.style.setProperty("--fire-y", "-24px")
+      this._lottie = lottie.loadAnimation({
+        container: this.lottieTarget,
+        renderer: "svg",
+        loop: !reduce,
+        autoplay: !reduce,
+        animationData: data
+      })
+      if (reduce) {
+        this._lottie.addEventListener("DOMLoaded", () => {
+          try {
+            const last = Math.max(0, this._lottie.totalFrames - 1)
+            this._lottie.goToAndStop(last, true)
+          } catch (_err) {
+            // optional
+          }
+        })
+      }
+    } catch (_err) {
+      this.element.classList.remove("is-lottie")
+      this.destroyLottie()
+    }
+  }
+
+  destroyLottie() {
+    if (this._lottie) {
+      try {
+        this._lottie.destroy()
+      } catch (_err) {
+        // optional
+      }
+      this._lottie = null
+    }
+    if (this.hasLottieTarget) this.lottieTarget.innerHTML = ""
+    this.element.classList.remove("is-lottie")
   }
 }
