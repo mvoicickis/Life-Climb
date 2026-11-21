@@ -84,7 +84,9 @@ class DashboardDeveloperHabitsTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-dash-anytime__count", text: "3/3"
+    assert_select "#basics_collapsed_title", text: "Habits · 3 done"
+    assert_select "#basics_survived_count", text: "3"
+    assert_no_match(%r{3/3}, css_select("#basics_survived_count").text)
   end
 
   test "developer sees plain amount for growth habit without stretch goal" do
