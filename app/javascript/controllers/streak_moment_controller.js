@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { enqueue, release } from "lib/lp_overlay_queue"
 
 // Streak moment overlay on Today — celebrate / progress / goal, then optional commit + reminder.
 export default class extends Controller {
@@ -13,6 +14,21 @@ export default class extends Controller {
 
   connect() {
     this._busy = false
+    this.element.hidden = true
+    this.element.classList.add("is-queued")
+    enqueue("streak", {
+      open: () => this.reveal(),
+      onFail: () => release("streak")
+    })
+  }
+
+  reveal() {
+    if (!this.element.isConnected) {
+      release("streak")
+      return
+    }
+    this.element.hidden = false
+    this.element.classList.remove("is-queued")
     this.element.classList.add("is-animating")
     this._doneTimer = window.setTimeout(() => {
       this.element.classList.remove("is-animating")
@@ -22,10 +38,12 @@ export default class extends Controller {
 
   disconnect() {
     window.clearTimeout(this._doneTimer)
+    release("streak")
   }
 
   dismiss(event) {
     event?.preventDefault?.()
+    release("streak")
     this.element.remove()
   }
 
