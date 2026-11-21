@@ -94,6 +94,12 @@
     <% end %>
   <% end %>
 
+  <% if @stream_finale.present? %>
+    <%= turbo_stream.update "today-finale-host" do %>
+      <%= render "dashboard/today_finale", finale: @stream_finale %>
+    <% end %>
+  <% end %>
+
   <% if @stream_streak_moment.present? %>
     <%= turbo_stream.update "streak-moment-host" do %>
       <%= render "dashboard/streak_moment", moment: @stream_streak_moment %>

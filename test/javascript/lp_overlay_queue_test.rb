@@ -8,6 +8,7 @@ class LpOverlayQueueTest < ActiveSupport::TestCase
     @source = Rails.root.join("app/javascript/lib/lp_overlay_queue.js").read
     @climb = Rails.root.join("app/javascript/controllers/climb_reward_controller.js").read
     @streak = Rails.root.join("app/javascript/controllers/streak_moment_controller.js").read
+    @finale = Rails.root.join("app/javascript/controllers/today_finale_controller.js").read
     @push = Rails.root.join("app/javascript/controllers/push_offer_controller.js").read
     @show = Rails.root.join("app/views/dashboard/show_v2.html.erb").read
   end
@@ -21,7 +22,9 @@ class LpOverlayQueueTest < ActiveSupport::TestCase
     assert_includes @source, "export function release"
   end
 
-  test "climb reward and streak and push wait on the queue" do
+  test "finale streak climb and push wait on the queue" do
+    assert_includes @finale, 'enqueue("finale"'
+    assert_includes @finale, 'release("finale")'
     assert_includes @climb, 'enqueue("climb_reward"'
     assert_includes @climb, 'release("climb_reward")'
     assert_includes @streak, 'enqueue("streak"'

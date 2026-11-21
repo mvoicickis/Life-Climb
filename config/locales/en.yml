@@ -156,6 +156,14 @@ en:
       share_text:
         one: "%{title} — %{done}/%{total} battle won · %{hp} health held on Life Climb"
         other: "%{title} — %{done}/%{total} battles won · %{hp} health held on Life Climb"
+    finale:
+      aria: "All battles won"
+      title: "ALL BATTLES WON!"
+      goal_line: "%{goal} moved forward 🏔️"
+      battles_today: "Battles today"
+      camp_of: "Camp %{current} of %{total}"
+      share: "Share my day"
+      continue: "Continue"
     end_of_day:
       title: "End of day"
       goal_label: "Your goal"
