@@ -75,7 +75,8 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#today-battlefield-header .lp-today-goal-strip", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
-    assert_select "#today-battlefield-header .lp-today-camp-of", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.0']", count: 1
     assert_select "#today-battlefield-header .lp-today-v2-risk", count: 0
