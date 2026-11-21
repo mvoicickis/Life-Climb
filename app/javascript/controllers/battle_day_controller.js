@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { syncAppBadge } from "app_badge"
 import { burst, consumeTapBurst, sound } from "lib/lp_feedback"
+import { flyPlusOneIntoGoalBar, todayGoalBarFill } from "lib/battle_win_feedback"
 
 // Subtle juice for Complete Battle — confetti, ring close, AP float, camp nudge.
 export default class extends Controller {
@@ -96,11 +97,14 @@ export default class extends Controller {
     this.element.classList.add("is-celebrating")
     if (this.bossValue) this.element.classList.add("is-boss")
     const tapBurst = consumeTapBurst()
+    // One confetti burst total — tap-time juicy already burst when markTapBurst ran.
     if (!tapBurst) burst(this.element, { density: "dash", boss: this.bossValue })
     this.nudgeReward()
     this.nudgeGoal()
     this.closeRing()
     this.nudgeCamp()
+    // Wait a frame so the replaced goal-header bar is in the DOM.
+    window.requestAnimationFrame(() => flyPlusOneIntoGoalBar())
     sound(this.bossValue ? "win_boss" : "win", { boss: this.bossValue })
     window.setTimeout(() => {
       this.element.classList.remove("is-celebrating", "is-boss")
@@ -126,6 +130,14 @@ export default class extends Controller {
   }
 
   nudgeGoal() {
+    const photoFill = todayGoalBarFill()
+    if (photoFill) {
+      photoFill.closest(".lp-today-camp-bar")?.classList.add("is-glow")
+      window.setTimeout(() => {
+        photoFill.closest(".lp-today-camp-bar")?.classList.remove("is-glow")
+      }, 900)
+      return
+    }
     if (!this.hasGoalBarTarget) return
     this.goalBarTarget.classList.add("is-glow", "is-bounce")
     if (this.hasGoalPctTarget) this.goalPctTarget.classList.add("is-glow")

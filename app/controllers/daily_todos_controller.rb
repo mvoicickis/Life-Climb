@@ -187,6 +187,7 @@ class DailyTodosController < ApplicationController
       @stream_win_number = 0
       @stream_push_offer_eligible = false
       @stream_streak_moment = nil
+      @stream_finale = nil
     else
       @stream_ap_gained = @result.awarded.to_i
       @stream_celebrate = true
@@ -198,6 +199,13 @@ class DailyTodosController < ApplicationController
       @stream_streak_moment = Today::StreakMoment.present_for!(
         user: current_user,
         goal_title: goal_title
+      )
+      @stream_finale = Today::FinaleMoment.present_for!(
+        user: current_user,
+        health: @battlefield_health,
+        goal_title: goal_title,
+        camp: @goal_card_camp,
+        share_text: @recap_share
       )
     end
   end

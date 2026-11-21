@@ -1,0 +1,63 @@
+<%# locals: finale (Today::FinaleMoment::Result) %>
+<% finale = local_assigns[:finale] %>
+<% return if finale.blank? %>
+<div class="lp-today-finale"
+     data-controller="today-finale"
+     data-today-finale-share-text-value="<%= finale.share_text %>"
+     data-today-finale-share-toast-value="<%= t('dash.battlefield.share_toast') %>"
+     data-today-finale-battles-value="<%= finale.battles_today %>"
+     role="dialog"
+     aria-label="<%= t('dash.finale.aria') %>"
+     hidden>
+  <div class="lp-today-finale__flood" aria-hidden="true"></div>
+  <div class="lp-today-finale__body">
+    <div class="lp-today-finale__hero">
+      <div class="lp-today-finale__sparkles" aria-hidden="true"></div>
+      <div class="lp-today-finale__ring" aria-hidden="true"></div>
+      <% if current_user.character_image.present? %>
+        <%= image_tag current_user.character_image,
+              class: "lp-today-finale__animal",
+              alt: "",
+              width: 168,
+              height: 168,
+              decoding: "async" %>
+      <% else %>
+        <%= image_tag "avatars/fox.webp",
+              class: "lp-today-finale__animal",
+              alt: "",
+              width: 168,
+              height: 168,
+              decoding: "async" %>
+      <% end %>
+    </div>
+    <h2 class="lp-today-finale__title"><%= t("dash.finale.title") %></h2>
+    <% if finale.goal_title.present? %>
+      <p class="lp-today-finale__line"><%= t("dash.finale.goal_line", goal: finale.goal_title) %></p>
+    <% end %>
+    <div class="lp-today-finale__stats">
+      <div class="lp-today-finale__stat">
+        <strong data-today-finale-target="battlesCount">0</strong>
+        <span><%= t("dash.finale.battles_today") %></span>
+      </div>
+      <div class="lp-today-finale__stat is-camp">
+        <strong><%= t("dash.finale.camp_of", current: finale.camp_current, total: [ finale.camp_total, 1 ].max) %></strong>
+        <div class="lp-today-camp-bar lp-today-finale__mini-bar" aria-hidden="true">
+          <span class="lp-today-camp-bar__fill" style="--lp-fill: <%= finale.camp_fill %>"></span>
+        </div>
+      </div>
+    </div>
+    <div class="lp-today-finale__spacer" aria-hidden="true"></div>
+  </div>
+  <div class="lp-today-finale__actions">
+    <button type="button"
+            class="lp-btn-3d is-white is-block lp-today-finale__share"
+            data-action="today-finale#share">
+      <%= t("dash.finale.share") %>
+    </button>
+    <button type="button"
+            class="lp-today-finale__continue"
+            data-action="today-finale#continue">
+      <%= t("dash.finale.continue") %>
+    </button>
+  </div>
+</div>

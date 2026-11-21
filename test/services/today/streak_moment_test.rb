@@ -137,10 +137,43 @@ module Today
       end
     end
 
+    test "new record updates longest_streak_days and flags once" do
+      travel_to zone_time(2026, 8, 6, 12) do
+        skip unless @user.has_attribute?(:longest_streak_days)
+
+        @user.update!(longest_streak_days: 1)
+        complete_one_shot!("Yesterday", on: @today - 1)
+        complete_one_shot!("Today", on: @today)
+
+        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        assert moment.new_record
+        assert_equal 2, @user.reload.longest_streak_days
+
+        @user.update!(last_streak_moment_on: nil)
+        moment2 = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        assert_nil moment2
+      end
+    end
+
+    test "tied longest streak is not a new record" do
+      travel_to zone_time(2026, 8, 6, 12) do
+        skip unless @user.has_attribute?(:longest_streak_days)
+
+        complete_one_shot!("Yesterday", on: @today - 1)
+        complete_one_shot!("Today", on: @today)
+        @user.update!(longest_streak_days: 2, last_streak_moment_on: nil)
+
+        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        assert_not moment.new_record
+        assert_equal 2, @user.reload.longest_streak_days
+      end
+    end
+
     private
 
     def reset_streak_state!
       attrs = { last_streak_moment_on: nil }
+      attrs[:longest_streak_days] = 0 if @user.has_attribute?(:longest_streak_days)
       if @user.has_attribute?(:streak_commitment_target_days)
         attrs.merge!(
           streak_commitment_target_days: nil,

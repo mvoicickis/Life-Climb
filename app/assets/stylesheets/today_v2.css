@@ -2078,6 +2078,52 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   color: var(--lp-ink-soft);
 }
 
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 8px 8px;
+  gap: 12px;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal {
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 4px var(--lp-surface),
+    0 8px 18px color-mix(in srgb, var(--lp-ink) 14%, transparent);
+  animation: lp-today-ready-bob 1.8s ease-in-out infinite;
+  transform-origin: 60% 80%;
+}
+
+@keyframes lp-today-ready-bob {
+  0%,
+  100% {
+    transform: scale(1.2) rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: scale(1.2) rotate(6deg) translateY(-6px);
+  }
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready__title {
+  margin: 0;
+  font-size: var(--lp-type-ui-lg);
+  font-weight: 900;
+  color: var(--lp-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal {
+    animation: none;
+  }
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__wrap {
   padding: 1rem;
 }
@@ -3215,6 +3261,59 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   width: calc(var(--lp-fill, 0) * 100%);
   border-radius: inherit;
   background: var(--lp-green);
+  position: relative;
+  overflow: hidden;
+  transition: width var(--lp-motion-slow) var(--lp-ease-out);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar.is-glow {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lp-green) 35%, transparent);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill.is-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in srgb, var(--lp-surface) 55%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: lp-today-bar-shine 0.7s var(--lp-ease-out);
+}
+@keyframes lp-today-bar-shine {
+  to { transform: translateX(120%); }
+}
+
+.lp-today-plus-fly {
+  position: absolute;
+  z-index: 40;
+  pointer-events: none;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--lp-green-deep);
+  text-shadow:
+    -1px -1px 0 var(--lp-surface),
+     1px -1px 0 var(--lp-surface),
+    -1px  1px 0 var(--lp-surface),
+     1px  1px 0 var(--lp-surface);
+  -webkit-text-stroke: 1.5px var(--lp-surface);
+  paint-order: stroke fill;
+  animation: lp-today-plus-fly 0.9s var(--lp-ease-out) forwards;
+  will-change: transform, opacity;
+}
+@keyframes lp-today-plus-fly {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.85); }
+  15% { opacity: 1; transform: translate(0, -4px) scale(1.08); }
+  100% { opacity: 0; transform: translate(var(--dx, 0px), var(--dy, -120px)) scale(0.75); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-today-plus-fly,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-camp-bar__fill.is-shine::after {
+    animation: none !important;
+  }
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-row {

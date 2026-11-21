@@ -1,0 +1,298 @@
+/* Today all-battles-won finale — green flood over Today (mockup rounds 6–13). */
+
+.lp-dash.is-today-v2.is-today-photo #today-finale-host:not(:empty) {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.lp-today-finale {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: var(--lp-surface);
+  color: var(--lp-surface);
+  overflow: hidden;
+  pointer-events: auto;
+  font-family: var(--lp-font-ui);
+}
+
+.lp-today-finale[hidden] {
+  display: none;
+}
+
+.lp-today-finale__flood {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 26%,
+    color-mix(in srgb, var(--lp-green) 70%, var(--lp-surface)),
+    var(--lp-green) 42%,
+    var(--lp-green-deep) 78%
+  );
+  opacity: 0;
+  transform: scale(0.15);
+  transition:
+    opacity 280ms var(--lp-ease-out),
+    transform 320ms var(--lp-ease-out);
+}
+
+.lp-today-finale.is-impact .lp-today-finale__flood,
+.lp-today-finale.is-final .lp-today-finale__flood {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lp-today-finale__body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lp-today-finale__hero {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin-top: 56px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.lp-today-finale__sparkles {
+  position: absolute;
+  inset: -18px;
+  pointer-events: none;
+  z-index: 3;
+  background-image:
+    radial-gradient(circle at 8% 22%, var(--lp-surface) 0 3px, transparent 4px),
+    radial-gradient(circle at 92% 18%, var(--lp-surface) 0 2.5px, transparent 3.5px),
+    radial-gradient(circle at 14% 78%, var(--lp-surface) 0 2.5px, transparent 3.5px),
+    radial-gradient(circle at 86% 82%, var(--lp-surface) 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 2%, var(--lp-surface) 0 2.5px, transparent 3.5px),
+    radial-gradient(circle at 50% 96%, var(--lp-surface) 0 2px, transparent 3px),
+    radial-gradient(circle at 2% 50%, var(--lp-surface) 0 2px, transparent 3px),
+    radial-gradient(circle at 98% 48%, var(--lp-surface) 0 2.5px, transparent 3.5px),
+    radial-gradient(circle at 28% 10%, color-mix(in srgb, var(--lp-surface) 80%, var(--lp-green)) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 72% 12%, color-mix(in srgb, var(--lp-surface) 80%, var(--lp-green)) 0 1.5px, transparent 2.5px);
+  animation: lp-today-finale-sparkle 1.6s ease-in-out infinite;
+  opacity: 1;
+}
+
+@keyframes lp-today-finale-sparkle {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.lp-today-finale__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 4px var(--lp-surface),
+    0 0 28px color-mix(in srgb, var(--lp-green) 45%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lp-today-finale__animal {
+  width: 168px;
+  height: 168px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 999px;
+  position: relative;
+  z-index: 2;
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 4px var(--lp-surface),
+    0 10px 22px color-mix(in srgb, var(--lp-ink) 18%, transparent);
+  animation: lp-today-finale-bounce 0.7s var(--lp-ease-spring) both;
+}
+
+@keyframes lp-today-finale-bounce {
+  0% {
+    transform: translateY(40px) rotate(-8deg) scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(-8px) rotate(4deg) scale(1.26);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) rotate(-2deg) scale(1.2);
+  }
+}
+
+.lp-today-finale__title {
+  margin: 24px 0 0;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--lp-surface);
+  max-width: 100%;
+}
+
+.lp-today-finale__line {
+  margin: 8px 0 0;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 800;
+  color: var(--lp-surface);
+  max-width: 18rem;
+}
+
+.lp-today-finale__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 24px 0 0;
+  flex: none;
+}
+
+.lp-today-finale__stat {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-card);
+  padding: 12px;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--lp-border) 70%, var(--lp-ink));
+  min-height: 84px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lp-today-finale__stat strong {
+  display: block;
+  font-size: var(--lp-type-ui-lg);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--lp-green-deep);
+  overflow-wrap: anywhere;
+}
+
+.lp-today-finale__stat span {
+  display: block;
+  font-size: var(--lp-type-ui-sm);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--lp-muted);
+}
+
+.lp-today-finale__stat.is-camp strong {
+  font-size: var(--lp-type-ui-md);
+}
+
+.lp-today-finale__mini-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lp-border) 55%, var(--lp-paper));
+  overflow: hidden;
+}
+
+.lp-today-finale__mini-bar .lp-today-camp-bar__fill {
+  display: block;
+  height: 100%;
+  width: calc(100% * var(--lp-fill, 0));
+  border-radius: inherit;
+  background: var(--lp-green);
+}
+
+.lp-today-finale__spacer {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.lp-today-finale__actions {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  margin: 0;
+}
+
+.lp-today-finale__share.lp-btn-3d.is-white {
+  width: 100%;
+  min-height: 56px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+  background: var(--lp-surface);
+  color: var(--lp-green-deep);
+  border: 0;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-ink) 15%, transparent);
+}
+
+.lp-today-finale__share.lp-btn-3d.is-white:active,
+.lp-today-finale__share.lp-btn-3d.is-white.is-pressed {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 color-mix(in srgb, var(--lp-ink) 15%, transparent);
+}
+
+.lp-today-finale__continue {
+  border: 0;
+  background: transparent;
+  color: var(--lp-surface);
+  font-family: inherit;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  min-height: 44px;
+  cursor: pointer;
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-today-finale__flood,
+  .lp-today-finale__animal,
+  .lp-today-finale__sparkles {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .lp-today-finale.is-final .lp-today-finale__flood {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .lp-today-finale.is-final .lp-today-finale__animal {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  .lp-today-finale__sparkles {
+    opacity: 0.85;
+  }
+}

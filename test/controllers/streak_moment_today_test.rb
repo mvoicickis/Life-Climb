@@ -37,7 +37,7 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
       get dashboard_path
       assert_response :success
       assert_select ".lp-streak-moment"
-      assert_select ".lp-streak-moment__num.is-to", text: "2"
+      assert_select ".lp-streak-moment__digit.is-new", text: "2"
       assert_equal @today, @user.reload.last_streak_moment_on
 
       get dashboard_path
@@ -46,7 +46,7 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "Monday streak strip shows Sunday and Monday wins with today last" do
+  test "Monday streak strip shows run pill for today and neutral futures" do
     monday = Date.new(2026, 8, 10)
     sunday = monday - 1
     travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
@@ -69,12 +69,11 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
 
       get dashboard_path
       assert_response :success
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day", count: 7
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day-mark.is-won", count: 2
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day.is-today", count: 1
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day:last-child.is-today"
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day:last-child .lp-streak-moment__day-mark.is-won"
-      assert_select ".lp-streak-moment__week .lp-streak-moment__day:nth-child(6) .lp-streak-moment__day-mark.is-won"
+      assert_select ".lp-streak-moment__week-labels span", count: 7
+      assert_select ".lp-streak-moment__pill", count: 1
+      assert_select ".lp-streak-moment__today", text: "✓"
+      assert_select ".lp-streak-moment__future", count: 6
+      assert_select ".lp-streak-moment__day-mark", count: 0
     end
   end
 end

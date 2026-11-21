@@ -632,6 +632,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_140000) do
     t.datetime "next_app_open_at"
     t.integer "push_offer_show_days", default: 0, null: false
     t.date "last_streak_moment_on"
+    t.date "last_finale_on"
+    t.integer "longest_streak_days", default: 0, null: false
     t.integer "streak_commitment_target_days"
     t.date "streak_commitment_started_on"
     t.integer "streak_commit_declines", default: 0, null: false

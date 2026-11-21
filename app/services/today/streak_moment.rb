@@ -16,6 +16,8 @@ module Today
       :offer_commit,
       :offered_targets,
       :default_target,
+      :new_record,
+      :share_text,
       keyword_init: true
     )
 
@@ -58,7 +60,7 @@ module Today
       return nil if days < 2
       return nil unless won_today?
 
-      week = Stats::BattleWins.call(user: @user).last_7_days
+      week = Stats::BattleWins.call(user: @user).this_week
       target = @commitment.target_days
       kind = kind_for(days: days, target: target)
       offered = @commitment.offered_targets(days_in_a_row: days)
@@ -67,7 +69,12 @@ module Today
       show_targets = offer_commit || (kind == :goal && offered.any? && @commitment.declines < 2)
       fill_pct = fill_pct_for(days: days, target: target)
 
-      @user.update!(last_streak_moment_on: today)
+      new_record =
+        @user.has_attribute?(:longest_streak_days) &&
+        days > @user.longest_streak_days.to_i
+      attrs = { last_streak_moment_on: today }
+      attrs[:longest_streak_days] = days if new_record
+      @user.update!(attrs)
 
       result = Result.new(
         kind: kind,
@@ -79,7 +86,13 @@ module Today
         fill_pct: fill_pct,
         offer_commit: offer_commit,
         offered_targets: show_targets ? offered : [],
-        default_target: show_targets ? @commitment.default_target(offered) : nil
+        default_target: show_targets ? @commitment.default_target(offered) : nil,
+        new_record: new_record,
+        share_text: I18n.t(
+          "climb.streak_moment.share_text",
+          count: days,
+          goal: goal_title.to_s.presence || I18n.t("dash.active_goal_fallback")
+        )
       )
 
       # Goal shows once: clear commitment in the same request after building the result.
