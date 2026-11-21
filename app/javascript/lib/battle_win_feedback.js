@@ -1,10 +1,101 @@
+import { prefersReducedMotion } from "lib/lp_feedback"
+
 export function turboSubmitOk(event) {
   return event.detail?.success === true
 }
 
 // Points still store on win; never float "+N Battle strength" / "+50 AP" on the row.
 export function floatBattleStrength(_host, _amount, _label) {
-  // no-op — PR2 adds "+1 into the goal bar" instead
+  // no-op — PR2 flies "+1" into the goal bar instead
+}
+
+const WIN_TICK_ORIGIN_KEY = "lpWinTickOrigin"
+const WIN_TICK_TTL_MS = 4000
+
+/** Capture the tick's screen rect at tap — streams may replace the row. */
+export function storeWinTickOrigin(el) {
+  if (!el || prefersReducedMotion()) return
+  const box = el.getBoundingClientRect()
+  if (!box.width && !box.height) return
+  const payload = {
+    at: Date.now(),
+    x: box.left + box.width / 2,
+    y: box.top + box.height / 2
+  }
+  try {
+    window.sessionStorage.setItem(WIN_TICK_ORIGIN_KEY, JSON.stringify(payload))
+  } catch (_err) {
+    window.__lpWinTickOrigin = payload
+  }
+}
+
+export function consumeWinTickOrigin() {
+  let raw = null
+  try {
+    raw = window.sessionStorage.getItem(WIN_TICK_ORIGIN_KEY)
+    window.sessionStorage.removeItem(WIN_TICK_ORIGIN_KEY)
+  } catch (_err) {
+    raw = window.__lpWinTickOrigin ? JSON.stringify(window.__lpWinTickOrigin) : null
+    window.__lpWinTickOrigin = null
+  }
+  if (!raw) return null
+  try {
+    const data = JSON.parse(raw)
+    if (!data || Date.now() - Number(data.at || 0) > WIN_TICK_TTL_MS) return null
+    return { x: Number(data.x), y: Number(data.y) }
+  } catch (_err) {
+    return null
+  }
+}
+
+export function todayGoalBarFill() {
+  return document.querySelector("[data-today-goal-bar]")
+}
+
+/** Fly "+1" from stored tick into the camp bar, then shine. */
+export function flyPlusOneIntoGoalBar() {
+  if (prefersReducedMotion()) {
+    shineGoalBar()
+    return
+  }
+  const origin = consumeWinTickOrigin()
+  const bar = todayGoalBarFill()
+  if (!origin || !bar) {
+    shineGoalBar()
+    return
+  }
+
+  const shell = document.querySelector(".lp-today-photo-shell") || document.getElementById("today-dash-root") || document.body
+  const shellBox = shell.getBoundingClientRect()
+  const to = bar.getBoundingClientRect()
+  const startX = origin.x - shellBox.left
+  const startY = origin.y - shellBox.top
+  const endX = to.left - shellBox.left + to.width * 0.72
+  const endY = to.top - shellBox.top + to.height * 0.5
+
+  const chip = document.createElement("span")
+  chip.className = "lp-today-plus-fly"
+  chip.textContent = "+1"
+  chip.setAttribute("aria-hidden", "true")
+  chip.style.left = `${startX}px`
+  chip.style.top = `${startY}px`
+  chip.style.setProperty("--dx", `${endX - startX}px`)
+  chip.style.setProperty("--dy", `${endY - startY}px`)
+  if (getComputedStyle(shell).position === "static") shell.style.position = "relative"
+  shell.appendChild(chip)
+  window.setTimeout(() => {
+    chip.remove()
+    shineGoalBar()
+  }, 900)
+}
+
+export function shineGoalBar() {
+  const bar = todayGoalBarFill()
+  if (!bar) return
+  bar.classList.remove("is-shine")
+  void bar.offsetWidth
+  bar.classList.add("is-shine")
+  window.setTimeout(() => bar.classList.remove("is-shine"), 700)
 }
 
 export function rollbackTrailWinRow(row) {
