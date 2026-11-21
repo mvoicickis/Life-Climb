@@ -2078,6 +2078,52 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   color: var(--lp-ink-soft);
 }
 
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 8px 8px;
+  gap: 12px;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal {
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 4px var(--lp-surface),
+    0 8px 18px color-mix(in srgb, var(--lp-ink) 14%, transparent);
+  animation: lp-today-ready-bob 1.8s ease-in-out infinite;
+  transform-origin: 60% 80%;
+}
+
+@keyframes lp-today-ready-bob {
+  0%,
+  100% {
+    transform: scale(1.2) rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: scale(1.2) rotate(6deg) translateY(-6px);
+  }
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-ready__title {
+  margin: 0;
+  font-size: var(--lp-type-ui-lg);
+  font-weight: 900;
+  color: var(--lp-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal {
+    animation: none;
+  }
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__wrap {
   padding: 1rem;
 }

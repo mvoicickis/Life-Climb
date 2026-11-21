@@ -90,6 +90,7 @@ en:
       title: "Battles"
       count: "%{done}/%{total}"
       empty_html: "No battles on Today's list yet.<br>Head to Mountain to open a camp and add a battle."
+      ready_title: "Ready for today?"
       empty_cta:
         start_climb: "Start your climb"
         set_goal: "Set your goal"

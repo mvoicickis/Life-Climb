@@ -39,6 +39,7 @@ export default class extends Controller {
 
   collapse() {
     if (this.saving) return
+    if (this.element.classList.contains("is-empty-attract")) return
     if (this.hasFieldTarget && this.fieldTarget.value.trim().length > 0) return
     if (this.hasComposerTarget) {
       this.composerTarget.hidden = true
