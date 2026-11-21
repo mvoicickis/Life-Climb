@@ -46,7 +46,7 @@ class FixedViewportTodayTest < ActionDispatch::IntegrationTest
     assert_match(/overflow-y:\s*auto/, pad)
     assert_match(/overscroll-behavior-y:\s*contain/, pad)
     assert_match(
-      /padding:\s*calc\(0\.5rem \+ env\(safe-area-inset-top,\s*0px\)\) 12px calc\(5\.5rem \+ env\(safe-area-inset-bottom\)\)/,
+      /padding:\s*calc\(0\.5rem \+ env\(safe-area-inset-top,\s*0px\)\) 16px calc\(5\.5rem \+ env\(safe-area-inset-bottom\)\)/,
       pad
     )
 

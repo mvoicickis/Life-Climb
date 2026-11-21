@@ -51,6 +51,12 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     assert dropdown.present?
     assert_match(/background:\s*var\(--lp-surface\)/, dropdown)
     refute_match(/color-mix\(in srgb, var\(--lp-surface\) 94%/, dropdown)
+
+    top = css[/\.lp-dash\.is-today-v2\.is-today-photo \.lp-other-mountains-dropdown--top\s*\{[^}]+\}/m]
+    assert top.present?
+    assert_match(/left:\s*0/, top)
+    assert_match(/right:\s*0/, top)
+    refute_match(/left:\s*auto/, top)
   end
 
   test "planet button is hidden when other mountains have zero open battles" do
