@@ -87,7 +87,7 @@ en:
       risk_open:
         one: "1 battle waiting"
         other: "%{count} battles waiting"
-      title: "⚔ Today's battlefield"
+      title: "Battles"
       count: "%{done}/%{total}"
       empty_html: "No battles on Today's list yet.<br>Head to Mountain to open a camp and add a battle."
       empty_cta:
@@ -280,7 +280,7 @@ en:
     anytime:
       # Heading drafts: A (shipped) Basics · B Basics · C Anytime
       title: "Habits"
-      collapsed_title: "Habits · %{done}/%{total}"
+      collapsed_title_done: "Habits · %{done} done"
       # Hint drafts: A (shipped) · B "Add whenever today" · C "Habits you can log all day"
       hint: "Log as many times as you like"
       binary_subtitle: "Every day"

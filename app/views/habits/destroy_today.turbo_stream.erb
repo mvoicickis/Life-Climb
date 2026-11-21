@@ -7,6 +7,9 @@
 <% else %>
   <%= turbo_stream.remove dom_id(@habit, :today) %>
 
+  <%= turbo_stream.replace "basics_collapsed_title" do %>
+    <%= render "dashboard/dash_anytime_collapsed_title", habits: @home_habits %>
+  <% end %>
   <%= turbo_stream.replace "basics_survived_count" do %>
     <%= render "dashboard/dash_anytime_survived_count", habits: @home_habits %>
   <% end %>

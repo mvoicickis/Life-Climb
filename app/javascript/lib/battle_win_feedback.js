@@ -2,16 +2,9 @@ export function turboSubmitOk(event) {
   return event.detail?.success === true
 }
 
-export function floatBattleStrength(host, amount, label) {
-  if (!host || amount <= 0) return
-
-  const chip = document.createElement("span")
-  chip.className = "lp-juicy-ap"
-  chip.setAttribute("aria-hidden", "true")
-  chip.textContent = `+${amount} ${label}`
-  host.appendChild(chip)
-  requestAnimationFrame(() => chip.classList.add("is-shown"))
-  window.setTimeout(() => chip.remove(), 900)
+// Points still store on win; never float "+N Battle strength" / "+50 AP" on the row.
+export function floatBattleStrength(_host, _amount, _label) {
+  // no-op — PR2 adds "+1 into the goal bar" instead
 }
 
 export function rollbackTrailWinRow(row) {

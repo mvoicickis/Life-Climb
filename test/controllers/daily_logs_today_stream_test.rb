@@ -43,6 +43,7 @@ class DailyLogsTodayStreamTest < ActionDispatch::IntegrationTest
     assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_meta)}"/, response.body)
     assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_quick)}"/, response.body)
     assert_match(/turbo-stream[^>]*target="#{dom_id(@habit, :today_segs)}"/, response.body)
+    assert_match(/turbo-stream[^>]*target="basics_collapsed_title"/, response.body)
     assert_match(/turbo-stream[^>]*target="basics_survived_count"/, response.body)
     assert_includes response.body, "basic-sheet-log"
     assert_match(/12/, response.body)

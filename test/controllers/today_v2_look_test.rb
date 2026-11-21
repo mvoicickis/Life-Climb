@@ -35,6 +35,9 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
+    assert_select "#today-battlefield-field .lp-today-v2-field__title", text: "Battles"
+    assert_no_match(/Today's battlefield/, response.body)
+    assert_no_match(/⚔/, css_select("#today-battlefield-field .lp-today-v2-field__title").text)
     assert_select "#today-battlefield-rows .lp-today-v2-row__title", minimum: 1
     assert_select "#today-battlefield-rows .lp-today-v2-row__camp", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row__camp-inline", count: 0
@@ -140,7 +143,10 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select ".lp-dash-anytime[data-controller~='today-habits']", count: 1
     assert_select ".lp-dash-anytime__body[hidden]", count: 1
+    assert_select "#basics_collapsed_title", text: "Habits"
     assert_select "#basics_survived_count", count: 1
+    assert_no_match(%r{Habits · 0}, response.body)
+    assert_no_match(%r{0/\d+}, css_select("#basics_survived_count").text)
   end
 
   test "all won line and won fold stay inside battles card" do
