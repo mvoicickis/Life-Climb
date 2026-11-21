@@ -74,6 +74,8 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select "#today-battlefield-add-host .lp-today-add-battle.is-empty-attract", count: 1
+    assert_select ".lp-today-ready", count: 1
+    assert_select ".lp-today-ready__title", text: I18n.t("dash.battlefield.ready_title")
     assert_select ".lp-today-empty-cta__pill", count: 0
   end
 

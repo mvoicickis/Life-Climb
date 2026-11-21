@@ -106,6 +106,6 @@ class FeelFoundationContractTest < ActiveSupport::TestCase
     assert_includes @application_js, "hardwareConcurrency"
     assert_includes @mountain_css, "html.lp-low-power"
     assert_includes @streak_css, "transform: scaleX(0)"
-    assert_includes @streak_css, "to { transform: scaleX(1); }"
+    assert_includes @streak_css, "transform: scaleX(1)"
   end
 end

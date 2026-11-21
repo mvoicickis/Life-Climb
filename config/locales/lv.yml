@@ -886,6 +886,7 @@ lv:
       risk_cleared: "Viss padarīts."
       risk_empty: "Šodienas sarakstā vēl nav cīņu."
       risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
+      ready_title: "Ready for today?" # TODO: translate
       empty_cta:
         start_climb: "Start your climb" # TODO: translate
         set_goal: "Set your goal" # TODO: translate
@@ -924,6 +925,14 @@ lv:
       next_day: "Nākamā diena"
       share_toast: "Kopsavilkums gatavs."
       share_text: '%{title} — %{done}/%{total} uzvarētas cīņas · %{hp}% veselība LifePoints'
+    finale: # TODO: translate
+      aria: "All battles won"
+      title: "ALL BATTLES WON!"
+      goal_line: "%{goal} moved forward 🏔️"
+      battles_today: "Battles today"
+      camp_of: "Camp %{current} of %{total}"
+      share: "Share my day"
+      continue: "Continue"
     # TODO: translate
     end_of_day:
       goal_label: "Your goal"
@@ -1111,11 +1120,16 @@ lv:
       fresh_start: "Sākas jauns kāpiens"
     streak_moment: # TODO: translate
       days_in_a_row: "days in a row"
+      day_streak: "day streak"
       days_in_a_row_bang: "%{count} days in a row!"
       aria: "%{count} days in a row"
       last_7_days: "Last 7 days"  # TODO: translate
+      this_week: "This week"
       mountain_yours: "The mountain is yours to climb:"
       continue: "Continue"
+      show_it_off: "Show it off"
+      longest: "Your longest climb yet!"
+      share_text: "%{count} day streak on Life Climb — %{goal}"
       day_of: "Day %{n} of %{m}"
       you_did_it: "You did it."
       pick_next: "Pick your next climb"

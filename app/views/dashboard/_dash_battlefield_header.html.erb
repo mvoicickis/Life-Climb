@@ -32,7 +32,9 @@
            aria-valuemax="<%= [ camp_total, 100 ].max %>"
            aria-valuenow="<%= camp_won %>"
            aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
-        <span class="lp-today-camp-bar__fill" style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
+        <span class="lp-today-camp-bar__fill"
+              data-today-goal-bar
+              style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
       </div>
     <% end %>
   </header>

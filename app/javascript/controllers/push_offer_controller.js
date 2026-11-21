@@ -11,6 +11,7 @@ import {
   repairPushSubscriptionIfNeeded,
   requestNotificationPermission
 } from "push_subscription"
+import { enqueue, release } from "lib/lp_overlay_queue"
 
 // Post-win push reminder offer — after celebration when eligible (no subscription, under ask cap).
 export default class extends Controller {
@@ -73,13 +74,17 @@ export default class extends Controller {
     document.removeEventListener("battle-day:celebrate", this._celebrateHandler)
     this.clearDoneTimer()
     this.setPushOfferOpen(false)
+    if (this.offerSource() !== "streak") release("push_offer")
   }
 
   onCelebrate({ celebrate = false, apGained = 0, pushOfferEligible = false } = {}) {
     if (!pushOfferEligible) return
     if (!celebrate && !(Number(apGained) > 0)) return
 
-    window.setTimeout(() => this.prepareOffer(), 1400)
+    enqueue("push_offer", {
+      open: () => this.prepareOffer(),
+      onFail: () => release("push_offer")
+    })
   }
 
   async syncPushEndpointFields() {
@@ -109,11 +114,13 @@ export default class extends Controller {
     if (state.subscribed) {
       console.info("[PushOffer] skip", "subscribed")
       if (this.offerSource() === "streak") this.closeStreakOverlay()
+      else release("push_offer")
       return
     }
     if (state.permission === "denied") {
       console.info("[PushOffer] skip", "denied")
       if (this.offerSource() === "streak") this.closeStreakOverlay()
+      else release("push_offer")
       return
     }
 
@@ -123,14 +130,17 @@ export default class extends Controller {
       const mode = this.cardMode()
       if (mode === "ios_install") {
         console.info("[PushOffer] skip", "ios")
+        release("push_offer")
         return
       }
       if (mode === "unsupported") {
         console.info("[PushOffer] skip", "unsupported")
+        release("push_offer")
         return
       }
       if (mode === "remind" && !this._prefetchPublicKey) {
         console.info("[PushOffer] skip", "no_vapid")
+        release("push_offer")
         return
       }
     }
@@ -631,6 +641,7 @@ export default class extends Controller {
       this.closeStreakOverlay()
       return
     }
+    release("push_offer")
     this.element.hidden = true
     this.element.innerHTML = ""
     this.cardElement = null

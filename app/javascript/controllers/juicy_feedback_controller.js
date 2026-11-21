@@ -5,7 +5,8 @@ import {
   showWinSaveNotice,
   clearWinSaveNotice,
   turboSubmitOk,
-  winSubmitHostFromForm
+  winSubmitHostFromForm,
+  storeWinTickOrigin
 } from "lib/battle_win_feedback"
 import { burst, haptic, markTapBurst, prefersReducedMotion } from "lib/lp_feedback"
 
@@ -56,7 +57,14 @@ export default class extends Controller {
     if (!reduceMotion) {
       this.bounce(host)
       burst(host, { density: "juicy" })
-      if (battleWin) markTapBurst()
+      if (battleWin) {
+        markTapBurst()
+        const tick =
+          rowHost?.querySelector(".lp-today-v2-row__box") ||
+          rowHost?.querySelector(".lp-today-v2-row__check") ||
+          host
+        storeWinTickOrigin(tick)
+      }
       if (popAmount > 0) this.floatHabitPop(host, popAmount)
     }
 

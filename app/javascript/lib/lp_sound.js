@@ -1,4 +1,4 @@
-// Shared win/UI sounds. Oscillator "win" by default; optional asset URLs via meta.
+// Shared win/UI sounds. Oscillator fallbacks by default; optional asset URLs via meta.
 // Unlock AudioContext on first user gesture; play() is no-op when sound is off
 // or prefers-reduced-motion is set.
 
@@ -180,6 +180,38 @@ function playStrategySynth({ boss = false, volume = DEFAULT_VOLUME } = {}) {
   }
 }
 
+function playAllWonSynth(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "triangle", freq: 523, dur: 0.16, vol: 0.1 * scale })
+  window.setTimeout(() => beep({ type: "triangle", freq: 659, dur: 0.18, vol: 0.1 * scale }), 90)
+  window.setTimeout(() => beep({ type: "triangle", freq: 784, dur: 0.28, vol: 0.12 * scale }), 200)
+}
+
+function playStreakWhooshSynth(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "sawtooth", freq: 220, dur: 0.28, vol: 0.06 * scale, slideTo: 520 })
+}
+
+function playStreakTickSynth(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "square", freq: 660, dur: 0.08, vol: 0.07 * scale })
+  window.setTimeout(() => {
+    beep({ type: "square", freq: 880, dur: 0.1, vol: 0.06 * scale })
+  }, 60)
+}
+
+function playCheerSynth(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "triangle", freq: 392, dur: 0.12, vol: 0.08 * scale })
+  window.setTimeout(() => beep({ type: "triangle", freq: 523, dur: 0.14, vol: 0.09 * scale }), 70)
+  window.setTimeout(() => beep({ type: "triangle", freq: 659, dur: 0.2, vol: 0.1 * scale }), 150)
+}
+
+function playTapSynth(volume = DEFAULT_VOLUME) {
+  const scale = (Number.isFinite(volume) ? volume : DEFAULT_VOLUME) / DEFAULT_VOLUME
+  beep({ type: "sine", freq: 720, dur: 0.05, vol: 0.05 * scale })
+}
+
 export function setEnabled(next) {
   enabledOverride = Boolean(next)
   const meta = document.querySelector(`meta[name="${META_ENABLED}"]`)
@@ -203,6 +235,26 @@ export function play(name, { volume = DEFAULT_VOLUME, boss = false } = {}) {
   }
   if (name === "win_boss") {
     playWinSynth({ boss: true, volume: vol })
+    return
+  }
+  if (name === "all_won") {
+    playAllWonSynth(vol)
+    return
+  }
+  if (name === "streak_whoosh" || name === "streak") {
+    playStreakWhooshSynth(vol)
+    return
+  }
+  if (name === "streak_tick") {
+    playStreakTickSynth(vol)
+    return
+  }
+  if (name === "cheer") {
+    playCheerSynth(vol)
+    return
+  }
+  if (name === "tap") {
+    playTapSynth(vol)
     return
   }
   if (name === "strategy" || name === "strategy_boss") {

@@ -20,11 +20,14 @@
          data-today-add-battle-all-clear-value="<%= all_clear %>">
       <button type="button"
               class="lp-today-add-battle__expand"
+              <%= "hidden" if empty_attract %>
               data-today-add-battle-target="expand"
               data-action="click->today-add-battle#expand">
         <%= t("dash.battlefield.add_battle.expand") %>
       </button>
-      <div class="lp-today-add-battle__row" hidden data-today-add-battle-target="composer">
+      <div class="lp-today-add-battle__row<%= " is-open" if empty_attract %>"
+           <%= "hidden" unless empty_attract %>
+           data-today-add-battle-target="composer">
         <textarea class="lp-today-add-battle__field"
                   rows="1"
                   maxlength="<%= StrategyGoal::TITLE_MAX %>"
