@@ -112,7 +112,6 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
       active: true,
       show_on_home: true,
       quantity_checkin: true,
-      stretch_goal: true,
       goal: 8
     )
 

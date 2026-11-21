@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_140000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -637,6 +637,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_233000) do
     t.integer "streak_commit_declines", default: 0, null: false
     t.string "avatar_key"
     t.boolean "sound_enabled", default: true, null: false
+    t.datetime "play_app_seen_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"

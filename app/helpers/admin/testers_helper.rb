@@ -6,11 +6,34 @@ module Admin
       date.strftime("%Y-%m")
     end
 
-    def climbers_calendar_nav_url(month_date, filter:)
-      admin_testers_path(
-        filter: filter,
-        climbers_month: climbers_month_param(month_date)
-      )
+    def testers_index_path(filter:, device:, climbers_month: nil)
+      params = { filter: filter, device: device }
+      params[:climbers_month] = climbers_month_param(climbers_month) if climbers_month.present?
+      admin_testers_path(params)
+    end
+
+    def climbers_calendar_nav_url(month_date, filter:, device:)
+      testers_index_path(filter: filter, device: device, climbers_month: month_date)
+    end
+
+    def tester_device_line(row)
+      segments = []
+      if row.primary_device.blank?
+        segments << t("admin.testers.device.unknown")
+      else
+        segments << t("admin.testers.device.label.#{row.primary_device}")
+      end
+      segments << t("admin.testers.device.play_app") if row.user.play_app_seen_at.present?
+      row.devices.each do |device|
+        next if device == row.primary_device
+
+        segments << t("admin.testers.device.also", label: t("admin.testers.device.short.#{device}"))
+      end
+      segments.join
+    end
+
+    def testers_device_filter_class(active_device, current_device)
+      active_device == current_device ? "lp-admin__btn" : "lp-admin__ghost"
     end
 
     def climbers_calendar_weeks(counts_by_day:, month_start:, today:)

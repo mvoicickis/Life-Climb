@@ -4,6 +4,7 @@ module Admin
   class TestersController < BaseController
     def index
       @filter = Testers::FILTERS.include?(params[:filter].to_s) ? params[:filter].to_s : Testers::FILTER_NEEDS_MESSAGE
+      @device = Testers::DEVICE_FILTERS.include?(params[:device].to_s) ? params[:device].to_s : Testers::DEVICE_FILTER_ALL
       @berlin_today = Testers.berlin_today
       @climbers_month = climbers_month_start
       @climbers_by_day = Testers.counts_by_day(month: @climbers_month)
@@ -14,7 +15,10 @@ module Admin
       end
 
       @today_counts = today_climber_counts
-      @rows = Testers.call(filter: @filter)
+      device_stats = Testers.device_dashboard_stats(berlin_today: @berlin_today)
+      @android_climbed_today = device_stats[:android_climbed_today]
+      @play_app_testers = device_stats[:play_app_testers]
+      @rows = Testers.call(filter: @filter, device: @device)
     end
 
     private
@@ -44,7 +48,8 @@ module Admin
         counts_by_day: @climbers_by_day,
         calendar_month: @climbers_month,
         berlin_today: @berlin_today,
-        filter: @filter
+        filter: @filter,
+        device: @device
       }
     end
   end

@@ -57,6 +57,12 @@ en:
       final: "Final ascent"
       summit: "Summit reached"
     battle_title: "Today's battle"
+    today_bar:
+      greeting_morning: "Good morning, %{name}"
+      greeting_afternoon: "Good afternoon, %{name}"
+      greeting_evening: "Good evening, %{name}"
+      cheered: "%{name} cheered you 🙌"
+      just_now: "just now"
     battlefield:
       progress_label: "Battles done"
       goal_card:
@@ -64,12 +70,6 @@ en:
         camp_bar: "Camp progress"
         camp_of: "Camp %{current} of %{total}"
         won: "%{count} won"
-      today_bar:
-        greeting_morning: "Good morning, %{name}"
-        greeting_afternoon: "Good afternoon, %{name}"
-        greeting_evening: "Good evening, %{name}"
-        cheered: "%{name} cheered you 🙌"
-        just_now: "just now"
       other_mountains:
         title: "Other mountains today"
         open: "Other mountains today"
@@ -3817,6 +3817,29 @@ en:
       filter_label: "Tester filter"
       filter_needs_message: "Needs a message"
       filter_everyone: "Everyone"
+      device_filter_label: "Device filter"
+      device_filter:
+        all: "All"
+        android: "Android"
+        iphone: "iPhone/iPad"
+        computer: "Computer"
+        play: "Play app"
+      climbers_android_today: "Android climbed today: %{count} / %{goal}"
+      play_app_testers:
+        one: "Play app testers: %{count}"
+        other: "Play app testers: %{count}"
+      device:
+        unknown: "—"
+        play_app: " · Play app"
+        also: " · also %{label}"
+        label:
+          android: "🤖 Android"
+          iphone: "🍎 iPhone/iPad"
+          computer: "💻 Computer"
+        short:
+          android: "Android"
+          iphone: "iPhone/iPad"
+          computer: "Computer"
       play_testers_list: "Play testers list ↗"
       signed_up: "Signed up"
       onboarding: "Onboarding"

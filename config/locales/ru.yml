@@ -636,7 +636,12 @@ ru:
       menu_undo: "Undo last add"
     battle_next_kicker: "Отлично — продолжай подъём."
     battle_next_coaching: "Один быстрый вопрос ниже держит гору честной."
-    # TODO: translate
+    today_bar:
+      greeting_morning: "Good morning, %{name}" # TODO: translate
+      greeting_afternoon: "Good afternoon, %{name}" # TODO: translate
+      greeting_evening: "Good evening, %{name}" # TODO: translate
+      cheered: "%{name} cheered you 🙌" # TODO: translate
+      just_now: "just now" # TODO: translate
     battlefield:
       progress_label: "Battles done"  # TODO: translate
       goal_card:
@@ -644,12 +649,6 @@ ru:
         camp_bar: "Camp progress"  # TODO: translate
         won: "%{count} won"  # TODO: translate
         camp_of: "Camp %{current} of %{total}" # TODO: translate
-      today_bar:
-        greeting_morning: "Good morning, %{name}" # TODO: translate
-        greeting_afternoon: "Good afternoon, %{name}" # TODO: translate
-        greeting_evening: "Good evening, %{name}" # TODO: translate
-        cheered: "%{name} cheered you 🙌" # TODO: translate
-        just_now: "just now" # TODO: translate
       other_mountains:
         title: "Other mountains today"  # TODO: translate
         open: "Other mountains today"  # TODO: translate
