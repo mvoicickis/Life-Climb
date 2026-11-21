@@ -1,0 +1,9 @@
+<%# locals: habits %>
+<% count = basics_survived_count(habits) %>
+<% title =
+     if count[:done_n].positive?
+       t("dash.anytime.collapsed_title_done", done: count[:done_n])
+     else
+       t("dash.anytime.title")
+     end %>
+<h2 class="lp-dash-anytime__title" id="basics_collapsed_title"><%= title %></h2>

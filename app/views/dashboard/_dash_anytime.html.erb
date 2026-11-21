@@ -5,7 +5,6 @@
 <% basics_all_done = habits.present? && habits.all? { |h| h.survived_today?(local_day) } %>
 <% battles_all_clear = @battlefield_health&.all_clear? %>
 <% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
-<% count = basics_survived_count(habits) %>
 <section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>"
          aria-label="<%= t('dash.anytime.title') %>"
          data-controller="today-habits">
@@ -15,17 +14,10 @@
             data-today-habits-trigger
             data-action="click->today-habits#toggle"
             aria-expanded="false">
-      <h2 class="lp-dash-anytime__title">
-        <%= t("dash.anytime.collapsed_title", done: count[:done_n], total: count[:total]) %>
-      </h2>
+      <%= render "dashboard/dash_anytime_collapsed_title", habits: habits %>
       <span class="lp-dash-anytime__chev" data-today-habits-target="chevron" aria-hidden="true">›</span>
     </button>
-    <%= tag.em(
-          id: "basics_survived_count",
-          class: "lp-dash-anytime__count",
-          hidden: true) do %>
-      <%= count[:done_n] %>/<%= count[:total] %>
-    <% end %>
+    <%= render "dashboard/dash_anytime_survived_count", habits: habits %>
 
     <div class="lp-dash-anytime__body" data-today-habits-target="body" hidden>
       <% if basics_all_done && battles_all_clear %>

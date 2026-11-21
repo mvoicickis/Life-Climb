@@ -643,6 +643,7 @@ ru:
       cheered: "%{name} cheered you 🙌" # TODO: translate
       just_now: "just now" # TODO: translate
     battlefield:
+      title: "Battles" # TODO: translate
       progress_label: "Battles done"  # TODO: translate
       goal_card:
         label: "Your goal"  # TODO: translate
@@ -796,7 +797,7 @@ ru:
     anytime:
       # TODO: translate
       title: "Habits"
-      collapsed_title: "Habits · %{done}/%{total}" # TODO: translate
+      collapsed_title_done: "Habits · %{done} done" # TODO: translate
       hint: "Log as many times as you like"
       empty: "No habits on Today yet — add one in Base Camp." # TODO: translate
       add_basic: "+ Add a habit" # TODO: translate

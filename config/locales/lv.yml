@@ -831,6 +831,7 @@ lv:
       cheered: "%{name} cheered you 🙌" # TODO: translate
       just_now: "just now" # TODO: translate
     battlefield:
+      title: "Battles" # TODO: translate
       progress_label: "Cīņas padarītas"
       goal_card:
         label: "Your goal"  # TODO: translate
@@ -881,7 +882,7 @@ lv:
           kicker: "Nākamais"
           headline: "“%{title}” ir ieplānota"
           sub: "Gaidāma %{date} — turi kāpienu dzīvu līdz tam."
-      title: "Šodienas kaujaslauks"
+      title: "Battles" # TODO: translate
       risk_cleared: "Viss padarīts."
       risk_empty: "Šodienas sarakstā vēl nav cīņu."
       risk_before_first_win: "Win a battle to move the bar."  # TODO: translate
@@ -1012,7 +1013,7 @@ lv:
       already_linked: "Šai kaujai jau ir kontrolsaraksta vieta."
     anytime:
       title: "Ikdienas soļi"
-      collapsed_title: "Habits · %{done}/%{total}" # TODO: translate
+      collapsed_title_done: "Habits · %{done} done" # TODO: translate
       hint: "Pieraksti tik reižu, cik vēlies"
       empty: "Šodien vēl nav ikdienas soļu — pievieno Bāzes nometnē."
       add_basic: "+ Add a habit" # TODO: translate

@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import {
-  floatBattleStrength,
   lockWinSubmit,
   rollbackTodayWinRow,
   showWinSaveNotice,
@@ -10,16 +9,15 @@ import {
 } from "lib/battle_win_feedback"
 import { burst, haptic, markTapBurst, prefersReducedMotion } from "lib/lp_feedback"
 
-// Click-time bounce + flat particle burst + optional "+N Battle strength" float.
-// When suppressReloadCelebrate is true (battle Win), defer strength float until
-// turbo submit succeeds; set sessionStorage so battle_day skips post-reload celebrate.
+// Click-time bounce + flat particle burst. No "+N Battle strength" float on win.
+// When suppressReloadCelebrate is true (battle Win), set sessionStorage so
+// battle_day skips post-reload celebrate.
 const SUPPRESS_KEY = "lpJuicySuppressCelebrate"
 
 export default class extends Controller {
   static values = {
     suppressReloadCelebrate: { type: Boolean, default: false },
     deferReward: { type: Boolean, default: false },
-    strengthLabel: { type: String, default: "Battle strength" },
     winNotSaved: { type: String, default: "" },
     delay: { type: Number, default: 500 },
     popAmount: { type: Number, default: 0 }
@@ -49,7 +47,6 @@ export default class extends Controller {
     this.playing = true
 
     const host = this.element.closest(".lp-dash-tcard, .lp-dash-checklist__obj, .lp-today-v2-row") || this.element
-    const amount = this.resolvedAmount(host)
     const popAmount = this.resolvedPopAmount()
     const reduceMotion = prefersReducedMotion()
     const battleWin = this.deferRewardValue
@@ -62,7 +59,6 @@ export default class extends Controller {
       if (battleWin) markTapBurst()
       if (popAmount > 0) this.floatHabitPop(host, popAmount)
     }
-    if (!battleWin && amount > 0) this.floatAp(host, amount)
 
     if (battleWin) {
       clearWinSaveNotice(rowHost)
@@ -109,9 +105,6 @@ export default class extends Controller {
     this.playing = false
 
     if (turboSubmitOk(event)) {
-      const host = rowHost || this.element.closest(".lp-today-v2-row") || this.element
-      const amount = this.resolvedAmount(host)
-      if (amount > 0) floatBattleStrength(host, amount, this.strengthLabelValue)
       if (this.suppressReloadCelebrateValue) {
         try {
           window.sessionStorage.setItem(SUPPRESS_KEY, "1")
@@ -125,12 +118,6 @@ export default class extends Controller {
     rollbackTodayWinRow(rowHost)
     const message = this.winNotSavedValue
     if (message && rowHost) showWinSaveNotice(rowHost, message)
-  }
-
-  resolvedAmount(host) {
-    const raw = host?.dataset?.lp || this.element.dataset.lp || "0"
-    const n = Number.parseInt(raw, 10)
-    return Number.isFinite(n) && n > 0 ? n : 0
   }
 
   resolvedPopAmount() {
@@ -155,9 +142,5 @@ export default class extends Controller {
     void host.offsetWidth
     host.classList.add("is-juicy")
     window.setTimeout(() => host.classList.remove("is-juicy"), 700)
-  }
-
-  floatAp(host, amount) {
-    floatBattleStrength(host, amount, this.strengthLabelValue)
   }
 }

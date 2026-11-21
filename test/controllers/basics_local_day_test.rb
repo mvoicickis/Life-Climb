@@ -46,6 +46,7 @@ class BasicsLocalDayTest < ActionDispatch::IntegrationTest
 
       get dashboard_path
       assert_response :success
+      assert_select "#basics_collapsed_title", text: /Habits · 1 done/
       assert_select "#basics_survived_count", text: /1/
     end
   end
@@ -79,7 +80,10 @@ class BasicsLocalDayTest < ActionDispatch::IntegrationTest
 
       get dashboard_path
       assert_response :success
-      assert_select "#basics_survived_count", text: /0/
+      assert_select "#basics_collapsed_title", text: "Habits"
+      assert_select "#basics_survived_count", text: ""
+      assert_no_match(%r{0/\d+}, css_select("#basics_survived_count").text)
+      assert_no_match(%r{Habits · 0}, response.body)
     end
   end
 

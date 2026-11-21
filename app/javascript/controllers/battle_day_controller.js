@@ -101,7 +101,6 @@ export default class extends Controller {
     this.nudgeGoal()
     this.closeRing()
     this.nudgeCamp()
-    this.floatAp()
     sound(this.bossValue ? "win_boss" : "win", { boss: this.bossValue })
     window.setTimeout(() => {
       this.element.classList.remove("is-celebrating", "is-boss")
@@ -118,16 +117,6 @@ export default class extends Controller {
     if (!this.hasCampArtTarget) return
     this.campArtTarget.classList.add("is-nudge")
     window.setTimeout(() => this.campArtTarget.classList.remove("is-nudge"), 800)
-  }
-
-  floatAp() {
-    if (this.apGainedValue <= 0) return
-    const host = this.hasLpTotalTarget ? this.lpTotalTarget.parentElement : this.element
-    const chip = document.createElement("span")
-    chip.className = "lp-dash__ap-float"
-    chip.textContent = `+${this.apGainedValue} Battle strength`
-    host.appendChild(chip)
-    window.setTimeout(() => chip.remove(), 1200)
   }
 
   nudgeReward() {
