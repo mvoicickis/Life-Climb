@@ -49,6 +49,10 @@ class TodayAllClearDeepLinkRevealTest < ApplicationSystemTestCase
                       text: I18n.t("dash.battlefield.add_another_battle"),
                       wait: 8
 
+    assert_selector ".lp-today-finale__continue", text: I18n.t("dash.finale.continue"), wait: 8
+    click_button I18n.t("dash.finale.continue")
+    assert_no_selector ".lp-today-finale", wait: 8
+
     click_on I18n.t("dash.battlefield.add_another_battle")
 
     assert_selector "#mountain-trail .lp-trail-sheet.is-open", wait: 8

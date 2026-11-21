@@ -151,7 +151,8 @@ module Today
 
         @user.update!(last_streak_moment_on: nil)
         moment2 = StreakMoment.present_for!(user: @user, goal_title: "Goal")
-        assert_nil moment2
+        assert_not moment2.new_record
+        assert_equal 2, @user.reload.longest_streak_days
       end
     end
 
