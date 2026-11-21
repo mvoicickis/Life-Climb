@@ -41,7 +41,7 @@ class TodayInlineAddBattleTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "today-battlefield-header"
     assert_includes response.body, "today-battlefield-add-host"
     assert_match(/Call the bank/, response.body)
-    assert_match(/Camp \d+ of \d+/, response.body)
+    assert_match(/aria-valuetext="Camp \d+ of \d+"/, response.body)
   end
 
   test "blank title is rejected" do

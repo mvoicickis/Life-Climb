@@ -1628,15 +1628,26 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 0.35rem 0.5rem;
+  width: 100%;
   min-width: 0;
-  overflow: visible;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  margin: 0 0 var(--lp-space-16);
+  padding: 10px 12px;
+  overflow: hidden;
+  border-radius: var(--lp-radius-card);
+  background: color-mix(in srgb, var(--lp-surface) 88%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  box-shadow: var(--lp-shadow-card);
   transition: padding var(--lp-motion-base) var(--lp-ease-out);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  }
 }
 
 .lp-dash.is-today-v2.is-today-photo #today-battlefield-field .lp-today-group-card {
@@ -1661,22 +1672,22 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed {
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-goal-strip {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
   margin: 0;
   min-width: 0;
   transition: gap var(--lp-motion-base) var(--lp-ease-out);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-strip {
-  gap: 0.35rem;
+  gap: 6px;
 }
 
 /* First paint after turbo header replace — no expand→collapse animation. */
@@ -1693,33 +1704,29 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-goal-strip__title {
-  flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
   margin: 0;
   font-size: var(--lp-type-17);
   font-weight: var(--lp-weight-900);
-  line-height: 1.2;
+  line-height: 1.25;
   color: var(--lp-ink);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  text-align: left;
+  white-space: nowrap;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
   transition: font-size var(--lp-motion-base) var(--lp-ease-out);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal.is-collapsed .lp-today-goal-strip__title {
   font-size: var(--lp-type-15);
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar {
-  flex: 0 1 4.5rem;
-  min-width: 2.5rem;
-  max-width: 5.5rem;
-  height: 0.35rem;
+  width: 100%;
+  flex: none;
+  min-width: 0;
+  height: 0.28rem;
   border-radius: var(--lp-radius-pill);
   background: color-mix(in srgb, var(--lp-border) 70%, var(--lp-paper));
   overflow: hidden;
@@ -1761,18 +1768,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 
 @keyframes lp-today-bar-shine {
   to { transform: translateX(120%); }
-}
-
-.lp-dash.is-today-v2.is-today-photo .lp-today-goal-strip__camp-of,
-.lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-of {
-  flex: none;
-  margin: 0;
-  font-size: var(--lp-type-13);
-  font-weight: var(--lp-weight-800);
-  color: var(--lp-muted);
-  line-height: 1.2;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-risk {

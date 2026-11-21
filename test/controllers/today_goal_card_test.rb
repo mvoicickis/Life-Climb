@@ -27,7 +27,8 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-today-goal-strip", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 0
     assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
-    assert_select "#today-battlefield-header .lp-today-camp-of", text: /Camp \d+ of \d+/
+    assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", text: /Camp \d+ of \d+/
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.5']", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
@@ -44,7 +45,8 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
 
     assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-of", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
   end
 

@@ -134,7 +134,8 @@ class TodayPageTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-goal-kicker", count: 0
     assert_select ".lp-today-goal-strip", count: 1
     assert_select ".lp-today-goal-camp", count: 0
-    assert_select ".lp-today-camp-of", text: /Camp 1 of 1/
+    assert_select ".lp-today-camp-of", count: 0
+    assert_select ".lp-today-camp-bar[aria-valuetext]", text: /Camp 1 of 1/
     assert_select ".lp-today-camp-bar", count: 1
     assert_select ".lp-today-v2-hp-bar", count: 0
     assert_select "img[src*='today_background']", count: 1
