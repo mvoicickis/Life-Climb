@@ -113,6 +113,15 @@ module TodayV2TestHelper
     sleep 0.4
   end
 
+  # Habits card is collapsed by default on Today V2.
+  def expand_today_habits!
+    toggle = find(".lp-dash-anytime__toggle", wait: 5)
+    return if toggle["aria-expanded"] == "true"
+
+    toggle.click
+    assert_selector ".lp-dash-anytime.is-open .lp-dash-anytime__body:not([hidden])", wait: 5
+  end
+
   def click_battle_row_check!(todo: nil, label: nil)
     selector =
       if todo
