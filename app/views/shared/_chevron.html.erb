@@ -1,0 +1,6 @@
+<%# Shared Today chevron — points right; rotate 90° when open via .is-open / details[open].
+    locals: class_name (optional extra classes) %>
+<% class_name = local_assigns.fetch(:class_name, "lp-chevron") %>
+<svg class="<%= class_name %>" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+  <path d="M6 3.5 L11 8 L6 12.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

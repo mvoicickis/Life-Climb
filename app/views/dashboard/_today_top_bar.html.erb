@@ -80,7 +80,7 @@
               <span class="lp-other-mountains-row__count">
                 <%= t("dash.battlefield.other_mountains.battles", count: entry.open_count) %>
               </span>
-              <span class="lp-other-mountains-row__chevron" aria-hidden="true">›</span>
+              <%= render "shared/chevron", class_name: "lp-chevron lp-other-mountains-row__chevron" %>
             <% end %>
           </li>
         <% end %>

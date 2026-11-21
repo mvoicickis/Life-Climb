@@ -9,7 +9,7 @@
   <details class="lp-today-v2-won" id="today-battlefield-won-group">
     <summary class="lp-today-v2-won__summary">
       <span id="today-battlefield-won-label"><%= t("dash.battlefield.won_today", count: count) %></span>
-      <span class="lp-today-v2-won__chev" aria-hidden="true">▾</span>
+      <%= render "shared/chevron", class_name: "lp-chevron lp-today-v2-won__chev" %>
     </summary>
     <div class="lp-today-v2-won__list" id="today-battlefield-won-list">
       <% listed.each do |todo| %>

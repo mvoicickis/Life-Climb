@@ -2029,10 +2029,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   pointer-events: none;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-dash-habit__sig--trail {
-  display: none;
-}
-
 /* Basics progress strip — light tokens on photo Today */
 .lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-binary-tick .lp-dash-habit__segs {
   height: 0;
@@ -2827,12 +2823,12 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   right: 0;
   z-index: 60;
   padding: var(--lp-space-2);
-  border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  border: 1px solid var(--lp-border);
   border-radius: 1.125rem;
-  /* Opaque by default — nothing behind may stay readable without blur. */
+  /* Fully opaque — goal card must never ghost through. */
   background: var(--lp-surface);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: var(--lp-shadow-card);
   opacity: 0;
   visibility: hidden;
@@ -2841,14 +2837,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transition:
     opacity var(--lp-motion-base) var(--lp-ease-out),
     visibility var(--lp-motion-base);
-}
-
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown {
-    background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  }
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown[hidden] {
@@ -2877,12 +2865,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transform: rotate(45deg);
 }
 
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown::before {
-    background: color-mix(in srgb, var(--lp-surface) 94%, transparent);
-  }
-}
-
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-dropdown__title {
   position: relative;
   margin: 0;
@@ -2907,28 +2889,28 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row {
   display: flex;
   min-width: 0;
-  min-height: 3.5rem;
+  min-height: 56px;
+  height: 56px;
   width: 100%;
   align-items: center;
-  gap: var(--lp-space-2);
-  padding: 0 var(--lp-space-2);
+  gap: 12px;
+  padding: 0 12px;
   border: 0;
   border-bottom: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius-field);
+  border-radius: 0;
   background: transparent;
+  box-shadow: none;
   color: var(--lp-ink);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    background var(--lp-motion-fast) var(--lp-ease-out),
-    transform var(--lp-motion-fast) var(--lp-ease-out);
+  transition: background var(--lp-motion-fast) var(--lp-ease-out);
   -webkit-tap-highlight-color: transparent;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row:active {
-  background: color-mix(in srgb, var(--lp-muted) 12%, transparent);
-  transform: scale(var(--lp-press-scale));
+  background: color-mix(in srgb, var(--lp-muted) 10%, var(--lp-surface));
+  transform: none;
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-list li:last-child .lp-other-mountains-row {
@@ -2969,7 +2951,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__name {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   font-size: 0.9rem;
@@ -2979,22 +2961,23 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__count {
-  flex: none;
+  flex: 0 0 auto;
+  flex-shrink: 0;
   color: var(--lp-muted);
   font-size: 0.75rem;
   font-weight: 800;
   white-space: nowrap;
-  padding: 0.25rem var(--lp-space-1);
-  border: 1px solid color-mix(in srgb, var(--lp-muted) 16%, var(--lp-border));
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--lp-border);
   border-radius: var(--lp-radius-pill);
-  background: color-mix(in srgb, var(--lp-muted) 10%, var(--lp-surface));
+  background: var(--lp-paper);
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row__chevron {
   flex: none;
+  width: 16px;
+  height: 16px;
   color: var(--lp-muted);
-  font-size: 1rem;
-  font-weight: 900;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3288,12 +3271,26 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 .lp-dash.is-today-v2.is-today-photo .lp-today-v2-won {
   margin-top: 8px;
+  margin-bottom: 0;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-won__summary {
+  min-height: 44px;
+  padding: 8px 16px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-won__chev {
+  width: 16px;
+  height: 16px;
+  color: var(--lp-muted);
+  transition: transform var(--lp-motion-fast) var(--lp-ease-out);
+}
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-won[open] > .lp-today-v2-won__summary .lp-today-v2-won__chev {
+  transform: rotate(90deg);
 }
 .lp-dash.is-today-v2.is-today-photo .lp-today-add-battle {
   gap: 0;
-  margin-top: 8px;
-  padding: 12px 16px 16px;
-  border-top: 1px dashed var(--lp-border);
+  margin-top: 16px;
+  padding: 0 16px 16px;
+  border-top: 0;
 }
 .lp-dash.is-today-v2.is-today-photo .lp-today-add-battle__expand {
   display: flex;
@@ -3374,9 +3371,10 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 }
 .lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__chev {
   flex: none;
-  font-size: 1.25rem;
-  line-height: 1;
+  width: 16px;
+  height: 16px;
   color: var(--lp-muted);
+  transition: transform var(--lp-motion-fast) var(--lp-ease-out);
 }
 .lp-dash.is-today-v2.is-today-photo .lp-dash-anytime.is-open .lp-dash-anytime__chev {
   transform: rotate(90deg);
@@ -3387,23 +3385,51 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 .lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__count {
   display: none !important;
 }
+.lp-dash.is-today-v2.is-today-photo .lp-dash-anytime__list {
+  margin: 0;
+  padding: 0;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-tcard.is-habit.is-compact.is-slot {
+  min-height: 56px;
+  padding: 8px 0;
+}
 .lp-dash.is-today-v2.is-today-photo .lp-dash-habit__sig {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  background: color-mix(in srgb, var(--lp-green) 16%, var(--lp-surface));
+  flex: none;
+  background: color-mix(in srgb, var(--lp-green) 18%, var(--lp-surface));
   color: var(--lp-green-deep);
   font-size: 0;
 }
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__sig--tile {
+  background: color-mix(in srgb, var(--lp-muted) 14%, var(--lp-surface));
+  color: var(--lp-ink);
+}
 .lp-dash.is-today-v2.is-today-photo .lp-dash-habit__sig .lp-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+}
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__r1,
+.lp-dash.is-today-v2.is-today-photo .lp-dash-habit__r1--binary-tick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
 }
 .lp-dash.is-today-v2.is-today-photo .lp-dash-habit__qb.is-big {
   min-height: 44px;
   min-width: 3.25rem;
+}
+
+/* Shared Today chevron */
+.lp-dash.is-today-v2.is-today-photo .lp-chevron {
+  display: block;
+  flex: none;
+  overflow: visible;
 }
 
 @media (prefers-reduced-motion: reduce) {

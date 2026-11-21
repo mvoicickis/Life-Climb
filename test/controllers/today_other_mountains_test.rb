@@ -42,8 +42,15 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     assert_equal [ "Alpha peak", "Bravo peak" ], names
     assert_select ".lp-other-mountains-row__count", text: I18n.t("dash.battlefield.other_mountains.battles", count: 2)
     assert_select ".lp-other-mountains-row__count", text: I18n.t("dash.battlefield.other_mountains.battles", count: 1)
+    assert_select ".lp-other-mountains-row__chevron.lp-chevron", count: 2
     assert_select "form.lp-other-mountains-row-form[action=?]", today_focus_path(journey_id: alpha.id)
     assert_select "form.lp-other-mountains-row-form[action=?]", today_focus_path(journey_id: bravo.id)
+
+    css = Rails.root.join("app/assets/stylesheets/today_v2.css").read
+    dropdown = css[/\.lp-dash\.is-today-v2\.is-today-photo \.lp-other-mountains-dropdown\s*\{[^}]+\}/m]
+    assert dropdown.present?
+    assert_match(/background:\s*var\(--lp-surface\)/, dropdown)
+    refute_match(/color-mix\(in srgb, var\(--lp-surface\) 94%/, dropdown)
   end
 
   test "planet button is hidden when other mountains have zero open battles" do

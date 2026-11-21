@@ -4,7 +4,7 @@ const STORAGE_KEY = "lpTodayHabitsOpen"
 
 // Collapsible Habits card — collapsed by default; remember open in sessionStorage.
 export default class extends Controller {
-  static targets = ["body", "chevron"]
+  static targets = ["body"]
 
   connect() {
     const open = window.sessionStorage.getItem(STORAGE_KEY) === "1"
@@ -25,7 +25,6 @@ export default class extends Controller {
   sync() {
     const open = this.element.classList.contains("is-open")
     if (this.hasBodyTarget) this.bodyTarget.hidden = !open
-    if (this.hasChevronTarget) this.chevronTarget.textContent = open ? "▾" : "›"
     this.element.querySelector("[data-today-habits-trigger]")?.setAttribute("aria-expanded", open ? "true" : "false")
   }
 }

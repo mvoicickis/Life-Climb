@@ -35,7 +35,7 @@
                   placeholder="<%= placeholder %>"
                   aria-label="<%= t('dash.battlefield.add_battle.aria') %>"
                   data-today-add-battle-target="field"
-                  data-action="input->today-add-battle#sync keydown->today-add-battle#keydown"></textarea>
+                  data-action="input->today-add-battle#sync keydown->today-add-battle#keydown blur->today-add-battle#blurField"></textarea>
         <button type="button"
                 class="lp-today-add-battle__add lp-btn-3d is-green<%= all_clear ? " is-ready" : " is-muted" %>"
                 aria-label="<%= t('dash.battlefield.add_battle.submit') %>"
