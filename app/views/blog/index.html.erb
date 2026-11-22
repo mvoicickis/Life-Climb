@@ -1,0 +1,40 @@
+<% content_for :title, t("blog.index_title") %>
+<% content_for :meta_description, t("blog.index_meta_description") %>
+<% content_for :social_title, t("blog.index_title") %>
+<% content_for :social_description, t("blog.index_meta_description") %>
+
+<main class="lp-public-blog">
+  <a class="lp-public-blog__back" href="<%= canonical_base_url %>/"><%= t("blog.back_to_app") %></a>
+  <h1 class="lp-public-blog__title"><%= t("blog.index_heading") %></h1>
+  <p class="lp-public-blog__intro"><%= t("blog.index_intro") %></p>
+
+  <% if @blog_posts.any? %>
+    <ul class="lp-public-blog__grid">
+      <% @blog_posts.each_with_index do |post, index| %>
+        <li class="lp-public-blog__card">
+          <%= link_to blog_post_path(post.slug), class: "lp-public-blog__card-link" do %>
+            <%= blog_post_cover_tag(
+                  post,
+                  width: BlogHelper::COVER_CARD_WIDTH,
+                  height: BlogHelper::COVER_CARD_HEIGHT,
+                  loading: index.zero? ? "eager" : "lazy",
+                  css_class: "lp-public-blog__card-cover"
+                ) %>
+            <div class="lp-public-blog__card-body">
+              <h2 class="lp-public-blog__card-title"><%= post.title %></h2>
+              <% if blog_card_excerpt(post).present? %>
+                <p class="lp-public-blog__card-excerpt"><%= blog_card_excerpt(post) %></p>
+              <% end %>
+              <p class="lp-public-blog__card-meta">
+                <span><%= blog_published_on(post) %></span>
+                <span><%= blog_reading_time(post) %></span>
+              </p>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-public-blog__empty"><%= t("blog.empty") %></p>
+  <% end %>
+</main>

@@ -27,6 +27,10 @@ class BlogPost < ApplicationRecord
       .order(published_at: :desc)
   }
 
+  def self.related_for(post, limit: 3)
+    published.where.not(id: post.id).limit(limit)
+  end
+
   def reading_minutes
     words = body.to_plain_text.to_s.split.size
     [ (words.to_f / WORDS_PER_MINUTE).ceil, 1 ].max

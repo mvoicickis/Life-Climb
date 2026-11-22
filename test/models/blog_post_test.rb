@@ -38,6 +38,25 @@ class BlogPostTest < ActiveSupport::TestCase
     assert_equal "draft", post.status
   end
 
+  test "related_for excludes current post" do
+    first = BlogPost.create!(
+      title: "First",
+      slug: "related-first",
+      status: "published",
+      published_at: 2.days.ago
+    )
+    second = BlogPost.create!(
+      title: "Second",
+      slug: "related-second",
+      status: "published",
+      published_at: 1.day.ago
+    )
+
+    related = BlogPost.related_for(first)
+
+    assert_equal [ second ], related.to_a
+  end
+
   test "published scope is newest first and hides future or draft" do
     travel_to Time.zone.parse("2026-11-22 12:00:00") do
       old = BlogPost.create!(

@@ -1,0 +1,81 @@
+<% content_for :title, @blog_post.google_preview_title %>
+<% content_for :meta_description, @blog_post.meta_description %>
+<% content_for :social_title, @blog_post.google_preview_title %>
+<% content_for :social_description, @blog_post.meta_description %>
+<% content_for :social_type, "article" %>
+<% if @blog_post.cover_photo.attached? %>
+  <% content_for :social_image, blog_cover_og_url(@blog_post) %>
+  <% content_for :social_image_type, "image/jpeg" %>
+  <% content_for :social_image_alt, @blog_post.title %>
+<% end %>
+
+<% content_for :head do %>
+  <%= render "blog/post_json_ld", post: @blog_post %>
+<% end %>
+
+<article class="lp-public-blog__article">
+  <%= blog_post_cover_tag(
+        @blog_post,
+        width: BlogHelper::COVER_HERO_WIDTH,
+        height: BlogHelper::COVER_HERO_HEIGHT,
+        loading: "eager",
+        css_class: "lp-public-blog__hero-cover"
+      ) %>
+
+  <div class="lp-public-blog__article-inner">
+    <header>
+      <h1 class="lp-public-blog__article-title"><%= @blog_post.title %></h1>
+      <div class="lp-public-blog__author">
+        <span class="lp-public-blog__author-avatar" aria-hidden="true"><%= blog_author_initial(@blog_post) %></span>
+        <div class="lp-public-blog__author-meta">
+          <p class="lp-public-blog__author-name">
+            <%= t("blog.byline", name: blog_author_name(@blog_post)) %>
+          </p>
+          <p class="lp-public-blog__author-line">
+            <span><%= blog_published_on(@blog_post) %></span>
+            <span aria-hidden="true">·</span>
+            <span><%= blog_reading_time(@blog_post) %></span>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="lp-public-blog__prose action-text-content">
+      <%= @blog_post.body %>
+    </div>
+
+    <% if @related_posts.any? %>
+      <section class="lp-public-blog__related" aria-labelledby="blog-related-heading">
+        <h2 id="blog-related-heading" class="lp-public-blog__related-title"><%= t("blog.related_heading") %></h2>
+        <ul class="lp-public-blog__related-list">
+          <% @related_posts.each do |related| %>
+            <li>
+              <%= link_to blog_post_path(related.slug), class: "lp-public-blog__related-card" do %>
+                <%= blog_post_cover_tag(
+                      related,
+                      width: BlogHelper::COVER_CARD_WIDTH,
+                      height: BlogHelper::COVER_CARD_HEIGHT,
+                      loading: "lazy",
+                      css_class: "lp-public-blog__related-cover"
+                    ) %>
+                <div class="lp-public-blog__related-body">
+                  <h3 class="lp-public-blog__related-card-title"><%= related.title %></h3>
+                  <p class="lp-public-blog__related-meta">
+                    <span><%= blog_published_on(related) %></span>
+                    <span><%= blog_reading_time(related) %></span>
+                  </p>
+                </div>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="lp-public-blog__start-card" aria-labelledby="blog-start-heading">
+      <h2 id="blog-start-heading" class="lp-public-blog__start-title"><%= t("blog.cta_title") %></h2>
+      <p class="lp-public-blog__start-body"><%= t("blog.cta_body") %></p>
+      <%= link_to t("blog.start_climbing"), new_registration_path, class: "lp-public-blog__cta lp-public-blog__cta--wide" %>
+    </section>
+  </div>
+</article>

@@ -1,0 +1,28 @@
+<%# JSON-LD BlogPosting for public post %>
+<% image_url = post.cover_photo.attached? ? blog_cover_og_url(post) : absolute_url(social_og_image_path) %>
+<% published = (post.published_at || post.created_at).iso8601 %>
+<% modified = post.updated_at.iso8601 %>
+<script type="application/ld+json">
+<%= raw({
+  "@context" => "https://schema.org",
+  "@type" => "BlogPosting",
+  "headline" => post.title,
+  "description" => post.meta_description,
+  "image" => [ image_url ],
+  "author" => {
+    "@type" => "Person",
+    "name" => blog_author_name(post)
+  },
+  "datePublished" => published,
+  "dateModified" => modified,
+  "publisher" => {
+    "@type" => "Organization",
+    "name" => "Life Climb",
+    "logo" => {
+      "@type" => "ImageObject",
+      "url" => absolute_url("/branding/lifepoints-mark.png?v=7")
+    }
+  },
+  "mainEntityOfPage" => absolute_url(blog_post_path(post.slug))
+}.to_json) %>
+</script>

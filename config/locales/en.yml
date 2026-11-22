@@ -3372,6 +3372,23 @@ en:
     default_one: "Log what matters today — even a small number counts."
     default_two: "Pick one thing to beat yesterday."
     default_three: "Keep tomorrow simple: one clear win."
+  blog:
+    footer_link: "Blog"
+    index_title: "Blog — Life Climb"
+    index_heading: "Blog"
+    index_intro: "Stories about climbing your mountain — one battle at a time."
+    index_meta_description: "Read Life Climb blog posts about goals, daily battles, and building a life you care about."
+    back_to_app: "← lifeclimb.app"
+    start_climbing: "Start climbing"
+    min_read:
+      one: "%{count} min read"
+      other: "%{count} min read"
+    author_default: "Karen"
+    byline: "By %{name}"
+    related_heading: "More from the blog"
+    cta_title: "Ready to climb your mountain?"
+    cta_body: "Free to start. Pick one goal and win one battle today."
+    empty: "No posts yet. Check back soon."
   landing:
     meta_title: "Life Climb — The mountain is yours to climb"
     meta_description: "Life Climb turns one real goal into a mountain — and gives you one clear step up it, every day."
