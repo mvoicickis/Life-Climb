@@ -43,11 +43,11 @@
             data: {
               blog_slug_target: "title",
               blog_title_field_target: "input",
-              action: "input->blog-slug#syncFromTitle input->blog-writer#scheduleSave input->blog-title-field#input keydown->blog-title-field#keydown blur->blog-writer#saveOnBlur"
+              action: "input->blog-slug#syncFromTitle input->blog-writer#scheduleSave input->blog-writer#syncPreviewTitle input->blog-title-field#input keydown->blog-title-field#keydown blur->blog-writer#saveOnBlur"
             } %>
 
       <div class="lp-blog-writer__body-wrap">
-        <%= f.rich_text_area :body %>
+        <%= f.rich_text_area :body, placeholder: t("admin.blog_posts.body_placeholder") %>
       </div>
 
       <details class="lp-blog-writer__more">
@@ -95,7 +95,6 @@
                 data: { action: "input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur" } %>
         </label>
 
-        <h3 class="lp-blog-writer__seo-heading"><%= t("admin.blog_posts.checklist") %></h3>
         <%= render "seo_checklist", blog_post: @blog_post %>
         <p class="lp-blog-writer__hint"><%= t("admin.blog_posts.checklist_hint") %></p>
 
@@ -109,7 +108,7 @@
                     class: "lp-input lp-blog-writer__more-input",
                     data: {
                       blog_writer_target: "seoTitle",
-                      action: "input->blog-writer#counterInput input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+                      action: "input->blog-writer#counterInput input->blog-writer#syncPreviewTitle input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
                     } %>
               <small class="lp-blog-writer__hint">
                 <span data-blog-writer-target="seoTitleCount"><%= @blog_post.seo_title.to_s.length %></span>

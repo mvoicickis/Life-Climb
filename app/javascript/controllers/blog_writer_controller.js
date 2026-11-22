@@ -9,16 +9,19 @@ export default class extends Controller {
     "seoTitle",
     "seoTitleCount",
     "metaDescription",
-    "metaCount"
+    "metaCount",
+    "previewTitle"
   ]
 
   static values = {
     saving: { type: Boolean, default: false }
   }
 
-  connect() {
+  async connect() {
+    await import("admin_blog")
     this.debounceTimer = null
     this.intervalId = setInterval(() => this.save(), AUTOSAVE_MS)
+    this.syncPreviewTitle()
   }
 
   disconnect() {
@@ -60,5 +63,16 @@ export default class extends Controller {
     if (this.hasMetaDescriptionTarget && this.hasMetaCountTarget) {
       this.metaCountTarget.textContent = String(this.metaDescriptionTarget.value.length)
     }
+    this.syncPreviewTitle()
+  }
+
+  syncPreviewTitle() {
+    if (!this.hasPreviewTitleTarget) return
+
+    const seo = this.hasSeoTitleTarget ? this.seoTitleTarget.value.trim() : ""
+    const titleField = this.element.querySelector("textarea.lp-blog-writer__title")
+    const title = titleField ? titleField.value.trim() : ""
+    const shown = seo || title
+    this.previewTitleTarget.textContent = shown.length > 0 ? shown : "Title"
   }
 }

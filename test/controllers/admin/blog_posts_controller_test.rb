@@ -9,6 +9,16 @@ module Admin
       @user = users(:one)
     end
 
+    def assert_script_load_order!
+      body = response.body
+      importmap_at = body.index('type="importmap"')
+      admin_blog_at = body.index('import "admin_blog"')
+
+      assert importmap_at, "expected importmap script"
+      assert admin_blog_at, "expected admin_blog module import"
+      assert_operator importmap_at, :<, admin_blog_at
+    end
+
     test "non admin cannot open blog posts" do
       sign_in_as @user
       get admin_blog_posts_path
@@ -94,6 +104,7 @@ module Admin
       assert_response :success
       assert_select "link[rel=stylesheet][href*='actiontext']"
       assert_match(/admin_blog/, response.body)
+      assert_script_load_order!
     end
 
     test "edit writer shows title textarea and visible google check" do
@@ -105,11 +116,24 @@ module Admin
       assert_response :success
       assert_select "link[rel=stylesheet][href*='actiontext']"
       assert_match(/admin_blog/, response.body)
+      assert_script_load_order!
       assert_select "textarea.lp-blog-writer__title[name=?]", "blog_post[title]"
       assert_select "#blog_google_preview"
       assert_select "#blog_seo_checklist"
       assert_select "details.lp-blog-writer__seo-panel", count: 0
       assert_select "details.lp-blog-writer__seo-edit summary", text: I18n.t("admin.blog_posts.edit_google_text")
+      assert_select "[data-blog-writer-target=?]", "previewTitle", text: "Writer layout test"
+    end
+
+    test "page title does not double escape apostrophes" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(title: "You'll climb", status: "draft")
+
+      get edit_admin_blog_post_path(post_record)
+
+      assert_response :success
+      assert_match %r{<title>You(?:'|&#39;)ll climb · Admin · Life Climb</title>}, response.body
+      assert_no_match %r{&amp;#39;}, response.body
     end
 
     test "admin can destroy a post" do

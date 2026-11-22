@@ -17548,6 +17548,15 @@ button.lp-strategy-overflow {
   color: var(--lp-ink);
 }
 
+@media (min-width: 1024px) {
+  .lp-blog-writer {
+    margin-left: calc(-1 * var(--lp-space-4, 1rem));
+    margin-right: calc(-1 * var(--lp-space-4, 1rem));
+    width: calc(100% + 2 * var(--lp-space-4, 1rem));
+    max-width: none;
+  }
+}
+
 .lp-blog-writer__bar {
   position: sticky;
   top: 0;
@@ -17620,15 +17629,31 @@ button.lp-strategy-overflow {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
-  max-width: 72rem;
+  max-width: 45rem;
   margin: 0 auto;
   padding: 1.25rem 1.1rem 3rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .lp-blog-writer__layout {
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+    grid-template-columns: minmax(0, 45rem) 20rem;
+    justify-content: center;
     align-items: start;
+    gap: 1.5rem;
+    max-width: none;
+    width: 100%;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .lp-blog-writer__main {
+    max-width: 45rem;
+    width: 100%;
+  }
+
+  .lp-blog-writer__seo-panel {
+    position: sticky;
+    top: 4.5rem;
   }
 }
 
@@ -17710,7 +17735,7 @@ button.lp-strategy-overflow {
 
 .lp-blog-writer__body-wrap trix-toolbar {
   position: sticky;
-  top: 3.5rem;
+  top: 4.5rem;
   z-index: 2;
   margin: 0 0 0.75rem;
   width: fit-content;

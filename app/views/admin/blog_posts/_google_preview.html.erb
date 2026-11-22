@@ -1,5 +1,5 @@
 <div class="lp-blog-writer__google" id="blog_google_preview">
   <p class="lp-blog-writer__google-url">lifeclimb.app/blog/<%= blog_post.slug.presence || "your-slug" %></p>
-  <p class="lp-blog-writer__google-title"><%= blog_post.google_preview_title %></p>
+  <p class="lp-blog-writer__google-title" data-blog-writer-target="previewTitle"><%= blog_post.google_preview_title %></p>
   <p class="lp-blog-writer__google-desc"><%= blog_post.meta_description.presence || t("admin.blog_posts.google_preview_missing") %></p>
 </div>
