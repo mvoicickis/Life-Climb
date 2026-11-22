@@ -73,9 +73,42 @@ class BlogPostTest < ActiveSupport::TestCase
 
   test "reading_minutes rounds up from word count" do
     post = BlogPost.create!(title: "Long read")
-    # 250 words → ceil(250/200) = 2
     post.body = ([ "word" ] * 250).join(" ")
 
     assert_equal 2, post.reading_minutes
+  end
+
+  test "seo_title defaults from title when blank" do
+    post = BlogPost.create!(title: "A" * 80)
+
+    assert_equal 60, post.seo_title.length
+    assert_equal ("A" * 60), post.seo_title
+  end
+
+  test "excerpt defaults from body when blank" do
+    words = ([ "climb" ] * 80).join(" ")
+    post = BlogPost.create!(title: "Excerpt test", body: words)
+
+    assert_operator post.excerpt.length, :<=, BlogPost::EXCERPT_LENGTH
+    assert_includes post.excerpt, "climb"
+  end
+
+  test "meta description defaults from excerpt when blank" do
+    post = BlogPost.create!(title: "Meta", body: "One line about the climb.")
+    post.reload
+
+    assert post.meta_description.present?
+    assert_operator post.meta_description.length, :<=, BlogPost::META_DESCRIPTION_MAX
+  end
+
+  test "seo checklist reflects focus phrase and headings" do
+    post = BlogPost.create!(title: "How to climb daily", focus_phrase: "climb")
+    post.body = "<h2>Start</h2><h2>Keep going</h2>climb #{"word " * 120}"
+
+    checklist = post.seo_checklist
+    assert checklist[:focus_in_title]
+    assert checklist[:focus_in_first_100]
+    assert checklist[:two_headings]
+    assert_not checklist[:six_hundred_words]
   end
 end

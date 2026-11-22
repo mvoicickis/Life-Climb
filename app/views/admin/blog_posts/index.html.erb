@@ -10,66 +10,30 @@
 </header>
 
 <% if @blog_posts.any? %>
-  <ul class="lp-admin__list lp-admin__list--blog-mobile">
+  <div class="lp-blog-writer__cards">
     <% @blog_posts.each do |post| %>
-      <li>
-        <%= link_to edit_admin_blog_post_path(post), class: "lp-admin__list-row" do %>
-          <span class="lp-admin__avatar" aria-hidden="true">📝</span>
-          <span class="lp-admin__list-row__main">
-            <strong><%= post.title %></strong>
-            <small>
-              <% if post.status == "published" %>
-                <%= l((post.published_at || post.updated_at).to_date, format: :long) %>
-              <% else %>
-                <%= t("admin.blog_posts.edited", date: l(post.updated_at.to_date, format: :long)) %>
-              <% end %>
-            </small>
-          </span>
-          <span>
+      <article class="lp-blog-writer__card">
+        <div class="lp-blog-writer__card-thumb <%= "has-image" if post.cover_photo.attached? %>">
+          <% if post.cover_photo.attached? %>
+            <%= image_tag post.cover_photo.variant(resize_to_fill: [ 640, 360 ]), alt: "", class: "lp-blog-writer__card-photo" %>
+          <% end %>
+        </div>
+        <div class="lp-blog-writer__card-body">
+          <h2 class="lp-blog-writer__card-title"><%= post.title %></h2>
+          <div class="lp-blog-writer__card-meta">
             <% if post.status == "published" %>
               <span class="lp-admin__badge"><%= t("admin.blog_posts.status_published") %></span>
             <% else %>
               <span class="lp-admin__badge is-muted"><%= t("admin.blog_posts.status_draft") %></span>
             <% end %>
-          </span>
-        <% end %>
-      </li>
+            <span><%= admin_blog_post_card_date(post) %></span>
+          </div>
+          <div class="lp-blog-writer__card-foot">
+            <%= link_to t("admin.blog_posts.edit"), edit_admin_blog_post_path(post), class: "lp-blog-writer__ghost" %>
+          </div>
+        </div>
+      </article>
     <% end %>
-  </ul>
-
-  <div class="lp-admin__table-wrap lp-admin__table-wrap--blog-desktop">
-    <table class="lp-admin__table">
-      <thead>
-        <tr>
-          <th><%= t("admin.blog_posts.col_title") %></th>
-          <th><%= t("admin.blog_posts.col_status") %></th>
-          <th><%= t("admin.blog_posts.col_updated") %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @blog_posts.each do |post| %>
-          <tr>
-            <td>
-              <%= link_to post.title, edit_admin_blog_post_path(post), class: "lp-admin__text-link" %>
-            </td>
-            <td>
-              <% if post.status == "published" %>
-                <span class="lp-admin__badge"><%= t("admin.blog_posts.status_published") %></span>
-              <% else %>
-                <span class="lp-admin__badge is-muted"><%= t("admin.blog_posts.status_draft") %></span>
-              <% end %>
-            </td>
-            <td>
-              <% if post.status == "published" && post.published_at.present? %>
-                <%= l(post.published_at.to_date, format: :long) %>
-              <% else %>
-                <%= l(post.updated_at.to_date, format: :long) %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
   </div>
 <% else %>
   <p class="lp-admin__empty"><%= t("admin.blog_posts.empty") %></p>

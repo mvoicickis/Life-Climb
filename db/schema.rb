@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_190100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_201500) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -84,6 +84,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_190100) do
     t.string "status", default: "draft", null: false
     t.datetime "published_at"
     t.string "author_name"
+    t.string "seo_title"
+    t.string "meta_description"
+    t.string "focus_phrase"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
