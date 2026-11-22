@@ -3389,6 +3389,7 @@ en:
     cta_title: "Ready to climb your mountain?"
     cta_body: "Free to start. Pick one goal and win one battle today."
     empty: "No posts yet. Check back soon."
+    draft_preview_banner: "Draft preview — not public yet"
   landing:
     meta_title: "Life Climb — The mountain is yours to climb"
     meta_description: "Life Climb turns one real goal into a mountain — and gives you one clear step up it, every day."

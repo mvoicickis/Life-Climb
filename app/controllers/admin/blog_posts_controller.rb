@@ -2,7 +2,7 @@
 
 module Admin
   class BlogPostsController < BaseController
-    before_action :set_blog_post, only: %i[ edit update destroy publish unpublish remove_cover ]
+    before_action :set_blog_post, only: %i[ edit update destroy publish unpublish remove_cover preview ]
 
     def index
       @blog_posts = BlogPost.order(created_at: :desc)
@@ -18,6 +18,14 @@ module Admin
     end
 
     def edit
+    end
+
+    def preview
+      @draft_preview = !@blog_post.published?
+      @related_posts = @blog_post.published? ? BlogPost.related_for(@blog_post) : []
+      response.headers["X-Robots-Tag"] = "noindex, nofollow"
+
+      render :preview, layout: "blog"
     end
 
     def update

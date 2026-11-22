@@ -202,6 +202,7 @@ Rails.application.routes.draw do
     resources :impersonations, only: %i[ create destroy ]
     resources :blog_posts, except: :create do
       member do
+        get :preview
         patch :publish
         patch :unpublish
         delete :remove_cover

@@ -9,8 +9,14 @@
   <% content_for :social_image_alt, @blog_post.title %>
 <% end %>
 
-<% content_for :head do %>
-  <%= render "blog/post_json_ld", post: @blog_post %>
+<% unless @draft_preview %>
+  <% content_for :head do %>
+    <%= render "blog/post_json_ld", post: @blog_post %>
+  <% end %>
+<% end %>
+
+<% if @draft_preview %>
+  <p class="lp-public-blog__draft-banner" role="status"><%= t("blog.draft_preview_banner") %></p>
 <% end %>
 
 <article class="lp-public-blog__article">

@@ -14,7 +14,8 @@ export default class extends Controller {
   ]
 
   static values = {
-    saving: { type: Boolean, default: false }
+    saving: { type: Boolean, default: false },
+    previewUrl: String
   }
 
   async connect() {
@@ -49,11 +50,44 @@ export default class extends Controller {
     this.formTarget.requestSubmit()
   }
 
-  noteSaved() {
+  openPreview(event) {
+    event.preventDefault()
+    const url = this.previewUrlValue || event.currentTarget.getAttribute("href")
+    if (!url) return
+
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer)
+      this.debounceTimer = null
+    }
+
+    this.previewAfterSaveUrl = url
+    if (this.savingValue) return
+
+    this.save()
+    if (!this.savingValue) {
+      this.flushPreviewOpen()
+    }
+  }
+
+  noteSaved(event) {
+    if (event?.detail && event.detail.success === false) {
+      this.savingValue = false
+      return
+    }
+
     this.savingValue = false
     if (this.hasAutosaveFlagTarget) {
       this.autosaveFlagTarget.value = ""
     }
+    this.flushPreviewOpen()
+  }
+
+  flushPreviewOpen() {
+    if (!this.previewAfterSaveUrl) return
+
+    const url = this.previewAfterSaveUrl
+    this.previewAfterSaveUrl = null
+    window.open(url, "_blank", "noopener")
   }
 
   counterInput() {

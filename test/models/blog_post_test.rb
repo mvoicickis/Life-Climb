@@ -24,6 +24,20 @@ class BlogPostTest < ActiveSupport::TestCase
     assert_equal "custom-camp-slug", post.reload.slug
   end
 
+  test "remembers previous slug when a published post slug changes" do
+    post = BlogPost.create!(
+      title: "First title",
+      slug: "first-title",
+      status: "published",
+      published_at: 1.day.ago
+    )
+
+    post.update!(slug: "second-title")
+
+    assert_equal "second-title", post.reload.slug
+    assert_equal [ "first-title" ], post.previous_slugs
+  end
+
   test "slug must be unique" do
     BlogPost.create!(title: "First", slug: "shared-slug")
     duplicate = BlogPost.new(title: "Second", slug: "shared-slug")
