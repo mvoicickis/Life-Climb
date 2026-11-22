@@ -962,6 +962,26 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     assert StrategyGoal.exists?(plan.id)
   end
 
+  test "deleting root goal as turbo stream turbo_visits landing without server error" do
+    goal = root_goal_for_delete_landing_test!
+
+    delete strategy_goal_path(goal), as: :turbo_stream
+
+    assert_response :see_other
+    assert_match(/turbo_visit/, response.body)
+    assert_match world_path, response.body
+    assert_equal "archived", @journey.reload.status
+  end
+
+  test "deleting root goal as html redirects to my world when it is the only climb" do
+    goal = root_goal_for_delete_landing_test!
+
+    delete strategy_goal_path(goal)
+
+    assert_redirected_to world_path
+    assert_equal "archived", @journey.reload.status
+  end
+
   test "deleting a goal removes plan camps and battles under it" do
     goal = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, horizon: "goal", title: "Spine goal", position: 0
@@ -1202,5 +1222,18 @@ class StrategyGoalsControllerTest < ActionDispatch::IntegrationTest
     camp = plan.children.for_kind("project").find_by!(title: "Join open A")
     assert_equal open_a.stage, camp.stage
     assert_response :success
+  end
+
+  private
+
+  def root_goal_for_delete_landing_test!
+    @user.strategy_goals.for_kind("goal").roots.find_by(life_journey_id: @journey.id) ||
+      @user.strategy_goals.create!(
+        life_area: @area,
+        life_journey: @journey,
+        horizon: "goal",
+        title: "Delete me",
+        position: 0
+      )
   end
 end

@@ -182,7 +182,7 @@ class StrategyGoalsController < ApplicationController
       land_path = land_after_root_goal_destroy!(journey_to_archive)
       return respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream_action_tag("turbo_visit", url: land_path), status: :see_other
+          render turbo_stream: helpers.turbo_stream_action_tag("turbo_visit", url: land_path), status: :see_other
         end
         format.html do
           redirect_with_mountain_quiet_notice(land_path, notice: t("strategy.removed"))
