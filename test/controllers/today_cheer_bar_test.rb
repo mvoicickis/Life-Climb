@@ -66,7 +66,8 @@ class TodayCheerBarTest < ActionDispatch::IntegrationTest
       assert_select "#today-top-bar[data-today-top-bar-auto-cheer-value='true']", count: 1
       assert_select "#today-top-bar[data-today-top-bar-cheer-id-value=?]", cheer.id.to_s
       assert_select "#today-top-bar .lp-today-top__cheer .lp-today-top__hi",
-                    text: "Birdie cheered you 🙌"
+                    text: "Birdie cheered you"
+      assert_select "#today-top-bar .lp-today-top__cheer-badge .lp-icon svg", count: 1
       assert_select "#today-top-bar .lp-today-top__cheer .lp-today-top__date",
                     text: "just now"
 

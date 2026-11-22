@@ -638,7 +638,7 @@ es:
       greeting_morning: "Good morning, %{name}" # TODO: translate
       greeting_afternoon: "Good afternoon, %{name}" # TODO: translate
       greeting_evening: "Good evening, %{name}" # TODO: translate
-      cheered: "%{name} cheered you 🙌" # TODO: translate
+      cheered: "%{name} cheered you" # TODO: translate
       just_now: "just now" # TODO: translate
     battlefield:
       title: "Battles" # TODO: translate

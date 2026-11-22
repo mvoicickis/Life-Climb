@@ -27,7 +27,9 @@
       <% if cheer_from.present? %>
         <span class="lp-today-top__cheer-avatar">
           <%= render "shared/avatar_circle", user: cheer_from, size: :sm %>
-          <span class="lp-today-top__cheer-badge" aria-hidden="true">🙌</span>
+          <span class="lp-today-top__cheer-badge" aria-hidden="true">
+            <%= render "shared/lp_icon", name: "check", class_name: "lp-icon" %>
+          </span>
         </span>
         <div class="lp-today-top__copy">
           <p class="lp-today-top__hi"><%= t("dash.today_bar.cheered", name: cheer_from.display_name) %></p>
@@ -71,9 +73,7 @@
                 </span>
               <% else %>
                 <span class="lp-other-mountains-row__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 19L9.5 8.5L13 14L16 10L21 19Z"/>
-                  </svg>
+                  <%= render "shared/lp_icon", name: "mountain", class_name: "lp-icon" %>
                 </span>
               <% end %>
               <span class="lp-other-mountains-row__name"><%= entry.title %></span>
