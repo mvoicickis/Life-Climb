@@ -84,13 +84,13 @@ module Notifications
         result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal "Plan today", @last_payload["title"]
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal morning_fallback_for(Date.new(2026, 8, 6)), @last_payload["body"]
         assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal 0, @last_payload["badge"]
       end
     end
 
-    test "still sends weekday body when every battle today is done" do
+    test "still sends fallback body when every battle today is done" do
       travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
         seed_climb!(@user, title: "Get my driving license")
         won_at = Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 7, 0, 0)
@@ -108,7 +108,7 @@ module Notifications
         result = run_nudge_and_deliver
         assert_equal 1, result.sent
         assert_equal "Get my driving license", @last_payload["title"]
-        assert_equal "Big goals fall to small steps. Take one.", @last_payload["body"]
+        assert_equal morning_fallback_for(Date.new(2026, 8, 6)), @last_payload["body"]
         assert_equal 0, @last_payload["badge"]
       end
     end
@@ -160,7 +160,7 @@ module Notifications
 
         result = run_nudge_and_deliver
         assert_equal 1, result.sent
-        assert_equal "This is why you started. Keep going.", @last_payload["body"]
+        assert_equal morning_fallback_for(Date.new(2026, 8, 7)), @last_payload["body"]
         assert_equal Date.new(2026, 8, 7), @pref.reload.last_morning_nudge_sent_on
       end
     end
@@ -280,6 +280,10 @@ module Notifications
         result = run_nudge_and_deliver
         assert_equal 1, result.sent
       end
+    end
+
+    def morning_fallback_for(date)
+      Notifications::NudgeFallbackLine.for(user: @user, date: date, kind: :morning, locale: :en)
     end
   end
 end

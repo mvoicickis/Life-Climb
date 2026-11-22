@@ -113,18 +113,32 @@ lv:
       battle_body: "%{title}. Win it today."
       plan_title: "Plan today"
       plan_body: "Pick one battle for today."
-      weekday_sun: "Your future self will thank you. Start now." # TODO: translate
-      weekday_mon: "New week. Make it count." # TODO: translate
-      weekday_tue: "You wanted this. Go get it." # TODO: translate
-      weekday_wed: "Do one small thing for this today." # TODO: translate
-      weekday_thu: "Big goals fall to small steps. Take one." # TODO: translate
-      weekday_fri: "This is why you started. Keep going." # TODO: translate
-      weekday_sat: "Five minutes today moves you closer." # TODO: translate
+      lines: # TODO: translate
+        - "One small step today. You've got this."
+        - "Your mountain is waiting. Pick one battle."
+        - "Today is a good day to climb."
+        - "Start small. Win one."
+        - "One battle today moves you up."
+        - "New day, new step on your mountain."
+        - "What's one thing you'll win today?"
+        - "Small steps, big mountains."
+        - "Your climb continues today."
+        - "Ready? One battle is enough."
     push:
       today_battle: "Today: %{title}" # TODO: translate
       day_of_commitment: "Day %{n} of %{m}: %{rest}" # TODO: translate
     evening_push:
-      body: "One small step before bed." # TODO: translate
+      lines: # TODO: translate
+        - "One small step before bed."
+        - "Still time for one quick win."
+        - "A tiny win now counts too."
+        - "End the day with one step up."
+        - "One battle, then rest."
+        - "Your mountain is still there. One step?"
+        - "Five minutes can be a win."
+        - "Finish today with something small."
+        - "One more step, then sleep."
+        - "Small win tonight, proud tomorrow."
     high_five_push: # TODO: translate
       title: "%{name} 🙌"
       body: "%{name} high-fived your battle: %{title}"

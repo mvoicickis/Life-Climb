@@ -23,7 +23,7 @@ module Notifications
           body: NudgeBody.build(
             user: @user,
             date: @date,
-            fallback: I18n.t("notifications.evening_push.body")
+            fallback: NudgeFallbackLine.for(user: @user, date: @date, kind: :evening, locale: @locale)
           )
         )
       end
