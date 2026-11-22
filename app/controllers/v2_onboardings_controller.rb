@@ -123,7 +123,7 @@ class V2OnboardingsController < ApplicationController
   end
 
   def redirect_completed_user!
-    journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    journey = current_user.primary_focused_journey || current_user.life_journeys.with_destination.order(:id).first
     fallback = journey.present? ? life_journey_path(journey) : dashboard_path
     redirect_after_onboarding!(fallback: fallback)
   end

@@ -57,6 +57,12 @@ class LifeJourney < ApplicationRecord
   after_initialize :ensure_json_defaults
 
   scope :active, -> { where(status: "active") }
+  # Active climbs that still have a root destination (StrategyGoal spine).
+  scope :with_destination, lambda {
+    destination_journey_ids =
+      StrategyGoal.for_kind("goal").roots.where.not(life_journey_id: nil).select(:life_journey_id)
+    active.where(id: destination_journey_ids)
+  }
   scope :focused, -> { where.not(focus_position: nil).order(:focus_position) }
   scope :primary_focus, -> { where(focus_position: 1) }
 
