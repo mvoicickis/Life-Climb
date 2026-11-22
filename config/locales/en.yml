@@ -3803,6 +3803,7 @@ en:
     nav:
       dashboard: "Dashboard"
       testers: "Testers"
+      beta_emails: "Beta emails"
       users: "Users"
       statistics: "Statistics"
       feedback: "Feedback"
@@ -3811,6 +3812,38 @@ en:
       strategy: "AI Strategist"
       blog: "Blog"
       app: "Back to app"
+    beta_signups:
+      title: "Beta emails"
+      lead: "Android waitlist from landing and blog."
+      count:
+        one: "%{count} email"
+        other: "%{count} emails"
+      copy_all: "Copy all emails"
+      copied: "Copied!"
+      download_csv: "Download CSV"
+      filter_label: "Device"
+      filter:
+        all: "All"
+        android: "Android"
+      col_email: "Email"
+      col_date: "Date"
+      col_source: "Source page"
+      col_device: "Device"
+      col_actions: "Actions"
+      delete: "Remove"
+      confirm_delete: "Remove this email from the waitlist?"
+      deleted: "Email removed."
+      empty: "No emails yet."
+      device:
+        android: "Android"
+        iphone: "iPhone"
+        computer: "Computer"
+        unknown: "Unknown"
+      source:
+        landing: "Landing"
+        blog_list: "Blog list"
+        blog_post: "Blog post"
+        unknown: "Other"
     testers:
       title: "Testers"
       lead: "Who needs a personal message."

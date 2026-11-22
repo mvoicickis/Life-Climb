@@ -188,6 +188,7 @@ Rails.application.routes.draw do
     resource :strategy, only: %i[ show create ], controller: "strategy"
     resources :feedbacks, only: %i[ index destroy ]
     resources :testers, only: :index
+    resources :beta_signups, only: %i[index destroy]
     resources :tester_contacts, only: %i[ edit update ], param: :user_id
     resources :users, only: %i[ index show edit update destroy ] do
       member do
