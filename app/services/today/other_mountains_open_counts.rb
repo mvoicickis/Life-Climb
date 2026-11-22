@@ -29,7 +29,7 @@ module Today
       date = @date || Battles::WinsOnLocalDate.local_today_for(@user)
       focused_id = @focused_journey&.id
 
-      journey_rows = @user.life_journeys.active
+      journey_rows = @user.life_journeys.with_destination
         .where.not(id: focused_id)
         .left_outer_joins(:mountain_photo_attachment)
         .pluck(

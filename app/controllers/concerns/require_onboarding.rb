@@ -32,7 +32,7 @@ module RequireOnboarding
     return if hierarchy_gate_exempt?
     return if Strategy::HierarchyReady.call(user: current_user)
 
-    journey = current_user.primary_focused_journey || current_user.life_journeys.active.order(:id).first
+    journey = current_user.primary_focused_journey || current_user.life_journeys.with_destination.order(:id).first
     if journey
       redirect_to life_journey_path(journey), status: :see_other
     else

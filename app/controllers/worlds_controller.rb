@@ -2,7 +2,7 @@
 
 class WorldsController < ApplicationController
   def show
-    active = current_user.life_journeys.active.includes(:life_area).order(:id).to_a
+    active = current_user.life_journeys.with_destination.includes(:life_area).order(:id).to_a
     active_by_ring = active.group_by { |journey| journey.life_area.world_ring }
 
     # One batched read: root goals for every active journey (peak title on the ring sheet).
@@ -58,7 +58,7 @@ class WorldsController < ApplicationController
   end
 
   def focus
-    journey = current_user.life_journeys.active.find(params[:journey_id])
+    journey = current_user.life_journeys.with_destination.find(params[:journey_id])
     Focus::SetJourneys.call(user: current_user, journey_ids: [ journey.id ])
     redirect_to life_journey_path(journey)
   rescue Focus::SetJourneys::Error

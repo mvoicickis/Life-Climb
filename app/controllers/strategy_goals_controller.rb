@@ -158,6 +158,9 @@ class StrategyGoalsController < ApplicationController
     stash_destroyed_goal!(goal) if goal.day? || (goal.project? && !goal.quantified?)
     capture_trail_summit_was_summit!(plan_for_project) if plan_for_project.present?
 
+    was_root_goal = goal.goal?
+    journey_to_archive = goal.life_journey if was_root_goal
+
     begin
       if goal.goal?
         StrategyGoal.with_holding_destroy { goal.destroy! }
@@ -170,6 +173,19 @@ class StrategyGoalsController < ApplicationController
         format.turbo_stream { head :unprocessable_entity }
         format.html do
           fail_redirect(t("strategy.removed"), area_id: area_id, focus_id: parent_id)
+        end
+      end
+    end
+
+    if was_root_goal
+      @removed_id = removed_id
+      land_path = land_after_root_goal_destroy!(journey_to_archive)
+      return respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream_action_tag("turbo_visit", url: land_path), status: :see_other
+        end
+        format.html do
+          redirect_with_mountain_quiet_notice(land_path, notice: t("strategy.removed"))
         end
       end
     end
@@ -741,9 +757,26 @@ class StrategyGoalsController < ApplicationController
     celebration[:notice].presence
   end
 
+  # Archive the hollow journey, then focus another climb or send the player to My world.
+  def land_after_root_goal_destroy!(journey)
+    if journey.present?
+      journey.update!(status: "archived", focus_position: nil)
+    end
+    Goals::Current.clear_cache!(user: current_user)
+
+    next_journey = current_user.life_journeys.with_destination.order(:id).first
+    if next_journey
+      Focus::SetJourneys.call(user: current_user, journey_ids: [ next_journey.id ])
+      life_journey_path(next_journey)
+    else
+      world_path
+    end
+  end
+
   def strategy_redirect_path(area_id: @life_area&.id, focus_id: nil, goal_id: nil, peek: nil, sheet: nil, plan_id: nil)
     area_id ||= current_user.primary_focused_journey&.life_area_id
-    journey = current_user.life_journeys.active.find_by(life_area_id: area_id) ||
+    journey = current_user.life_journeys.with_destination.find_by(life_area_id: area_id) ||
+              current_user.life_journeys.with_destination.order(:id).first ||
               current_user.primary_focused_journey
     if journey
       life_journey_path(

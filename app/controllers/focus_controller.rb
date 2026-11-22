@@ -2,7 +2,7 @@ class FocusController < ApplicationController
   before_action :require_planning_v2
 
   def show
-    @journeys = current_user.life_journeys.active.order(:id)
+    @journeys = current_user.life_journeys.with_destination.order(:id)
     redirect_to new_life_journey_path, alert: t("focus.need_journey") and return if @journeys.empty?
 
     @selected_ids = current_user.focused_journeys.pluck(:id)
