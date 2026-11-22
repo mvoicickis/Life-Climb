@@ -1,4 +1,4 @@
-<%# locals: name (goal|camp|gear|flag|sign|tent|sword|fire|check), class_name %>
+<%# locals: name (goal|camp|gear|flag|sign|tent|sword|fire|mountain|check), class_name %>
 <% name = local_assigns.fetch(:name)
    class_name = local_assigns.fetch(:class_name, "lp-icon") %>
 <span class="<%= class_name %>" aria-hidden="true">
@@ -131,6 +131,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M5 5.5 C5 4.7 5.7 4 6.5 4 H12 V19 H6.5 C5.7 19 5 18.3 5 17.5 Z"/>
       <path d="M19 5.5 C19 4.7 18.3 4 17.5 4 H12 V19 H17.5 C18.3 19 19 18.3 19 17.5 Z"/>
+    </svg>
+  <% when "mountain" %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 19L9.5 8.5L13 14L16 10L21 19Z"/>
     </svg>
   <% end %>
 </span>

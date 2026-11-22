@@ -3154,6 +3154,10 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   transform: scale(0);
   opacity: 0;
 }
+.lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-badge .lp-icon {
+  width: 12px;
+  height: 12px;
+}
 .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering:not(.is-leaving) .lp-today-top__cheer-badge {
   animation: lp-today-badge-pop 320ms var(--lp-ease-spring) 200ms forwards;
 }

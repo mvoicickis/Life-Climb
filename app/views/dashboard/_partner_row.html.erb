@@ -21,7 +21,9 @@
             </p>
           </span>
         <% end %>
-        <span class="lp-partner-row__cheer is-done lp-btn-3d is-grey is-sm" aria-hidden="true">🙌</span>
+        <span class="lp-partner-row__cheer is-done lp-btn-3d is-grey is-sm" aria-hidden="true">
+          <%= render "shared/lp_icon", name: "check", class_name: "lp-icon" %>
+        </span>
       </div>
     <% else %>
       <div class="lp-partner-row"
