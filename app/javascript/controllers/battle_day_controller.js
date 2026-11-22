@@ -130,14 +130,8 @@ export default class extends Controller {
   }
 
   nudgeGoal() {
-    const photoFill = todayGoalBarFill()
-    if (photoFill) {
-      photoFill.closest(".lp-today-camp-bar")?.classList.add("is-glow")
-      window.setTimeout(() => {
-        photoFill.closest(".lp-today-camp-bar")?.classList.remove("is-glow")
-      }, 900)
-      return
-    }
+    // Photo Today camp bar: sheen only (no glow). Legacy goal bar keeps bounce/glow.
+    if (todayGoalBarFill()) return
     if (!this.hasGoalBarTarget) return
     this.goalBarTarget.classList.add("is-glow", "is-bounce")
     if (this.hasGoalPctTarget) this.goalPctTarget.classList.add("is-glow")
