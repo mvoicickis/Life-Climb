@@ -18,6 +18,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Name today(?:&#39;|')s battle/i, response.body)
     assert_no_match(/Win the battle\. Your mountain rises/, response.body)
     assert_no_match(/landing-scene-climb/, response.body)
+    assert_select "a.lp-legal-footer-links__link[href=?]", blog_path
     assert_select "a.lp-legal-footer-links__link[href=?]", privacy_path
     assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
     assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
@@ -81,6 +82,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_match(%r{https://lifeclimb\.app/}, response.body)
     assert_match(%r{https://lifeclimb\.app/about}, response.body)
     assert_match(%r{https://lifeclimb\.app/registration/new}, response.body)
+    assert_match %r{<loc>https://lifeclimb\.app/blog</loc>}, response.body
   end
 
   test "signed in users go to dashboard from root" do

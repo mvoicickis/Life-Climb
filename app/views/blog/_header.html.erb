@@ -1,0 +1,9 @@
+<header class="lp-public-blog__top">
+  <div class="lp-public-blog__top-inner">
+    <%= link_to root_path, class: "lp-public-blog__brand" do %>
+      <%= render "shared/lp_brand_mark", size: 28, class_name: "lp-public-blog__mark" %>
+      <span class="lp-public-blog__brand-name"><%= t("app_name") %></span>
+    <% end %>
+    <%= link_to t("blog.start_climbing"), new_registration_path, class: "lp-public-blog__cta" %>
+  </div>
+</header>

@@ -91,8 +91,40 @@ module ApplicationHelper
     "Life Climb — #{social_meta_description}"
   end
 
+  def social_share_title
+    content_for?(:social_title) ? content_for(:social_title) : social_meta_title
+  end
+
+  def social_share_description
+    content_for?(:social_description) ? content_for(:social_description) : page_meta_description
+  end
+
   def social_og_image_path
     "/og-lifeclimb-share.png"
+  end
+
+  def social_share_image_url
+    content_for?(:social_image) ? content_for(:social_image) : absolute_url(social_og_image_path)
+  end
+
+  def social_share_image_type
+    content_for?(:social_image_type) ? content_for(:social_image_type) : "image/png"
+  end
+
+  def social_share_image_width
+    content_for?(:social_image_width) ? content_for(:social_image_width) : "1200"
+  end
+
+  def social_share_image_height
+    content_for?(:social_image_height) ? content_for(:social_image_height) : "630"
+  end
+
+  def social_share_image_alt
+    content_for?(:social_image_alt) ? content_for(:social_image_alt) : "Life Climb — #{social_meta_description}"
+  end
+
+  def social_share_type
+    content_for?(:social_type) ? content_for(:social_type) : "website"
   end
 
   def absolute_url(path)

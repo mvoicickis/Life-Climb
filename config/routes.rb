@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   resource :two_factor_session, only: %i[ new create destroy ]
 
   root "pages#home"
+  get "blog", to: "blog#index", as: :blog
+  get "blog/:slug", to: "blog#show", as: :blog_post
+  get "sitemap.xml", to: "sitemaps#show", defaults: { format: :xml }
   get "privacy", to: "legal#privacy", as: :privacy
   get "terms", to: "legal#terms", as: :terms
   get "delete-account", to: "legal#delete_account", as: :delete_account
