@@ -200,7 +200,7 @@ Rails.application.routes.draw do
       end
     end
     resources :impersonations, only: %i[ create destroy ]
-    resources :blog_posts, except: :create do
+    resources :blog_posts do
       member do
         get :preview
         patch :publish

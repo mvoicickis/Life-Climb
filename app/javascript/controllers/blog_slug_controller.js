@@ -18,6 +18,14 @@ export default class extends Controller {
     this.slugEdited = this.slugDiffersFromTitle()
   }
 
+  isAutoSynced() {
+    return !this.slugEdited
+  }
+
+  refreshEditedState() {
+    this.slugEdited = this.slugDiffersFromTitle()
+  }
+
   slugify(raw) {
     return raw
       .toString()

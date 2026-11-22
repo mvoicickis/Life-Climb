@@ -47,7 +47,7 @@
     </header>
 
     <div class="lp-public-blog__prose action-text-content">
-      <%= @blog_post.body %>
+      <%= blog_post_body_html(@blog_post) %>
     </div>
 
     <% if @related_posts.any? %>

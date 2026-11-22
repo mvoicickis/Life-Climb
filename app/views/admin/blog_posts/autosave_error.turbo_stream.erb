@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "blog_save_status" do %>
+  <%= render "save_status", blog_post: @blog_post, save_state: :error %>
+<% end %>

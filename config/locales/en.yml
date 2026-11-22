@@ -4123,6 +4123,7 @@ en:
       save_status_published: "Published"
       saved_now: "Saved"
       saved_just_now: "just now"
+      not_saved_tap: "Not saved. Tap to try again."
       update: "Update"
       google_check: "Help people find this post"
       edit_google_text: "Change what Google shows"

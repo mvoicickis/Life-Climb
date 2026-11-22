@@ -9,12 +9,28 @@ module Admin
     end
 
     def new
-      @blog_post = BlogPost.create!(
-        title: t("admin.blog_posts.untitled"),
-        author_name: default_author_name,
-        status: "draft"
-      )
-      redirect_to edit_admin_blog_post_path(@blog_post)
+      @blog_post = BlogPost.new(author_name: default_author_name, status: "draft")
+      render :edit
+    end
+
+    def create
+      autosaving = params[:autosave].to_s == "1"
+      @blog_post = BlogPost.new(blog_post_params)
+      @blog_post.author_name = default_author_name if @blog_post.author_name.blank?
+      @replace_editor = true
+
+      if @blog_post.save
+        respond_to do |format|
+          format.turbo_stream { render :autosave, status: :ok }
+          format.html { redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.updated") }
+        end
+      else
+        @replace_editor = false
+        respond_to do |format|
+          format.turbo_stream { render :autosave_error, status: :unprocessable_entity }
+          format.html { render :edit, status: :unprocessable_entity }
+        end
+      end
     end
 
     def edit
@@ -31,11 +47,12 @@ module Admin
     def update
       autosaving = params[:autosave].to_s == "1"
       @blog_post.assign_attributes(blog_post_params)
+      @replace_editor = false
 
       if @blog_post.save
         respond_to do |format|
           format.turbo_stream do
-            autosaving ? render(:autosave) : head(:ok)
+            autosaving ? render(:autosave, status: :ok) : head(:ok)
           end
           format.html do
             redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.updated")
@@ -43,7 +60,7 @@ module Admin
         end
       else
         respond_to do |format|
-          format.turbo_stream { head :unprocessable_entity }
+          format.turbo_stream { render :autosave_error, status: :unprocessable_entity }
           format.html { render :edit, status: :unprocessable_entity }
         end
       end

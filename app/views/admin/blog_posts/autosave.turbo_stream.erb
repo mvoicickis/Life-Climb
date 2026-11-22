@@ -1,9 +1,25 @@
 <%= turbo_stream.replace "blog_save_status" do %>
-  <%= render "save_status", blog_post: @blog_post %>
+  <%= render "save_status", blog_post: @blog_post, save_state: :saved %>
 <% end %>
 <%= turbo_stream.replace "blog_google_preview" do %>
   <%= render "google_preview", blog_post: @blog_post %>
 <% end %>
 <%= turbo_stream.replace "blog_seo_checklist" do %>
   <%= render "seo_checklist", blog_post: @blog_post %>
+<% end %>
+<% if params[:slug_auto].to_s == "1" %>
+  <%= turbo_stream.replace "blog_post_slug_field" do %>
+    <%= text_field_tag "blog_post[slug]",
+          @blog_post.slug,
+          class: "lp-input lp-blog-writer__more-input",
+          data: {
+            blog_slug_target: "slug",
+            action: "input->blog-slug#markSlugEdited input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+          } %>
+  <% end %>
+<% end %>
+<% if @replace_editor %>
+  <%= turbo_stream.replace "blog_post_editor" do %>
+    <%= render "editor" %>
+  <% end %>
 <% end %>
