@@ -46,7 +46,7 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "Monday streak strip shows run pill for today and neutral futures" do
+  test "Monday streak strip shows run pill past and future markers" do
     monday = Date.new(2026, 8, 10)
     sunday = monday - 1
     travel_to Time.find_zone!(@zone).local(2026, 8, 10, 12, 0, 0) do
@@ -72,6 +72,7 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
       assert_select ".lp-streak-moment__week-labels span", count: 7
       assert_select ".lp-streak-moment__pill", count: 1
       assert_select ".lp-streak-moment__today", text: "✓"
+      assert_select ".lp-streak-moment__past", count: 0
       assert_select ".lp-streak-moment__future", count: 6
       assert_select ".lp-streak-moment__day-mark", count: 0
     end
