@@ -3499,6 +3499,54 @@ body:has(.lp-dash.is-today-v2) .lp-dash-habit__sheet.is-sheet-open {
   animation: lp-today-sheet-dialog-in var(--lp-motion-base) var(--lp-ease-out) both;
 }
 
+/* Today feel — sheet close (habit ⋯, quantity, strategy on Today) */
+@keyframes lp-today-sheet-scrim-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes lp-today-sheet-rise-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes lp-today-sheet-dialog-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+body:has(.lp-dash.is-today-v2) .lp-dash-habit__scrim.is-sheet-closing {
+  animation: lp-today-sheet-scrim-out var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+body:has(.lp-dash.is-today-v2) .lp-dash-habit__sheet.is-sheet-closing {
+  animation: lp-today-sheet-rise-out var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+.lp-dash.is-today-v2 .lp-strategy-sheet[open].is-sheet-closing::backdrop {
+  animation: lp-today-sheet-scrim-out var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+.lp-dash.is-today-v2 .lp-strategy-sheet[open].is-sheet-closing .lp-strategy-sheet__panel {
+  animation: lp-today-sheet-dialog-out var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
 /* Today feel — shared press (scale token; 3D tick keeps translateY on box). */
 .lp-dash.is-today-v2 .lp-today-v2-row,
 .lp-dash.is-today-v2 .lp-today-add-battle__expand,
@@ -3572,8 +3620,12 @@ body:has(.lp-dash.is-today-v2) .lp-dash-habit__sheet.is-sheet-open {
   .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill.is-shine::after,
   body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__scrim.is-sheet-open,
   body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__sheet.is-sheet-open,
+  body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__scrim.is-sheet-closing,
+  body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__sheet.is-sheet-closing,
   .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open]::backdrop,
-  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open] .lp-strategy-sheet__panel {
+  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open] .lp-strategy-sheet__panel,
+  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open].is-sheet-closing::backdrop,
+  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open].is-sheet-closing .lp-strategy-sheet__panel {
     animation: none !important;
     transition: none !important;
   }

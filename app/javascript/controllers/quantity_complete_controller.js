@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { dismissDialogAnimated } from "lib/lp_today_sheet_dismiss"
 
 // Intercepts checkbox complete for quantified battles, asks for an amount, then submits.
 export default class extends Controller {
@@ -43,20 +44,26 @@ export default class extends Controller {
     }
     input.value = String(amount)
 
-    this.close()
-    this.readyToSubmit = true
-    if (typeof this.formTarget.requestSubmit === "function") {
-      this.formTarget.requestSubmit()
+    const submitAfterClose = () => {
+      this.readyToSubmit = true
+      if (typeof this.formTarget.requestSubmit === "function") {
+        this.formTarget.requestSubmit()
+      } else {
+        this.formTarget.submit()
+      }
+    }
+
+    if (this.hasDialogTarget && this.dialogTarget.open) {
+      dismissDialogAnimated(this.dialogTarget, { onAfterClose: submitAfterClose })
     } else {
-      this.formTarget.submit()
+      submitAfterClose()
     }
   }
 
   close(event) {
     event?.preventDefault?.()
-    if (this.hasDialogTarget && this.dialogTarget.open) {
-      this.dialogTarget.close()
-    }
+    if (!this.hasDialogTarget || !this.dialogTarget.open) return
+    dismissDialogAnimated(this.dialogTarget)
   }
 
   backdropClose(event) {
