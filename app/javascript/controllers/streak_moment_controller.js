@@ -3,9 +3,6 @@ import { enqueue, release } from "lib/lp_overlay_queue"
 import { haptic, sound, prefersReducedMotion } from "lib/lp_feedback"
 
 const PHASES = [
-  "is-flying",
-  "is-impact",
-  "is-shaking",
   "is-avatar",
   "is-flipping",
   "is-titled",
@@ -16,7 +13,9 @@ const PHASES = [
   "is-final"
 ]
 
-// Streak moment overlay on Today — fireball sequence, then optional commit + reminder.
+const CHECK_STAGGER_MS = 70
+
+// Streak moment overlay on Today — brand white sequence, then optional commit + reminder.
 export default class extends Controller {
   static targets = [
     "celebrate",
@@ -25,13 +24,8 @@ export default class extends Controller {
     "commitCta",
     "error",
     "reminderHost",
-    "sparks",
-    "embers",
-    "fireball",
-    "fire",
-    "lottie",
     "todayMark",
-    "runner"
+    "check"
   ]
   static values = {
     offerCommit: { type: Boolean, default: false },
@@ -39,14 +33,12 @@ export default class extends Controller {
     declineUrl: String,
     notSaved: String,
     commitCtaTemplate: String,
-    shareText: String,
-    lottieUrl: { type: String, default: "" }
+    shareText: String
   }
 
   connect() {
     this._busy = false
     this._timers = []
-    this._lottie = null
     this.element.hidden = true
     this.element.classList.add("is-queued")
     enqueue("streak", {
@@ -67,35 +59,20 @@ export default class extends Controller {
 
   disconnect() {
     this.clearTimers()
-    this.destroyLottie()
     release("streak")
   }
 
   playSequence() {
     this.clearTimers()
     this.resetPhases()
-    const reduce = prefersReducedMotion()
-    this.maybeLoadLottie(reduce)
-    if (reduce) {
+    if (prefersReducedMotion()) {
       this.showFinal()
       return
     }
 
-    this.element.classList.add("is-flying")
-    sound("streak_whoosh")
-
-    this.later(() => {
-      this.element.classList.add("is-impact", "is-shaking")
-      this.burstImpactSparks(20)
-      haptic([ 20, 40, 20 ])
-      this.later(() => this.element.classList.remove("is-shaking"), 160)
-    }, 400)
-
-    this.later(() => {
-      this.element.classList.remove("is-flying")
-      this.element.classList.add("is-avatar")
-      this.seedEmbers()
-    }, 700)
+    // Timing kept from prior sequence (without fly/impact/Lottie):
+    // avatar land → flip at 900 → week/running at 1300 → today + confetti → cta/final at 1800
+    this.element.classList.add("is-avatar")
 
     this.later(() => {
       this.element.classList.add("is-flipping", "is-titled")
@@ -104,14 +81,7 @@ export default class extends Controller {
 
     this.later(() => {
       this.element.classList.add("is-week", "is-running")
-      this.later(() => {
-        if (this.hasTodayMarkTarget) this.todayMarkTarget.classList.add("is-pop")
-        this.miniTodayBurst()
-        sound("tap")
-        if (this.element.dataset.record === "true") {
-          this.element.classList.add("is-record")
-        }
-      }, 430)
+      this.revealChecks()
     }, 1300)
 
     this.later(() => {
@@ -122,72 +92,60 @@ export default class extends Controller {
   showFinal() {
     this.resetPhases()
     this.element.classList.add(
-      "is-impact",
       "is-avatar",
       "is-flipping",
       "is-titled",
       "is-week",
+      "is-running",
       "is-cta",
       "is-final"
     )
     if (this.element.dataset.record === "true") this.element.classList.add("is-record")
-    if (this.hasTodayMarkTarget) this.todayMarkTarget.classList.add("is-pop")
-    this.seedEmbers()
+    this.checkTargets.forEach((el) => el.classList.add("is-shown"))
+    if (this.hasTodayMarkTarget) this.todayMarkTarget.classList.add("is-shown", "is-pop")
   }
 
   resetPhases() {
     this.element.classList.remove(...PHASES)
-    if (this.hasSparksTarget) this.sparksTarget.innerHTML = ""
-    if (this.hasEmbersTarget) this.embersTarget.innerHTML = ""
-    if (this.hasTodayMarkTarget) this.todayMarkTarget.classList.remove("is-pop")
-    this.element.querySelectorAll(".lp-streak-moment__day-sparks").forEach((el) => el.remove())
-  }
-
-  seedEmbers() {
-    if (!this.hasEmbersTarget || prefersReducedMotion()) return
-    this.embersTarget.innerHTML = ""
-    const xs = [ -32, -22, -12, -4, 4, 12, 20, 28, 36 ]
-    xs.forEach((x, i) => {
-      const ember = document.createElement("span")
-      ember.className = "lp-streak-moment__ember"
-      ember.style.setProperty("--x", `${x}px`)
-      ember.style.setProperty("--delay", `${i * 160}ms`)
-      ember.style.setProperty("--ember-size", `${2 + (i % 3)}px`)
-      this.embersTarget.appendChild(ember)
-    })
-  }
-
-  burstImpactSparks(count) {
-    if (!this.hasSparksTarget || prefersReducedMotion()) return
-    this.sparksTarget.innerHTML = ""
-    for (let i = 0; i < count; i += 1) {
-      const bit = document.createElement("span")
-      bit.className = "lp-streak-moment__spark-bit"
-      const angle = (Math.PI * 2 * i) / count
-      const dist = 42 + Math.random() * 70
-      bit.style.setProperty("--x", `${Math.cos(angle) * dist}px`)
-      bit.style.setProperty("--y", `${Math.sin(angle) * dist}px`)
-      bit.style.setProperty("--d", `${480 + Math.random() * 260}ms`)
-      this.sparksTarget.appendChild(bit)
+    this.checkTargets.forEach((el) => el.classList.remove("is-shown"))
+    if (this.hasTodayMarkTarget) {
+      this.todayMarkTarget.classList.remove("is-pop", "is-shown")
+      this.todayMarkTarget.querySelectorAll(".lp-streak-moment__confetti").forEach((el) => el.remove())
     }
-    this.later(() => {
-      if (this.hasSparksTarget) this.sparksTarget.innerHTML = ""
-    }, 850)
   }
 
-  miniTodayBurst() {
+  revealChecks() {
+    this.checkTargets.forEach((el, i) => {
+      this.later(() => el.classList.add("is-shown"), i * CHECK_STAGGER_MS)
+    })
+    const afterChecks = this.checkTargets.length * CHECK_STAGGER_MS
+    this.later(() => {
+      if (this.hasTodayMarkTarget) {
+        this.todayMarkTarget.classList.add("is-shown", "is-pop")
+        this.burstGreenConfetti()
+        sound("tap")
+        haptic([ 20, 40, 20 ])
+      }
+      if (this.element.dataset.record === "true") {
+        this.element.classList.add("is-record")
+      }
+    }, afterChecks + 40)
+  }
+
+  burstGreenConfetti() {
     if (!this.hasTodayMarkTarget || prefersReducedMotion()) return
     const wrap = document.createElement("span")
-    wrap.className = "lp-streak-moment__day-sparks"
-    for (let i = 0; i < 7; i += 1) {
+    wrap.className = "lp-streak-moment__confetti"
+    for (let i = 0; i < 12; i += 1) {
       const bit = document.createElement("i")
-      const angle = (Math.PI * 2 * i) / 7
-      bit.style.setProperty("--x", `${Math.cos(angle) * (12 + Math.random() * 18)}px`)
-      bit.style.setProperty("--y", `${Math.sin(angle) * (12 + Math.random() * 18)}px`)
+      const angle = (Math.PI * 2 * i) / 12
+      const dist = 18 + Math.random() * 28
+      bit.style.setProperty("--x", `${Math.cos(angle) * dist}px`)
+      bit.style.setProperty("--y", `${Math.sin(angle) * dist}px`)
       wrap.appendChild(bit)
     }
     this.todayMarkTarget.appendChild(wrap)
-    this.later(() => wrap.remove(), 520)
+    this.later(() => wrap.remove(), 700)
   }
 
   later(fn, ms) {
@@ -363,58 +321,5 @@ export default class extends Controller {
     if (!this.hasErrorTarget) return
     this.errorTarget.hidden = true
     this.errorTarget.textContent = ""
-  }
-
-  // Optional: only runs when data-streak-moment-lottie-url-value is set
-  // (partial checks app/assets/animations/streak_fire.json exists).
-  async maybeLoadLottie(reduce) {
-    const url = this.lottieUrlValue
-    if (!url || !this.hasLottieTarget || !this.hasFireTarget) return
-
-    try {
-      const [{ default: lottie }, res] = await Promise.all([
-        import("lottie-web"),
-        fetch(url, { credentials: "same-origin" })
-      ])
-      if (!res.ok) return
-      const data = await res.json()
-      this.destroyLottie()
-      this.element.classList.add("is-lottie")
-      this.fireTarget.style.setProperty("--fire-size", "1.6")
-      this.fireTarget.style.setProperty("--fire-y", "-24px")
-      this._lottie = lottie.loadAnimation({
-        container: this.lottieTarget,
-        renderer: "svg",
-        loop: !reduce,
-        autoplay: !reduce,
-        animationData: data
-      })
-      if (reduce) {
-        this._lottie.addEventListener("DOMLoaded", () => {
-          try {
-            const last = Math.max(0, this._lottie.totalFrames - 1)
-            this._lottie.goToAndStop(last, true)
-          } catch (_err) {
-            // optional
-          }
-        })
-      }
-    } catch (_err) {
-      this.element.classList.remove("is-lottie")
-      this.destroyLottie()
-    }
-  }
-
-  destroyLottie() {
-    if (this._lottie) {
-      try {
-        this._lottie.destroy()
-      } catch (_err) {
-        // optional
-      }
-      this._lottie = null
-    }
-    if (this.hasLottieTarget) this.lottieTarget.innerHTML = ""
-    this.element.classList.remove("is-lottie")
   }
 }
