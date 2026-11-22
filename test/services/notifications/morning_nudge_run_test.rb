@@ -240,5 +240,46 @@ module Notifications
         assert_equal 0, @send_calls
       end
     end
+
+    test "sets animal icon on push when avatar is picked" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        @user.update!(avatar_key: "fox")
+
+        run_nudge_and_deliver
+
+        assert_match %r{lifeclimb\.app.*/avatars/fox\.png}, @last_payload["icon"]
+      end
+    end
+
+    test "omits icon when no avatar is picked" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        @user.update!(avatar_key: nil)
+
+        run_nudge_and_deliver
+
+        refute @last_payload.key?("icon")
+      end
+    end
+
+    test "skips when user already opened the app today" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        @user.update!(last_opened_on: Date.new(2026, 8, 6))
+
+        assert_no_enqueued_jobs only: SendWebPushJob do
+          result = MorningNudgeRun.call
+          assert_equal 0, result.sent
+        end
+        assert_nil @pref.reload.last_morning_nudge_sent_on
+      end
+    end
+
+    test "still sends when last open was yesterday" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        @user.update!(last_opened_on: Date.new(2026, 8, 5))
+
+        result = run_nudge_and_deliver
+        assert_equal 1, result.sent
+      end
+    end
   end
 end

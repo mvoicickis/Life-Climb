@@ -59,6 +59,11 @@ class SendWebPushJob < ApplicationJob
 
     message["token"] = user.signed_id(purpose: :notification_action, expires_in: 30.days)
 
+    if kind.in?(%w[morning evening]) && message["icon"].blank?
+      icon = Notifications::PushIconUrl.for(user: user)
+      message["icon"] = icon if icon.present?
+    end
+
     # Never send actions: [] — omit the key so the SW does not pass an empty array.
     message.delete("actions")
 

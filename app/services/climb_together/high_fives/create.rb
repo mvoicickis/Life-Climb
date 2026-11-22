@@ -75,7 +75,7 @@ module ClimbTogether
           "kind" => "high_five",
           "tag" => "high_five"
         }
-        icon = sender_avatar_icon_url
+        icon = Notifications::PushIconUrl.for(user: @from)
         payload["icon"] = icon if icon.present?
 
         SendWebPushJob.perform_later(to.id, payload)
@@ -86,14 +86,6 @@ module ClimbTogether
         )
       end
 
-      def sender_avatar_icon_url
-        asset = @from.avatar_push_image
-        return nil if asset.blank?
-
-        path = ActionController::Base.helpers.asset_path(asset)
-        path = "/#{path}" unless path.start_with?("/")
-        Notifications::PushAssetUrl.call(path)
-      end
     end
   end
 end
