@@ -28,7 +28,7 @@ class DeletedGoalCleanupTest < ActionDispatch::IntegrationTest
     get world_path
     assert_response :success
     assert_select ".lp-my-world-sheet__mtn-title", text: "Focused peak", count: 0
-    assert_select ".lp-my-world__reach", text: I18n.t("my_world.reaches", count: 0)
+    assert_select ".lp-my-world__reach", count: 0
   end
 
   test "deleting one goal focuses the survivor and hides the deleted climb from my world and other mountains" do
@@ -63,5 +63,40 @@ class DeletedGoalCleanupTest < ActionDispatch::IntegrationTest
 
   def root_goal_for(journey)
     @user.strategy_goals.for_kind("goal").roots.find_by!(life_journey_id: journey.id)
+  end
+
+  def seed_second_journey!(title:, area_key:, battle_title:)
+    LifeAreas::Select.call(user: @user, keys: [ area_key ])
+    area = @user.life_areas.v2_selected.find_by!(key: area_key)
+    journey = Journeys::Create.call(
+      user: @user,
+      life_area: area,
+      title: title,
+      ideal_scene: "Ideal #{title}",
+      current_reality: "Present #{title}",
+      next_win: "Next #{title}",
+      closer_percent: 20
+    )
+    goal = @user.strategy_goals.create!(
+      user: @user,
+      life_area: area,
+      life_journey: journey,
+      horizon: "goal",
+      title: title,
+      position: 0
+    )
+    plan = goal.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "plan", title: "Plan #{title}", position: 0
+    )
+    project = plan.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "project", title: "Camp #{title}", position: 0
+    )
+    project.children.create!(
+      user: @user, life_area: area, life_journey: journey,
+      horizon: "day", title: battle_title, scheduled_on: Date.current, position: 0
+    )
+    journey
   end
 end
