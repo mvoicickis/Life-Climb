@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_21_161000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_190100) do
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -55,6 +65,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_161000) do
     t.integer "user_id", null: false
     t.index ["user_id", "position"], name: "index_areas_on_user_id_and_position"
     t.index ["user_id"], name: "index_areas_on_user_id"
+  end
+
+  create_table "beta_signups", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "source_path"
+    t.string "device"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_beta_signups_on_email", unique: true
+  end
+
+  create_table "blog_posts", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.text "excerpt"
+    t.string "status", default: "draft", null: false
+    t.datetime "published_at"
+    t.string "author_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+    t.index ["status", "published_at"], name: "index_blog_posts_on_status_and_published_at"
   end
 
   create_table "buildings", force: :cascade do |t|
