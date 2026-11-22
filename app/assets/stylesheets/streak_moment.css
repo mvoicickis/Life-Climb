@@ -16,6 +16,7 @@
   --lp-fire-deep: #c2410c;
   --lp-fire-glow: #fbbf24;
   --lp-fire-pale: #fef3c7;
+  --lp-streak-nav-chrome: calc(0.6rem + var(--lp-tap) + env(safe-area-inset-bottom, 0px));
   position: absolute;
   inset: 0;
   z-index: 6;
@@ -23,7 +24,7 @@
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(16px + var(--lp-streak-nav-chrome));
   text-align: center;
   background: var(--lp-surface);
   color: var(--lp-surface);
@@ -99,6 +100,12 @@
   place-items: center;
   flex: none;
   overflow: visible;
+}
+
+@media (max-height: 640px) {
+  .lp-streak-moment__hero {
+    margin-top: 40px;
+  }
 }
 
 .lp-streak-moment__fireball {
@@ -499,6 +506,7 @@
   gap: 4px;
   align-items: center;
   min-height: 2.15rem;
+  grid-template-rows: minmax(2.15rem, auto);
 }
 
 .lp-streak-moment__pill {
@@ -506,6 +514,7 @@
   display: grid;
   grid-template-columns: repeat(var(--lp-streak-run, 1), 1fr);
   align-items: center;
+  grid-row: 1;
   min-height: 2.15rem;
   padding: 4px;
   border-radius: 999px;
@@ -581,22 +590,17 @@
   }
 }
 
-.lp-streak-moment__past {
-  width: 1.55rem;
-  height: 1.55rem;
-  margin: 0 auto;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--lp-surface) 28%, transparent);
-}
-
+.lp-streak-moment__past,
 .lp-streak-moment__future {
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
   width: 1.55rem;
   height: 1.55rem;
-  margin: 0 auto;
+  margin: 0;
   border-radius: 999px;
-  box-sizing: border-box;
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--lp-surface) 35%, transparent);
+  border: 0;
+  background: color-mix(in srgb, var(--lp-fire-deep) 62%, var(--lp-fire));
 }
 
 .lp-streak-moment__day-sparks {
@@ -717,7 +721,7 @@
   animation: lp-streak-fade-up 0.4s var(--lp-ease-spring) forwards;
 }
 
-.lp-streak-moment__continue {
+.lp-streak-moment__share {
   width: 100%;
   min-height: 56px;
   border: 0;
@@ -733,24 +737,24 @@
   box-shadow: 0 4px 0 color-mix(in srgb, var(--lp-ink) 15%, transparent);
 }
 
-.lp-streak-moment__continue:active {
+.lp-streak-moment__share:active {
   transform: translateY(4px);
   box-shadow: 0 0 0 transparent;
 }
 
-.lp-streak-moment__share {
+.lp-streak-moment__continue {
+  width: 100%;
+  min-height: var(--lp-tap);
   border: 0;
   background: transparent;
   color: var(--lp-surface);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  padding: 8px 12px;
-  min-height: 44px;
-  opacity: 0.88;
+  padding: 0.5rem 0.75rem;
 }
 
 .lp-streak-moment.is-final {
