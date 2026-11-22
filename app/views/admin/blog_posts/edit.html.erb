@@ -2,16 +2,18 @@
 
 <div class="lp-blog-writer"
      data-controller="blog-writer blog-slug blog-trix-toolbar blog-title-field"
-     data-action="trix-change->blog-writer#scheduleSave turbo:submit-end->blog-writer#noteSaved">
+     data-action="trix-change->blog-writer#scheduleSave turbo:submit-end->blog-writer#noteSaved"
+     data-blog-writer-preview-url-value="<%= preview_admin_blog_post_path(@blog_post) %>">
   <header class="lp-blog-writer__bar">
     <%= link_to t("admin.blog_posts.back_to_list"), admin_blog_posts_path, class: "lp-blog-writer__back" %>
     <%= render "save_status", blog_post: @blog_post %>
     <div class="lp-blog-writer__bar-actions">
       <%= link_to t("admin.blog_posts.preview"),
-            (@blog_post.slug.present? ? "/blog/#{@blog_post.slug}" : "#"),
+            preview_admin_blog_post_path(@blog_post),
             class: "lp-blog-writer__btn is-white",
             target: "_blank",
-            rel: "noopener" %>
+            rel: "noopener",
+            data: { action: "click->blog-writer#openPreview" } %>
       <% if @blog_post.status == "published" %>
         <button type="submit" form="blog-post-writer" class="lp-blog-writer__btn is-green" data-turbo="false">
           <%= t("admin.blog_posts.update") %>

@@ -20,6 +20,7 @@ class BlogPost < ApplicationRecord
   before_validation :normalize_slug
   before_validation :assign_excerpt_from_body
   before_validation :assign_seo_defaults
+  before_validation :remember_previous_slug, on: :update
 
   scope :published, lambda {
     where(status: "published")
@@ -29,6 +30,19 @@ class BlogPost < ApplicationRecord
 
   def self.related_for(post, limit: 3)
     published.where.not(id: post.id).limit(limit)
+  end
+
+  def self.find_published_by_current_slug(slug)
+    published.find_by(slug: slug)
+  end
+
+  def self.find_published_by_legacy_slug(slug)
+    return nil if slug.blank?
+
+    published.find_each do |post|
+      return post if Array(post.previous_slugs).include?(slug)
+    end
+    nil
   end
 
   def reading_minutes
@@ -96,6 +110,18 @@ class BlogPost < ApplicationRecord
     return if plain.blank?
 
     self.excerpt = plain.truncate(EXCERPT_LENGTH, omission: "")
+  end
+
+  def remember_previous_slug
+    return unless will_save_change_to_attribute?(:slug)
+    return unless status == "published"
+
+    old_slug = slug_in_database
+    return if old_slug.blank? || old_slug == slug
+
+    list = Array(previous_slugs)
+    list << old_slug unless list.include?(old_slug)
+    self.previous_slugs = list
   end
 
   def assign_seo_defaults

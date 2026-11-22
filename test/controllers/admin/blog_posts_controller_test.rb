@@ -136,6 +136,37 @@ module Admin
       assert_no_match %r{&amp;#39;}, response.body
     end
 
+    test "admin can preview a draft with noindex banner" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(title: "Draft preview test", status: "draft")
+      post_record.body = "Preview body text."
+      post_record.save!
+
+      get preview_admin_blog_post_path(post_record)
+
+      assert_response :success
+      assert_match I18n.t("blog.draft_preview_banner"), response.body
+      assert_match(/Preview body text/, response.body)
+      assert_match %r{<meta name="robots" content="noindex, nofollow">}, response.body
+    end
+
+    test "non admin cannot preview a post" do
+      sign_in_as @user
+      post_record = BlogPost.create!(title: "Secret draft", status: "draft")
+
+      get preview_admin_blog_post_path(post_record)
+
+      assert_redirected_to dashboard_path
+    end
+
+    test "guest cannot preview a post" do
+      post_record = BlogPost.create!(title: "Secret draft", status: "draft")
+
+      get preview_admin_blog_post_path(post_record)
+
+      assert_redirected_to new_session_path
+    end
+
     test "admin can destroy a post" do
       sign_in_as @admin
       post_record = BlogPost.create!(title: "Gone soon")

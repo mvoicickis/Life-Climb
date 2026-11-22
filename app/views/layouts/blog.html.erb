@@ -3,7 +3,7 @@
   <head>
     <title><%= page_meta_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="<%= content_for?(:blog_robots) ? yield(:blog_robots) : "index, follow" %>">
     <meta name="application-name" content="Life Climb">
     <%= render "shared/social_meta" %>
     <%= yield :head %>

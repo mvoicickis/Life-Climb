@@ -37,6 +37,36 @@ class BlogControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "scheduled post returns not found before published_at" do
+    travel_to Time.zone.parse("2026-11-22 12:00:00") do
+      scheduled = BlogPost.create!(
+        title: "Scheduled climb",
+        slug: "scheduled-climb",
+        status: "published",
+        published_at: 1.day.from_now
+      )
+
+      get blog_post_path(scheduled.slug)
+
+      assert_response :not_found
+    end
+  end
+
+  test "old slug redirects to current published post" do
+    BlogPost.create!(
+      title: "Renamed climb tips",
+      slug: "renamed-climb-tips",
+      status: "published",
+      published_at: 2.days.ago,
+      previous_slugs: [ "legacy-climb-tips" ]
+    )
+
+    get blog_post_path("legacy-climb-tips")
+
+    assert_redirected_to blog_post_path("renamed-climb-tips")
+    assert_response :moved_permanently
+  end
+
   test "published post renders meta og and json-ld" do
     get blog_post_path(@published.slug)
 

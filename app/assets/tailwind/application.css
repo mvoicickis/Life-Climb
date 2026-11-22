@@ -29518,6 +29518,19 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   border-bottom: 1px solid var(--lp-border);
 }
 
+.lp-public-blog__draft-banner {
+  max-width: 46rem;
+  margin: var(--lp-space-3) auto 0;
+  padding: var(--lp-space-3) var(--lp-space-4);
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  background: color-mix(in srgb, var(--lp-green) 14%, var(--lp-surface));
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  text-align: center;
+}
+
 .lp-public-blog__top-inner {
   display: flex;
   align-items: center;

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_201500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_210000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -89,6 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_201500) do
     t.string "seo_title"
     t.string "meta_description"
     t.string "focus_phrase"
+    t.json "previous_slugs", default: [], null: false
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
     t.index ["status", "published_at"], name: "index_blog_posts_on_status_and_published_at"
   end
@@ -668,14 +669,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_201500) do
     t.datetime "next_app_open_at"
     t.integer "push_offer_show_days", default: 0, null: false
     t.date "last_streak_moment_on"
-    t.date "last_finale_on"
-    t.integer "longest_streak_days", default: 0, null: false
     t.integer "streak_commitment_target_days"
     t.date "streak_commitment_started_on"
     t.integer "streak_commit_declines", default: 0, null: false
     t.string "avatar_key"
     t.boolean "sound_enabled", default: true, null: false
     t.datetime "play_app_seen_at"
+    t.date "last_finale_on"
+    t.integer "longest_streak_days", default: 0, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"

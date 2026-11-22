@@ -12,11 +12,20 @@ const ALLOW = new Set([
 
 export default class extends Controller {
   connect() {
+    this.beforeInit = this.beforeInit.bind(this)
+    this.element.addEventListener("trix-before-initialize", this.beforeInit)
     this.element.addEventListener("trix-initialize", this.trimToolbar)
   }
 
   disconnect() {
+    this.element.removeEventListener("trix-before-initialize", this.beforeInit)
     this.element.removeEventListener("trix-initialize", this.trimToolbar)
+  }
+
+  beforeInit() {
+    if (typeof Trix === "undefined") return
+    const heading = Trix.config.blockAttributes?.heading1
+    if (heading) heading.tagName = "h2"
   }
 
   trimToolbar = (event) => {
