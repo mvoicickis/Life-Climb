@@ -12,6 +12,7 @@
     <link rel="icon" href="/icon.svg?v=7" type="image/svg+xml">
     <%= render "shared/nunito_fonts" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= yield :head %>
     <%= javascript_importmap_tags %>
   </head>
   <body class="lp-min-h-screen antialiased lp-admin" data-controller="offline-page-cache">
@@ -27,6 +28,7 @@
         <nav class="lp-admin__nav" aria-label="Admin">
           <%= link_to t("admin.nav.dashboard"), admin_root_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "dashboard"}" %>
           <%= link_to t("admin.nav.testers"), admin_testers_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "testers"}" %>
+          <%= link_to t("admin.nav.blog"), admin_blog_posts_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "blog_posts"}" %>
           <%= link_to t("admin.nav.users"), admin_users_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "users"}" %>
           <%= link_to t("admin.nav.statistics"), admin_statistics_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "statistics"}" %>
           <%= link_to t("admin.nav.feedback"), admin_feedbacks_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "feedbacks"}" %>
