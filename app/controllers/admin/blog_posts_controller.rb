@@ -2,33 +2,42 @@
 
 module Admin
   class BlogPostsController < BaseController
-    before_action :set_blog_post, only: %i[ edit update destroy publish unpublish ]
+    before_action :set_blog_post, only: %i[ edit update destroy publish unpublish remove_cover ]
 
     def index
       @blog_posts = BlogPost.order(created_at: :desc)
     end
 
     def new
-      @blog_post = BlogPost.new(author_name: default_author_name, status: "draft")
-    end
-
-    def create
-      @blog_post = BlogPost.new(blog_post_params)
-      if @blog_post.save
-        redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.created")
-      else
-        render :new, status: :unprocessable_entity
-      end
+      @blog_post = BlogPost.create!(
+        title: t("admin.blog_posts.untitled"),
+        author_name: default_author_name,
+        status: "draft"
+      )
+      redirect_to edit_admin_blog_post_path(@blog_post)
     end
 
     def edit
     end
 
     def update
-      if @blog_post.update(blog_post_params)
-        redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.updated")
+      autosaving = params[:autosave].to_s == "1"
+      @blog_post.assign_attributes(blog_post_params)
+
+      if @blog_post.save
+        respond_to do |format|
+          format.turbo_stream do
+            autosaving ? render(:autosave) : head(:ok)
+          end
+          format.html do
+            redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.updated")
+          end
+        end
       else
-        render :edit, status: :unprocessable_entity
+        respond_to do |format|
+          format.turbo_stream { head :unprocessable_entity }
+          format.html { render :edit, status: :unprocessable_entity }
+        end
       end
     end
 
@@ -49,6 +58,14 @@ module Admin
       redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.unpublished")
     end
 
+    def remove_cover
+      @blog_post.cover_photo.purge
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to edit_admin_blog_post_path(@blog_post) }
+      end
+    end
+
     private
 
     def set_blog_post
@@ -56,7 +73,17 @@ module Admin
     end
 
     def blog_post_params
-      params.require(:blog_post).permit(:title, :slug, :excerpt, :author_name, :cover_photo, :body)
+      params.require(:blog_post).permit(
+        :title,
+        :slug,
+        :excerpt,
+        :author_name,
+        :cover_photo,
+        :body,
+        :seo_title,
+        :meta_description,
+        :focus_phrase
+      )
     end
 
     def default_author_name

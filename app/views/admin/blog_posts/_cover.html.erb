@@ -1,0 +1,28 @@
+<%# locals: (blog_post:, form:) %>
+<div id="blog_cover" class="lp-blog-writer__cover"
+     data-controller="blog-cover"
+     data-action="blog-cover:changed->blog-writer#scheduleSave">
+  <% if blog_post.cover_photo.attached? %>
+    <div class="lp-blog-writer__cover-image">
+      <%= image_tag blog_post.cover_photo, alt: "", class: "lp-blog-writer__cover-photo" %>
+      <div class="lp-blog-writer__cover-actions">
+        <button type="button" class="lp-blog-writer__ghost" data-action="blog-cover#openPicker"><%= t("admin.blog_posts.cover_change") %></button>
+        <%= button_to t("admin.blog_posts.cover_remove"),
+              remove_cover_admin_blog_post_path(blog_post),
+              method: :delete,
+              class: "lp-blog-writer__ghost",
+              form: { data: { turbo: true } } %>
+      </div>
+    </div>
+  <% else %>
+    <button type="button" class="lp-blog-writer__cover-drop"
+            data-blog-cover-target="drop"
+            data-action="click->blog-cover#openPicker dragover->blog-cover#dragOver dragleave->blog-cover#dragLeave drop->blog-cover#drop">
+      <%= t("admin.blog_posts.cover_drop") %>
+    </button>
+  <% end %>
+  <%= form.file_field :cover_photo,
+        accept: "image/*",
+        class: "sr-only",
+        data: { blog_cover_target: "input", action: "change->blog-cover#picked change->blog-writer#scheduleSave" } %>
+</div>

@@ -1,40 +1,147 @@
 <% content_for :title, @blog_post.title %>
+<%= render "head_assets" %>
 
-<header class="lp-admin__page-head">
-  <div class="lp-admin__page-head__title">
-    <p class="lp-admin__eyebrow"><%= t("admin.blog_posts.title") %></p>
-    <h1 class="lp-admin__h1"><%= @blog_post.title %></h1>
-    <p class="lp-admin__lead">
-      <% if @blog_post.status == "published" %>
-        <span class="lp-admin__badge"><%= t("admin.blog_posts.status_published") %></span>
-      <% else %>
-        <span class="lp-admin__badge is-muted"><%= t("admin.blog_posts.status_draft") %></span>
-      <% end %>
-    </p>
-  </div>
-  <div class="lp-admin__btn-row">
-    <% if @blog_post.status == "published" %>
+<div class="lp-blog-writer"
+     data-controller="blog-writer blog-slug blog-trix-toolbar"
+     data-action="trix-change->blog-writer#scheduleSave turbo:submit-end->blog-writer#noteSaved">
+  <header class="lp-blog-writer__bar">
+    <%= link_to t("admin.blog_posts.back_to_list"), admin_blog_posts_path, class: "lp-blog-writer__back" %>
+    <%= render "save_status", blog_post: @blog_post %>
+    <div class="lp-blog-writer__bar-actions">
       <%= link_to t("admin.blog_posts.preview"),
-            "/blog/#{@blog_post.slug}",
-            class: "lp-admin__ghost",
+            (@blog_post.slug.present? ? "/blog/#{@blog_post.slug}" : "#"),
+            class: "lp-blog-writer__btn is-white",
             target: "_blank",
             rel: "noopener" %>
-      <%= button_to t("admin.blog_posts.unpublish"),
-            unpublish_admin_blog_post_path(@blog_post),
-            method: :patch,
-            class: "lp-admin__ghost" %>
-    <% else %>
-      <%= button_to t("admin.blog_posts.publish"),
-            publish_admin_blog_post_path(@blog_post),
-            method: :patch,
-            class: "lp-admin__btn" %>
-    <% end %>
-    <%= button_to t("admin.blog_posts.delete"),
-          admin_blog_post_path(@blog_post),
-          method: :delete,
-          class: "lp-admin__ghost is-danger",
-          form: { data: { turbo_confirm: t("admin.blog_posts.confirm_delete") } } %>
-  </div>
-</header>
+      <% if @blog_post.status == "published" %>
+        <button type="submit" form="blog-post-writer" class="lp-blog-writer__btn is-green" data-turbo="false">
+          <%= t("admin.blog_posts.update") %>
+        </button>
+      <% else %>
+        <%= button_to t("admin.blog_posts.publish"),
+              publish_admin_blog_post_path(@blog_post),
+              method: :patch,
+              class: "lp-blog-writer__btn is-green" %>
+      <% end %>
+    </div>
+  </header>
 
-<%= render "form" %>
+  <%= form_with model: @blog_post,
+        url: admin_blog_post_path(@blog_post),
+        id: "blog-post-writer",
+        class: "lp-blog-writer__layout",
+        data: { blog_writer_target: "form", turbo: true } do |f| %>
+      <%= hidden_field_tag :autosave, "", data: { blog_writer_target: "autosaveFlag" } %>
+
+    <div class="lp-blog-writer__main">
+      <%= render "cover", blog_post: @blog_post, form: f %>
+
+      <%= f.text_field :title,
+            class: "lp-blog-writer__title",
+            placeholder: t("admin.blog_posts.writer_title_placeholder"),
+            required: true,
+            data: {
+              blog_slug_target: "title",
+              action: "input->blog-slug#syncFromTitle input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+            } %>
+
+      <div class="lp-blog-writer__body-wrap">
+        <%= f.rich_text_area :body, class: "lp-blog-writer__trix" %>
+      </div>
+
+      <details class="lp-blog-writer__more">
+        <summary><%= t("admin.blog_posts.more_settings") %></summary>
+        <div class="lp-blog-writer__more-grid">
+          <label class="lp-blog-writer__more-field">
+            <span><%= t("admin.blog_posts.field_slug") %></span>
+            <%= f.text_field :slug,
+                  class: "lp-input lp-blog-writer__more-input",
+                  data: {
+                    blog_slug_target: "slug",
+                    action: "input->blog-slug#markSlugEdited input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+                  } %>
+            <small class="lp-blog-writer__hint"><%= t("admin.blog_posts.slug_auto_hint") %></small>
+          </label>
+          <label class="lp-blog-writer__more-field">
+            <span><%= t("admin.blog_posts.field_excerpt") %></span>
+            <%= f.text_area :excerpt,
+                  class: "lp-input lp-blog-writer__more-input",
+                  rows: 2,
+                  data: { action: "input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur" } %>
+            <small class="lp-blog-writer__hint"><%= t("admin.blog_posts.excerpt_auto_hint") %></small>
+          </label>
+          <label class="lp-blog-writer__more-field">
+            <span><%= t("admin.blog_posts.field_author") %></span>
+            <%= f.text_field :author_name,
+                  class: "lp-input lp-blog-writer__more-input",
+                  data: { action: "input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur" } %>
+          </label>
+        </div>
+      </details>
+    </div>
+
+    <aside class="lp-blog-writer__seo">
+      <details class="lp-blog-writer__seo-panel">
+        <summary class="lp-blog-writer__seo-summary"><%= t("admin.blog_posts.google_check") %></summary>
+        <div class="lp-blog-writer__seo-inner">
+          <label class="lp-blog-writer__seo-field">
+            <span><%= t("admin.blog_posts.seo_title") %></span>
+            <%= f.text_field :seo_title,
+                  maxlength: BlogPost::SEO_TITLE_MAX,
+                  class: "lp-input lp-blog-writer__more-input",
+                  data: {
+                    blog_writer_target: "seoTitle",
+                    action: "input->blog-writer#counterInput input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+                  } %>
+            <small class="lp-blog-writer__hint">
+              <span data-blog-writer-target="seoTitleCount"><%= @blog_post.seo_title.to_s.length %></span>
+              / <%= BlogPost::SEO_TITLE_MAX %>
+            </small>
+          </label>
+          <label class="lp-blog-writer__seo-field">
+            <span><%= t("admin.blog_posts.meta_description") %></span>
+            <%= f.text_area :meta_description,
+                  maxlength: BlogPost::META_DESCRIPTION_MAX,
+                  rows: 3,
+                  class: "lp-input lp-blog-writer__more-input",
+                  data: {
+                    blog_writer_target: "metaDescription",
+                    action: "input->blog-writer#counterInput input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur"
+                  } %>
+            <small class="lp-blog-writer__hint">
+              <span data-blog-writer-target="metaCount"><%= @blog_post.meta_description.to_s.length %></span>
+              / <%= BlogPost::META_DESCRIPTION_MAX %>
+            </small>
+          </label>
+          <label class="lp-blog-writer__seo-field">
+            <span><%= t("admin.blog_posts.focus_phrase") %></span>
+            <%= f.text_field :focus_phrase,
+                  class: "lp-input lp-blog-writer__more-input",
+                  data: { action: "input->blog-writer#scheduleSave blur->blog-writer#saveOnBlur" } %>
+          </label>
+
+          <h3 class="lp-blog-writer__seo-heading"><%= t("admin.blog_posts.google_preview") %></h3>
+          <%= render "google_preview", blog_post: @blog_post %>
+
+          <h3 class="lp-blog-writer__seo-heading"><%= t("admin.blog_posts.checklist") %></h3>
+          <%= render "seo_checklist", blog_post: @blog_post %>
+          <p class="lp-blog-writer__hint"><%= t("admin.blog_posts.checklist_hint") %></p>
+
+          <div class="lp-blog-writer__more-actions">
+            <% if @blog_post.status == "published" %>
+              <%= button_to t("admin.blog_posts.unpublish"),
+                    unpublish_admin_blog_post_path(@blog_post),
+                    method: :patch,
+                    class: "lp-blog-writer__ghost" %>
+            <% end %>
+            <%= button_to t("admin.blog_posts.delete"),
+                  admin_blog_post_path(@blog_post),
+                  method: :delete,
+                  class: "lp-blog-writer__ghost is-danger",
+                  form: { data: { turbo_confirm: t("admin.blog_posts.confirm_delete") } } %>
+          </div>
+        </div>
+      </details>
+    </aside>
+  <% end %>
+</div>

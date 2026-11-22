@@ -1,0 +1,19 @@
+<%
+  checklist = blog_post.seo_checklist
+  rows = [
+    [ :focus_in_title, t("admin.blog_posts.check_focus_title") ],
+    [ :focus_in_first_100, t("admin.blog_posts.check_focus_body") ],
+    [ :two_headings, t("admin.blog_posts.check_headings") ],
+    [ :cover_photo, t("admin.blog_posts.check_cover") ],
+    [ :six_hundred_words, t("admin.blog_posts.check_word_count") ],
+    [ :meta_filled, t("admin.blog_posts.check_meta") ]
+  ]
+%>
+<ul class="lp-blog-writer__checklist" id="blog_seo_checklist">
+  <% rows.each do |key, label| %>
+    <li class="lp-blog-writer__checklist-row <%= checklist[key] ? "is-done" : "" %>">
+      <span class="lp-blog-writer__checklist-mark" aria-hidden="true"><%= checklist[key] ? "✓" : "○" %></span>
+      <span><%= label %></span>
+    </li>
+  <% end %>
+</ul>

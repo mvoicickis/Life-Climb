@@ -23,23 +23,34 @@ module Admin
       assert_redirected_to new_session_path
     end
 
-    test "admin can create a draft post" do
+    test "admin new creates a draft and opens the writer" do
       sign_in_as @admin
 
       assert_difference -> { BlogPost.count }, 1 do
-        post admin_blog_posts_path, params: {
-          blog_post: {
-            title: "Why one battle a day",
-            author_name: "Karen",
-            body: "Small steps add up."
-          }
-        }
+        get new_admin_blog_post_path
       end
 
       post = BlogPost.order(:id).last
       assert_equal "draft", post.status
-      assert_equal "why-one-battle-a-day", post.slug
       assert_redirected_to edit_admin_blog_post_path(post)
+    end
+
+    test "autosave never publishes" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(title: "Autosave me", status: "draft")
+
+      patch admin_blog_post_path(post_record), params: {
+        autosave: "1",
+        blog_post: {
+          title: "Still a draft",
+          body: "Updated body copy."
+        }
+      }, headers: { Accept: "text/vnd.turbo-stream.html" }
+
+      assert_response :success
+      post_record.reload
+      assert_equal "draft", post_record.status
+      assert_nil post_record.published_at
     end
 
     test "publish sets published_at on first publish" do
