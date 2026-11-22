@@ -55,8 +55,13 @@ class TodaySheetMotionContractTest < ActiveSupport::TestCase
     assert_includes @menu, "finishClose"
     assert_includes @menu, "afterExitMotion"
     assert_includes @menu, "requestAnimationFrame"
-    assert_includes @menu, "this.detailsTarget.querySelectorAll(LAYER_SELECTOR)"
-    refute_includes @menu, "this.element.querySelectorAll('[data-tcard-menu-target=\"scrim\"], [data-tcard-menu-target=\"sheet\"]')"
+    assert_includes @menu, "hasScrimTarget"
+    assert_includes @menu, "hasSheetTarget"
+    assert_includes @menu, "this.scrimTarget"
+    assert_includes @menu, "this.sheetTarget"
+    refute_includes @menu, "layerRoot"
+    refute_includes @menu, "this.detailsTarget.querySelectorAll"
+    refute_includes @menu, "this.element.querySelectorAll"
   end
 
   test "openEdit uses closeImmediate before opening edit sheet" do

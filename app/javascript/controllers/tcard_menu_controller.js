@@ -2,7 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 import { afterExitMotion, todaySheetExitEnabled } from "lib/lp_today_sheet_dismiss"
 
 const OPEN_EVENT = "lp-tcard-menu:open"
-const LAYER_SELECTOR = '[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'
 
 // Minimal details/summary menu: Escape, outside click, one open at a time.
 export default class extends Controller {
@@ -191,34 +190,23 @@ export default class extends Controller {
     return target === scrim || scrim.contains(target)
   }
 
-  layerRoot() {
-    return this.hasDetailsTarget ? this.detailsTarget : this.element
-  }
-
   scrimLayer() {
     for (const element of this._portaled || []) {
       if (element.getAttribute("data-tcard-menu-target") === "scrim") return element
     }
-    return this.layerRoot().querySelector('[data-tcard-menu-target="scrim"]')
+    return this.hasScrimTarget ? this.scrimTarget : null
   }
 
   sheetLayer() {
     for (const element of this._portaled || []) {
       if (element.getAttribute("data-tcard-menu-target") === "sheet") return element
     }
-    return this.layerRoot().querySelector('[data-tcard-menu-target="sheet"]')
+    return this.hasSheetTarget ? this.sheetTarget : null
   }
 
   layerContains(target) {
     if (!target) return false
-    for (const element of this._portaled || []) {
-      if (element.contains(target)) return true
-    }
-    for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
-      const element = this.layerRoot().querySelector(selector)
-      if (element?.contains(target)) return true
-    }
-    return false
+    return this.sheetLayerElements().some((element) => element.contains(target))
   }
 
   onKeydown(event) {
@@ -241,10 +229,7 @@ export default class extends Controller {
     if (!this.portalValue) return
     if (!this._portaled) this._portaled = []
 
-    for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
-      const element = this.layerRoot().querySelector(selector)
-      if (!element) continue
-
+    for (const element of this.sheetLayerElements()) {
       if (!element._portalHome) {
         element._portalHome = { parent: element.parentNode, next: element.nextSibling }
       }
@@ -279,6 +264,8 @@ export default class extends Controller {
     }
   }
 
+  // This controller's Stimulus targets only (works inside or beside <details>).
+  // Never query this.element — nested tcard-menu hosts must keep their own layers.
   sheetLayerElements() {
     const seen = new Set()
     const out = []
@@ -288,9 +275,8 @@ export default class extends Controller {
       out.push(el)
     }
 
-    if (this.hasDetailsTarget) {
-      this.detailsTarget.querySelectorAll(LAYER_SELECTOR).forEach(push)
-    }
+    if (this.hasScrimTarget) push(this.scrimTarget)
+    if (this.hasSheetTarget) push(this.sheetTarget)
 
     for (const el of this._portaled || []) {
       const name = el.getAttribute("data-tcard-menu-target")
