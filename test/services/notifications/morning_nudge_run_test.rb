@@ -69,7 +69,7 @@ module Notifications
         assert_equal "morning", @last_payload["kind"]
         assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Today: Warm up", @last_payload["body"]
-        assert_equal "/dashboard", @last_payload["url"]
+        assert_equal nudge_url_for(Date.new(2026, 8, 6)), @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
         expected_badge = Today::BattleOpenCount.for(user: @user, on: Date.new(2026, 8, 6))
@@ -122,6 +122,19 @@ module Notifications
         assert_equal 1, result.sent
         assert_equal 1, @send_calls
         assert_equal "Today: Already planned", @last_payload["body"]
+      end
+    end
+
+    test "push url includes battle id when body names today battle" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 8, 0, 0) do
+        seed_climb!(@user, today_mission: "Already planned")
+        todo = @user.daily_todos.for_day(Date.new(2026, 8, 6)).incomplete.first
+        assert todo.present?
+
+        run_nudge_and_deliver
+
+        assert_equal "Today: Already planned", @last_payload["body"]
+        assert_equal "/dashboard?battle=#{todo.id}", @last_payload["url"]
       end
     end
 
@@ -284,6 +297,11 @@ module Notifications
 
     def morning_fallback_for(date)
       Notifications::NudgeFallbackLine.for(user: @user, date: date, kind: :morning, locale: :en)
+    end
+
+    def nudge_url_for(date)
+      open_battle = Notifications::OpenBattle.for(user: @user, on: date)
+      Notifications::NudgeDashboardUrl.for(open_battle: open_battle)
     end
   end
 end
