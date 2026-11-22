@@ -85,7 +85,6 @@ module ClimbTogether
           "from=#{@from.id} to=#{to.id} #{e.class}: #{e.message}"
         )
       end
-
     end
   end
 end
