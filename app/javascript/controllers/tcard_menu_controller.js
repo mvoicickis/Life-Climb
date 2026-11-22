@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { afterExitMotion, todaySheetExitEnabled } from "lib/lp_today_sheet_dismiss"
 
 const OPEN_EVENT = "lp-tcard-menu:open"
 
@@ -24,8 +25,8 @@ export default class extends Controller {
     if (this.hasDetailsTarget && this._onDetailsToggle) {
       this.detailsTarget.removeEventListener("toggle", this._onDetailsToggle)
     }
-    this.restoreFromPortal()
-    this.unbindDocument()
+    this._closing = false
+    this.finishClose()
     window.removeEventListener(OPEN_EVENT, this._onOpenElsewhere)
   }
 
@@ -37,25 +38,90 @@ export default class extends Controller {
       this.portalToBody()
       requestAnimationFrame(() => this.bindDocument())
       this.positionMenu()
-      window.addEventListener("resize", this._onReposition)
-      window.visualViewport?.addEventListener("resize", this._onReposition)
-      window.visualViewport?.addEventListener("scroll", this._onReposition)
+      this.addRepositionListeners()
+    } else if (this._closing) {
+      // Animated close in progress; teardown runs in finishClose.
+    } else if (this.layersVisible() && this.shouldAnimateClose()) {
+      this.beginExitAnimation()
+    } else if (this.layersVisible()) {
+      this.finishClose()
     } else {
-      this.setPortalLayersVisible(false)
-      this.restoreFromPortal()
-      this.unbindDocument()
-      window.removeEventListener("resize", this._onReposition)
-      window.visualViewport?.removeEventListener("resize", this._onReposition)
-      window.visualViewport?.removeEventListener("scroll", this._onReposition)
+      this.clearOpenListeners()
     }
   }
 
   close(event) {
     event?.preventDefault?.()
     if (!this.hasDetailsTarget) return
-    this.detailsTarget.open = false
-    this.setPortalLayersVisible(false)
+    if (this._closing) return
+    this.closeAnimated()
+  }
+
+  closeAnimated() {
+    if (!this.hasDetailsTarget) return
+    if (this._closing) return
+    if (!this.detailsTarget.open && !this.layersVisible()) return
+
+    if (!this.shouldAnimateClose()) {
+      this.finishClose()
+      return
+    }
+
+    this.beginExitAnimation()
+  }
+
+  beginExitAnimation() {
+    if (this._closing) return
+    this._closing = true
+    this.unbindDocument()
+
+    for (const element of this.visibleLayerElements()) {
+      element.classList.remove("is-sheet-open")
+      element.classList.add("is-sheet-closing")
+    }
+
+    const sheet = this.sheetLayer()
+    const scrim = this.scrimLayer()
+    afterExitMotion([scrim, sheet], () => this.finishClose())
+  }
+
+  finishClose() {
+    this._closing = false
+
+    for (const element of this.sheetLayerElements()) {
+      element.hidden = true
+      element.classList.remove("is-sheet-open", "is-sheet-closing")
+    }
+
     this.restoreFromPortal()
+    this.clearOpenListeners()
+
+    if (this.hasDetailsTarget && this.detailsTarget.open) {
+      this.detailsTarget.open = false
+    }
+  }
+
+  shouldAnimateClose() {
+    if (!todaySheetExitEnabled()) return false
+    if (!this.portalValue) return false
+    return this.visibleLayerElements().length > 0
+  }
+
+  layersVisible() {
+    return this.sheetLayerElements().some((el) => !el.hidden)
+  }
+
+  visibleLayerElements() {
+    return this.sheetLayerElements().filter((el) => !el.hidden)
+  }
+
+  addRepositionListeners() {
+    window.addEventListener("resize", this._onReposition)
+    window.visualViewport?.addEventListener("resize", this._onReposition)
+    window.visualViewport?.addEventListener("scroll", this._onReposition)
+  }
+
+  clearOpenListeners() {
     this.unbindDocument()
     window.removeEventListener("resize", this._onReposition)
     window.visualViewport?.removeEventListener("resize", this._onReposition)
@@ -190,7 +256,9 @@ export default class extends Controller {
     const elements = this.sheetLayerElements()
     for (const element of elements) {
       element.hidden = !visible
-      if (!visible) element.classList.remove("is-sheet-open")
+      if (!visible) {
+        element.classList.remove("is-sheet-open", "is-sheet-closing")
+      }
     }
     if (visible) {
       requestAnimationFrame(() => {

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { dismissDialogAnimated } from "lib/lp_today_sheet_dismiss"
 
 // Opens/closes the Today quest steps sheet (native <dialog>).
 export default class extends Controller {
@@ -14,12 +15,12 @@ export default class extends Controller {
 
   close(event) {
     event?.preventDefault()
-    if (!this.hasDialogTarget) return
-    this.dialogTarget.close()
+    if (!this.hasDialogTarget || !this.dialogTarget.open) return
+    dismissDialogAnimated(this.dialogTarget)
   }
 
   backdropClose(event) {
     if (!this.hasDialogTarget) return
-    if (event.target === this.dialogTarget) this.dialogTarget.close()
+    if (event.target === this.dialogTarget) this.close()
   }
 }
