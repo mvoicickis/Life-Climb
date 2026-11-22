@@ -37,6 +37,7 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-skeleton__goal", count: 1
     assert_select ".lp-today-skeleton__battles .lp-today-skeleton__row", count: 3
     assert_select "#today-dash-root[data-controller*='today-loading']", count: 1
+    assert_select "#today-dash-root[data-controller*='today-battle-deep-link']", count: 1
   end
 
   test "battle rows have no camp label and use 3d tick markup" do
@@ -47,6 +48,7 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_no_match(/Today's battlefield/, response.body)
     assert_no_match(/⚔/, css_select("#today-battlefield-field .lp-today-v2-field__title").text)
     assert_select "#today-battlefield-rows .lp-today-v2-row__title", minimum: 1
+    assert_select "#today-battlefield-rows [data-todo-id='#{@todo.id}']", count: 1
     assert_select "#today-battlefield-rows .lp-today-v2-row__camp", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row__camp-inline", count: 0
     assert_select "#today-battlefield-rows .lp-today-v2-row__box", minimum: 1

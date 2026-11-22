@@ -227,6 +227,18 @@ body:has(.lp-dash.is-today-v2) {
   animation: todayClearOut 0.3s ease forwards;
 }
 
+.lp-today-v2-row.is-push-highlight {
+  border-color: color-mix(in srgb, var(--lp-green-deep) 55%, var(--lp-border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lp-green) 28%, transparent);
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-today-v2-row.is-push-highlight {
+    transition: none;
+  }
+}
+
 .lp-today-v2-row__stripe {
   position: absolute;
   left: 0;

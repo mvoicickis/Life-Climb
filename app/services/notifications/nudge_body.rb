@@ -4,9 +4,10 @@ module Notifications
   module NudgeBody
     module_function
 
-    def build(user:, date:, fallback:)
-      battle = OpenBattleTitle.for(user: user, on: date)
-      rest = battle.presence || fallback
+    def build(user:, date:, fallback:, open_battle: nil)
+      open_battle ||= OpenBattle.for(user: user, on: date)
+      battle_title = open_battle&.title
+      rest = battle_title.presence || fallback
       commitment = Today::StreakCommitment.peek(user, date: date)
 
       if commitment
@@ -16,8 +17,8 @@ module Notifications
           m: commitment[:target],
           rest: rest
         )
-      elsif battle.present?
-        I18n.t("notifications.push.today_battle", title: battle)
+      elsif battle_title.present?
+        I18n.t("notifications.push.today_battle", title: battle_title)
       else
         fallback
       end

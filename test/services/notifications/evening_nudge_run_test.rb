@@ -59,7 +59,8 @@ module Notifications
         assert_equal "evening", @last_payload["kind"]
         assert_equal "Get my driving license", @last_payload["title"]
         assert_equal "Today: Warm up", @last_payload["body"]
-        assert_equal "/dashboard", @last_payload["url"]
+        todo = @user.daily_todos.for_day(Date.new(2026, 8, 6)).find_by!(title: "Warm up")
+        assert_equal "/dashboard?battle=#{todo.id}", @last_payload["url"]
         assert_equal "daily-nudge", @last_payload["tag"]
         assert_equal "https://lifeclimb.app/images/push_mountain.webp", @last_payload["image"]
         refute @last_payload.key?("actions")

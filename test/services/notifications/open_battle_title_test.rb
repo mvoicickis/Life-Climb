@@ -27,6 +27,8 @@ module Notifications
       )
 
       assert_equal "First todo", OpenBattleTitle.for(user: @user, on: date)
+      open = OpenBattle.for(user: @user, on: date)
+      assert_equal @user.daily_todos.find_by!(title: "First todo").id, open.daily_todo_id
     end
 
     test "falls back to due strategy goal when no todos" do

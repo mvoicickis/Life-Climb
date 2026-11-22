@@ -50,7 +50,9 @@ module Notifications
       return false unless gate.allowed?
 
       locale = :en
-      copy = EveningNudgeCopy.for(user: user, date: local_date, locale: locale)
+      open_battle = OpenBattle.for(user: user, on: local_date)
+      EnsureFocusForOpenBattle.call(user: user, open_battle: open_battle)
+      copy = EveningNudgeCopy.for(user: user, date: local_date, locale: locale, open_battle: open_battle)
       badge = Today::BattleOpenCount.for(user: user, on: local_date)
 
       return false unless claim_send_date!(pref, local_date)
@@ -62,7 +64,7 @@ module Notifications
         {
           "title" => copy.title,
           "body" => copy.body,
-          "url" => "/dashboard",
+          "url" => copy.url,
           "kind" => KIND,
           "badge" => badge,
           "tag" => "daily-nudge",
