@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class BetaSignup < ApplicationRecord
+  scope :newest_first, -> { order(created_at: :desc) }
+
   DEVICES = [
     Admin::DeviceFromUserAgent::DEVICE_ANDROID,
     Admin::DeviceFromUserAgent::DEVICE_IPHONE,

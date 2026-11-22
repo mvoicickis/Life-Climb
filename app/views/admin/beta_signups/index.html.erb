@@ -1,0 +1,91 @@
+<% content_for :title, t("admin.beta_signups.title") %>
+
+<div data-controller="admin-copy-emails"
+     data-admin-copy-emails-emails-value="<%= j @copy_emails %>"
+     data-admin-copy-emails-copied-value="<%= j t("admin.beta_signups.copied") %>">
+  <header class="lp-admin__page-head">
+    <div>
+      <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+      <h1 class="lp-admin__h1"><%= t("admin.beta_signups.title") %></h1>
+      <p class="lp-admin__lead"><%= t("admin.beta_signups.lead") %></p>
+      <p class="lp-admin__meta"><%= t("admin.beta_signups.count", count: @total_count) %></p>
+    </div>
+    <div class="lp-admin__btn-row">
+      <button type="button"
+              class="lp-admin__ghost"
+              data-admin-copy-emails-target="button"
+              data-action="click->admin-copy-emails#copy">
+        <%= t("admin.beta_signups.copy_all") %>
+      </button>
+      <%= link_to t("admin.beta_signups.download_csv"),
+            admin_beta_signups_path(format: :csv, filter: @filter),
+            class: "lp-admin__ghost" %>
+    </div>
+  </header>
+
+  <div class="lp-admin__toolbar" role="navigation" aria-label="<%= t("admin.beta_signups.filter_label") %>">
+    <%= link_to t("admin.beta_signups.filter.all"),
+          beta_signups_index_path(filter: Admin::BetaSignupsController::FILTER_ALL),
+          class: beta_signups_filter_class(Admin::BetaSignupsController::FILTER_ALL, @filter) %>
+    <%= link_to t("admin.beta_signups.filter.android"),
+          beta_signups_index_path(filter: Admin::BetaSignupsController::FILTER_ANDROID),
+          class: beta_signups_filter_class(Admin::BetaSignupsController::FILTER_ANDROID, @filter) %>
+  </div>
+
+  <% if @beta_signups.any? %>
+    <ul class="lp-admin__stack lp-admin__list--blog-mobile" aria-label="<%= t("admin.beta_signups.title") %>">
+      <% @beta_signups.each do |signup| %>
+        <li class="lp-admin__panel">
+          <div class="lp-admin__panel-head">
+            <div class="lp-admin__list-row__main">
+              <strong><%= signup.email %></strong>
+              <p class="lp-admin__meta">
+                <%= l(signup.created_at.to_date, format: :long) %>
+                · <%= admin_beta_signup_source_label(signup) %>
+                · <%= admin_beta_signup_device_label(signup.device) %>
+              </p>
+            </div>
+            <%= button_to t("admin.beta_signups.delete"),
+                  admin_beta_signup_path(signup, filter: @filter),
+                  method: :delete,
+                  class: "lp-admin__text-link is-danger",
+                  form: { data: { turbo_confirm: t("admin.beta_signups.confirm_delete") } } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="lp-admin__table-wrap lp-admin__table-wrap--blog-desktop">
+      <table class="lp-admin__table">
+        <thead>
+          <tr>
+            <th><%= t("admin.beta_signups.col_email") %></th>
+            <th><%= t("admin.beta_signups.col_date") %></th>
+            <th><%= t("admin.beta_signups.col_source") %></th>
+            <th><%= t("admin.beta_signups.col_device") %></th>
+            <th><%= t("admin.beta_signups.col_actions") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @beta_signups.each do |signup| %>
+            <tr>
+              <td><strong><%= signup.email %></strong></td>
+              <td><%= l(signup.created_at.to_date, format: :long) %></td>
+              <td><%= admin_beta_signup_source_label(signup) %></td>
+              <td><%= admin_beta_signup_device_label(signup.device) %></td>
+              <td class="lp-admin__row-actions">
+                <%= button_to t("admin.beta_signups.delete"),
+                      admin_beta_signup_path(signup, filter: @filter),
+                      method: :delete,
+                      class: "lp-admin__text-link is-danger",
+                      form: { data: { turbo_confirm: t("admin.beta_signups.confirm_delete") } } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="lp-admin__empty"><%= t("admin.beta_signups.empty") %></p>
+  <% end %>
+</div>
