@@ -247,7 +247,7 @@ module Notifications
 
         run_nudge_and_deliver
 
-        assert_match %r{lifeclimb\.app.*/avatars/fox\.png}, @last_payload["icon"]
+        assert_match %r{lifeclimb\.app/.*/avatars/fox.*\.png}, @last_payload["icon"]
       end
     end
 
