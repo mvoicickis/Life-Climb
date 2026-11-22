@@ -60,12 +60,12 @@ function vibrate(ms) {
 
 export function hapticTap() {
   if (!feelEnabled() || prefersReducedMotion()) return
-  vibrate(10)
+  vibrate(18)
 }
 
 export function hapticSuccess() {
   if (!feelEnabled() || prefersReducedMotion()) return
-  vibrate(12)
+  vibrate([ 30, 50, 60 ])
 }
 
 export function haptic(ms = 12) {
