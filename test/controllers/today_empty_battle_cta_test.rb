@@ -48,6 +48,33 @@ class TodayEmptyBattleCtaControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test "pending daily mission never replaces the green next step" do
+    Onboarding::Run.call(
+      user: @user,
+      area_key: "career",
+      title: "Ship LifePoints",
+      ideal_scene: "App live",
+      current_reality: "Building",
+      next_win: "Launch",
+      today_mission: "Ship one thing",
+      closer_percent: 20,
+      route_mission: false
+    )
+    @journey = @user.reload.primary_focused_journey
+    @user.update!(character: @user.character.presence || "fox")
+    clear_today_battles!(@journey)
+    mission = @journey.missions.for_day(Date.current).primary.incomplete.order(:id).first
+    assert mission, "setup needs an open daily mission"
+
+    assert_empty_battle_pill!(
+      label: I18n.t("dash.battlefield.empty_cta.set_goal"),
+      href_includes: "/life_journeys/#{ @journey.id }"
+    )
+    assert_select ".lp-today-v2-row", count: 0
+    assert_select "form[action=?]", mission_completion_path(mission), count: 0
+    assert_equal "pending", mission.reload.status
+  end
+
   test "empty battlefield shows inline add when project is missing" do
     @journey = seed_climb!(@user, today_mission: "Ship")
     dismiss_onboarding_missions!(@user)

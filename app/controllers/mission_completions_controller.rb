@@ -9,7 +9,6 @@ class MissionCompletionsController < ApplicationController
     end
 
     Missions::Complete.call(user: current_user, mission: mission)
-    Missions::EnsureDaily.call(user: current_user) if current_user.planning_v2?
 
     streak = Climb::Streak.touch!(user: current_user)
     pb = Climb::PersonalBest.record!(user: current_user, awarded: mission.lp_reward.to_i)
@@ -33,7 +32,7 @@ class MissionCompletionsController < ApplicationController
       )
     end
 
-    redirect_to dashboard_path, notice: t("missions.completed_notice_short", lp: mission.lp_reward)
+    redirect_to dashboard_path
   rescue Missions::Complete::Error => e
     redirect_to dashboard_path, alert: e.message
   end

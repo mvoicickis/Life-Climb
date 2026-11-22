@@ -1,11 +1,9 @@
-<%# Today V2 — open battle rows. locals: health, open_todos, done_todos, journey, include_mission, mission, prompt %>
+<%# Today V2 — open battle rows. locals: health, open_todos, done_todos, journey, prompt %>
 <%
   health = local_assigns.fetch(:health)
   open_todos = Array(local_assigns.fetch(:open_todos) { @open_todos })
   done_todos = Array(local_assigns.fetch(:done_todos) { @done_todos })
   journey = local_assigns.fetch(:journey) { @journey }
-  include_mission = local_assigns.fetch(:include_mission) { @include_mission_in_battle }
-  mission = local_assigns[:mission] || @mission
   all_clear = health.all_clear?
 %>
 
@@ -20,9 +18,7 @@
           health: health,
           open_todos: open_todos,
           done_todos: done_todos,
-          journey: journey,
-          include_mission: include_mission,
-          mission: mission %>
+          journey: journey %>
 
     <%= render "dashboard/partner_row", day: @partner_day_wins %>
 

@@ -130,15 +130,43 @@ class DailyBattlePlanTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
     assert_operator flash[:ap_gained].to_i, :>, 0
     assert flash[:battle_celebrate].present?
+    assert_nil flash[:notice], "mission wins must not flash a points notice on Today"
     # A later win in the same day may hit a personal-best milestone — that's reserved.
 
     follow_redirect!
+    assert_select ".lp-flash--notice", count: 0
     assert @user.daily_todos.for_day.incomplete.none?
     assert mission.reload.completed?
     assert_operator @user.reload.total_points, :>, before
     assert_select ".lp-dash.is-battle-won", count: 1
     assert_select ".lp-dash-battle__won", count: 0
     assert_select "form[action=?]", battle_completion_path, count: 0
+  end
+
+  test "pending daily mission is not a battle row and does not block the day win" do
+    todo = @user.daily_todos.create!(
+      title: "Track spending",
+      aspect_key: "money",
+      scheduled_on: Date.current
+    )
+    mission = @user.missions.for_day.primary.incomplete.order(:id).first
+    assert mission
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-rows .lp-today-v2-row", count: 1
+    assert_select "#today-battlefield-rows .lp-today-v2-row[data-todo-id=?]", todo.id.to_s, count: 1
+    assert_select "form[action=?]", mission_completion_path(mission), count: 0
+    assert_no_match(/#{Regexp.escape(mission.title)}/, css_select("#today-battlefield-field").text)
+
+    post complete_daily_todo_path(todo)
+    assert_redirected_to dashboard_path
+    follow_redirect!
+    assert_select ".lp-dash.is-battle-won", count: 1
+
+    # Old mission data stays untouched — it is only hidden from Today.
+    assert_equal "pending", mission.reload.status
+    assert_not mission.completed?
   end
 
   test "today lists strategy-fed battles as flat rows without an add form" do

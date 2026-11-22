@@ -6,7 +6,6 @@ module Today
     def update
       journey = current_user.life_journeys.active.find(params[:journey_id])
       Focus::SetJourneys.call(user: current_user, journey_ids: [ journey.id ])
-      Missions::EnsureDaily.call(user: current_user)
       redirect_to dashboard_path
     rescue Focus::SetJourneys::Error
       raise ActiveRecord::RecordNotFound

@@ -37,10 +37,10 @@ module Dashboard
       @first_climb_needed = @strategy_goal.present? && @strategy_goal.children.for_kind("plan").not_holding.none?
       @show_plan_route = @first_climb_needed || plan_route_pending?
       @today_photo_basics = !@show_plan_route
-      @include_mission_in_battle = !@show_plan_route && @mission.present? && @mission.status == "pending"
+      # Daily missions are not battles: photo Today lists and counts todos only.
+      # @mission stays for the plan-route coach (plan_route_pending?).
       @battle_reward = @open_todos.sum { |t| t.lp_reward.to_i }
-      @battle_reward += @mission.lp_reward if @include_mission_in_battle
-      @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
+      @battle_open_count = @open_todos.size
       @battle_day_full = @open_todos.size >= GameRules::MAX_DAILY_TODOS
       @targets = @journey.journey_targets.active.ordered.to_a
       @closer =
@@ -53,7 +53,7 @@ module Dashboard
       @strategy_handoff = Strategy::Handoff.for(user: current_user, journey: @journey)
       @empty_battle_cta = Today::EmptyBattleCta.for(journey: @journey, handoff: @strategy_handoff)
       @upcoming_battle = Strategy::UpcomingBattle.for(user: current_user, journey: @journey)
-      @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
+      @battle_total_count = @daily_todos.size
       @adventure_year = (@strategy_goal&.due_on || Strategy::YearCycle.default_goal_due).year
 
       if reconcile && !read_only_impersonation?
@@ -65,8 +65,8 @@ module Dashboard
         )
         @open_todos = @daily_todos.reject(&:completed?)
         @done_todos = @daily_todos.select(&:completed?)
-        @battle_open_count = @open_todos.size + (@include_mission_in_battle ? 1 : 0)
-        @battle_total_count = @daily_todos.size + (@include_mission_in_battle ? 1 : 0)
+        @battle_open_count = @open_todos.size
+        @battle_total_count = @daily_todos.size
       end
 
       assign_battles_waiting_count!

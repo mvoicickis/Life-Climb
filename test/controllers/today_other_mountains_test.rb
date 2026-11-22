@@ -101,8 +101,11 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-rows", text: /Focused fight/
     assert_select "#today-battlefield-rows", text: /Second fight/, count: 0
 
-    patch today_focus_path, params: { journey_id: second.id }
+    assert_no_difference -> { @user.missions.count } do
+      patch today_focus_path, params: { journey_id: second.id }
+    end
     assert_redirected_to dashboard_path
+    assert_nil flash[:notice]
     follow_redirect!
     assert_response :success
 
@@ -110,11 +113,24 @@ class TodayOtherMountainsTest < ActionDispatch::IntegrationTest
     assert_nil @focused.reload.focus_position
     assert_select "#today-battlefield-rows", text: /Second fight/
     assert_select "#today-battlefield-rows", text: /Focused fight/, count: 0
+    assert_equal 1, css_select("#today-battlefield-rows .lp-today-v2-row").size,
+                 "only the real battle shows — no daily mission row"
+    assert_select "form[action*='/missions/']", count: 0
     assert_select ".lp-today-v2-header__name", text: /Second peak/
 
     get life_journey_path(second)
     assert_response :success
     assert_select ".lp-trail__my-world-corner .lp-planet-icon", count: 1
+  end
+
+  test "focus picker switches mountains without adding a daily mission" do
+    second = seed_second_journey!(title: "Picker peak", area_key: "self", battle_title: "Picker fight")
+
+    assert_no_difference -> { @user.missions.count } do
+      patch focus_path, params: { journey_ids: [ second.id ] }
+    end
+    assert_redirected_to dashboard_path
+    assert_equal 1, second.reload.focus_position
   end
 
   test "cannot switch to another users journey" do

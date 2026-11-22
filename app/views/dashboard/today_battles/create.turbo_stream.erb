@@ -3,9 +3,7 @@
         health: @battlefield_health,
         open_todos: @open_todos,
         done_todos: @done_todos,
-        journey: @journey,
-        include_mission: @include_mission_in_battle,
-        mission: @mission %>
+        journey: @journey %>
 <% end %>
 
 <%= turbo_stream.replace "today-battlefield-count" do %>
