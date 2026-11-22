@@ -1,0 +1,32 @@
+<%# Photo Today — Turbo navigation placeholder; SSR first paint stays hidden. %>
+<div id="today-loading-skeleton"
+     class="lp-today-skeleton"
+     hidden
+     aria-hidden="true"
+     aria-busy="true"
+     data-today-loading-target="skeleton">
+  <div class="lp-today-skeleton__pad">
+    <div class="lp-today-skeleton__top lp-today-top" aria-hidden="true">
+      <span class="lp-today-skeleton__shape lp-today-skeleton__avatar"></span>
+      <span class="lp-today-skeleton__copy">
+        <span class="lp-today-skeleton__shape lp-today-skeleton__line lp-today-skeleton__line--hi"></span>
+        <span class="lp-today-skeleton__shape lp-today-skeleton__line lp-today-skeleton__line--date"></span>
+      </span>
+      <span class="lp-today-skeleton__shape lp-today-skeleton__planet"></span>
+    </div>
+
+    <div class="lp-today-skeleton__goal lp-today-group-card lp-today-group-card--goal" aria-hidden="true">
+      <span class="lp-today-skeleton__shape lp-today-skeleton__line lp-today-skeleton__line--goal"></span>
+      <span class="lp-today-skeleton__shape lp-today-skeleton__camp-bar"></span>
+    </div>
+
+    <div class="lp-today-skeleton__battles lp-today-group-card" aria-hidden="true">
+      <% 3.times do %>
+        <div class="lp-today-skeleton__row">
+          <span class="lp-today-skeleton__shape lp-today-skeleton__tick"></span>
+          <span class="lp-today-skeleton__shape lp-today-skeleton__line lp-today-skeleton__line--battle"></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
