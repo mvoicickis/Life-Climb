@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { afterExitMotion, todaySheetExitEnabled } from "lib/lp_today_sheet_dismiss"
 
 const OPEN_EVENT = "lp-tcard-menu:open"
+const LAYER_SELECTOR = '[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'
 
 // Minimal details/summary menu: Escape, outside click, one open at a time.
 export default class extends Controller {
@@ -34,13 +35,12 @@ export default class extends Controller {
     if (!this.hasDetailsTarget) return
     if (this.detailsTarget.open) {
       window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { source: this } }))
-      this.setPortalLayersVisible(true)
-      this.portalToBody()
+      this.openLayers()
       requestAnimationFrame(() => this.bindDocument())
       this.positionMenu()
       this.addRepositionListeners()
     } else if (this._closing) {
-      // Animated close in progress; teardown runs in finishClose.
+      // Animated close in progress; teardown runs once in finishClose.
     } else if (this.layersVisible() && this.shouldAnimateClose()) {
       this.beginExitAnimation()
     } else if (this.layersVisible()) {
@@ -55,6 +55,13 @@ export default class extends Controller {
     if (!this.hasDetailsTarget) return
     if (this._closing) return
     this.closeAnimated()
+  }
+
+  // Sync teardown for sheet handoff (e.g. log → Edit). No exit motion.
+  closeImmediate() {
+    if (!this.hasDetailsTarget) return
+    this._closing = false
+    this.finishClose()
   }
 
   closeAnimated() {
@@ -82,11 +89,17 @@ export default class extends Controller {
 
     const sheet = this.sheetLayer()
     const scrim = this.scrimLayer()
-    afterExitMotion([scrim, sheet], () => this.finishClose())
+    this._exitGeneration = (this._exitGeneration || 0) + 1
+    const generation = this._exitGeneration
+    afterExitMotion([scrim, sheet], () => {
+      if (generation !== this._exitGeneration) return
+      this.finishClose()
+    })
   }
 
   finishClose() {
     this._closing = false
+    this._exitGeneration = (this._exitGeneration || 0) + 1
 
     for (const element of this.sheetLayerElements()) {
       element.hidden = true
@@ -178,18 +191,22 @@ export default class extends Controller {
     return target === scrim || scrim.contains(target)
   }
 
+  layerRoot() {
+    return this.hasDetailsTarget ? this.detailsTarget : this.element
+  }
+
   scrimLayer() {
     for (const element of this._portaled || []) {
       if (element.getAttribute("data-tcard-menu-target") === "scrim") return element
     }
-    return this.element.querySelector('[data-tcard-menu-target="scrim"]')
+    return this.layerRoot().querySelector('[data-tcard-menu-target="scrim"]')
   }
 
   sheetLayer() {
     for (const element of this._portaled || []) {
       if (element.getAttribute("data-tcard-menu-target") === "sheet") return element
     }
-    return this.element.querySelector('[data-tcard-menu-target="sheet"]')
+    return this.layerRoot().querySelector('[data-tcard-menu-target="sheet"]')
   }
 
   layerContains(target) {
@@ -198,7 +215,7 @@ export default class extends Controller {
       if (element.contains(target)) return true
     }
     for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
-      const element = this.element.querySelector(selector)
+      const element = this.layerRoot().querySelector(selector)
       if (element?.contains(target)) return true
     }
     return false
@@ -225,7 +242,7 @@ export default class extends Controller {
     if (!this._portaled) this._portaled = []
 
     for (const selector of ['[data-tcard-menu-target="scrim"]', '[data-tcard-menu-target="sheet"]']) {
-      const element = this.element.querySelector(selector)
+      const element = this.layerRoot().querySelector(selector)
       if (!element) continue
 
       if (!element._portalHome) {
@@ -252,37 +269,46 @@ export default class extends Controller {
     return typeof this[method] === "function" && this[method]()
   }
 
-  setPortalLayersVisible(visible) {
-    const elements = this.sheetLayerElements()
-    for (const element of elements) {
-      element.hidden = !visible
-      if (!visible) {
-        element.classList.remove("is-sheet-open", "is-sheet-closing")
-      }
-    }
-    if (visible) {
-      requestAnimationFrame(() => {
-        if (!this.hasDetailsTarget || !this.detailsTarget.open) return
-        for (const element of this.sheetLayerElements()) {
-          if (!element.hidden) element.classList.add("is-sheet-open")
-        }
-      })
+  // Portal while hidden, then unhide + is-sheet-open in the same turn (no rest-pose flash).
+  openLayers() {
+    this.portalToBody()
+    for (const element of this.sheetLayerElements()) {
+      element.classList.remove("is-sheet-closing")
+      element.hidden = false
+      element.classList.add("is-sheet-open")
     }
   }
 
   sheetLayerElements() {
-    const portaled = (this._portaled || []).filter(
-      (el) => el.getAttribute("data-tcard-menu-target") === "scrim" ||
-        el.getAttribute("data-tcard-menu-target") === "sheet"
-    )
-    return [
-      ...this.element.querySelectorAll('[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'),
-      ...portaled
-    ]
+    const seen = new Set()
+    const out = []
+    const push = (el) => {
+      if (!el || seen.has(el)) return
+      seen.add(el)
+      out.push(el)
+    }
+
+    if (this.hasDetailsTarget) {
+      this.detailsTarget.querySelectorAll(LAYER_SELECTOR).forEach(push)
+    }
+
+    for (const el of this._portaled || []) {
+      const name = el.getAttribute("data-tcard-menu-target")
+      if (name === "scrim" || name === "sheet") push(el)
+    }
+
+    return out
   }
 
   syncPortalLayerVisibility() {
     if (!this.hasDetailsTarget) return
-    this.setPortalLayersVisible(this.detailsTarget.open)
+    if (this.detailsTarget.open) {
+      this.openLayers()
+    } else {
+      for (const element of this.sheetLayerElements()) {
+        element.hidden = true
+        element.classList.remove("is-sheet-open", "is-sheet-closing")
+      }
+    }
   }
 }

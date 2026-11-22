@@ -155,7 +155,7 @@ export default class extends Controller {
     const editHost = row.querySelector(".lp-dash-habit__edit-host")
     const editDetails = editHost?.querySelector("details")
     const logCtrl = this.application.getControllerForElementAndIdentifier(row, "tcard-menu")
-    logCtrl?.close()
+    logCtrl?.closeImmediate()
 
     requestAnimationFrame(() => {
       if (!editDetails || !editHost) return

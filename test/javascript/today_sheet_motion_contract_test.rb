@@ -6,6 +6,7 @@ class TodaySheetMotionContractTest < ActiveSupport::TestCase
   setup do
     @css = Rails.root.join("app/assets/stylesheets/today_v2.css").read
     @menu = Rails.root.join("app/javascript/controllers/tcard_menu_controller.js").read
+    @log = Rails.root.join("app/javascript/controllers/basic_sheet_log_controller.js").read
     @dismiss = Rails.root.join("app/javascript/lib/lp_today_sheet_dismiss.js").read
     @quantity = Rails.root.join("app/javascript/controllers/quantity_complete_controller.js").read
     @quest = Rails.root.join("app/javascript/controllers/quest_steps_controller.js").read
@@ -43,15 +44,24 @@ class TodaySheetMotionContractTest < ActiveSupport::TestCase
     )
   end
 
-  test "tcard menu defers teardown until exit animation" do
+  test "tcard menu defers dismiss teardown and opens without flash" do
     assert_includes @menu, "is-sheet-open"
     assert_includes @menu, "is-sheet-closing"
     assert_includes @menu, "closeAnimated"
+    assert_includes @menu, "closeImmediate"
+    assert_includes @menu, "openLayers"
     assert_includes @menu, "_closing"
     assert_includes @menu, "beginExitAnimation"
     assert_includes @menu, "finishClose"
     assert_includes @menu, "afterExitMotion"
     assert_includes @menu, "requestAnimationFrame"
+    assert_includes @menu, "this.detailsTarget.querySelectorAll(LAYER_SELECTOR)"
+    refute_includes @menu, "this.element.querySelectorAll('[data-tcard-menu-target=\"scrim\"], [data-tcard-menu-target=\"sheet\"]')"
+  end
+
+  test "openEdit uses closeImmediate before opening edit sheet" do
+    assert_includes @log, "closeImmediate"
+    assert_match(/closeImmediate\(\)[\s\S]*requestAnimationFrame/, @log)
   end
 
   test "dialogs dismiss with deferred close helper" do
