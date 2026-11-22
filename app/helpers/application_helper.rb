@@ -404,8 +404,7 @@ module ApplicationHelper
       t("dash.end_of_day.recap_stats.partial_health",
         count: health.total_count,
         done: health.done_count,
-        total: health.total_count,
-        hp: health.hp)
+        total: health.total_count)
     end
   end
 

@@ -1273,10 +1273,17 @@ module MountainTrailHelper
       camp.title.to_s
     end
 
+    sub =
+      if headline == camp.title.to_s
+        ""
+      else
+        I18n.t("strategy.rpg.trail.today_card.add_sub", camp: camp.title)
+      end
+
     meadow_plaque(
       mode: "forward",
       headline: headline,
-      sub: I18n.t("strategy.rpg.trail.today_card.add_sub", camp: camp.title),
+      sub: sub,
       busy: true,
       camp_id: camp.id,
       camp: camp

@@ -46,7 +46,7 @@ class BattlesCompleteDayTest < ActiveSupport::TestCase
     result = Battles::CompleteDay.call(user: @user)
     assert result.ok
     assert_operator result.awarded, :>, 0
-    assert_match(/Action Points/i, result.message)
+    assert_match(/battles won/i, result.message)
     assert_no_match(/Mountain now/i, result.message)
 
     assert battle_a.reload.completed?

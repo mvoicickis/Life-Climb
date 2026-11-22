@@ -64,12 +64,8 @@
                     <span class="lp-rpg-practice-folder__meta">
                       <% if battle.completed? %>
                         <span class="lp-rpg-practice-folder__status"><%= t("strategy.rpg.quest_completed") %></span>
-                        <span class="lp-rpg-practice-folder__xp is-done">+<%= battle_xp %> XP</span>
-                      <% else %>
-                        <% if battle.repeat_daily? %>
-                          <em class="lp-rpg-practice-folder__badge"><%= t("strategy.rpg.practice_repeat_badge") %></em>
-                        <% end %>
-                        <span class="lp-rpg-practice-folder__xp" aria-label="<%= battle_xp %> XP">+<%= battle_xp %> XP</span>
+                      <% elsif battle.repeat_daily? %>
+                        <em class="lp-rpg-practice-folder__badge"><%= t("strategy.rpg.practice_repeat_badge") %></em>
                       <% end %>
                     </span>
                     <% unless battle.completed? %>

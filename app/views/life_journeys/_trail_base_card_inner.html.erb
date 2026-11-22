@@ -22,7 +22,7 @@
       <span class="lp-trail-base-card__kicker"><%= today_card[:sub] %></span>
     <% elsif plant_mode %>
       <span class="lp-trail-base-card__kicker"><%= t("strategy.rpg.trail.plant.kicker") %></span>
-    <% else %>
+    <% elsif !camp_kicker_modes.include?(mode) %>
       <span class="lp-trail-base-card__kicker"><%= t("strategy.rpg.trail.base_camp.kicker") %></span>
     <% end %>
     <span class="lp-trail-base-card__title" title="<%= today_card[:headline] %>"><%= today_card[:headline] %></span>

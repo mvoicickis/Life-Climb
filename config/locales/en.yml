@@ -150,13 +150,13 @@ en:
       # TODO: translate for lv/de/es/ru
       recap_empty: "Day open"
       recap_rough: "Rough day"
-      recap_stats: "%{done}/%{total} battles won · %{hp} health held"
+      recap_stats: "%{done}/%{total} battles won"
       share_recap: "Share recap"
       next_day: "Next day →"
       share_toast: "Recap ready — share sheet would open here."
       share_text:
-        one: "%{title} — %{done}/%{total} battle won · %{hp} health held on Life Climb"
-        other: "%{title} — %{done}/%{total} battles won · %{hp} health held on Life Climb"
+        one: "%{title} — %{done}/%{total} battle won on Life Climb"
+        other: "%{title} — %{done}/%{total} battles won on Life Climb"
     finale:
       aria: "All battles won"
       title: "ALL BATTLES WON!"
@@ -186,11 +186,11 @@ en:
           other: "All %{count} battles won today"
       recap_stats:
         full_health:
-          one: "You won %{done} of %{total} battle. You kept all your health."
-          other: "You won %{done} of %{total} battles. You kept all your health."
+          one: "You won your only battle today."
+          other: "You won all %{count} battles today."
         partial_health:
-          one: "You won %{done} of %{total} battle. You kept %{hp} percent of your health."
-          other: "You won %{done} of %{total} battles. You kept %{hp} percent of your health."
+          one: "You won %{done} of %{total} battle today."
+          other: "You won %{done} of %{total} battles today."
       closed:
         sub: "Day %{day} is closed."
       inline_ack:
@@ -267,7 +267,7 @@ en:
       end_after_start: "End time must be after start time."
       remove: "Remove"
       remove_confirm: "Remove this battle from Today?"
-      stats_pill: "Streak and Action Points"
+      stats_pill: "Streak and battles won"
       hours_free:
         one: "%{count}h free"
         other: "%{count}h free"
@@ -275,7 +275,7 @@ en:
         one: "%{count}m free"
         other: "%{count}m free"
       hours_minutes_free: "%{hours}h %{minutes}m free"
-      ledger_miss: "Missed “%{title}” (−%{amount} AP)"
+      ledger_miss: "Missed “%{title}”"
       ledger_shielded: "Shield blocked a miss on “%{title}”"
     add_step:
       cta: "Add step"
@@ -377,7 +377,7 @@ en:
     quest_steps:
       open: "All steps for %{title}"
     overshoot:
-      title: "%{percent}% of your day · +%{bonus} bonus AP"
+      title: "%{percent}% of your day"
       title_no_ap: "%{percent}% of your day"
       body: "You went past everything you set today. That extra counts."
     battle_done_summary:
@@ -393,11 +393,11 @@ en:
       add_project: "Add a camp under “%{plan}”" # TODO: translate for lv/de/es/ru.
       add_battle: "Add today’s battle under “%{project}”"
       open_strategy: "Continue on Mountain"
-    action_points_short: "AP"
-    strategy_points_short: "PP"
-    action_points_label: "Action Points"
-    action_points_hint: "Battle strength"
-    action_points_reward: "Action Points reward"
+    action_points_short: ""
+    strategy_points_short: ""
+    action_points_label: "Battles won"
+    action_points_hint: "Battles won"
+    action_points_reward: "Battle win"
     battle_placeholder: "Add a battle task"
     battle_add: "Add"
     battle_add_more: "+ Add a point"
@@ -451,10 +451,10 @@ en:
       subtitle: "Win today. Move your life forward."
       empty: "No battle items yet. Add one below."
       empty_cta: "Nothing left to complete — nice work."
-      reward: "+%{lp} Action Points"
+      reward: "Win this battle"
       complete: "Complete Today's Battle"
-      complete_success: "Battle complete. +%{lp} Action Points."
-      complete_success_climb: "Battle complete. +%{lp} Action Points. Mountain now %{percent}%."
+      complete_success: "All battles won for today."
+      complete_success_climb: "All battles won for today. Mountain now %{percent}%."
     project:
       kicker: "Current Camp" # TODO: translate for lv/de/es/ru.
       view: "View Camp →" # TODO: translate for lv/de/es/ru.
@@ -530,13 +530,13 @@ en:
         habit_label_days: "%{name} · days"
         habit_label_amount: "%{name} · %{unit}"
     goal_label: "Your goal"
-    hero_battle_strength: "Battle strength"
-    hero_planning_power: "Planning power"
+    hero_battle_strength: "Battles won"
+    hero_planning_power: "Camps finished"
     hero_goal: "Goal"
     hero_plans: "Plans"
     hero_camps: "Camps"
     hero_now: "Now:"
-    hero_points: "%{ap} AP · %{pp} PP"
+    hero_points: "%{ap} battles · %{pp} camps"
     hero_mountain: "Mountain →"
     period_label: "Time range"
     periods:
@@ -546,9 +546,9 @@ en:
       d365: "1 Year"
       all: "All Time"
     points_title: "Your strength"
-    points_hint: "Action Points from real days you showed up."
-    action_points: "Action Points"
-    strategy_points: "Planning points"
+    points_hint: "Battles you won on days you showed up."
+    action_points: "Battles won"
+    strategy_points: "Camps finished"
     details_summary: "See weekly activity"
     details_hint: "Heatmap for the last 6 months — optional."
     mountain_summary_title: "Mountain Summary"
@@ -559,19 +559,19 @@ en:
     open_strategy: "Open Mountain →"
     lock_goal: "Lock your season goal on Mountain to start the climb."
     activity_title: "Activity"
-    activity_hint: "How this period went — Battles, Action Points, and insights."
+    activity_hint: "How this period went — battles won and insights."
     kpi_section: "How am I doing?"
     kpi:
-      life_points: "Action Points"
+      life_points: "Battles won"
       tasks: "Battles completed"
       rate: "Completion rate"
       days: "days"
       vs_prior: "vs prior period"
-      vs_prior_pts: "pts vs prior"
-    growth_title: "Action Points growth"
-    growth_hint: "Daily Action Points earned in this period."
+      vs_prior_pts: "vs prior period"
+    growth_title: "Battles won over time"
+    growth_hint: "Battles you won each day in this period."
     categories_title: "Category distribution"
-    categories_hint: "Where your Action Points went."
+    categories_hint: "Where your wins went."
     heatmap_title: "Weekly activity"
     heatmap_summary:
       one: "%{count} active day in the last 6 months"
@@ -579,7 +579,7 @@ en:
     heatmap_hint: "Swipe for earlier weeks."
     heatmap_less: "Less"
     heatmap_more: "More"
-    heatmap_tooltip: "%{date}: %{tasks} battles · %{lp} Action Points"
+    heatmap_tooltip: "%{date}: %{tasks} battles won"
     projects_title: "Camps progress" # TODO: translate for lv/de/es/ru.
     projects_hint: "What you are building now."
     climbs_title: "Mountain Summary"
@@ -607,15 +607,15 @@ en:
       first_camp: "First camp finished"
       first_camp_hint: "You finished your first camp."
       first_camp_locked_hint: "Finish your first camp."
-      lp_100: "First 100 Battle strength"
-      lp_100_hint: "You crossed 100 Battle strength."
-      lp_100_locked_hint: "Reach 100 Battle strength."
+      lp_100: "First 100 battles won"
+      lp_100_hint: "You won 100 battles."
+      lp_100_locked_hint: "Win 100 battles."
       closer_25: "Quarter of the mountain"
       closer_25_hint: "Your mountain reached 25%."
       closer_25_locked_hint: "Reach 25% on your mountain."
-      lp_1000: "First 1000 Battle strength"
-      lp_1000_hint: "Four digits of Battle strength."
-      lp_1000_locked_hint: "Reach 1000 Battle strength."
+      lp_1000: "First 1000 battles won"
+      lp_1000_hint: "You won 1000 battles."
+      lp_1000_locked_hint: "Win 1000 battles."
       battles_100: "100 Battles"
       battles_100_hint: "One hundred completed battles."
       battles_100_locked_hint: "Complete 100 battles."
@@ -634,14 +634,14 @@ en:
     insights_hint: "What to improve next."
     insights:
       best_day: "You're most consistent on %{day}s."
-      top_category: "%{percent}% of recent Action Points came from %{category}."
+      top_category: "%{percent}% of recent wins came from %{category}."
       consistency_up: "You've improved consistency by %{percent}% vs the prior period."
       consistency_down: "Consistency dipped %{percent}% vs the prior period."
       battle_turnaround: "Win today's battle to turn it around."
-      lp_down_nudge: "Action Points dipped %{percent}% vs last period — complete today's battle to rebuild momentum."
-      lp_change: "You earned %{percent}% %{direction} Action Points than last period."
+      lp_down_nudge: "Wins dipped %{percent}% vs last period — win today's battle to rebuild momentum."
+      lp_change: "You won %{percent}% %{direction} battles than last period."
       empty: "Complete today's battle to unlock personal insights."
-    empty_chart: "No Action Points in this period yet."
+    empty_chart: "No battles won in this period yet."
     empty_categories: "Complete battles to see category mix."
     empty_projects: "Start a journey to track camp progress." # TODO: translate for lv/de/es/ru.
     close: "Close"
@@ -704,7 +704,7 @@ en:
     progress_hint: "How close you feel to your journey."
     gap_hint: "Lower gap means you are closer to your ideal life."
     vs_yesterday: "%{delta}% vs yesterday"
-    reward_preview: "+%{lp} AP"
+    reward_preview: "Win this battle"
     complete: "I did it"
     done_today: "Done for today. Rest or dream bigger tomorrow."
     ask_today: "What's one thing you did — or will do — in one sitting?"
@@ -1048,7 +1048,7 @@ en:
           win_battle: "Tick a battle to win it — that’s a day’s progress." # TODO: translate for lv/de/es/ru.
           rename_flag: "Tap your goal name to open the menu."
           rename_flag_summit: "Tap your goal on the summit to open the menu."
-          xp_bar: "Your XP and camps done live in the bar up top." # TODO: translate for lv/de/es/ru.
+          xp_bar: "Your streak and camps finished live in the bar up top." # TODO: translate for lv/de/es/ru.
           journey_stats: "Every number you log becomes a stat under Journey." # TODO: translate for lv/de/es/ru.
         today_card:
           plant_first_headline: "Plant your first camp"
@@ -1330,8 +1330,8 @@ en:
       pick_checkpoint: "Pick a plan on this trail"
       pick_mission: "Open a camp to reveal today’s battles" # TODO: translate for lv/de/es/ru.
       stats: "Climb stats"
-      xp: "XP"
-      ap: "Action Points"
+      xp: "Battles won" # TODO: translate for lv/de/es/ru — legacy key, not shown on trail.
+      ap: "Battles won" # TODO: translate for lv/de/es/ru — legacy key, not shown on trail.
       save: "Save"
       level: "Level"
       level_n: "Level %{n}"
@@ -1348,7 +1348,7 @@ en:
         hard: "Hard"
     breadcrumb: "Mountain path"
     intro_lead: "Plan the climb here."
-    intro_body: "One decision at a time. On Today you do the work and earn Action Points. Season ends %{date}."
+    intro_body: "One decision at a time. On Today you win battles and climb. Season ends %{date}."
     intro_short: "One decision at a time. Season ends %{date}."
     your_quests: "Your path so far"
     more_actions: "More actions"
@@ -1764,7 +1764,7 @@ en:
       add_another_battle_hint: "Stack another small win under this camp." # TODO: translate for lv/de/es/ru.
       add_another_battle_cta: "Add another battle"
       go_today_title: "Fight on Today"
-      go_today_hint: "Your battles are ready — go earn Action Points."
+      go_today_hint: "Your battles are ready — go win them on Today."
       mountain_ready_title: "Your mountain is ready"
       mountain_ready_hint: "You’ve planned your journey. Now fight today’s first battle."
       fight_today_cta: "Fight Today's Battle"
@@ -1818,11 +1818,11 @@ en:
     universe: "Your universe"
     sp_label: "Strategy Points"
     sp_short: "SP"
-    sp_hint: "Planning power"
-    sp_hint_short: "Planning power"
+    sp_hint: "Camps finished"
+    sp_hint_short: "Camps finished"
     sp_reason: "Planned %{horizon}: %{title}"
     week_breakdown_bonus: "Week breakdown complete"
-    created: "Saved · planning +%{sp}"
+    created: "Saved"
     removed: "Removed."
     rename: "Rename"
     save_name: "Save name"
@@ -1840,11 +1840,11 @@ en:
       plan_title: "lp.holding.plan"
       project_title: "Extra battles"
     celebrate:
-      goal: "Goal locked · planning +%{sp}"
-      first_plan: "First plan · planning +%{sp}"
-      first_project: "First camp · planning +%{sp}" # TODO: translate for lv/de/es/ru.
-      strategy_complete: "Trail ready · planning +%{sp}"
-      float: "+%{sp}"
+      goal: "Goal locked"
+      first_plan: "First plan saved"
+      first_project: "First camp saved" # TODO: translate for lv/de/es/ru.
+      strategy_complete: "Trail ready"
+      float: ""
     guided:
       step: "Step %{n}"
       steps:
@@ -1880,10 +1880,10 @@ en:
     project_placeholder: "e.g. Learn German"
     battle_placeholder: "e.g. Learn 20 words"
     day_placeholder: "One sitting action"
-    add_goal: "Create goal · +SP"
-    add_plan: "Add plan · +SP"
-    add_project: "Add camp · +SP" # TODO: translate for lv/de/es/ru.
-    add_battle: "Add today’s battle · +SP"
+    add_goal: "Create goal"
+    add_plan: "Add plan"
+    add_project: "Add camp" # TODO: translate for lv/de/es/ru.
+    add_battle: "Add today’s battle"
     battles_heading: "Today’s Battles"
     today_battle_title: "Today’s Battle"
     today_battle_empty: "No battles scheduled for today yet — add one above, then go fight on Today."
@@ -1891,7 +1891,7 @@ en:
     year_hint: "What do you want this year in this part of life?"
     day_hint: "Break into daily battles — then sync them to Today."
     year_placeholder: "e.g. Ship a calm software studio"
-    add_year: "Add year goal · +SP"
+    add_year: "Add year goal"
     save_brief: "Save scale"
     sync_today: "Send battles to Today"
     break_down: "Open"
@@ -1902,7 +1902,7 @@ en:
       other: "%{count} children"
     need_year: "Add a goal first."
     go_year: "Go to goal"
-    feeds_today: "Battles show up on Today so you can earn Action Points."
+    feeds_today: "Battles show up on Today so you can win them."
     plan_week_cta: "Plan battles on Mountain"
     plan_together_title: "Plan it together"
     plan_together_body: "This works best with a partner or startup teammates — someone who can hold the year with you.\nYou’re not meant to carry the whole map alone."
@@ -2123,7 +2123,7 @@ en:
       project_title: "Camp conquered" # TODO: translate for lv/de/es/ru.
       boss_title: "Boss beaten"
       mountain_pct: "Mountain %{pct}%"
-      ap_meaning: "Battle strength"
+      ap_meaning: "Battles won"
       personal_best: "Biggest climb yet"
       keep_fighting: "Keep going"
       back_to_trail: "See your mountain"
@@ -3260,7 +3260,7 @@ en:
       won_today:
         one: "%{name} won %{count} battle today"
         other: "%{name} won %{count} battles today"
-      cheered: "You cheered %{name} ✓"
+      cheered: "You cheered %{name}"
       high_five_aria: "High-five %{name}"
       open_side_aria: "Open side by side with %{name}"
       not_saved: "Not saved"
@@ -3343,7 +3343,7 @@ en:
       title: "Share Life Climb"
       subtitle: "Send the climb to someone you care about."
       body: "I'm using Life Climb to climb one mountain — one small battle a day."
-      closer: "Win today’s battle for Action Points. Finish real work to climb. Become more alive."
+      closer: "Win today’s battles. Finish real work to climb. Become more alive."
   status:
     better: "Better"
     same: "Same"
@@ -3390,8 +3390,8 @@ en:
     how_foot: "Planning counts too. Every camp you set and every battle you win moves you up — and nothing ever takes you back down."
     why_title: "Proof you did something real"
     why_body: "Not a game score. Every point is one real thing you finished, in a part of your life you chose."
-    why_ap_label: "Battle strength"
-    why_ap_chip: "+50"
+    why_ap_label: "Battles won"
+    why_ap_chip: "+1 battle won"
     cta_title: "Pick your mountain"
     cta_body: "One goal. One step today. Free to start."
     footer_tagline: "The mountain is yours to climb"
