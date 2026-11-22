@@ -55,7 +55,9 @@ module Goals
       def resolve_journey(user)
         user.life_journeys.with_destination.primary_focus.first ||
           user.life_journeys.with_destination.order(:id).first ||
-          legacy_journey_for(user)
+          legacy_journey_for(user) ||
+          user.life_journeys.active.primary_focus.first ||
+          user.life_journeys.active.order(:id).first
       end
 
       def legacy_journey_for(user)
