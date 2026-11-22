@@ -132,8 +132,8 @@ module Admin
       get edit_admin_blog_post_path(post_record)
 
       assert_response :success
-      assert_match %r{<title>You'll climb · Admin · Life Climb</title>}, response.body
-      assert_no_match %r{<title>.*&amp;#}, response.body
+      assert_match %r{<title>You(?:'|&#39;)ll climb · Admin · Life Climb</title>}, response.body
+      assert_no_match %r{&amp;#39;}, response.body
     end
 
     test "admin can destroy a post" do
