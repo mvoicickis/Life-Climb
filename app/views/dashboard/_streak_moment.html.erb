@@ -63,21 +63,12 @@
           <div class="lp-streak-moment__lottie" data-streak-moment-target="lottie"></div>
         </div>
         <div class="lp-streak-moment__avatar-wrap">
-          <% if current_user.character_image.present? %>
-            <%= image_tag current_user.character_image,
-                  class: "lp-streak-moment__avatar",
-                  alt: "",
-                  width: 168,
-                  height: 168,
-                  decoding: "async" %>
-          <% else %>
-            <%= image_tag "avatars/fox.webp",
-                  class: "lp-streak-moment__avatar",
-                  alt: "",
-                  width: 168,
-                  height: 168,
-                  decoding: "async" %>
-          <% end %>
+          <%= image_tag hero_animal_image_path(current_user),
+                class: "lp-streak-moment__avatar",
+                alt: "",
+                width: 168,
+                height: 168,
+                decoding: "async" %>
         </div>
       </div>
 
