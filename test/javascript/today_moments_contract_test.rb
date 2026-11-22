@@ -46,10 +46,40 @@ class TodayMomentsContractTest < ActiveSupport::TestCase
     assert_includes @streak_erb, "climb.streak_moment.show_it_off"
     assert_includes @streak_erb, "grid-column:"
     assert_includes @streak_erb, "strip_run_start"
+    assert_includes @streak_erb, "hero_animal_image_path"
+    assert_includes @streak_erb, "moment.from_days"
     refute_includes @streak_erb, "is-missed"
     refute_includes @streak_erb, "day-mark"
+    refute_includes @streak_erb, "fireball"
+    refute_includes @streak_erb, "lp-streak-moment__flood"
+    refute_includes @streak_erb, "lp-streak-moment__runner"
+    refute_includes @streak_erb, "streak_fire.json"
     css = Rails.root.join("app/assets/stylesheets/streak_moment.css").read
     assert_includes css, '.lp-streak-moment[data-record="true"] .lp-streak-moment__record'
+  end
+
+  test "streak moment uses brand white tokens without fire palette" do
+    css = Rails.root.join("app/assets/stylesheets/streak_moment.css").read
+    refute_includes css, "--lp-fire"
+    refute_includes css, "lp-streak-moment__fireball"
+    refute_includes css, "lp-streak-moment__flood"
+    refute_includes css, "lp-streak-moment__runner"
+    assert_includes css, "background: var(--lp-surface)"
+    assert_includes css, "color: var(--lp-ink)"
+    assert_includes css, "background: var(--lp-green)"
+    assert_includes css, "color: var(--lp-green-deep)"
+    assert_includes css, "lp-streak-moment__confetti"
+    assert_includes @streak_js, "is-flipping"
+    assert_includes @streak_js, "is-week"
+    assert_includes @streak_js, "is-running"
+    assert_includes @streak_js, "is-cta"
+    assert_includes @streak_js, "is-final"
+    assert_includes @streak_js, "burstGreenConfetti"
+    assert_includes @streak_js, "revealChecks"
+    refute_includes @streak_js, "is-flying"
+    refute_includes @streak_js, "is-impact"
+    refute_includes @streak_js, "lottie-web"
+    refute_includes @streak_js, "lottieUrl"
   end
 
   test "empty ready state and plus-one goal bar target exist" do
@@ -79,10 +109,4 @@ class TodayMomentsContractTest < ActiveSupport::TestCase
     assert_includes @schema, 't.date "last_finale_on"'
   end
 
-  test "lottie loads only when streak fire url is set" do
-    assert_includes @streak_js, "import(\"lottie-web\")"
-    assert_includes @streak_js, "if (!url || !this.hasLottieTarget"
-    assert_includes @streak_erb, "streak_fire.json"
-    refute_includes Rails.root.join("app/javascript/application.js").read, "lottie-web"
-  end
 end
