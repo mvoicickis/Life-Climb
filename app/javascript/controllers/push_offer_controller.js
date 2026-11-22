@@ -112,13 +112,11 @@ export default class extends Controller {
     const state = await getPushSubscriptionState()
 
     if (state.subscribed) {
-      console.info("[PushOffer] skip", "subscribed")
       if (this.offerSource() === "streak") this.closeStreakOverlay()
       else release("push_offer")
       return
     }
     if (state.permission === "denied") {
-      console.info("[PushOffer] skip", "denied")
       if (this.offerSource() === "streak") this.closeStreakOverlay()
       else release("push_offer")
       return
@@ -129,17 +127,14 @@ export default class extends Controller {
     if (this.campSheetValue) {
       const mode = this.cardMode()
       if (mode === "ios_install") {
-        console.info("[PushOffer] skip", "ios")
         release("push_offer")
         return
       }
       if (mode === "unsupported") {
-        console.info("[PushOffer] skip", "unsupported")
         release("push_offer")
         return
       }
       if (mode === "remind" && !this._prefetchPublicKey) {
-        console.info("[PushOffer] skip", "no_vapid")
         release("push_offer")
         return
       }
