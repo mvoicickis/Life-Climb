@@ -1563,6 +1563,158 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   overflow: hidden;
 }
 
+/* Turbo navigation loading — frosted placeholders (photo Today). */
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton[hidden] {
+  display: none;
+}
+
+.lp-dash.is-today-v2.is-today-photo.is-loading .lp-today-scroll__pad {
+  visibility: hidden;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__pad {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+  padding: calc(0.5rem + env(safe-area-inset-top, 0px)) 16px calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__top {
+  display: flex;
+  align-items: center;
+  gap: var(--lp-space-16);
+  min-height: 72px;
+  margin: 0 0 var(--lp-space-16);
+  padding: 12px;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__avatar {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__planet {
+  flex: none;
+  width: var(--lp-tap);
+  height: var(--lp-tap);
+  border-radius: var(--lp-radius-pill);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__line {
+  display: block;
+  width: 100%;
+  border-radius: var(--lp-radius-pill);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__line--hi {
+  width: 55%;
+  height: 0.95rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__line--date {
+  width: 38%;
+  height: 0.75rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__goal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 var(--lp-space-16);
+  padding: 10px 12px;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__line--goal {
+  width: 72%;
+  height: 1.05rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__camp-bar {
+  display: block;
+  width: 100%;
+  height: 0.28rem;
+  border-radius: var(--lp-radius-pill);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__battles {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__row + .lp-today-skeleton__row {
+  border-top: 1px solid var(--lp-border);
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__tick {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__line--battle {
+  flex: 1;
+  min-width: 0;
+  height: 0.875rem;
+  max-width: 78%;
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__shape {
+  background: color-mix(in srgb, var(--lp-paper) 55%, var(--lp-border));
+  animation: lp-today-skeleton-pulse var(--lp-motion-slow) var(--lp-ease-out) infinite alternate;
+}
+
+@keyframes lp-today-skeleton-pulse {
+  from {
+    opacity: 0.42;
+  }
+
+  to {
+    opacity: 0.82;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-skeleton__shape {
+    animation: none;
+    opacity: 0.62;
+  }
+}
+
 .lp-dash.is-today-v2.is-today-photo .lp-today-photo-bg {
   position: absolute;
   inset: 0;
