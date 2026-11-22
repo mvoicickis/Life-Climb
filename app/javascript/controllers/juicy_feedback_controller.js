@@ -8,7 +8,7 @@ import {
   winSubmitHostFromForm,
   storeWinTickOrigin
 } from "lib/battle_win_feedback"
-import { burst, haptic, markTapBurst, prefersReducedMotion } from "lib/lp_feedback"
+import { burst, hapticSuccess, markTapBurst, prefersReducedMotion } from "lib/lp_feedback"
 
 // Click-time bounce + flat particle burst. No "+N Battle strength" float on win.
 // When suppressReloadCelebrate is true (battle Win), set sessionStorage so
@@ -52,7 +52,7 @@ export default class extends Controller {
     const reduceMotion = prefersReducedMotion()
     const battleWin = this.deferRewardValue
 
-    if (battleWin) haptic(12)
+    if (battleWin) hapticSuccess()
 
     if (!reduceMotion) {
       this.bounce(host)

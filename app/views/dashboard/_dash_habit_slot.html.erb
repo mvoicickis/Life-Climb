@@ -7,6 +7,8 @@
    binary = habit.binary_checkin?
    quantity = habit.quantity_checkin?
    stretch_target = quantity && habit.stretch_goal? ? habit.todays_goal_value(on: local_day) : nil
+   pressable_action = "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+   check_pressable = { controller: "pressable", action: pressable_action }
    habit_win_form_data = {
      turbo: true,
      turbo_stream: true,
@@ -60,12 +62,13 @@
           <%= button_to t("dash.battlefield.undo"),
                 completion_path(completion),
                 method: :delete,
-                class: "lp-today-row__undo",
+                class: "lp-today-row__undo lp-pressable",
                 aria: { label: "#{t('dash.battlefield.undo')} #{habit.name}" },
                 form: {
                   class: "lp-today-v2-row__check-form",
                   data: { turbo: true, turbo_stream: true }
-                } %>
+                },
+                data: check_pressable %>
         <% else %>
           <%= button_to completions_path(habit_id: habit.id),
                 method: :post,
@@ -73,8 +76,9 @@
                   class: "lp-today-v2-row__check-form",
                   data: habit_win_form_data
                 },
-                class: "lp-today-v2-row__check",
-                aria: { label: t("dash.battlefield.win_battle", title: habit.name) } do %>
+                class: "lp-today-v2-row__check lp-pressable",
+                aria: { label: t("dash.battlefield.win_battle", title: habit.name) },
+                data: check_pressable do %>
             <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
           <% end %>
         <% end %>
@@ -82,9 +86,9 @@
         <%= render "dashboard/dash_habit_quick", habit: habit, quick: quick %>
 
         <details class="lp-dash-habit__menu" data-tcard-menu-target="details">
-          <summary class="lp-dash-habit__dots"
+          <summary class="lp-dash-habit__dots lp-pressable"
                    data-controller="pressable"
-                   data-action="pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+                   data-action="<%= pressable_action %>"
                    aria-label="<%= t('dash.timeline.more_actions') %>">⋯</summary>
           <button type="button"
                   class="lp-dash-habit__scrim"

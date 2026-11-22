@@ -5,14 +5,16 @@
 <% basics_all_done = habits.present? && habits.all? { |h| h.survived_today?(local_day) } %>
 <% battles_all_clear = @battlefield_health&.all_clear? %>
 <% basics_focus = battles_all_clear && habits.present? && !basics_all_done %>
+<% pressable_action = "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release" %>
 <section class="lp-dash-anytime<%= ' is-focus' if basics_focus %>"
          aria-label="<%= t('dash.anytime.title') %>"
          data-controller="today-habits">
   <div class="lp-today-group-card">
     <button type="button"
-            class="lp-dash-anytime__toggle"
+            class="lp-dash-anytime__toggle lp-pressable"
+            data-controller="pressable"
             data-today-habits-trigger
-            data-action="click->today-habits#toggle"
+            data-action="<%= pressable_action %> click->today-habits#toggle"
             aria-expanded="false">
       <%= render "dashboard/dash_anytime_collapsed_title", habits: habits %>
       <%= render "shared/chevron", class_name: "lp-chevron lp-dash-anytime__chev" %>

@@ -2947,9 +2947,9 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   -webkit-tap-highlight-color: transparent;
 }
 
-.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row:active {
-  background: color-mix(in srgb, var(--lp-muted) 10%, var(--lp-surface));
-  transform: none;
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row:active,
+.lp-dash.is-today-v2.is-today-photo .lp-other-mountains-row.is-pressed {
+  transform: scale(var(--lp-press-scale));
 }
 
 .lp-dash.is-today-v2.is-today-photo .lp-other-mountains-list li:last-child .lp-other-mountains-row {
@@ -3467,5 +3467,60 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__cheer-badge {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Today feel — shared press (scale token; 3D tick keeps translateY on box). */
+.lp-dash.is-today-v2 .lp-today-v2-row,
+.lp-dash.is-today-v2 .lp-today-add-battle__expand,
+.lp-dash.is-today-v2 .lp-dash-anytime__toggle,
+.lp-dash.is-today-v2 .lp-today-v2-won__summary,
+.lp-dash.is-today-v2 .lp-other-mountains-button,
+.lp-dash.is-today-v2 .lp-other-mountains-row,
+.lp-dash.is-today-v2 .lp-dash-habit__qb,
+.lp-dash.is-today-v2 .lp-dash-habit__dots,
+.lp-dash.is-today-v2 .lp-today-v2-row__title-btn,
+#today-dash-nav .lp-dash-nav__link,
+#today-dash-nav .lp-dash-nav__fab {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--lp-motion-fast) var(--lp-ease-out);
+}
+
+.lp-dash.is-today-v2 .lp-today-v2-row.is-pressed,
+.lp-dash.is-today-v2 .lp-today-add-battle__expand.is-pressed,
+.lp-dash.is-today-v2 .lp-dash-anytime__toggle.is-pressed,
+.lp-dash.is-today-v2 .lp-today-v2-won__summary.is-pressed,
+.lp-dash.is-today-v2 .lp-other-mountains-button.is-pressed,
+.lp-dash.is-today-v2 .lp-today-v2-row__title-btn.is-pressed,
+#today-dash-nav .lp-dash-nav__link.is-pressed,
+#today-dash-nav .lp-dash-nav__fab.is-pressed {
+  transform: scale(var(--lp-press-scale));
+}
+
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__check.lp-pressable.is-pressed,
+.lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__check.lp-pressable:active {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2 .lp-today-v2-row,
+  .lp-dash.is-today-v2 .lp-today-v2-row.is-pressed,
+  .lp-dash.is-today-v2 .lp-today-add-battle__expand,
+  .lp-dash.is-today-v2 .lp-today-add-battle__expand.is-pressed,
+  .lp-dash.is-today-v2 .lp-dash-anytime__toggle,
+  .lp-dash.is-today-v2 .lp-dash-anytime__toggle.is-pressed,
+  .lp-dash.is-today-v2 .lp-other-mountains-button,
+  .lp-dash.is-today-v2 .lp-other-mountains-button.is-pressed,
+  .lp-dash.is-today-v2 .lp-other-mountains-row,
+  .lp-dash.is-today-v2 .lp-other-mountains-row.is-pressed,
+  .lp-dash.is-today-v2 .lp-dash-habit__qb,
+  .lp-dash.is-today-v2 .lp-dash-habit__dots,
+  #today-dash-nav .lp-dash-nav__link,
+  #today-dash-nav .lp-dash-nav__link.is-pressed,
+  #today-dash-nav .lp-dash-nav__fab,
+  #today-dash-nav .lp-dash-nav__fab.is-pressed {
+    transition: none !important;
+    transform: none !important;
   }
 }

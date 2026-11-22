@@ -29,6 +29,8 @@ class TodayV2LookTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-other-mountains-button", count: 0
     assert_select ".lp-today-scroll__pad", count: 1
     assert_select "#today-dash-nav .lp-dash-nav.is-v4", count: 1
+    assert_select "#today-dash-nav a.lp-dash-nav__link[data-controller='pressable']", minimum: 4
+    assert_select ".lp-today-add-battle__expand[data-controller='pressable']", minimum: 1
   end
 
   test "battle rows have no camp label and use 3d tick markup" do
