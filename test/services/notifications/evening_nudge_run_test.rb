@@ -178,5 +178,15 @@ module Notifications
         end
       end
     end
+
+    test "sets animal icon on push when avatar is picked" do
+      travel_to Time.find_zone!("Europe/Berlin").local(2026, 8, 6, 20, 0, 0) do
+        @user.update!(avatar_key: "bear")
+
+        run_nudge_and_deliver
+
+        assert_match %r{lifeclimb\.app/.*/avatars/bear.*\.png}, @last_payload["icon"]
+      end
+    end
   end
 end

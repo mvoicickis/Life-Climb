@@ -42,6 +42,8 @@ module Notifications
 
       local_date = local_time.to_date
 
+      return false if user.last_opened_on == local_date
+
       gate = NotificationGate.allow?(user: user, kind: KIND)
       return false unless gate.allowed?
 
