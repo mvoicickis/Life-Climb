@@ -2114,12 +2114,6 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   color: var(--lp-ink);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal {
-    animation: none;
-  }
-}
-
 .lp-dash.is-today-v2.is-today-photo .lp-today-empty-cta__wrap {
   padding: 1rem;
 }
@@ -3457,17 +3451,52 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   overflow: visible;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lp-dash.is-today-v2.is-today-photo .lp-today-top__greet,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer,
-  .lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-badge {
-    transition: none !important;
-    animation: none !important;
+/* Today feel — sheet open (habit ⋯, quantity, strategy on Today) */
+@keyframes lp-today-sheet-scrim-in {
+  from {
+    opacity: 0;
   }
-  .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__cheer-badge {
+  to {
     opacity: 1;
-    transform: scale(1);
   }
+}
+
+@keyframes lp-today-sheet-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lp-today-sheet-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body:has(.lp-dash.is-today-v2) .lp-dash-habit__scrim.is-sheet-open {
+  animation: lp-today-sheet-scrim-in var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+body:has(.lp-dash.is-today-v2) .lp-dash-habit__sheet.is-sheet-open {
+  animation: lp-today-sheet-rise-in var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+.lp-dash.is-today-v2 .lp-strategy-sheet[open]::backdrop {
+  animation: lp-today-sheet-scrim-in var(--lp-motion-base) var(--lp-ease-out) both;
+}
+
+.lp-dash.is-today-v2 .lp-strategy-sheet[open] .lp-strategy-sheet__panel {
+  animation: lp-today-sheet-dialog-in var(--lp-motion-base) var(--lp-ease-out) both;
 }
 
 /* Today feel — shared press (scale token; 3D tick keeps translateY on box). */
@@ -3522,5 +3551,35 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   #today-dash-nav .lp-dash-nav__fab.is-pressed {
     transition: none !important;
     transform: none !important;
+  }
+}
+
+/* Photo Today — reduced motion (consolidated) */
+@media (prefers-reduced-motion: reduce) {
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-hp-bar.is-pulse,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-mountain-link.is-clear,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-win,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-recap,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-end-of-day.is-closed .lp-today-v2-big-ack,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-signoff.is-closed,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-win,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-eod-win__glow,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-toast,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-ready__animal,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top__cheer-badge,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-v2-row__box.is-won,
+  .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal .lp-today-camp-bar__fill.is-shine::after,
+  body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__scrim.is-sheet-open,
+  body:has(.lp-dash.is-today-v2.is-today-photo) .lp-dash-habit__sheet.is-sheet-open,
+  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open]::backdrop,
+  .lp-dash.is-today-v2.is-today-photo .lp-strategy-sheet[open] .lp-strategy-sheet__panel {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .lp-dash.is-today-v2.is-today-photo .lp-today-top.is-cheering .lp-today-top__cheer-badge {
+    opacity: 1;
+    transform: scale(1);
   }
 }
