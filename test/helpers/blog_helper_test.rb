@@ -14,7 +14,7 @@ class BlogHelperTest < ActionView::TestCase
     )
     blob.update!(metadata: blob.metadata.merge("width" => 640, "height" => 480))
 
-    post.body.attach(blob)
+    post.body = ActionText::Attachment.from_attachable(blob).to_html
     post.save!
     post.reload
 

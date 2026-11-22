@@ -85,7 +85,7 @@ module Admin
       patch admin_blog_post_path(post_record), params: {
         autosave: "1",
         slug_auto: "1",
-        blog_post: { title: "You'll Climb" }
+        blog_post: { title: "You'll Climb", slug: "youll-climb" }
       }, headers: { Accept: "text/vnd.turbo-stream.html" }
 
       assert_response :success
