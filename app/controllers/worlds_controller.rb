@@ -60,7 +60,6 @@ class WorldsController < ApplicationController
   def focus
     journey = current_user.life_journeys.active.find(params[:journey_id])
     Focus::SetJourneys.call(user: current_user, journey_ids: [ journey.id ])
-    Missions::EnsureDaily.call(user: current_user)
     redirect_to life_journey_path(journey)
   rescue Focus::SetJourneys::Error
     raise ActiveRecord::RecordNotFound

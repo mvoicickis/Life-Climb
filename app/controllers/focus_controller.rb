@@ -10,7 +10,6 @@ class FocusController < ApplicationController
 
   def update
     Focus::SetJourneys.call(user: current_user, journey_ids: params[:journey_ids])
-    Missions::EnsureDaily.call(user: current_user)
     redirect_to dashboard_path, notice: t("focus.saved")
   rescue Focus::SetJourneys::Error => e
     redirect_to focus_path, alert: e.message

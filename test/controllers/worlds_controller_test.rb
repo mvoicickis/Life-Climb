@@ -142,7 +142,9 @@ class WorldsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, first.focus_position
     assert_nil second.focus_position
 
-    patch focus_world_path, params: { journey_id: second.id }
+    assert_no_difference -> { @user.missions.count } do
+      patch focus_world_path, params: { journey_id: second.id }
+    end
     assert_redirected_to life_journey_path(second)
     assert_nil flash[:notice]
     assert_nil flash[:alert]
