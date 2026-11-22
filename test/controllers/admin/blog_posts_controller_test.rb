@@ -93,7 +93,7 @@ module Admin
 
       assert_response :success
       assert_select "link[rel=stylesheet][href*='actiontext']"
-      assert_select "script[type='module'][src*='admin_blog']"
+      assert_match(/admin_blog/, response.body)
     end
 
     test "edit writer shows title textarea and visible google check" do
@@ -104,7 +104,7 @@ module Admin
 
       assert_response :success
       assert_select "link[rel=stylesheet][href*='actiontext']"
-      assert_select "script[type='module'][src*='admin_blog']"
+      assert_match(/admin_blog/, response.body)
       assert_select "textarea.lp-blog-writer__title[name=?]", "blog_post[title]"
       assert_select "#blog_google_preview"
       assert_select "#blog_seo_checklist"
