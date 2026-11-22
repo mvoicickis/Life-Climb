@@ -19,21 +19,12 @@
     <%= render "dashboard/dash_battlefield_empty_cta", cta: empty_battlefield_cta %>
   <% elsif health.empty? && show_inline_add %>
     <div class="lp-today-ready" id="today-battlefield-rows" data-today-v2-target="rows">
-      <% if current_user.character_image.present? %>
-        <%= image_tag current_user.character_image,
-              class: "lp-today-ready__animal",
-              alt: "",
-              width: 120,
-              height: 120,
-              decoding: "async" %>
-      <% else %>
-        <%= image_tag "avatars/fox.webp",
-              class: "lp-today-ready__animal",
-              alt: "",
-              width: 120,
-              height: 120,
-              decoding: "async" %>
-      <% end %>
+      <%= image_tag hero_animal_image_path(current_user),
+            class: "lp-today-ready__animal",
+            alt: "",
+            width: 120,
+            height: 120,
+            decoding: "async" %>
       <h2 class="lp-today-ready__title"><%= t("dash.battlefield.ready_title") %></h2>
     </div>
     <div id="today-battlefield-all-clear-line"></div>

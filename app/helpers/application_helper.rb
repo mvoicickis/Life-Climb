@@ -21,6 +21,13 @@ module ApplicationHelper
     image_tag user.character_image, **options
   end
 
+  # Today hero moments: You profile animal → mountain companion → default bird.
+  def hero_animal_image_path(user)
+    return "avatars/bird.webp" if user.blank?
+
+    user.avatar_image.presence || user.character_image.presence || "avatars/bird.webp"
+  end
+
   # Camp pill colors for Today V2 battlefield rows.
   def battlefield_camp_style(project)
     hex = if project&.trail_accent_hex.present?

@@ -55,4 +55,17 @@ class ApplicationHelperTest < ActionView::TestCase
   test "active_goal_title falls back to dash command when no goal or journey" do
     assert_equal I18n.t("dash.active_goal_fallback"), active_goal_title
   end
+
+  test "hero_animal_image_path prefers You avatar then companion then bird" do
+    @user.update!(avatar_key: nil, character: nil)
+    assert_equal "avatars/bird.webp", hero_animal_image_path(@user)
+
+    @user.update!(character: "fox")
+    assert_equal "characters/fox.png", hero_animal_image_path(@user)
+
+    @user.update!(avatar_key: "bird")
+    assert_equal "avatars/bird.webp", hero_animal_image_path(@user)
+
+    assert_equal "avatars/bird.webp", hero_animal_image_path(nil)
+  end
 end
