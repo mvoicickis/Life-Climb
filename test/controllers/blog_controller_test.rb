@@ -53,15 +53,15 @@ class BlogControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "old slug redirects to current published post" do
-    post = BlogPost.create!(
+    BlogPost.create!(
       title: "Renamed climb tips",
       slug: "renamed-climb-tips",
       status: "published",
       published_at: 2.days.ago,
-      previous_slugs: [ "published-climb-tips" ]
+      previous_slugs: [ "legacy-climb-tips" ]
     )
 
-    get blog_post_path("published-climb-tips")
+    get blog_post_path("legacy-climb-tips")
 
     assert_redirected_to blog_post_path("renamed-climb-tips")
     assert_response :moved_permanently
