@@ -74,7 +74,10 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select ".lp-today-v2-row.lp-pressable[data-todo-id=?] .lp-today-v2-row__tick-slot .lp-today-v2-row__box",
+    assert_select ".lp-today-v2-row.lp-pressable[data-todo-id=?][data-controller*='pressable']", todo.id
+    assert_select ".lp-today-v2-row[data-todo-id=?] button.lp-today-v2-row__check[data-controller='pressable']",
+                  todo.id
+    assert_select ".lp-today-v2-row[data-todo-id=?] .lp-today-v2-row__tick-slot .lp-today-v2-row__box",
                   todo.id
   end
 
@@ -84,6 +87,7 @@ class JuicyWinFeedbackTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select ".lp-dash-anytime", count: 1
+    assert_select ".lp-dash-anytime__toggle[data-controller='pressable']", count: 1
     assert_select ".lp-dash-anytime form[data-controller='juicy-feedback']", minimum: 1
     assert_select ".lp-dash-habit__quick-wrap form[data-controller='juicy-feedback']", count: 0
   end

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { play as playSound } from "lib/lp_sound"
+import { hapticTap } from "lib/lp_feedback"
 
 // Frosted Today top bar — morph greeting → received cheer, then mark seen.
 export default class extends Controller {
@@ -25,9 +26,7 @@ export default class extends Controller {
     this.element.classList.remove("is-leaving")
     this.element.classList.add("is-cheering")
     try { playSound("cheer") } catch (_err) { /* optional */ }
-    try {
-      if (typeof navigator.vibrate === "function") navigator.vibrate(10)
-    } catch (_err) { /* optional */ }
+    hapticTap()
 
     window.clearTimeout(this.hideTimer)
     window.clearTimeout(this.resetTimer)

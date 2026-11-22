@@ -4,6 +4,8 @@
 <% show_add = today_inline_add_battle?(journey: journey) %>
 <% all_clear = health.all_clear? %>
 <% empty_attract = health.empty? && !all_clear %>
+<% pressable_action = "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release" %>
+<% pressable_data = { controller: "pressable", action: pressable_action } %>
 <% placeholder =
      if all_clear
        t("dash.battlefield.add_battle.placeholder_all_clear")
@@ -19,10 +21,11 @@
          data-today-add-battle-not-saved-value="<%= t('dash.battlefield.win_not_saved') %>"
          data-today-add-battle-all-clear-value="<%= all_clear %>">
       <button type="button"
-              class="lp-today-add-battle__expand"
+              class="lp-today-add-battle__expand lp-pressable"
               <%= "hidden" if empty_attract %>
+              data-controller="pressable"
               data-today-add-battle-target="expand"
-              data-action="click->today-add-battle#expand">
+              data-action="<%= pressable_action %> click->today-add-battle#expand">
         <%= t("dash.battlefield.add_battle.expand") %>
       </button>
       <div class="lp-today-add-battle__row<%= " is-open" if empty_attract %>"
@@ -40,19 +43,21 @@
                   data-today-add-battle-target="field"
                   data-action="input->today-add-battle#sync keydown->today-add-battle#keydown blur->today-add-battle#blurField"></textarea>
         <button type="button"
-                class="lp-today-add-battle__add lp-btn-3d is-green<%= all_clear ? " is-ready" : " is-muted" %>"
+                class="lp-today-add-battle__add lp-btn-3d is-green<%= all_clear ? " is-ready" : " is-muted" %> lp-pressable"
                 aria-label="<%= t('dash.battlefield.add_battle.submit') %>"
                 <%= "disabled" unless all_clear %>
+                data-controller="pressable"
                 data-today-add-battle-target="submit"
-                data-action="click->today-add-battle#save">
+                data-action="<%= pressable_action %> click->today-add-battle#save">
           <%= t("dash.battlefield.add_battle.submit") %>
         </button>
       </div>
       <button type="button"
-              class="lp-today-add-battle__fail"
+              class="lp-today-add-battle__fail lp-pressable"
               hidden
+              data-controller="pressable"
               data-today-add-battle-target="fail"
-              data-action="click->today-add-battle#retry">
+              data-action="<%= pressable_action %> click->today-add-battle#retry">
         <%= t("dash.battlefield.win_not_saved") %>
       </button>
     </div>

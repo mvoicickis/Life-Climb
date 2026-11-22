@@ -4,6 +4,8 @@
   show_other_mountains = other_mountains.present? && other_mountains.total.positive?
   cheer = @today_cheer
   cheer_from = cheer&.from_user
+  pressable_action = "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+  row_pressable = { controller: "pressable", action: pressable_action }
 %>
 <header class="lp-today-top"
         id="today-top-bar"
@@ -42,8 +44,9 @@
   <% if show_other_mountains %>
     <button type="button"
             class="lp-other-mountains-button lp-btn-3d is-white is-sm lp-pressable"
+            data-controller="pressable"
             data-dropdown-target="button"
-            data-action="click->dropdown#toggle"
+            data-action="<%= pressable_action %> click->dropdown#toggle"
             aria-haspopup="menu"
             aria-expanded="false"
             aria-label="<%= t('dash.battlefield.other_mountains.open') %>">
@@ -66,6 +69,7 @@
                   method: :patch,
                   class: "lp-other-mountains-row lp-pressable",
                   form: { class: "lp-other-mountains-row-form" },
+                  data: row_pressable,
                   role: "menuitem" do %>
               <% if entry.custom_photo? && journey.present? %>
                 <span class="lp-other-mountains-row__thumb">

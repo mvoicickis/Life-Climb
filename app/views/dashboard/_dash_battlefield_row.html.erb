@@ -27,7 +27,9 @@
   row_classes << "is-struck" if row_state.in?(%i[pending_won won])
   row_classes << "is-pending-won" if row_state == :pending_won
   row_classes << "is-won-row" if row_state == :won
-  controllers = [ "today-battle-row" ]
+  pressable_action = "pointerdown->pressable#press pointerup->pressable#release pointercancel->pressable#release pointerleave->pressable#release"
+  check_pressable = { controller: "pressable", action: pressable_action }
+  controllers = [ "today-battle-row", "pressable" ]
   controllers << "quantity-complete" if qty_project
   controllers << "inline-title-edit" if strategy_battle
   controllers << "today-battle-pending-win" if row_state == :pending_won
@@ -42,7 +44,7 @@
          data-inline-title-edit-todo-id-value="<%= todo.id %>"
          data-inline-title-edit-at-max-template-value="<%= t('title_limit.at_max') %>"
          <% end %>
-         data-action="click->today-battle-row#activate"
+         data-action="<%= pressable_action %> click->today-battle-row#activate"
          <% if todo %>
          data-todo-id="<%= todo.id %>"
          data-battle-day-target="item"
@@ -64,8 +66,9 @@
               action: "submit->quantity-complete#intercept"
             }
           },
-          class: "lp-today-v2-row__check",
-          aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+          class: "lp-today-v2-row__check lp-pressable",
+          aria: { label: t("dash.battlefield.win_battle", title: title) },
+          data: check_pressable do %>
       <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
       <%= render "shared/push_endpoint_hidden" %>
     <% end %>
@@ -86,8 +89,9 @@
               juicy_feedback_win_not_saved_value: t("dash.battlefield.win_not_saved")
             }
           },
-          class: "lp-today-v2-row__check",
-          aria: { label: t("dash.battlefield.win_battle", title: title) } do %>
+          class: "lp-today-v2-row__check lp-pressable",
+          aria: { label: t("dash.battlefield.win_battle", title: title) },
+          data: check_pressable do %>
       <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box"></span></span>
       <%= render "shared/push_endpoint_hidden" %>
     <% end %>
@@ -99,8 +103,9 @@
             class: "lp-today-v2-row__check-form",
             data: { turbo: true, turbo_stream: true }
           },
-          class: "lp-today-v2-row__check",
-          aria: { label: t("dash.battlefield.unwin_battle", title: title) } do %>
+          class: "lp-today-v2-row__check lp-pressable",
+          aria: { label: t("dash.battlefield.unwin_battle", title: title) },
+          data: check_pressable do %>
       <span class="lp-today-v2-row__tick-slot" aria-hidden="true"><span class="lp-today-v2-row__box is-won"></span></span>
       <%= render "shared/push_endpoint_hidden" %>
     <% end %>
@@ -110,9 +115,10 @@
     <div class="lp-today-v2-row__title-line">
       <% if strategy_battle %>
         <button type="button"
-                class="lp-today-v2-row__title lp-today-v2-row__title-btn"
+                class="lp-today-v2-row__title lp-today-v2-row__title-btn lp-pressable"
+                data-controller="pressable"
                 data-inline-title-edit-target="display"
-                data-action="click->inline-title-edit#open">
+                data-action="<%= pressable_action %> click->inline-title-edit#open">
           <%= title %>
         </button>
       <% else %>
@@ -123,10 +129,11 @@
 
   <% if row_state == :pending_won %>
     <button type="button"
-            class="lp-today-row__undo"
+            class="lp-today-row__undo lp-pressable"
             hidden
+            data-controller="pressable"
             data-today-battle-pending-win-target="undo"
-            data-action="click->today-battle-pending-win#undo">
+            data-action="<%= pressable_action %> click->today-battle-pending-win#undo">
       <%= t("dash.battlefield.undo") %>
     </button>
   <% end %>

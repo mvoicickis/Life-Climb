@@ -15,6 +15,7 @@ class FeelFoundationContractTest < ActiveSupport::TestCase
     @battle_day = Rails.root.join("app/javascript/controllers/battle_day_controller.js").read
     @strategy = Rails.root.join("app/javascript/controllers/strategy_celebrate_controller.js").read
     @pressable = Rails.root.join("app/javascript/controllers/pressable_controller.js").read
+    @top_bar = Rails.root.join("app/javascript/controllers/today_top_bar_controller.js").read
     @application_js = Rails.root.join("app/javascript/application.js").read
   end
 
@@ -49,6 +50,19 @@ class FeelFoundationContractTest < ActiveSupport::TestCase
     assert_includes @css, "scale(var(--lp-press-scale))"
     assert_match(/prefers-reduced-motion:\s*reduce[\s\S]*\.lp-pressable/, @css)
     assert_includes @pressable, 'classList.add("lp-pressable")'
+    assert_includes @pressable, "hapticTap"
+    assert_includes @today_css, "touch-action: manipulation"
+    assert_includes @today_css, "scale(var(--lp-press-scale))"
+  end
+
+  test "haptic helpers respect feel switch and reduced motion" do
+    assert_includes @feedback, "export function feelEnabled"
+    assert_includes @feedback, "export function hapticTap"
+    assert_includes @feedback, "export function hapticSuccess"
+    assert_includes @feedback, "isEnabled as soundEnabled"
+    assert_match(/if \(!feelEnabled\(\) \|\| prefersReducedMotion\(\)\) return/, @feedback)
+    refute_includes @top_bar, "navigator.vibrate"
+    assert_includes @top_bar, "hapticTap"
   end
 
   test "one confetti path and shared sound API" do
@@ -57,7 +71,7 @@ class FeelFoundationContractTest < ActiveSupport::TestCase
     assert_includes @feedback, "export function consumeTapBurst"
     assert_includes @juicy, 'burst(host, { density: "juicy" })'
     assert_includes @juicy, "markTapBurst()"
-    assert_includes @juicy, "haptic(12)"
+    assert_includes @juicy, "hapticSuccess()"
     assert_includes @battle_day, "consumeTapBurst()"
     assert_includes @battle_day, 'burst(this.element, { density: "dash"'
     assert_includes @battle_day, 'sound(this.bossValue ? "win_boss" : "win"'

@@ -1,7 +1,7 @@
 // Shared press / haptic / confetti helpers. One burst implementation for
 // juicy_feedback, battle_day, and strategy_celebrate.
 
-import { play as playSound } from "lib/lp_sound"
+import { play as playSound, isEnabled as soundEnabled } from "lib/lp_sound"
 
 const TAP_BURST_KEY = "lpTapBurst"
 const TAP_BURST_TTL_MS = 2500
@@ -45,14 +45,32 @@ export function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
 }
 
-export function haptic(ms = 12) {
-  if (prefersReducedMotion()) return
+export function feelEnabled() {
+  return soundEnabled()
+}
+
+function vibrate(ms) {
   try {
     const nav = navigator
     if (typeof nav.vibrate === "function") nav.vibrate(ms)
   } catch (_err) {
     // iOS / denied — silent
   }
+}
+
+export function hapticTap() {
+  if (!feelEnabled() || prefersReducedMotion()) return
+  vibrate(10)
+}
+
+export function hapticSuccess() {
+  if (!feelEnabled() || prefersReducedMotion()) return
+  vibrate(12)
+}
+
+export function haptic(ms = 12) {
+  if (!feelEnabled() || prefersReducedMotion()) return
+  vibrate(ms)
 }
 
 export function sound(name, options = {}) {
@@ -113,4 +131,14 @@ export function burst(host, { density = "juicy", boss = false } = {}) {
   window.setTimeout(() => root.remove(), preset.removeMs)
 }
 
-export default { haptic, sound, burst, markTapBurst, consumeTapBurst, prefersReducedMotion }
+export default {
+  haptic,
+  hapticTap,
+  hapticSuccess,
+  feelEnabled,
+  sound,
+  burst,
+  markTapBurst,
+  consumeTapBurst,
+  prefersReducedMotion
+}
