@@ -57,19 +57,20 @@ module BlogHelper
     fragment = Nokogiri::HTML5.fragment(html)
     return html.html_safe unless post.body.present?
 
-    post.body.embeds.each do |embed|
-      next unless embed.is_a?(ActiveStorage::Blob)
-      next unless embed.image?
+    post.body.body.attachments.each do |attachment|
+      blob = attachment.attachable
+      next unless blob.is_a?(ActiveStorage::Blob)
+      next unless blob.image?
 
-      embed.analyze unless embed.analyzed?
-      width = embed.metadata["width"]
-      height = embed.metadata["height"]
+      blob.analyze unless blob.analyzed?
+      width = blob.metadata["width"]
+      height = blob.metadata["height"]
       next unless width && height
 
       fragment.css("img").each do |img|
         src = img["src"].to_s
         next if img["width"].present? && img["height"].present?
-        next unless src.include?(embed.signed_id)
+        next unless src.include?(blob.signed_id)
 
         img["width"] = width.to_s
         img["height"] = height.to_s
