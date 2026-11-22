@@ -7,7 +7,7 @@ class DeletedGoalCleanupTest < ActionDispatch::IntegrationTest
   include TodayV2TestHelper
 
   setup do
-    @user = users(:one)
+    @user = users(:two)
     @user.update!(planning_version: 2, onboarding_completed_at: Time.current)
     sign_in_as @user
     allow_extra_climbs!(@user)
