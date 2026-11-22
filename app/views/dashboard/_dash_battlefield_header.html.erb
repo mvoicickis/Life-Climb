@@ -1,6 +1,7 @@
-<%# Today V2 — frosted goal strip: title + ink camp bar (Camp N of M in progressbar only). %>
+<%# Today V2 — frosted goal card. Camp progress from @goal_card_camp (Today::CampProgress). %>
 <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
 <% camp = @goal_card_camp %>
+<% camp_title = camp&.dig(:camp_title).to_s %>
 <% camp_won = camp&.dig(:won).to_i %>
 <% camp_total = camp&.dig(:total).to_i %>
 <% camp_percent = camp&.dig(:percent).to_i %>
@@ -10,21 +11,30 @@
 
 <div class="lp-today-group-card lp-today-group-card--goal"
      data-controller="today-goal-card">
-  <header class="lp-today-v2-header lp-today-v2-header--compact lp-today-goal-strip"
-          aria-label="<%= goal_title %>">
-    <p class="lp-today-v2-header__name lp-today-goal-strip__title" title="<%= goal_title %>"><%= goal_title %></p>
+  <header class="lp-today-v2-header lp-today-v2-header--compact"
+          aria-label="<%= t('dash.battlefield.goal_card.label') %>">
+    <div class="lp-today-goal-kicker-row">
+      <p class="lp-today-goal-kicker"><%= t("dash.battlefield.goal_card.label") %></p>
+    </div>
+    <p class="lp-today-v2-header__name" title="<%= goal_title %>"><%= goal_title %></p>
 
     <% if camp.present? %>
-      <div class="lp-today-camp-bar"
-           role="progressbar"
-           aria-valuemin="0"
-           aria-valuemax="<%= [ camp_total, 100 ].max %>"
-           aria-valuenow="<%= camp_won %>"
-           aria-valuetext="<%= camp_of_label %>"
-           aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
-        <span class="lp-today-camp-bar__fill"
-              data-today-goal-bar
-              style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
+      <p class="lp-today-goal-camp" title="<%= camp_title %>"><%= camp_title %></p>
+      <div class="lp-today-camp-bar-row">
+        <div class="lp-today-camp-bar"
+             role="progressbar"
+             aria-valuemin="0"
+             aria-valuemax="<%= [ camp_total, 100 ].max %>"
+             aria-valuenow="<%= camp_won %>"
+             aria-valuetext="<%= camp_of_label %>"
+             aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
+          <span class="lp-today-camp-bar__fill"
+                data-today-goal-bar
+                style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
+        </div>
+        <p class="lp-today-camp-won"<%= " hidden" unless camp_won.positive? %>>
+          <%= t("dash.battlefield.goal_card.won", count: camp_won) %>
+        </p>
       </div>
     <% end %>
   </header>

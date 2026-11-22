@@ -15,7 +15,7 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert @camp.present?
   end
 
-  test "header shows slim goal strip with camp bar when battles are won" do
+  test "header shows Your goal kicker, camp name, bar, and won count" do
     clear_camp_battles!
     first = add_camp_battle!("Fight one", position: 0)
     add_camp_battle!("Fight two", position: 1)
@@ -24,31 +24,31 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-strip", count: 1
-    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 0
-    assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
+    assert_select "#today-battlefield-header .lp-today-goal-kicker", text: "Your goal", count: 1
+    assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title, count: 1
     assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
     assert_match(/Camp \d+ of \d+/, css_select("#today-battlefield-header .lp-today-camp-bar").first["aria-valuetext"])
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.5']", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[data-today-goal-bar][style*='--lp-fill: 0.5']", count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-won", text: "1 won", count: 1
     assert_select "#today-battlefield-header .lp-today-v2-hp-bar", count: 0
     assert_select "#today-battlefield-count", count: 1
   end
 
-  test "open camp shows camp bar and camp of label" do
+  test "open camp with zero wins hides won count" do
     clear_camp_battles!
     add_camp_battle!("Open fight", position: 0)
 
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
+    assert_select "#today-battlefield-header .lp-today-goal-kicker", text: "Your goal", count: 1
+    assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title, count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
   end
 
   test "goal card carries the collapse controller for scroll pad" do
@@ -60,7 +60,7 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert_select ".lp-today-scroll__pad", count: 1
   end
 
-  test "no camp means label and title only" do
+  test "no camp means Your goal and title only" do
     @user.strategy_goals.where(horizon: "project", life_journey_id: @journey.id).find_each do |camp|
       camp.update_columns(completed_at: Time.current)
     end
@@ -69,14 +69,14 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
 
-    assert_select "#today-battlefield-header .lp-today-goal-kicker", count: 0
+    assert_select "#today-battlefield-header .lp-today-goal-kicker", text: "Your goal", count: 1
     assert_select "#today-battlefield-header .lp-today-v2-header__name", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 0
     assert_select "#today-battlefield-header .lp-today-camp-won", count: 0
   end
 
-  test "long goal title stays inside the strip" do
+  test "long goal title stays on the card" do
     long_goal = "Build a calm software studio that helps families every week"
     @goal.update!(title: long_goal)
 
