@@ -87,6 +87,31 @@ module Admin
       assert_equal "A short teaser.", post_record.excerpt
     end
 
+    test "blog list loads writer assets for turbo visits" do
+      sign_in_as @admin
+      get admin_blog_posts_path
+
+      assert_response :success
+      assert_select "link[rel=stylesheet][href*='actiontext']"
+      assert_select "script[type='module'][src*='admin_blog']"
+    end
+
+    test "edit writer shows title textarea and visible google check" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(title: "Writer layout test", status: "draft")
+
+      get edit_admin_blog_post_path(post_record)
+
+      assert_response :success
+      assert_select "link[rel=stylesheet][href*='actiontext']"
+      assert_select "script[type='module'][src*='admin_blog']"
+      assert_select "textarea.lp-blog-writer__title[name=?]", "blog_post[title]"
+      assert_select "#blog_google_preview"
+      assert_select "#blog_seo_checklist"
+      assert_select "details.lp-blog-writer__seo-panel", count: 0
+      assert_select "details.lp-blog-writer__seo-edit summary", text: I18n.t("admin.blog_posts.edit_google_text")
+    end
+
     test "admin can destroy a post" do
       sign_in_as @admin
       post_record = BlogPost.create!(title: "Gone soon")

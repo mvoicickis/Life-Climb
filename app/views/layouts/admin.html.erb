@@ -12,6 +12,10 @@
     <link rel="icon" href="/icon.svg?v=7" type="image/svg+xml">
     <%= render "shared/nunito_fonts" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% if controller_name == "blog_posts" %>
+      <%= stylesheet_link_tag "actiontext", "data-turbo-track": "reload" %>
+      <%= javascript_import_module_tag "admin_blog", nonce: true %>
+    <% end %>
     <%= yield :head %>
     <%= javascript_importmap_tags %>
   </head>
