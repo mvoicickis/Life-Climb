@@ -108,5 +108,4 @@ class TodayMomentsContractTest < ActiveSupport::TestCase
     assert_includes @schema, 't.integer "longest_streak_days", default: 0, null: false'
     assert_includes @schema, 't.date "last_finale_on"'
   end
-
 end
