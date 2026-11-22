@@ -103,9 +103,13 @@
                 </span>
               </div>
             <% end %>
-            <% week_days.each_with_index do |_day, index| %>
+            <% week_days.each_with_index do |day, index| %>
               <% next if run_indices.include?(index) %>
-              <span class="lp-streak-moment__future" aria-hidden="true"></span>
+              <% if day > local_today %>
+                <span class="lp-streak-moment__future" aria-hidden="true"></span>
+              <% else %>
+                <span class="lp-streak-moment__past" aria-hidden="true"></span>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -133,11 +137,6 @@
       <div class="lp-streak-moment__spacer" aria-hidden="true"></div>
 
       <div class="lp-streak-moment__actions">
-        <button type="button"
-                class="lp-streak-moment__share"
-                data-action="streak-moment#share">
-          <%= t("climb.streak_moment.show_it_off") %>
-        </button>
         <% if kind == :goal && offered.any? %>
           <button type="button"
                   class="lp-streak-moment__continue"
@@ -151,6 +150,11 @@
             <%= t("climb.streak_moment.continue") %>
           </button>
         <% end %>
+        <button type="button"
+                class="lp-streak-moment__share"
+                data-action="streak-moment#share">
+          <%= t("climb.streak_moment.share") %>
+        </button>
       </div>
     </div>
   </div>

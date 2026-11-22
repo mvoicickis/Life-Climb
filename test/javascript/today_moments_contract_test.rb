@@ -42,6 +42,8 @@ class TodayMomentsContractTest < ActiveSupport::TestCase
     assert_includes @streak_erb, 'data-record="<%= moment.new_record ? \'true\' : \'false\' %>"'
     assert_includes @streak_erb, "lp-streak-moment__pill"
     assert_includes @streak_erb, "lp-streak-moment__future"
+    assert_includes @streak_erb, "lp-streak-moment__past"
+    assert_includes @streak_erb, "climb.streak_moment.share"
     refute_includes @streak_erb, "is-missed"
     refute_includes @streak_erb, "day-mark"
     css = Rails.root.join("app/assets/stylesheets/streak_moment.css").read
