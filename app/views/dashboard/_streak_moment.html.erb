@@ -8,11 +8,13 @@
 <% offer_commit = moment.offer_commit %>
 <% offered = Array(moment.offered_targets) %>
 <% default_target = moment.default_target %>
-<% run_start = local_today - (moment.days.to_i - 1) %>
+<% week_start = week_days.first %>
+<% streak_start = local_today - (moment.days.to_i - 1) %>
+<% strip_run_start = week_start.present? ? [ streak_start, week_start ].max : streak_start %>
 <% today_idx = week_days.index(local_today) %>
 <% run_indices = [] %>
 <% week_days.each_with_index do |day, index| %>
-  <% run_indices << index if day >= run_start && day <= local_today %>
+  <% run_indices << index if day >= strip_run_start && day <= local_today %>
 <% end %>
 <% run_len = run_indices.size %>
 <% run_first = run_indices.first %>
@@ -106,9 +108,13 @@
             <% week_days.each_with_index do |day, index| %>
               <% next if run_indices.include?(index) %>
               <% if day > local_today %>
-                <span class="lp-streak-moment__future" aria-hidden="true"></span>
+                <span class="lp-streak-moment__future"
+                      style="grid-column: <%= index + 1 %>"
+                      aria-hidden="true"></span>
               <% else %>
-                <span class="lp-streak-moment__past" aria-hidden="true"></span>
+                <span class="lp-streak-moment__past"
+                      style="grid-column: <%= index + 1 %>"
+                      aria-hidden="true"></span>
               <% end %>
             <% end %>
           </div>
@@ -137,6 +143,11 @@
       <div class="lp-streak-moment__spacer" aria-hidden="true"></div>
 
       <div class="lp-streak-moment__actions">
+        <button type="button"
+                class="lp-streak-moment__share"
+                data-action="streak-moment#share">
+          <%= t("climb.streak_moment.show_it_off") %>
+        </button>
         <% if kind == :goal && offered.any? %>
           <button type="button"
                   class="lp-streak-moment__continue"
@@ -150,11 +161,6 @@
             <%= t("climb.streak_moment.continue") %>
           </button>
         <% end %>
-        <button type="button"
-                class="lp-streak-moment__share"
-                data-action="streak-moment#share">
-          <%= t("climb.streak_moment.share") %>
-        </button>
       </div>
     </div>
   </div>
