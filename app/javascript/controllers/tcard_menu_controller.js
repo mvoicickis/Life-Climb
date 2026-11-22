@@ -187,13 +187,30 @@ export default class extends Controller {
   }
 
   setPortalLayersVisible(visible) {
-    const elements = [
-      ...this.element.querySelectorAll('[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'),
-      ...(this._portaled || [])
-    ]
+    const elements = this.sheetLayerElements()
     for (const element of elements) {
       element.hidden = !visible
+      if (!visible) element.classList.remove("is-sheet-open")
     }
+    if (visible) {
+      requestAnimationFrame(() => {
+        if (!this.hasDetailsTarget || !this.detailsTarget.open) return
+        for (const element of this.sheetLayerElements()) {
+          if (!element.hidden) element.classList.add("is-sheet-open")
+        }
+      })
+    }
+  }
+
+  sheetLayerElements() {
+    const portaled = (this._portaled || []).filter(
+      (el) => el.getAttribute("data-tcard-menu-target") === "scrim" ||
+        el.getAttribute("data-tcard-menu-target") === "sheet"
+    )
+    return [
+      ...this.element.querySelectorAll('[data-tcard-menu-target="scrim"], [data-tcard-menu-target="sheet"]'),
+      ...portaled
+    ]
   }
 
   syncPortalLayerVisibility() {
