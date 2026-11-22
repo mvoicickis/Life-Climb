@@ -196,6 +196,12 @@ Rails.application.routes.draw do
       end
     end
     resources :impersonations, only: %i[ create destroy ]
+    resources :blog_posts do
+      member do
+        patch :publish
+        patch :unpublish
+      end
+    end
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

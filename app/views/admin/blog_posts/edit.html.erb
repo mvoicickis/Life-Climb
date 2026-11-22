@@ -1,0 +1,40 @@
+<% content_for :title, @blog_post.title %>
+
+<header class="lp-admin__page-head">
+  <div class="lp-admin__page-head__title">
+    <p class="lp-admin__eyebrow"><%= t("admin.blog_posts.title") %></p>
+    <h1 class="lp-admin__h1"><%= @blog_post.title %></h1>
+    <p class="lp-admin__lead">
+      <% if @blog_post.status == "published" %>
+        <span class="lp-admin__badge"><%= t("admin.blog_posts.status_published") %></span>
+      <% else %>
+        <span class="lp-admin__badge is-muted"><%= t("admin.blog_posts.status_draft") %></span>
+      <% end %>
+    </p>
+  </div>
+  <div class="lp-admin__btn-row">
+    <% if @blog_post.status == "published" %>
+      <%= link_to t("admin.blog_posts.preview"),
+            "/blog/#{@blog_post.slug}",
+            class: "lp-admin__ghost",
+            target: "_blank",
+            rel: "noopener" %>
+      <%= button_to t("admin.blog_posts.unpublish"),
+            unpublish_admin_blog_post_path(@blog_post),
+            method: :patch,
+            class: "lp-admin__ghost" %>
+    <% else %>
+      <%= button_to t("admin.blog_posts.publish"),
+            publish_admin_blog_post_path(@blog_post),
+            method: :patch,
+            class: "lp-admin__btn" %>
+    <% end %>
+    <%= button_to t("admin.blog_posts.delete"),
+          admin_blog_post_path(@blog_post),
+          method: :delete,
+          class: "lp-admin__ghost is-danger",
+          form: { data: { turbo_confirm: t("admin.blog_posts.confirm_delete") } } %>
+  </div>
+</header>
+
+<%= render "form" %>

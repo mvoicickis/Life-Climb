@@ -17475,6 +17475,71 @@ button.lp-strategy-overflow {
   max-width: 36rem;
 }
 
+.lp-admin__form--blog {
+  max-width: 48rem;
+}
+
+.lp-admin__page-head__title {
+  min-width: 0;
+  flex: 1;
+}
+
+.lp-admin__input--blog {
+  border-radius: var(--lp-radius-field);
+  font-size: 1rem;
+  min-height: var(--lp-tap);
+}
+
+.lp-admin__textarea--blog {
+  border-radius: var(--lp-radius-field);
+  font-size: 1rem;
+  min-height: 5rem;
+}
+
+.lp-admin__file {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--lp-ink);
+}
+
+.lp-admin__list-row__main {
+  min-width: 0;
+}
+
+.lp-admin__list--blog-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.lp-admin__table-wrap--blog-desktop {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  .lp-admin__list--blog-mobile {
+    display: none;
+  }
+
+  .lp-admin__table-wrap--blog-desktop {
+    display: block;
+  }
+}
+
+.lp-admin trix-toolbar .trix-button-group {
+  border-color: var(--lp-border);
+}
+
+.lp-admin trix-editor {
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-field);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  font-size: 1rem;
+  min-height: 14rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.35rem;
+}
+
 .lp-admin__field {
   display: flex;
   flex-direction: column;
