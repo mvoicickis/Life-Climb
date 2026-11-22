@@ -42,7 +42,7 @@ class ProgressDashboardTest < ActiveSupport::TestCase
 
     assert_equal "7d", data[:period].key
     assert_equal 3, data[:kpis].size
-    assert_equal "Action Points", data[:kpis].first[:label]
+    assert_equal "Battles won", data[:kpis].first[:label]
     assert data[:growth].any?
     assert data[:mountain_summary].is_a?(Hash)
     assert_equal [], data[:projects]

@@ -18,7 +18,7 @@ class CompletionsController < ApplicationController
       assign_today_habit_stream! unless mountain_return?
       respond_to do |format|
         format.turbo_stream
-        format.html { redirect_to after_completion_path, notice: "+#{@habit.points} points!" }
+        format.html { redirect_to after_completion_path }
       end
     else
       respond_to do |format|

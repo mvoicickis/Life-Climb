@@ -23,8 +23,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
     assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
     assert_match(/Free to start/, response.body)
-    assert_match(/\+50/, response.body)
-    assert_match(/Battle strength/, response.body)
+    assert_match(/\+1 battle won/, response.body)
+    assert_match(/Battles won/, response.body)
     assert_no_match(/\+50 LP/, response.body)
     assert_no_match(/\+50 AP/, response.body)
     assert_no_match(/Early climbers are already on their way/, response.body)

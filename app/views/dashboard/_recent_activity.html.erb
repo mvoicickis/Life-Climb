@@ -6,7 +6,7 @@
       <% recent_completions.each do |completion| %>
         <li id="<%= dom_id(completion) %>" class="flex items-center justify-between text-sm">
           <span class="text-slate-700"><%= completion.habit.name %></span>
-          <span class="font-medium text-emerald-600">+<%= completion.points_awarded %> pts</span>
+          <span class="font-medium text-emerald-600">+<%= completion.points_awarded %></span>
         </li>
       <% end %>
     </ul>

@@ -105,21 +105,12 @@
     </div>
   </div>
 
-  <% xp = current_user.life_points.to_i %>
   <% streak_days = streak.days.to_i %>
   <div class="lp-rpg-hud__chips">
-    <% if xp.positive? %>
-      <div class="lp-rpg-chip is-xp" data-strategy-celebrate-target="spBadge" aria-label="<%= t('strategy.rpg.xp') %>">
-        <span class="lp-rpg-chip__icon" aria-hidden="true">★</span>
-        <span class="lp-rpg-chip__value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(xp) %></span>
-        <span class="lp-rpg-chip__name"><%= t("strategy.rpg.xp") %></span>
-      </div>
-    <% else %>
-      <%# Keep celebrate targets mounted so XP awards can animate in later. %>
-      <div class="lp-rpg-chip is-xp is-quiet" data-strategy-celebrate-target="spBadge" aria-hidden="true">
-        <span class="lp-rpg-chip__value" data-strategy-celebrate-target="apValue">0</span>
-      </div>
-    <% end %>
+    <%# Celebrate mounts only — no point totals on Mountain. %>
+    <div class="lp-rpg-chip is-quiet" data-strategy-celebrate-target="spBadge" aria-hidden="true">
+      <span class="lp-rpg-chip__value" data-strategy-celebrate-target="apValue"><%= number_with_delimiter(current_user.life_points.to_i) %></span>
+    </div>
     <% if streak_days.positive? %>
       <div class="lp-rpg-chip is-streak" aria-label="<%= t('strategy.rpg.streak') %>">
         <span class="lp-rpg-chip__icon" aria-hidden="true">🔥</span>

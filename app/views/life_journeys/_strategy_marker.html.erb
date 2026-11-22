@@ -8,7 +8,6 @@
 <% quiet = local_assigns.fetch(:quiet, false) %>
 <% kind = strategy_kind_css(node) %>
 <% state = strategy_pin_state(node: node, today: today) %>
-<% ap = node.day? ? GameRules::BATTLE_TODO_LP : nil %>
 <% title_limit = quiet ? 12 : 22 %>
 
 <button type="button"
@@ -38,8 +37,6 @@
     <span class="lp-strategy-marker__title"><%= node.title.truncate(title_limit) %></span>
     <% if node.progress_percent.positive? && !node.day? && on_spine %>
       <span class="lp-strategy-marker__pct"><%= node.progress_percent %>%</span>
-    <% elsif ap.present? && !node.completed? && !quiet %>
-      <span class="lp-strategy-marker__ap">+<%= ap %> <%= t("dash.action_points_short") %></span>
     <% elsif whisper.present? && !quiet %>
       <span class="lp-strategy-marker__whisper"><%= whisper %></span>
     <% elsif node.completed? && on_spine %>

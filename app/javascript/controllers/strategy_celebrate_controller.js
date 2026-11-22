@@ -24,7 +24,6 @@ export default class extends Controller {
       if (this.bossValue) this.mountainTarget.classList.add("is-boss")
     }
     if (this.hasCampTarget) this.campTarget.classList.add("is-nudge")
-    this.floatPoints()
     burst(this.element, { density: "strategy", boss: this.bossValue })
     sound(this.bossValue ? "strategy_boss" : "strategy", { boss: this.bossValue })
     window.setTimeout(() => {
@@ -35,25 +34,4 @@ export default class extends Controller {
     }, this.bossValue ? 1800 : 1200)
   }
 
-  floatPoints() {
-    if (this.gainedValue > 0 && this.hasSpBadgeTarget) {
-      const chip = document.createElement("span")
-      chip.className = "lp-strategy__sp-float"
-      chip.textContent = `+${this.gainedValue} ${this.spLabel()}`
-      this.spBadgeTarget.appendChild(chip)
-      window.setTimeout(() => chip.remove(), 1100)
-    }
-    if (this.apGainedValue > 0) {
-      const host = this.hasMountainTarget ? this.mountainTarget : this.element
-      const chip = document.createElement("span")
-      chip.className = "lp-strategy__ap-float lp-rpg-xp-float"
-      chip.textContent = `+${this.apGainedValue} XP`
-      host.appendChild(chip)
-      window.setTimeout(() => chip.remove(), 1200)
-    }
-  }
-
-  spLabel() {
-    return "planning"
-  }
 }

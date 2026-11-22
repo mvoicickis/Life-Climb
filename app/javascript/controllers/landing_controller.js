@@ -42,7 +42,7 @@ export default class extends Controller {
     if (!this.hasLpCountTarget || this.lpCountTarget.dataset.done === "true") return
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const end = 250
+    const end = 1
     if (reduce) {
       this.lpCountTarget.textContent = String(end)
       this.lpCountTarget.dataset.done = "true"
