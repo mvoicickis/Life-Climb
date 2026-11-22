@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for?(:title) ? "#{yield(:title)} · Admin · Life Climb" : "Admin · Life Climb" %></title>
+    <title><% if content_for?(:title) %><%= yield(:title) %> · Admin · Life Climb<% else %>Admin · Life Climb<% end %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
     <%= csrf_meta_tags %>
@@ -12,12 +12,12 @@
     <link rel="icon" href="/icon.svg?v=7" type="image/svg+xml">
     <%= render "shared/nunito_fonts" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= yield :head %>
+    <%= javascript_importmap_tags %>
     <% if controller_name == "blog_posts" %>
       <%= stylesheet_link_tag "actiontext", "data-turbo-track": "reload" %>
       <%= javascript_import_module_tag "admin_blog", nonce: true %>
     <% end %>
-    <%= yield :head %>
-    <%= javascript_importmap_tags %>
   </head>
   <body class="lp-min-h-screen antialiased lp-admin" data-controller="offline-page-cache">
     <header class="lp-admin__top">

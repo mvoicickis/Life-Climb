@@ -84,11 +84,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_201500) do
     t.string "status", default: "draft", null: false
     t.datetime "published_at"
     t.string "author_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "seo_title"
     t.string "meta_description"
     t.string "focus_phrase"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
     t.index ["status", "published_at"], name: "index_blog_posts_on_status_and_published_at"
   end
