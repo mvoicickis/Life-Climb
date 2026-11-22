@@ -17679,6 +17679,7 @@ button.lp-strategy-overflow {
 }
 
 .lp-blog-writer__title {
+  display: block;
   width: 100%;
   margin: 0 0 0.5rem;
   padding: 0;
@@ -17690,6 +17691,11 @@ button.lp-strategy-overflow {
   font-weight: 800;
   line-height: 1.2;
   color: var(--lp-ink);
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;
+  min-height: calc(1.2 * 2rem);
+  max-height: calc(1.2 * 2rem * 3);
 }
 
 .lp-blog-writer__title::placeholder {
@@ -17699,13 +17705,14 @@ button.lp-strategy-overflow {
 .lp-blog-writer__body-wrap {
   position: relative;
   min-width: 0;
+  margin-top: 0.35rem;
 }
 
-.lp-blog-writer__trix trix-toolbar {
+.lp-blog-writer__body-wrap trix-toolbar {
   position: sticky;
-  bottom: 0.75rem;
+  top: 3.5rem;
   z-index: 2;
-  margin: 0.75rem auto 0;
+  margin: 0 0 0.75rem;
   width: fit-content;
   max-width: 100%;
   border: 1px solid var(--lp-border);
@@ -17714,14 +17721,25 @@ button.lp-strategy-overflow {
   background: color-mix(in srgb, var(--lp-surface) 96%, transparent);
 }
 
-.lp-blog-writer__trix trix-editor {
+.lp-blog-writer__body-wrap trix-toolbar .trix-button-row {
+  flex-wrap: wrap;
+}
+
+.lp-blog-writer__body-wrap trix-editor {
+  display: block;
   border: 0;
   border-radius: 0;
-  min-height: 16rem;
+  min-height: 60vh;
   padding: 0;
   margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.65;
+  font-size: 18px;
+  line-height: 1.7;
+  background: transparent;
+  box-shadow: none;
+}
+
+.lp-blog-writer__body-wrap trix-editor:focus {
+  outline: none;
 }
 
 .lp-blog-writer__more {
@@ -17766,24 +17784,43 @@ button.lp-strategy-overflow {
   font-size: 0.78rem;
 }
 
+.lp-blog-writer__seo {
+  min-width: 0;
+}
+
 .lp-blog-writer__seo-panel {
+  display: grid;
+  gap: 0.85rem;
   border: 1px solid var(--lp-border);
   border-radius: var(--lp-radius-card);
   background: var(--lp-paper);
   padding: 0.75rem 0.85rem;
 }
 
-.lp-blog-writer__seo-summary {
+.lp-blog-writer__seo-kicker {
+  margin: 0;
+  font-size: var(--lp-type-ui-md);
+  font-weight: 800;
+}
+
+.lp-blog-writer__seo-edit {
+  border-top: 1px solid var(--lp-border);
+  padding-top: 0.65rem;
+}
+
+.lp-blog-writer__seo-edit-summary {
   cursor: pointer;
   font-weight: 800;
+  font-size: 0.84rem;
+  color: var(--lp-muted);
   list-style: none;
 }
 
-.lp-blog-writer__seo-summary::-webkit-details-marker {
+.lp-blog-writer__seo-edit-summary::-webkit-details-marker {
   display: none;
 }
 
-.lp-blog-writer__seo-inner {
+.lp-blog-writer__seo-edit-fields {
   display: grid;
   gap: 0.85rem;
   margin-top: 0.85rem;
