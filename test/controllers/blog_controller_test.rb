@@ -67,6 +67,30 @@ class BlogControllerTest < ActionDispatch::IntegrationTest
     assert_response :moved_permanently
   end
 
+  test "published post body images include width and height" do
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("fake-image"),
+      filename: "inline.png",
+      content_type: "image/png"
+    )
+    blob.update!(metadata: blob.metadata.merge("width" => 640, "height" => 480))
+
+    post = BlogPost.create!(
+      title: "Post with image",
+      slug: "post-with-image",
+      status: "published",
+      published_at: 1.day.ago
+    )
+    post.body = ActionText::Attachment.from_attachable(blob).to_html
+    post.save!
+
+    get blog_post_path(post.slug)
+
+    assert_response :success
+    assert_match(/width="640"/, response.body)
+    assert_match(/height="480"/, response.body)
+  end
+
   test "published post renders meta og and json-ld" do
     get blog_post_path(@published.slug)
 
