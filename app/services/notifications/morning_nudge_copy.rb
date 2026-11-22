@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module Notifications
-  # Title/body for the daily morning push — focused goal title and weekday line.
+  # Title/body for the daily morning push — focused goal title and rotating fallback line.
   class MorningNudgeCopy
-    WEEKDAY_KEYS = %w[sun mon tue wed thu fri sat].freeze
-
     Result = Struct.new(:title, :body, keyword_init: true)
 
     def self.for(user:, date:, locale: I18n.locale)
@@ -54,8 +52,7 @@ module Notifications
     end
 
     def body
-      key = WEEKDAY_KEYS[@date.wday]
-      fallback = I18n.t("notifications.morning_push.weekday_#{key}")
+      fallback = NudgeFallbackLine.for(user: @user, date: @date, kind: :morning, locale: @locale)
       NudgeBody.build(user: @user, date: @date, fallback: fallback)
     end
   end

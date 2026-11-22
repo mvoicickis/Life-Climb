@@ -13,12 +13,12 @@ module Notifications
 
     test "uses goal title without mountain prefix" do
       seed_climb!(@user, title: "Get my driving license", today_mission: "Warm up")
-      date = Date.new(2026, 8, 4) # Tuesday
+      date = Date.new(2026, 8, 4)
 
       copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
 
       assert_equal "Get my driving license", copy.title
-      assert_equal "You wanted this. Go get it.", copy.body
+      assert_equal fallback_line(:morning, date), copy.body
     end
 
     test "truncates long goal title at forty graphemes" do
@@ -41,22 +41,24 @@ module Notifications
       assert_equal "Iemācīties vācu valodu līdz B1", copy.title
     end
 
-    test "no journey uses plan title and weekday body" do
-      date = Date.new(2026, 8, 6) # Thursday
+    test "no journey uses plan title and rotating fallback body" do
+      date = Date.new(2026, 8, 6)
 
       copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
 
       assert_equal "Plan today", copy.title
-      assert_equal "Big goals fall to small steps. Take one.", copy.body
+      assert_equal fallback_line(:morning, date), copy.body
     end
 
-    test "weekday body follows date not server default" do
+    test "fallback body follows push date not weekday of week" do
       seed_climb!(@user, title: "Get my driving license")
-      berlin_tuesday = Date.new(2026, 8, 4)
+      date_a = Date.new(2026, 8, 4)
+      date_b = Date.new(2026, 8, 5)
 
-      copy = MorningNudgeCopy.for(user: @user, date: berlin_tuesday, locale: :en)
+      body_a = MorningNudgeCopy.for(user: @user, date: date_a, locale: :en).body
+      body_b = MorningNudgeCopy.for(user: @user, date: date_b, locale: :en).body
 
-      assert_equal "You wanted this. Go get it.", copy.body
+      refute_equal body_a, body_b
     end
 
     test "body uses linked battle todo" do
@@ -81,7 +83,7 @@ module Notifications
 
     test "body ignores ad-hoc todo without strategy goal" do
       seed_climb!(@user, title: "Get my driving license")
-      date = Date.new(2026, 8, 3) # Monday
+      date = Date.new(2026, 8, 3)
       @user.daily_todos.create!(
         title: "Secret battle name",
         aspect_key: "career",
@@ -92,7 +94,7 @@ module Notifications
 
       copy = MorningNudgeCopy.for(user: @user, date: date, locale: :en)
 
-      assert_equal "New week. Make it count.", copy.body
+      assert_equal fallback_line(:morning, date), copy.body
       refute_includes copy.body, "Secret battle"
     end
 
@@ -106,6 +108,12 @@ module Notifications
 
       assert_equal todo_count, DailyTodo.count
       assert_equal goal_count, StrategyGoal.count
+    end
+
+    private
+
+    def fallback_line(kind, date)
+      NudgeFallbackLine.for(user: @user, date: date, kind: kind, locale: :en)
     end
   end
 end
