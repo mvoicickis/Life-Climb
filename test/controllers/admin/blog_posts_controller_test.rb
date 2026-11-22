@@ -33,16 +33,65 @@ module Admin
       assert_redirected_to new_session_path
     end
 
-    test "admin new creates a draft and opens the writer" do
+    test "admin new opens the writer without creating a post" do
       sign_in_as @admin
 
-      assert_difference -> { BlogPost.count }, 1 do
+      assert_no_difference -> { BlogPost.count } do
         get new_admin_blog_post_path
       end
 
-      post = BlogPost.order(:id).last
-      assert_equal "draft", post.status
-      assert_redirected_to edit_admin_blog_post_path(post)
+      assert_response :success
+      assert_select "#blog_post_editor"
+      assert_no_match(/lp-blog-writer__status-ok/, response.body)
+    end
+
+    test "first autosave on new post creates the record" do
+      sign_in_as @admin
+      get new_admin_blog_post_path
+
+      assert_difference -> { BlogPost.count }, 1 do
+        post admin_blog_posts_path, params: {
+          autosave: "1",
+          slug_auto: "1",
+          blog_post: { title: "My first story" }
+        }, headers: { Accept: "text/vnd.turbo-stream.html" }
+      end
+
+      assert_response :success
+      created = BlogPost.order(:id).last
+      assert_equal "My first story", created.title
+      assert_match(/lp-blog-writer__status-ok/, response.body)
+    end
+
+    test "failed autosave shows not saved message" do
+      sign_in_as @admin
+      BlogPost.create!(title: "Taken", slug: "taken-slug", status: "draft")
+      post_record = BlogPost.create!(title: "Other", slug: "other-slug", status: "draft")
+
+      patch admin_blog_post_path(post_record), params: {
+        autosave: "1",
+        blog_post: { slug: "taken-slug" }
+      }, headers: { Accept: "text/vnd.turbo-stream.html" }
+
+      assert_response :unprocessable_entity
+      assert_match I18n.t("admin.blog_posts.not_saved_tap"), response.body
+      assert_no_match(/lp-blog-writer__status-ok/, response.body)
+    end
+
+    test "autosave syncs slug field from server when slug is auto" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(title: "Hello World", slug: "hello-world", status: "draft")
+
+      patch admin_blog_post_path(post_record), params: {
+        autosave: "1",
+        slug_auto: "1",
+        blog_post: { title: "You'll Climb", slug: "youll-climb" }
+      }, headers: { Accept: "text/vnd.turbo-stream.html" }
+
+      assert_response :success
+      post_record.reload
+      assert_equal "youll-climb", post_record.slug
+      assert_match(/value="youll-climb"/, response.body)
     end
 
     test "autosave never publishes" do

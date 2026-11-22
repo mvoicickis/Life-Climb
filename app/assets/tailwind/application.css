@@ -17591,6 +17591,14 @@ button.lp-strategy-overflow {
   color: var(--lp-green-deep);
 }
 
+.lp-blog-writer__status.is-error {
+  cursor: pointer;
+  color: var(--lp-muted);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
 .lp-blog-writer__bar-actions {
   display: flex;
   flex-wrap: wrap;

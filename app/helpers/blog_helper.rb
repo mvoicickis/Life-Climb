@@ -49,4 +49,36 @@ module BlogHelper
   def blog_card_excerpt(post)
     post.excerpt.presence || post.meta_description.to_s
   end
+
+  def blog_post_body_html(post)
+    html = post.body.to_s
+    return "".html_safe if html.blank?
+
+    fragment = Nokogiri::HTML5.fragment(html)
+    return html.html_safe unless post.body.present?
+
+    post.body.body.attachments.each do |attachment|
+      blob = attachment.attachable
+      next unless blob.is_a?(ActiveStorage::Blob)
+      next unless blob.image?
+
+      blob.analyze unless blob.analyzed?
+      width = blob.metadata["width"]
+      height = blob.metadata["height"]
+      next unless width && height
+
+      fragment.css("img").each do |img|
+        src = img["src"].to_s
+        next if img["width"].present? && img["height"].present?
+        next unless src.include?(blob.signed_id)
+
+        img["width"] = width.to_s
+        img["height"] = height.to_s
+        img["decoding"] ||= "async"
+        img["loading"] ||= "lazy"
+      end
+    end
+
+    fragment.to_html.html_safe
+  end
 end
