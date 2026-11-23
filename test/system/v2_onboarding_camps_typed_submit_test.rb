@@ -34,6 +34,10 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     fill_in "onboarding_camp_add", with: "Launch beta"
     click_button I18n.t("v2_onboarding.create_my_camps")
 
+    assert_selector "[data-controller='onboarding-climb']", wait: 12
+    assert_selector "input.lp-ob-climb__next.is-shown, button.lp-ob-climb__next.is-shown", wait: 15
+    find(".lp-ob-climb__next.is-shown").click
+
     assert_selector ".lp-trail", wait: 12
 
     user = User.find_by!(email_address: @email)

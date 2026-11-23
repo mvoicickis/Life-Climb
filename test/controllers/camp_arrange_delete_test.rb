@@ -19,6 +19,7 @@ class CampArrangeDeleteTest < ActionDispatch::IntegrationTest
     follow_redirect!
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: goal } }
     patch v2_onboarding_url(step: "camps"), params: { onboarding: { camp_titles: camps } }
+    patch v2_onboarding_url(step: "climb")
     follow_redirect!
     user = User.find_by!(email_address: email)
     user.primary_focused_journey.clear_first_camp_reveal!

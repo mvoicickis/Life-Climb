@@ -4,7 +4,8 @@ class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
   INTRO_STEPS = %w[intro_big_goals intro_battles].freeze
-  STEPS = (INTRO_STEPS + %w[goal camps]).freeze
+  POST_SETUP_STEPS = %w[climb].freeze
+  STEPS = (INTRO_STEPS + %w[goal camps] + POST_SETUP_STEPS).freeze
   SETUP_STEPS = %w[goal camps].freeze
   SETUP_STEP_DISPLAY_TOTAL = 3
   LEGACY_STEPS = %w[welcome category mountain commitment deadline forge how].freeze
@@ -22,6 +23,10 @@ class V2OnboardingsController < ApplicationController
       redirect_to v2_onboarding_path(step: entry_step) and return
     end
 
+    if pending_climb_step? && (INTRO_STEPS.include?(@step) || SETUP_STEPS.include?(@step))
+      redirect_to v2_onboarding_path(step: "climb") and return
+    end
+
     if INTRO_STEPS.include?(@step) && draft_goal_present?
       redirect_to v2_onboarding_path(step: missing_step) and return
     end
@@ -29,6 +34,16 @@ class V2OnboardingsController < ApplicationController
     if SETUP_STEPS.include?(@step)
       @setup_step_index = setup_display_index(@step)
       @setup_step_total = SETUP_STEP_DISPLAY_TOTAL
+    end
+
+    if @step == "climb"
+      journey = onboarding_bootstrap_journey
+      unless journey
+        redirect_to v2_onboarding_path(step: entry_step) and return
+      end
+
+      @goal_title = journey.title
+      @camp_titles = camp_titles_for_journey(journey)
     end
 
     redirect_to v2_onboarding_path(step: missing_step) and return if step_incomplete?
@@ -82,24 +97,43 @@ class V2OnboardingsController < ApplicationController
         session.delete(:v2_onboarding)
         redirect_completed_user! and return
       end
-      if (existing_journey = onboarding_bootstrap_journey_for(draft["goal"]))
+
+      if (existing_journey = onboarding_bootstrap_journey)
         session.delete(:v2_onboarding)
-        redirect_after_onboarding!(fallback: life_journey_path(existing_journey)) and return
+        session.delete(:v2_onboarding_from_legacy_mountain)
+        if current_user.onboarding_completed?
+          redirect_after_onboarding!(fallback: life_journey_path(existing_journey)) and return
+        else
+          redirect_to v2_onboarding_path(step: "climb") and return
+        end
       end
+
       session[:v2_onboarding] = draft.merge("camp_titles" => titles)
       track_onboarding_event!("onboarding_step_completed", step)
       begin
-        result = Onboarding::Bootstrap.call(
+        Onboarding::Bootstrap.call(
           user: current_user,
           goal_title: draft["goal"],
-          camp_titles: titles
+          camp_titles: titles,
+          complete_onboarding: false
         )
         session.delete(:v2_onboarding)
         session.delete(:v2_onboarding_from_legacy_mountain)
-        redirect_after_onboarding!(fallback: life_journey_path(result.journey))
+        redirect_to v2_onboarding_path(step: "climb")
       rescue Onboarding::Bootstrap::Error => e
         redirect_to v2_onboarding_path(step: "camps"), alert: e.message
       end
+    when "climb"
+      journey = onboarding_bootstrap_journey
+      unless journey
+        redirect_to v2_onboarding_path(step: entry_step) and return
+      end
+
+      complete_v2_onboarding!
+      track_onboarding_event!("onboarding_step_completed", step)
+      session.delete(:v2_onboarding)
+      session.delete(:v2_onboarding_from_legacy_mountain)
+      redirect_after_onboarding!(fallback: life_journey_path(journey))
     else
       redirect_to v2_onboarding_path(step: entry_step)
     end
@@ -115,7 +149,15 @@ class V2OnboardingsController < ApplicationController
   end
 
   def entry_step
+    return "climb" if pending_climb_step?
+
     draft_goal_present? ? missing_step : "intro_big_goals"
+  end
+
+  def pending_climb_step?
+    return false if current_user.onboarding_completed?
+
+    onboarding_bootstrap_journey.present?
   end
 
   def draft_goal_present?
@@ -191,6 +233,12 @@ class V2OnboardingsController < ApplicationController
     end
   end
 
+  def complete_v2_onboarding!
+    return if current_user.onboarding_completed? && current_user.planning_v2?
+
+    current_user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+  end
+
   def step_incomplete?
     draft = normalized_draft
     case @step
@@ -211,6 +259,7 @@ class V2OnboardingsController < ApplicationController
 
   def legacy_or_retired_redirect_step(legacy_step)
     draft = normalized_draft
+    return "climb" if pending_climb_step?
     return "intro_big_goals" if draft["goal"].blank?
     return "camps" if legacy_step == "mountain" || session[:v2_onboarding_from_legacy_mountain]
     return "camps" if draft_goal_present?
@@ -228,12 +277,18 @@ class V2OnboardingsController < ApplicationController
     )
   end
 
-  def onboarding_bootstrap_journey_for(goal_title)
-    title = goal_title.to_s.strip
-    return if title.blank?
-
-    current_user.life_journeys.active.order(id: :desc).find do |journey|
-      journey.title == title && journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG) == "true"
+  def onboarding_bootstrap_journey
+    @onboarding_bootstrap_journey ||= current_user.life_journeys.active.order(id: :desc).find do |journey|
+      journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG) == "true"
     end
+  end
+
+  def camp_titles_for_journey(journey)
+    journey.user.strategy_goals
+      .where(life_journey_id: journey.id)
+      .for_kind("project")
+      .order(:position)
+      .limit(3)
+      .pluck(:title)
   end
 end

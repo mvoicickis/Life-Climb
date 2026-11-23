@@ -17,14 +17,15 @@ module Onboarding
 
     Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)
 
-    def self.call(user:, goal_title:, camp_titles:)
-      new(user:, goal_title:, camp_titles:).call
+    def self.call(user:, goal_title:, camp_titles:, complete_onboarding: true)
+      new(user:, goal_title:, camp_titles:, complete_onboarding:).call
     end
 
-    def initialize(user:, goal_title:, camp_titles:)
+    def initialize(user:, goal_title:, camp_titles:, complete_onboarding: true)
       @user = user
       @goal_title = goal_title.to_s.strip
       @camp_titles = normalize_camp_titles(camp_titles)
+      @complete_onboarding = complete_onboarding
     end
 
     def call
@@ -37,8 +38,8 @@ module Onboarding
         @user.with_lock do
           @user.reload
           if (journey = find_existing_bootstrap_journey)
-            ensure_onboarding_completed!
-            result = Result.new(journey: journey)
+            ensure_onboarding_completed! if @complete_onboarding
+            result = result_for_journey(journey)
           else
             result = ClimbSpine.call(
               user: @user,
@@ -47,7 +48,7 @@ module Onboarding
               seed_battle: false
             )
 
-            @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+            mark_onboarding_complete! if @complete_onboarding
 
             Strategy::Celebrate.call(user: @user, goal: result.first_battle) if result.first_battle
             Goals::Current.clear_cache!(user: @user)
@@ -64,14 +65,29 @@ module Onboarding
 
     def find_existing_bootstrap_journey
       @user.life_journeys.active.order(id: :desc).find do |journey|
-        journey.title == @goal_title && journey.setup_flag(BOOTSTRAP_FLAG) == "true"
+        journey.setup_flag(BOOTSTRAP_FLAG) == "true"
       end
     end
 
-    def ensure_onboarding_completed!
+    def result_for_journey(journey)
+      plan = @user.strategy_goals.where(life_journey_id: journey.id).for_kind("plan").first
+      projects = if plan
+        plan.children.for_kind("project").order(:position).to_a
+      else
+        []
+      end
+      goal = @user.strategy_goals.where(life_journey_id: journey.id).for_kind("goal").first
+      Result.new(journey: journey, goal: goal, plan: plan, projects: projects, first_battle: nil)
+    end
+
+    def mark_onboarding_complete!
       return if @user.onboarding_completed? && @user.planning_v2?
 
       @user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+    end
+
+    def ensure_onboarding_completed!
+      mark_onboarding_complete!
     end
 
     def normalize_camp_titles(camp_titles)
