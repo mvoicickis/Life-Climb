@@ -198,10 +198,10 @@
 .lp-today-finale__stat span {
   display: block;
   font-size: var(--lp-type-ui-sm);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--lp-muted);
+  text-transform: none;
 }
 
 .lp-today-finale__stat.is-camp strong {
@@ -242,9 +242,23 @@
   margin: 0;
 }
 
+.lp-today-finale__continue.lp-cta {
+  width: 100%;
+  min-height: var(--lp-tap);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+  background: var(--lp-green);
+  color: var(--lp-surface);
+  border: 0;
+  box-shadow: var(--lp-shadow-cta);
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .lp-today-finale__share.lp-btn-3d.is-white {
   width: 100%;
-  min-height: 56px;
+  min-height: var(--lp-tap);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 900;
@@ -258,20 +272,6 @@
 .lp-today-finale__share.lp-btn-3d.is-white.is-pressed {
   transform: translateY(4px);
   box-shadow: 0 0 0 color-mix(in srgb, var(--lp-ink) 15%, transparent);
-}
-
-.lp-today-finale__continue {
-  border: 0;
-  background: transparent;
-  color: var(--lp-surface);
-  font-family: inherit;
-  font-size: var(--lp-type-ui-md);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  min-height: 44px;
-  cursor: pointer;
-  opacity: 0.95;
 }
 
 @media (prefers-reduced-motion: reduce) {

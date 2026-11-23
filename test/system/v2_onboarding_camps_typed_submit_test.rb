@@ -40,7 +40,7 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
 
     assert_selector "[data-controller='onboarding-v3-battles']", wait: 12
     fill_in "onboarding_battle_add", with: "Ship slice 3"
-    click_button I18n.t("v2_onboarding.battles_add_battle")
+    find(".lp-ob-steps__add-btn", match: :first).click
     click_button I18n.t("v2_onboarding.battles_done")
 
     assert_selector "h1", text: I18n.t("v2_onboarding.celebrate_title"), wait: 8

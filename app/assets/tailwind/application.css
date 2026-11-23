@@ -29097,7 +29097,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--lp-ob-keyboard-inset, 0px));
   z-index: 30;
   box-sizing: border-box;
   width: 100%;
@@ -29432,10 +29432,6 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--lp-muted);
-}
-
-.lp-ob-steps__dock {
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--lp-ob-keyboard-inset, 0px));
 }
 
 .lp-ob .lp-cta {
@@ -29914,30 +29910,68 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob__body--battles {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding-top: 0.85rem;
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
-.lp-ob-battles__scroll {
+.lp-ob-battles__head {
+  flex: none;
   display: grid;
   gap: 0.65rem;
 }
 
+.lp-ob-battles__form {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.55rem;
+}
+
+.lp-ob-battles__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(0.5rem + var(--lp-ob-dock-offset, 0px));
+}
+
 .lp-ob-battles__example {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.lp-ob-battles__example-toggle {
+  list-style: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-muted-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.lp-ob-battles__example-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.lp-ob-battles__example-body {
+  margin-top: 0.55rem;
   padding: 0.7rem 0.8rem;
   border-radius: var(--lp-radius-field);
   background: color-mix(in srgb, var(--lp-paper) 92%, var(--lp-green-soft));
   border: 1px solid color-mix(in srgb, var(--lp-border) 80%, var(--lp-green-soft));
   display: grid;
   gap: 0.3rem;
-}
-
-.lp-ob-battles__example-label {
-  margin: 0;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--lp-muted-dark);
 }
 
 .lp-ob-battles__example-row {
@@ -29960,11 +29994,6 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--lp-muted-dark);
-}
-
-.lp-ob-battles__form {
-  display: grid;
-  gap: 0.55rem;
 }
 
 .lp-ob-battles__list {

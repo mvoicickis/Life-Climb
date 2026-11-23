@@ -4,11 +4,13 @@ import { haptic, sound, prefersReducedMotion } from "lib/lp_feedback"
 
 // Full-screen all-battles-won finale — waits on the overlay queue.
 export default class extends Controller {
-  static targets = [ "battlesCount" ]
+  static targets = [ "battlesCount", "battlesLabel" ]
   static values = {
     shareText: String,
     shareToast: String,
-    battles: Number
+    battles: Number,
+    battlesLabelOne: String,
+    battlesLabelOther: String
   }
 
   connect() {
@@ -34,13 +36,24 @@ export default class extends Controller {
     if (!reduce) this.element.classList.add("is-impact")
     sound("all_won")
     haptic([ 20, 40, 20 ])
-    if (this.hasBattlesCountTarget) {
-      const to = this.battlesValue || 0
-      if (reduce) {
-        this.battlesCountTarget.textContent = String(to)
-      } else {
-        this.countUp(this.battlesCountTarget, to, 700)
-      }
+    this.revealBattlesCount()
+  }
+
+  setBattlesLabel(count) {
+    if (!this.hasBattlesLabelTarget) return
+    const label = count === 1 ? this.battlesLabelOneValue : this.battlesLabelOtherValue
+    if (label) this.battlesLabelTarget.textContent = label
+  }
+
+  revealBattlesCount() {
+    const to = this.battlesValue || 0
+    this.setBattlesLabel(to)
+    if (!this.hasBattlesCountTarget) return
+    const reduce = prefersReducedMotion()
+    if (reduce) {
+      this.battlesCountTarget.textContent = String(to)
+    } else {
+      this.countUp(this.battlesCountTarget, to, 700)
     }
   }
 
