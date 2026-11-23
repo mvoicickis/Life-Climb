@@ -104,7 +104,7 @@ module ClimbTogether
           password: "password12345"
         }
       }
-      assert_redirected_to v2_onboarding_path(step: "goal")
+      assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
       assert_equal @invite.token, session[ClimbTogether::INVITE_TOKEN_SESSION_KEY]
 
       patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship Life Climb" } }
@@ -138,7 +138,7 @@ module ClimbTogether
       )
 
       get "/auth/google_oauth2/callback"
-      assert_redirected_to v2_onboarding_path(step: "goal")
+      assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
       assert_equal @invite.token, session[ClimbTogether::INVITE_TOKEN_SESSION_KEY]
 
       patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Google mountain" } }
@@ -161,7 +161,7 @@ module ClimbTogether
           password: "password12345"
         }
       }
-      assert_redirected_to v2_onboarding_path(step: "goal")
+      assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
       assert_nil session[ClimbTogether::INVITE_TOKEN_SESSION_KEY]
 
       patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Normal mountain" } }

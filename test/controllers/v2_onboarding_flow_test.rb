@@ -5,13 +5,15 @@ require "test_helper"
 class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   test "two step flow finishes on mountain with seeded battle on today" do
     post registration_url, params: registration_params("fresh@example.com")
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
 
     follow_redirect!
+    advance_through_intros!
+    follow_redirect!
     assert_response :success
-    assert_match(/Name your mountain/i, response.body)
-    assert_match(/Step 1 of 2/i, response.body)
-    assert_select "#onboarding_goal[placeholder=?]", I18n.t("v2_onboarding.mountain_name_placeholder")
+    assert_match(/What is your goal\?/i, response.body)
+    assert_match(/Step 1 of 3/i, response.body)
+    assert_select "#onboarding_goal[placeholder=?]", I18n.t("v2_onboarding.goal_placeholder")
 
     user = User.find_by!(email_address: "fresh@example.com")
     assert_equal "fox", user.character
@@ -20,8 +22,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Become a Ruby Developer" } }
     assert_redirected_to v2_onboarding_path(step: "camps")
     follow_redirect!
-    assert_match(/Create your climb/i, response.body)
-    assert_match(/Step 2 of 2/i, response.body)
+    assert_match(/What steps do you need to get to/i, response.body)
+    assert_match(/Step 2 of 3/i, response.body)
     assert_select "[data-controller='onboarding-camps']"
 
     patch v2_onboarding_url(step: "camps"), params: {
@@ -114,8 +116,15 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     post registration_url, params: registration_params("tracked@example.com")
     user = User.find_by!(email_address: "tracked@example.com")
 
+    follow_redirect!
+    advance_through_intros!
+    follow_redirect!
+
     get v2_onboarding_path(step: "goal")
-    assert_equal 1, user.user_events.named("onboarding_step_viewed").count
+    viewed_steps = user.user_events.named("onboarding_step_viewed")
+                       .order(:id)
+                       .map { |event| event.properties["step"] }
+    assert_equal %w[intro_big_goals intro_battles goal], viewed_steps
 
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship LifePoints" } }
 
@@ -123,7 +132,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     viewed_steps = user.user_events.named("onboarding_step_viewed")
                        .order(:id)
                        .map { |event| event.properties["step"] }
-    assert_equal %w[goal camps], viewed_steps
+    assert_equal %w[intro_big_goals intro_battles goal camps], viewed_steps
 
     patch v2_onboarding_url(step: "camps"), params: {
       onboarding: { camp_titles: [ "Launch" ] }
@@ -132,7 +141,40 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     completed_steps = user.user_events.named("onboarding_step_completed")
                          .order(:id)
                          .map { |event| event.properties["step"] }
-    assert_equal %w[goal camps], completed_steps
+    assert_equal %w[intro_big_goals intro_battles goal camps], completed_steps
+    refute user.user_events.named("onboarding_step_completed").any? { |e| e.properties["skipped"] }
+  end
+
+  test "plain signup lands on intro one" do
+    post registration_url, params: registration_params("intro-signup@example.com")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
+    follow_redirect!
+    assert_match(I18n.t("v2_onboarding.intro_big_goals_title"), response.body)
+  end
+
+  test "intro skip tracks skipped and lands on goal" do
+    post registration_url, params: registration_params("intro-skip@example.com")
+    user = User.find_by!(email_address: "intro-skip@example.com")
+
+    follow_redirect!
+    patch v2_onboarding_url(step: "intro_big_goals"), params: { onboarding: { skip: true } }
+    assert_redirected_to v2_onboarding_path(step: "goal")
+
+    event = user.user_events.named("onboarding_step_completed").order(:id).last
+    assert_equal "intro_big_goals", event.properties["step"]
+    assert event.properties["skipped"]
+
+    follow_redirect!
+    assert_match(/What is your goal\?/i, response.body)
+  end
+
+  test "in-flight user with goal in session lands on goal not intro" do
+    post registration_url, params: registration_params("inflight@example.com")
+    patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Learn piano" } }
+    assert_redirected_to v2_onboarding_path(step: "camps")
+
+    get v2_onboarding_path(step: "intro_big_goals")
+    assert_redirected_to v2_onboarding_path(step: "goal")
   end
 
   test "legacy session title migrates to goal for in-progress users" do
@@ -149,10 +191,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     post registration_url, params: registration_params("legacy-steps@example.com")
 
     get v2_onboarding_path(step: "welcome")
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
 
     get v2_onboarding_path(step: "character")
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
 
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship it" } }
     get v2_onboarding_path(step: "battles")
@@ -252,7 +294,19 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     }
   end
 
+  def advance_through_intros!
+    patch v2_onboarding_url(step: "intro_big_goals")
+    assert_redirected_to v2_onboarding_path(step: "intro_battles")
+    patch v2_onboarding_url(step: "intro_battles")
+    assert_redirected_to v2_onboarding_path(step: "goal")
+  end
+
   def finish_onboarding_draft!(goal:, camps:)
+    follow_redirect! if response.redirect?
+    if response.body.include?(I18n.t("v2_onboarding.intro_big_goals_title"))
+      advance_through_intros!
+      follow_redirect!
+    end
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: goal } }
     patch v2_onboarding_url(step: "camps"), params: { onboarding: { camp_titles: camps } }
   end

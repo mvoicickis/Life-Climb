@@ -14,7 +14,7 @@ module Developer
       session.delete(Today::EodFlow::ACK_SESSION_KEY)
       session.delete(Today::BattlefieldDay::SESSION_KEY)
 
-      redirect_to v2_onboarding_path(step: "goal"),
+      redirect_to v2_onboarding_path(step: "intro_big_goals"),
                   notice: t("developer.tools.restart_npe_done"),
                   status: :see_other
     end

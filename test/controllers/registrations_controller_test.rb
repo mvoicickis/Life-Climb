@@ -26,7 +26,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user = User.find_by!(email_address: "mareks-new@example.com")
     assert_equal "Mareks", user.name
     assert_equal "Mareks", user.display_name
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
   end
 
   test "registration succeeds with password only" do
@@ -41,7 +41,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert User.find_by(email_address: "solo-password@example.com").authenticate("password12345")
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
   end
 
   test "registration captures browser time zone into notification preference" do

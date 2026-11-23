@@ -1,0 +1,53 @@
+<%# locals: step, photo, title, bodies, dot_index, battles_scene: false %>
+<div class="lp-ob lp-ob--intro">
+  <div class="lp-ob-intro__art" aria-hidden="false">
+    <%= image_tag photo, class: "lp-ob-intro__photo", alt: "", decoding: "async" %>
+    <% if battles_scene %>
+      <div class="lp-ob-intro__battles" aria-hidden="true">
+        <span class="lp-ob-intro__battle-ring is-won"></span>
+        <span class="lp-ob-intro__battle-ring"></span>
+        <span class="lp-ob-intro__battle-ring"></span>
+      </div>
+    <% else %>
+      <div class="lp-ob-intro__trail" aria-hidden="true">
+        <div class="lp-ob-intro__trail-path"></div>
+        <div class="lp-ob-intro__camp" style="left:22%; top:58%;">
+          <span class="lp-ob-intro__camp-num">1</span>
+          <span class="lp-ob-intro__tent lp-ob-intro__tent--a lp-ob-intro__tent--lg"></span>
+        </div>
+        <div class="lp-ob-intro__camp" style="left:48%; top:40%;">
+          <span class="lp-ob-intro__camp-num">2</span>
+          <span class="lp-ob-intro__tent lp-ob-intro__tent--b"></span>
+        </div>
+        <div class="lp-ob-intro__camp" style="left:70%; top:26%;">
+          <span class="lp-ob-intro__camp-num">3</span>
+          <span class="lp-ob-intro__tent lp-ob-intro__tent--c lp-ob-intro__tent--sm"></span>
+        </div>
+      </div>
+    <% end %>
+    <div class="lp-ob-intro__fade"></div>
+    <%= button_to t("v2_onboarding.intro_skip"),
+          v2_onboarding_path(step: step),
+          method: :patch,
+          params: { onboarding: { skip: true } },
+          class: "lp-ob-intro__skip",
+          form: { class: "lp-ob-intro__skip-form" } %>
+  </div>
+
+  <div class="lp-ob-intro__copy">
+    <h1 class="lp-ob-intro__title"><%= title %></h1>
+    <% Array(bodies).each do |line| %>
+      <p class="lp-ob-intro__body"><%= line %></p>
+    <% end %>
+    <div class="lp-ob-intro__spacer"></div>
+    <div class="lp-ob-intro__dots" aria-hidden="true">
+      <span class="lp-ob-intro__dot<%= dot_index == 0 ? " is-on" : "" %>"></span>
+      <span class="lp-ob-intro__dot<%= dot_index == 1 ? " is-on" : "" %>"></span>
+    </div>
+    <%= button_to t("v2_onboarding.intro_next"),
+          v2_onboarding_path(step: step),
+          method: :patch,
+          class: "lp-cta w-full",
+          form: { data: { turbo: false } } %>
+  </div>
+</div>

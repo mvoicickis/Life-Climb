@@ -92,7 +92,7 @@ module Authentication
 
       clear_pending_2fa!
       start_new_session_for user
-      redirect_to new_account ? v2_onboarding_path(step: "goal") : after_authentication_url
+      redirect_to new_account ? v2_onboarding_path(step: "intro_big_goals") : after_authentication_url
     end
 
     def promote_configured_admin!(user)

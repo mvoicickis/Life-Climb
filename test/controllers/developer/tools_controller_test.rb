@@ -57,7 +57,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
     session[DailyLogsController::UNDO_SESSION_KEY] = { "habit_id" => 1 }
 
     post restart_new_player_experience_developer_tools_path
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
 
     @user.reload
     assert_nil @user.onboarding_completed_at
@@ -82,7 +82,7 @@ class DeveloperToolsControllerTest < ActionDispatch::IntegrationTest
 
     begin
       post restart_new_player_experience_developer_tools_path
-      assert_redirected_to v2_onboarding_path(step: "goal")
+      assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
       assert @user.reload.read_attribute(:developer)
     ensure
       ENV.delete("DEVELOPER_EMAIL")
