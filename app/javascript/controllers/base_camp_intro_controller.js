@@ -1,10 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
+const OVERLAY_OPEN = "lp-overlay-open"
+
 // One-time Base Camp intro sheet before the real base camp sheet opens.
 export default class extends Controller {
   static targets = ["overlay"]
   static values = {
     dismissUrl: String
+  }
+
+  connect() {
+    this._onBeforeVisit = () => this.clearOverlayOpen()
+    document.addEventListener("turbo:before-visit", this._onBeforeVisit)
+  }
+
+  disconnect() {
+    document.removeEventListener("turbo:before-visit", this._onBeforeVisit)
+    this.clearOverlayOpen()
   }
 
   interceptOpen(event) {
@@ -14,6 +26,7 @@ export default class extends Controller {
     event.preventDefault()
     event.stopImmediatePropagation()
     this.overlayTarget.hidden = false
+    this.markOverlayOpen()
   }
 
   async dismiss() {
@@ -34,6 +47,7 @@ export default class extends Controller {
       }
     }
     this.overlayTarget.hidden = true
+    this.clearOverlayOpen()
     window.dispatchEvent(new CustomEvent("base-camp-intro:resume-open"))
   }
 
@@ -42,5 +56,13 @@ export default class extends Controller {
     if (!trail) return
     const sheet = this.application.getControllerForElementAndIdentifier(trail, "trail-camp-sheet")
     sheet?.openBase()
+  }
+
+  markOverlayOpen() {
+    document.body.classList.add(OVERLAY_OPEN)
+  }
+
+  clearOverlayOpen() {
+    document.body.classList.remove(OVERLAY_OPEN)
   }
 }

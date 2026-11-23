@@ -20,7 +20,9 @@ class TodayFinalePartialTest < ActiveSupport::TestCase
     assert continue_at
     assert share_at
     assert_operator continue_at, :<, share_at
-    assert_match(/lp-cta.*lp-today-finale__continue/, @erb)
-    assert_match(/lp-btn-3d is-white.*lp-today-finale__share/, @erb)
+    assert_match(/lp-btn-3d is-white.*lp-today-finale__continue/, @erb)
+    assert_match(/class="lp-today-finale__share"/, @erb)
+    refute_match(/lp-cta.*lp-today-finale__continue/, @erb)
+    refute_match(/lp-btn-3d is-white.*lp-today-finale__share/, @erb)
   end
 end
