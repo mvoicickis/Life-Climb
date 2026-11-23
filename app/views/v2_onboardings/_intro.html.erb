@@ -1,4 +1,5 @@
 <%# locals: step, photo, title, bodies, dot_index, battles_scene: false %>
+<% battles_scene = local_assigns.fetch(:battles_scene, false) %>
 <div class="lp-ob lp-ob--intro">
   <div class="lp-ob-intro__art" aria-hidden="false">
     <%= image_tag photo, class: "lp-ob-intro__photo", alt: "", decoding: "async" %>

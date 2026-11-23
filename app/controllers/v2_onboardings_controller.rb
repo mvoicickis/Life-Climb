@@ -16,7 +16,7 @@ class V2OnboardingsController < ApplicationController
     @draft = normalized_draft
     @step = requested_step
     if LEGACY_STEPS.include?(@step) || RETIRED_STEPS.include?(@step)
-      redirect_to v2_onboarding_path(step: missing_step) and return
+      redirect_to v2_onboarding_path(step: legacy_or_retired_redirect_step(@step)) and return
     end
     unless STEPS.include?(@step)
       redirect_to v2_onboarding_path(step: entry_step) and return
@@ -50,7 +50,7 @@ class V2OnboardingsController < ApplicationController
         session[:v2_onboarding] = legacy_draft
         session[:v2_onboarding_from_legacy_mountain] = true
       end
-      redirect_to v2_onboarding_path(step: missing_step) and return
+      redirect_to v2_onboarding_path(step: legacy_or_retired_redirect_step(step)) and return
     end
     unless STEPS.include?(step)
       redirect_to v2_onboarding_path(step: entry_step) and return
@@ -205,6 +205,15 @@ class V2OnboardingsController < ApplicationController
     return "intro_big_goals" if draft["goal"].blank?
 
     return "camps" if session[:v2_onboarding_from_legacy_mountain]
+
+    "goal"
+  end
+
+  def legacy_or_retired_redirect_step(legacy_step)
+    draft = normalized_draft
+    return "intro_big_goals" if draft["goal"].blank?
+    return "camps" if legacy_step == "mountain" || session[:v2_onboarding_from_legacy_mountain]
+    return "camps" if draft_goal_present?
 
     "goal"
   end
