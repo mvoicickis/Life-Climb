@@ -35,13 +35,22 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     click_button I18n.t("v2_onboarding.create_my_camps")
 
     assert_selector "[data-controller='onboarding-climb']", wait: 12
-    assert_selector "input.lp-ob-climb__next.is-shown, button.lp-ob-climb__next.is-shown", wait: 15
+    assert_selector ".lp-ob-climb__next.is-shown", wait: 15
     find(".lp-ob-climb__next.is-shown").click
 
-    assert_selector ".lp-trail", wait: 12
+    assert_selector "[data-controller='onboarding-v3-battles']", wait: 12
+    fill_in "onboarding_battle_add", with: "Ship slice 3"
+    click_button I18n.t("v2_onboarding.battles_add_battle")
+    click_button I18n.t("v2_onboarding.battles_done")
+
+    assert_selector "h1", text: I18n.t("v2_onboarding.celebrate_title"), wait: 8
+    click_button I18n.t("v2_onboarding.celebrate_cta")
+
+    assert_selector ".lp-dash-nav", wait: 12
 
     user = User.find_by!(email_address: @email)
     assert user.onboarding_completed?
+    assert user.daily_todos.where(scheduled_on: Date.current).exists?
     camp = user.strategy_goals.for_kind("project").order(:position).first
     assert_equal "Launch beta", camp.title
   end

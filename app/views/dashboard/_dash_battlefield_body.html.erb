@@ -29,12 +29,13 @@
     <div id="today-battlefield-end-day-host"></div>
   <% else %>
     <div class="lp-today-v2-rows" id="today-battlefield-rows" data-today-v2-target="rows">
-      <% open_todos.each do |todo| %>
+      <% open_todos.each_with_index do |todo, index| %>
         <%= render "dashboard/dash_battlefield_row",
               todo: todo,
               mission: nil,
               journey: journey,
-              row_state: :open %>
+              row_state: :open,
+              show_tap_hint: index.zero? && journey&.first_camp_win_nudge_pending? %>
       <% end %>
     </div>
 

@@ -29079,6 +29079,9 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   --lp-ob-green: var(--lp-green);
   --lp-ob-green-deep: var(--lp-green-deep);
   --lp-ob-tap: var(--lp-tap);
+  --lp-ob-dock-clearance: calc(4.75rem + 16px + env(safe-area-inset-bottom, 0px));
+  height: 100dvh;
+  max-height: 100dvh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -29086,6 +29089,33 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   color: var(--lp-ink);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+.lp-ob__cta-dock,
+.lp-ob-steps__dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 0 1rem;
+  border: 0;
+  background: transparent;
+}
+
+.lp-ob__cta-dock-form {
+  margin: 0;
+  width: 100%;
+}
+
+.lp-ob__cta-dock .lp-cta,
+.lp-ob-steps__dock .lp-cta {
+  width: 100%;
 }
 
 .lp-ob__mountain-bg {
@@ -29116,10 +29146,12 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 1.35rem 1rem 0;
+  padding: 1.35rem 1rem var(--lp-ob-dock-clearance);
   max-width: 28rem;
   margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .lp-ob__body--camps {
@@ -29403,18 +29435,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob-steps__dock {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: var(--lp-ob-keyboard-inset, 0px);
-  z-index: 20;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 28rem;
-  margin-inline: auto;
-  padding: 0.75rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--lp-border);
-  background: var(--lp-surface);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--lp-ob-keyboard-inset, 0px));
 }
 
 .lp-ob .lp-cta {
@@ -29469,7 +29490,6 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 .lp-ob--intro {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
 }
 
 .lp-ob-intro__art {
@@ -29530,9 +29550,11 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 0.2rem 1.1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  padding: 0.2rem 1.1rem var(--lp-ob-dock-clearance);
   gap: 0.4rem;
   background: var(--lp-surface);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .lp-ob-intro__title {
@@ -29706,14 +29728,12 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob--climb {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
   background: var(--lp-paper);
 }
 
 .lp-ob-climb {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   position: relative;
   overflow: hidden;
   background: var(--lp-paper);
@@ -29836,32 +29856,13 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   box-shadow: 0 4px 12px color-mix(in srgb, var(--lp-ink) 12%, transparent);
 }
 
-.lp-ob-climb__dock {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 4;
-  padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  justify-content: center;
-}
-
-.lp-ob-climb__next-form {
-  margin: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.lp-ob-climb__next {
-  min-width: 8rem;
+.lp-ob-climb .lp-ob__cta-dock .lp-ob-climb__next {
   opacity: 0;
   pointer-events: none;
   transition: opacity 200ms ease;
 }
 
-.lp-ob-climb__next.is-shown {
+.lp-ob-climb .lp-ob__cta-dock .lp-ob-climb__next.is-shown {
   opacity: 1;
   pointer-events: auto;
 }
@@ -29889,6 +29890,235 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   .lp-ob-climb__photo {
     transform: scale(1);
   }
+}
+
+.lp-ob__strip {
+  position: relative;
+  flex: 0 0 22%;
+  min-height: 6.5rem;
+  overflow: hidden;
+}
+
+.lp-ob__strip-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.lp-ob__strip-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, var(--lp-surface) 100%);
+  pointer-events: none;
+}
+
+.lp-ob__body--battles {
+  padding-top: 0.85rem;
+}
+
+.lp-ob-battles__scroll {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lp-ob-battles__example {
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--lp-radius-field);
+  background: color-mix(in srgb, var(--lp-paper) 92%, var(--lp-green-soft));
+  border: 1px solid color-mix(in srgb, var(--lp-border) 80%, var(--lp-green-soft));
+  display: grid;
+  gap: 0.3rem;
+}
+
+.lp-ob-battles__example-label {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted-dark);
+}
+
+.lp-ob-battles__example-row {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--lp-muted);
+  font-weight: 600;
+}
+
+.lp-ob-battles__example-row strong {
+  color: var(--lp-ink);
+  font-weight: 800;
+}
+
+.lp-ob-battles__kicker {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted-dark);
+}
+
+.lp-ob-battles__form {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-ob-battles__list {
+  list-style: none;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.lp-ob-battles__row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--lp-radius-field);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lp-ob-battles__ring {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--lp-ink) 22%, transparent);
+  background: color-mix(in srgb, var(--lp-surface) 70%, transparent);
+  box-sizing: border-box;
+}
+
+.lp-ob-battles__label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lp-ob--celebrate {
+  background: var(--lp-surface);
+}
+
+.lp-ob-celebrate__art {
+  position: relative;
+  flex: 0 0 48%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lp-ob-celebrate__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.lp-ob-celebrate__flag {
+  position: absolute;
+  left: 58%;
+  top: 18%;
+  z-index: 3;
+}
+
+.lp-ob-celebrate__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+  background: linear-gradient(180deg, transparent, var(--lp-surface));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.lp-ob-celebrate__confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lp-ob-celebrate__confetti span {
+  position: absolute;
+  top: -8%;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--lp-green);
+  opacity: 0.85;
+  animation: lp-ob-confetti-fall 2.8s ease-in infinite;
+}
+
+.lp-ob-celebrate__confetti span:nth-child(odd) {
+  background: var(--lp-green-deep);
+  width: 6px;
+  height: 6px;
+}
+
+.lp-ob-celebrate__copy {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  padding: 0.35rem 1.1rem var(--lp-ob-dock-clearance);
+  overflow-y: auto;
+}
+
+@keyframes lp-ob-confetti-fall {
+  from { transform: translateY(0) rotate(0deg); opacity: 0.85; }
+  to { transform: translateY(110vh) rotate(320deg); opacity: 0; }
+}
+
+.lp-base-camp-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: end center;
+  padding: 1rem 1rem calc(16px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--lp-ink) 42%, transparent);
+}
+
+.lp-base-camp-intro[hidden] {
+  display: none;
+}
+
+.lp-base-camp-intro__card {
+  width: min(100%, 22rem);
+  padding: 1.1rem 1rem 1rem;
+  border-radius: var(--lp-radius-card);
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  box-shadow: var(--lp-shadow-card);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.lp-base-camp-intro__kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted-dark);
+}
+
+.lp-base-camp-intro__body {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--lp-muted);
 }
 
 /* Legacy companion re-pick — matches onboarding goal/camps screens */

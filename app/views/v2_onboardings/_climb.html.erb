@@ -1,5 +1,5 @@
 <%# locals: goal_title, camp_titles %>
-<div class="lp-ob lp-ob--climb"
+<div class="lp-ob lp-ob--climb lp-ob--screen"
      data-controller="onboarding-climb"
      data-onboarding-climb-goal-value="<%= goal_title %>"
      data-onboarding-climb-camps-value="<%= camp_titles.to_json %>"
@@ -30,13 +30,13 @@
       </div>
     </div>
 
-    <div class="lp-ob-climb__dock">
+    <footer class="lp-ob__cta-dock">
       <%= button_to t("v2_onboarding.climb_next"),
             v2_onboarding_path(step: "climb"),
             method: :patch,
-            class: "lp-cta lp-ob-climb__next",
-            form: { class: "lp-ob-climb__next-form", data: { onboarding_climb_next: true } },
+            class: "lp-cta w-full lp-ob-climb__next",
+            form: { class: "lp-ob__cta-dock-form", data: { onboarding_climb_next: true } },
             data: { onboarding_climb_target: "next" } %>
-    </div>
+    </footer>
   </div>
 </div>

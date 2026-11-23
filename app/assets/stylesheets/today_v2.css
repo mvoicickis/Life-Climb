@@ -452,6 +452,14 @@ body:has(.lp-dash.is-today-v2) {
   width: 100%;
 }
 
+.lp-today-v2-row__tap-hint {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--today-muted, var(--lp-muted));
+}
+
 .lp-today-v2-row__title-input {
   flex: 1;
   min-width: 0;

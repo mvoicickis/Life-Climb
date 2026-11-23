@@ -1,0 +1,23 @@
+<div class="lp-ob lp-ob--celebrate">
+  <div class="lp-ob-celebrate__art" aria-hidden="true">
+    <%= image_tag MountainTrailHelper::BUILTIN_DAY_PHOTO, class: "lp-ob-celebrate__photo", alt: "", decoding: "async" %>
+    <span class="lp-ob-climb__peak-flag lp-ob-celebrate__flag" aria-hidden="true"></span>
+    <div class="lp-ob-celebrate__fade"></div>
+    <div class="lp-ob-celebrate__confetti" aria-hidden="true">
+      <% 8.times do %><span></span><% end %>
+    </div>
+  </div>
+
+  <div class="lp-ob-celebrate__copy">
+    <h1 class="lp-ob__title"><%= t("v2_onboarding.celebrate_title") %></h1>
+    <p class="lp-ob__lead"><%= t("v2_onboarding.celebrate_lead") %></p>
+  </div>
+
+  <footer class="lp-ob__cta-dock">
+    <%= button_to t("v2_onboarding.celebrate_cta"),
+          v2_onboarding_path(step: "celebrate"),
+          method: :patch,
+          class: "lp-cta w-full",
+          form: { data: { turbo: false } } %>
+  </footer>
+</div>

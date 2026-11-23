@@ -102,6 +102,18 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 0, @user.life_journeys.count
   end
 
+  test "v3 onboarding bootstrap can skip first camp reveal overlay" do
+    result = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Become a Ruby Developer",
+      camp_titles: [ "Get certified" ],
+      complete_onboarding: false,
+      first_camp_reveal_status: "done"
+    )
+
+    assert_equal "done", result.journey.setup_flag(Onboarding::Bootstrap::FIRST_CAMP_REVEAL_FLAG)
+  end
+
   test "complete_onboarding false leaves user incomplete until climb finishes" do
     result = Onboarding::Bootstrap.call(
       user: @user,

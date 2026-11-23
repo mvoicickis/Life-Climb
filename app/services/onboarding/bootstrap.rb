@@ -13,19 +13,21 @@ module Onboarding
     FIRST_CAMP_REVEAL_FLAG = "first_camp_reveal".freeze
     FIRST_CAMP_ID_FLAG = "first_camp_id".freeze
     FIRST_CAMP_WIN_NUDGE_FLAG = "first_camp_win_nudge".freeze
+    ONBOARDING_V3_CLIMB_DONE_FLAG = "onboarding_v3_climb_done".freeze
     MAX_CAMPS = 20
 
     Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)
 
-    def self.call(user:, goal_title:, camp_titles:, complete_onboarding: true)
-      new(user:, goal_title:, camp_titles:, complete_onboarding:).call
+    def self.call(user:, goal_title:, camp_titles:, complete_onboarding: true, first_camp_reveal_status: "pending")
+      new(user:, goal_title:, camp_titles:, complete_onboarding:, first_camp_reveal_status:).call
     end
 
-    def initialize(user:, goal_title:, camp_titles:, complete_onboarding: true)
+    def initialize(user:, goal_title:, camp_titles:, complete_onboarding: true, first_camp_reveal_status: "pending")
       @user = user
       @goal_title = goal_title.to_s.strip
       @camp_titles = normalize_camp_titles(camp_titles)
       @complete_onboarding = complete_onboarding
+      @first_camp_reveal_status = first_camp_reveal_status
     end
 
     def call
@@ -45,7 +47,8 @@ module Onboarding
               user: @user,
               goal_title: @goal_title,
               camp_titles: @camp_titles,
-              seed_battle: false
+              seed_battle: false,
+              first_camp_reveal_status: @first_camp_reveal_status
             )
 
             mark_onboarding_complete! if @complete_onboarding
