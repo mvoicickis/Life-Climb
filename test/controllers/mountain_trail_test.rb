@@ -209,6 +209,27 @@ class MountainTrailTest < ActionDispatch::IntegrationTest
     assert_select ".lp-trail-hud", count: 0
   end
 
+  test "tour step 4 hides Got it and keeps Skip tour" do
+    refute @journey.onboarding_v3?
+    @user.update!(mountain_trail_tour_ack: 0)
+    @project.children.create!(
+      user: @user,
+      life_area: @area,
+      life_journey: @journey,
+      horizon: "day",
+      title: "Write the pitch",
+      scheduled_on: Date.current,
+      position: 0
+    )
+
+    get life_journey_path(@journey, goal_id: @goal.id, plan_id: @plan.id)
+    assert_response :success
+    assert_select ".lp-trail-coach"
+    assert_select ".lp-trail-coach__ack[hidden]", count: 1
+    assert_select ".lp-trail-coach__ack:not([hidden])", count: 0
+    assert_select ".lp-trail-coach__skip", text: I18n.t("strategy.rpg.trail.coach.skip")
+  end
+
   test "mountain show renders V4 trail canvas with camps and hides holding" do
     holding_plan = @user.strategy_goals.create!(
       life_area: @area, life_journey: @journey, parent: @goal,

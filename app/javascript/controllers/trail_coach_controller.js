@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Post–FirstClimb Mountain tour chips (steps 2–7). Advances on real trail events.
 export default class extends Controller {
-  static targets = ["chip", "step", "text", "icon"]
+  static targets = ["chip", "step", "text", "icon", "ack"]
   static values = {
     ack: { type: Number, default: 0 },
     url: String,
@@ -34,6 +34,13 @@ export default class extends Controller {
     if (this.hasStepTarget) this.stepTarget.textContent = this.formatStep(coach.n)
     if (this.hasTextTarget) this.textTarget.textContent = coach.text
     if (this.hasIconTarget) this.iconTarget.textContent = coach.icon
+    if (this.hasAckTarget) {
+      if (coach.canAck) {
+        this.ackTarget.removeAttribute("hidden")
+      } else {
+        this.ackTarget.setAttribute("hidden", "")
+      }
+    }
   }
 
   formatStep(n) {
