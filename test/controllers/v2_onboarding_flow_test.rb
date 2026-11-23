@@ -63,7 +63,8 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     gap = Today::Commitment.setup_gap(user: user, journey: journey)
     refute_equal :habits, gap&.kind
-    assert_equal :battles, gap&.kind
+    refute_equal :battles, gap&.kind
+    assert_equal :set_time, gap&.kind
 
     plan = user.strategy_goals.for_kind("plan").first
     assert_equal I18n.t("v2_onboarding.climb_plan_title"), plan.title
