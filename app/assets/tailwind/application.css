@@ -29603,22 +29603,15 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   z-index: 2;
 }
 
-.lp-ob-intro__trail-path {
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  top: 28%;
-  bottom: 22%;
-  border: 3px dashed color-mix(in srgb, var(--lp-surface) 55%, transparent);
-  border-radius: 50% 40% 60% 45%;
-  opacity: 0.85;
-}
-
 .lp-ob-intro__camp {
   position: absolute;
+  left: calc(var(--lp-trail-x, 0.5) * 100%);
+  top: calc(var(--lp-trail-y, 0.5) * 100%);
+  transform: translate(-50%, -100%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.2rem;
 }
 

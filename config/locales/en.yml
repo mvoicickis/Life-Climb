@@ -2179,7 +2179,8 @@ en:
     camps_example_hint: "For example: Learn baking basics"
     climb_next: "Next"
     battles_title: "Your Camp is your workspace. Your Battles are your daily to-do list."
-    battles_lead: "Think about the actions that will move this Camp forward."
+    battles_lead: "Think about the actions that will move %{camp} forward."
+    battles_lead_fallback: "Think about the actions that will move this Camp forward."
     battles_example_toggle: "See an example"
     battles_example_intro: "For example, if your Camp is \"Edit my book\", your Battles could be:"
     battles_example_items:

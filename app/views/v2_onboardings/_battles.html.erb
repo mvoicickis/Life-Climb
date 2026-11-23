@@ -18,7 +18,13 @@
       </div>
 
       <h1 class="lp-ob__title"><%= t("v2_onboarding.battles_title") %></h1>
-      <p class="lp-ob__lead"><%= t("v2_onboarding.battles_lead") %></p>
+      <p class="lp-ob__lead">
+        <% if @first_camp_title.present? %>
+          <%= t("v2_onboarding.battles_lead", camp: @first_camp_title) %>
+        <% else %>
+          <%= t("v2_onboarding.battles_lead_fallback") %>
+        <% end %>
+      </p>
 
       <details class="lp-ob-battles__example">
         <summary class="lp-ob-battles__example-toggle"><%= t("v2_onboarding.battles_example_toggle") %></summary>

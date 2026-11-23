@@ -55,6 +55,7 @@ class V2OnboardingsController < ApplicationController
 
       @journey = journey
       @battle_titles = existing_battle_titles_for(journey)
+      @first_camp_title = first_camp_project_for(journey)&.title
     elsif @step == "celebrate"
       unless journey && onboarding_first_camp_has_battles?(journey)
         redirect_to v2_onboarding_path(step: resume_post_camps_step) and return
