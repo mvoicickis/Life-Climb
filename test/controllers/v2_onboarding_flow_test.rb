@@ -120,7 +120,6 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     advance_through_intros!
     follow_redirect!
 
-    get v2_onboarding_path(step: "goal")
     viewed_steps = user.user_events.named("onboarding_step_viewed")
                        .order(:id)
                        .map { |event| event.properties["step"] }
