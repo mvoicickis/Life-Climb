@@ -151,6 +151,10 @@ class LifeJourney < ApplicationRecord
     setup_flag(Onboarding::Bootstrap::ONBOARDING_V3_CLIMB_DONE_FLAG) == "done"
   end
 
+  def onboarding_v3?
+    setup_flag(Onboarding::Bootstrap::ONBOARDING_V3_FLAG) == "true"
+  end
+
   def mark_onboarding_v3_climb_done!
     flags = (setup_flags.presence || {}).stringify_keys.merge(
       Onboarding::Bootstrap::ONBOARDING_V3_CLIMB_DONE_FLAG => "done"

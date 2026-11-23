@@ -207,7 +207,8 @@ class User < ApplicationRecord
   end
 
   def needs_base_camp_intro?
-    planning_v2? && onboarding_completed? && !base_camp_intro_seen?
+    journey = primary_focused_journey
+    planning_v2? && onboarding_completed? && !base_camp_intro_seen? && journey&.onboarding_v3?
   end
 
   def mark_base_camp_intro_seen!

@@ -14,6 +14,7 @@ module Onboarding
     FIRST_CAMP_ID_FLAG = "first_camp_id".freeze
     FIRST_CAMP_WIN_NUDGE_FLAG = "first_camp_win_nudge".freeze
     ONBOARDING_V3_CLIMB_DONE_FLAG = "onboarding_v3_climb_done".freeze
+    ONBOARDING_V3_FLAG = "onboarding_v3".freeze
     MAX_CAMPS = 20
 
     Result = Struct.new(:journey, :goal, :plan, :projects, :first_battle, keyword_init: true)
@@ -53,6 +54,8 @@ module Onboarding
 
             mark_onboarding_complete! if @complete_onboarding
 
+            mark_onboarding_v3_journey!(result.journey) if @first_camp_reveal_status == "done"
+
             Strategy::Celebrate.call(user: @user, goal: result.first_battle) if result.first_battle
             Goals::Current.clear_cache!(user: @user)
           end
@@ -91,6 +94,12 @@ module Onboarding
 
     def ensure_onboarding_completed!
       mark_onboarding_complete!
+    end
+
+    def mark_onboarding_v3_journey!(journey)
+      flags = (journey.setup_flags.presence || {}).stringify_keys.merge(ONBOARDING_V3_FLAG => "true")
+      journey.update_columns(setup_flags: flags, updated_at: Time.current)
+      journey.setup_flags = flags
     end
 
     def normalize_camp_titles(camp_titles)

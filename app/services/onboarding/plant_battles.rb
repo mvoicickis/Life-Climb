@@ -21,7 +21,7 @@ module Onboarding
       project = first_camp_project
       raise Error, I18n.t("v2_onboarding.need_camp") if project.blank?
 
-      existing = project.children.for_kind("day").reject(&:holding?)
+      existing = project.children.for_kind("day").to_a.reject(&:holding?)
       return existing if existing.any?
 
       created = []

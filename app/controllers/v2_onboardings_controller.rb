@@ -351,7 +351,7 @@ class V2OnboardingsController < ApplicationController
     project = first_camp_project_for(journey)
     return false if project.blank?
 
-    project.children.for_kind("day").reject(&:holding?).exists?
+    project.children.for_kind("day").reject(&:holding?).any?
   end
 
   def first_camp_project_for(journey)
