@@ -29493,7 +29493,27 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   flex: 0 0 48%;
   min-height: 0;
   overflow: hidden;
+  container-type: size;
   background: var(--lp-mist);
+}
+
+/* Shared cover surface: art aspect covers the frame; pegs use full-frame fractions. */
+.lp-ob-art-surface {
+  --lp-ob-art-w: max(100cqw, calc(100cqh * 1024 / 1536));
+  position: absolute;
+  width: var(--lp-ob-art-w);
+  aspect-ratio: 1024 / 1536;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.lp-ob-art-surface--intro {
+  top: calc((100cqh - (var(--lp-ob-art-w) * 1.5)) * 0.3);
+}
+
+.lp-ob-art-surface--climb {
+  top: calc((100cqh - (var(--lp-ob-art-w) * 1.5)) * 0.28);
 }
 
 .lp-ob-intro__photo {
@@ -29501,8 +29521,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
+  object-fit: fill;
 }
 
 .lp-ob-intro__fade {
@@ -29616,6 +29635,10 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob-intro__camp-num {
+  position: absolute;
+  bottom: calc(100% + 0.15rem);
+  left: 50%;
+  transform: translateX(-50%);
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 50%;
@@ -29731,19 +29754,22 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 .lp-ob-climb__bg {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  container-type: size;
 }
 
 .lp-ob-climb__photo {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 28%;
-  transform: scale(1.04);
+  object-fit: fill;
 }
 
 .lp-ob-climb__shade {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--lp-ink) 8%, transparent) 0%,
@@ -29761,9 +29787,9 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 
 .lp-ob-climb__summit {
   position: absolute;
-  left: 50%;
-  top: 12%;
-  transform: translateX(-50%);
+  left: calc(var(--lp-trail-x, 0.5) * 100%);
+  top: calc(var(--lp-trail-y, 0.5) * 100%);
+  transform: translate(-50%, -100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29796,7 +29822,11 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob-climb__goal-chip {
-  margin: 0;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0.35rem 0 0;
   padding: 0.4rem 0.75rem;
   border-radius: var(--lp-radius-pill);
   background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
@@ -29814,11 +29844,14 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 
 .lp-ob-climb__camp {
   position: absolute;
+  left: calc(var(--lp-trail-x, 0.5) * 100%);
+  top: calc(var(--lp-trail-y, 0.5) * 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.3rem;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
   opacity: 0;
   pointer-events: none;
 }
@@ -29829,7 +29862,11 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 }
 
 .lp-ob-climb__camp-chip {
-  margin: 0;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0.2rem 0 0;
   padding: 0.28rem 0.6rem;
   border-radius: var(--lp-radius-pill);
   background: color-mix(in srgb, var(--lp-surface) 90%, transparent);
@@ -29859,12 +29896,12 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 @keyframes lp-ob-climb-pop {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(10px) scale(0.86);
+    transform: translate(-50%, -100%) translateY(10px) scale(0.86);
   }
 
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translate(-50%, -100%) scale(1);
   }
 }
 
@@ -29873,11 +29910,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   .lp-ob-climb__camp.is-in {
     animation: none;
     opacity: 1;
-    transform: translateX(-50%);
-  }
-
-  .lp-ob-climb__photo {
-    transform: scale(1);
+    transform: translate(-50%, -100%);
   }
 }
 
@@ -29922,7 +29955,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto 1fr;
   gap: 0.55rem;
 }
 
@@ -29932,6 +29965,31 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(0.5rem + var(--lp-ob-dock-offset, 0px));
+}
+
+.lp-ob-battles__stack {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--lp-ob-keyboard-inset, 0px));
+  z-index: 30;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 0 1rem;
+  display: grid;
+  gap: 0.55rem;
+  background: transparent;
+}
+
+.lp-ob-battles__stack .lp-ob-battles__add {
+  margin: 0;
+}
+
+.lp-ob-battles__done {
+  width: 100%;
+  margin: 0;
 }
 
 .lp-ob-battles__example {
@@ -30072,6 +30130,7 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
 .lp-ob-celebrate__confetti span {
   position: absolute;
   top: -8%;
+  left: 50%;
   width: 8px;
   height: 8px;
   border-radius: 2px;
