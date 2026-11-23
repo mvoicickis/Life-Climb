@@ -2,29 +2,31 @@
 <% battles_scene = local_assigns.fetch(:battles_scene, false) %>
 <div class="lp-ob lp-ob--intro lp-ob--screen">
   <div class="lp-ob-intro__art" aria-hidden="false">
-    <%= image_tag photo, class: "lp-ob-intro__photo", alt: "", decoding: "async" %>
-    <% if battles_scene %>
-      <div class="lp-ob-intro__battles" aria-hidden="true">
-        <span class="lp-ob-intro__battle-ring is-won"></span>
-        <span class="lp-ob-intro__battle-ring"></span>
-        <span class="lp-ob-intro__battle-ring"></span>
-      </div>
-    <% else %>
-      <div class="lp-ob-intro__trail" aria-hidden="true">
-        <% tent_classes = [
-          %w[lp-ob-intro__tent--a lp-ob-intro__tent--lg],
-          %w[lp-ob-intro__tent--b],
-          %w[lp-ob-intro__tent--c lp-ob-intro__tent--sm]
-        ] %>
-        <% mountain_trail_intro_camp_positions.each_with_index do |pos, index| %>
-          <div class="lp-ob-intro__camp"
-               style="--lp-trail-x: <%= pos[:x] %>; --lp-trail-y: <%= pos[:y] %>;">
-            <span class="lp-ob-intro__camp-num"><%= index + 1 %></span>
-            <span class="lp-ob-intro__tent <%= tent_classes[index].join(" ") %>" aria-hidden="true"></span>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+    <div class="lp-ob-art-surface lp-ob-art-surface--intro">
+      <%= image_tag photo, class: "lp-ob-intro__photo", alt: "", decoding: "async" %>
+      <% if battles_scene %>
+        <div class="lp-ob-intro__battles" aria-hidden="true">
+          <span class="lp-ob-intro__battle-ring is-won"></span>
+          <span class="lp-ob-intro__battle-ring"></span>
+          <span class="lp-ob-intro__battle-ring"></span>
+        </div>
+      <% else %>
+        <div class="lp-ob-intro__trail" aria-hidden="true">
+          <% tent_classes = [
+            %w[lp-ob-intro__tent--a lp-ob-intro__tent--lg],
+            %w[lp-ob-intro__tent--b],
+            %w[lp-ob-intro__tent--c lp-ob-intro__tent--sm]
+          ] %>
+          <% mountain_trail_intro_camp_positions.each_with_index do |pos, index| %>
+            <div class="lp-ob-intro__camp"
+                 style="--lp-trail-x: <%= pos[:x] %>; --lp-trail-y: <%= pos[:y] %>;">
+              <span class="lp-ob-intro__camp-num"><%= index + 1 %></span>
+              <span class="lp-ob-intro__tent <%= tent_classes[index].join(" ") %>" aria-hidden="true"></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
     <div class="lp-ob-intro__fade"></div>
     <%= button_to t("v2_onboarding.intro_skip"),
           v2_onboarding_path(step: step),

@@ -43,23 +43,6 @@
           data: { turbo: false, onboarding_v3_battles_target: "form" } do %>
       <p class="lp-ob-battles__kicker"><%= t("v2_onboarding.battles_today_kicker") %></p>
 
-      <div class="lp-ob-steps__add lp-ob-battles__add">
-        <label class="sr-only" for="onboarding_battle_add"><%= t("v2_onboarding.battles_add_placeholder") %></label>
-        <input type="text"
-               id="onboarding_battle_add"
-               class="lp-input lp-ob-steps__add-input"
-               autocomplete="off"
-               maxlength="<%= StrategyGoal::TITLE_MAX %>"
-               enterkeyhint="done"
-               placeholder="<%= t("v2_onboarding.battles_add_placeholder") %>"
-               data-onboarding-v3-battles-target="addInput"
-               data-action="keydown->onboarding-v3-battles#addFromEnter">
-        <button type="button"
-                class="lp-ob-steps__add-btn"
-                aria-label="<%= t("v2_onboarding.battles_add_button") %>"
-                data-action="click->onboarding-v3-battles#add">+</button>
-      </div>
-
       <div class="lp-ob-battles__scroll" data-onboarding-v3-battles-target="scroll">
         <ul class="lp-ob-battles__list" data-onboarding-v3-battles-target="list" aria-label="<%= t("v2_onboarding.battles_list_label") %>">
           <% battle_titles.each do |title| %>
@@ -72,12 +55,29 @@
         </ul>
       </div>
 
-      <footer class="lp-ob__cta-dock" data-onboarding-v3-battles-target="dock">
+      <div class="lp-ob-battles__stack" data-onboarding-v3-battles-target="dock">
+        <div class="lp-ob-steps__add lp-ob-battles__add">
+          <label class="sr-only" for="onboarding_battle_add"><%= t("v2_onboarding.battles_add_placeholder") %></label>
+          <input type="text"
+                 id="onboarding_battle_add"
+                 class="lp-input lp-ob-steps__add-input"
+                 autocomplete="off"
+                 maxlength="<%= StrategyGoal::TITLE_MAX %>"
+                 enterkeyhint="done"
+                 placeholder="<%= t("v2_onboarding.battles_add_placeholder") %>"
+                 data-onboarding-v3-battles-target="addInput"
+                 data-action="keydown->onboarding-v3-battles#addFromEnter">
+          <button type="button"
+                  class="lp-ob-steps__add-btn"
+                  aria-label="<%= t("v2_onboarding.battles_add_button") %>"
+                  data-action="click->onboarding-v3-battles#add">+</button>
+        </div>
+
         <%= submit_tag t("v2_onboarding.battles_done"),
-              class: "lp-cta w-full",
+              class: "lp-cta w-full lp-ob-battles__done",
               disabled: battle_titles.empty?,
               data: { onboarding_v3_battles_target: "submit" } %>
-      </footer>
+      </div>
     <% end %>
   </div>
 </div>
