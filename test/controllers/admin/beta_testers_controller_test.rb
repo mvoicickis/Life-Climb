@@ -24,6 +24,18 @@ module Admin
       assert_redirected_to new_session_path
     end
 
+    test "admin page shows weekly cards and funnel" do
+      sign_in_as @admin
+
+      get admin_beta_testers_path
+
+      assert_response :success
+      assert_select "h2", text: I18n.t("admin.beta_testers.stats.karen_title")
+      assert_select "h2", text: I18n.t("admin.beta_testers.stats.mareks_title")
+      assert_select "h2", text: I18n.t("admin.beta_testers.funnel.title")
+      assert_includes response.body, I18n.t("admin.beta_testers.funnel.android_signed_up")
+    end
+
     test "admin paste shows import summary" do
       sign_in_as @admin
       BetaTester.create!(email: "old@example.com", added_at: Time.current)

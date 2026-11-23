@@ -1,0 +1,26 @@
+<section class="lp-admin__panel" aria-label="<%= t('admin.beta_testers.funnel.title') %>">
+  <header class="lp-admin__panel-head">
+    <h2 class="lp-admin__h2"><%= t("admin.beta_testers.funnel.title") %></h2>
+  </header>
+
+  <div class="lp-admin__table-wrap">
+    <table class="lp-admin__table">
+      <thead>
+        <tr>
+          <th scope="col"><%= t("admin.beta_testers.funnel.step") %></th>
+          <th scope="col"><%= t("admin.beta_testers.funnel.owner") %></th>
+          <th scope="col"><%= t("admin.beta_testers.funnel.count") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr>
+            <td><%= row.label %></td>
+            <td><%= row.owner.presence || t("admin.beta_testers.funnel.owner_none") %></td>
+            <td><%= row.count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

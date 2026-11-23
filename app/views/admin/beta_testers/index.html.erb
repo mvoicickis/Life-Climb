@@ -8,6 +8,9 @@
   </div>
 </header>
 
+<%= render "admin/beta_testers/weekly_stats", stats: @weekly_stats %>
+<%= render "admin/beta_testers/funnel", rows: @weekly_stats[:funnel] %>
+
 <%= form_with url: admin_beta_testers_path, method: :post, class: "lp-admin__panel lp-admin__stack" do |f| %>
   <label class="lp-admin__stack" for="beta_testers_emails">
     <span><%= t("admin.beta_testers.paste_label") %></span>

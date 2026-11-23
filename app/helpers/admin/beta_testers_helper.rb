@@ -22,5 +22,35 @@ module Admin
     def beta_testers_play_label(play_app)
       play_app ? t("admin.beta_testers.play_yes") : t("admin.beta_testers.play_no")
     end
+
+    def beta_testers_trend(current, previous)
+      if current > previous
+        :up
+      elsif current < previous
+        :down
+      else
+        :same
+      end
+    end
+
+    def beta_testers_trend_mark(trend)
+      case trend
+      when :up then "↑"
+      when :down then "↓"
+      else "="
+      end
+    end
+
+    def beta_testers_trend_delta(current, previous)
+      delta = current.to_i - previous.to_i
+      mark = beta_testers_trend_mark(beta_testers_trend(current, previous))
+      "#{mark} #{delta.abs}"
+    end
+
+    def beta_testers_progress_percent(count, goal)
+      return 0 if goal.to_i <= 0
+
+      ((count.to_f / goal) * 100).clamp(0, 100).round
+    end
   end
 end
