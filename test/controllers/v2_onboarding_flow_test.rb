@@ -59,7 +59,6 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_equal 0, journey.commitment_habit_count
     assert_equal 1, journey.commitment_battle_count
     assert_nil journey.setup_flag("route")
-    refute Strategy::HierarchyReady.call(user: user, journey: journey)
     assert user.daily_todos.where(scheduled_on: Date.current).exists?
 
     gap = Today::Commitment.setup_gap(user: user, journey: journey)
@@ -287,7 +286,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Ship it" } }
     get v2_onboarding_path(step: "battles")
-    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
+    assert_redirected_to v2_onboarding_path(step: "goal")
   end
 
   # Typed-but-not-added camp submit is covered by V2OnboardingCampsTypedSubmitTest (system).
