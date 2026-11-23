@@ -38,9 +38,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     refute user.onboarding_completed?
 
     patch v2_onboarding_url(step: "climb")
-    first_project = user.strategy_goals.for_kind("project").order(:position).first
     assert_redirected_to life_journey_path(journey)
 
+    user.reload
+    first_project = user.strategy_goals.for_kind("project").order(:position).first
     assert user.onboarding_completed?
     assert_equal "self", user.life_areas.v2_selected.first.key
     assert_equal "other", journey.setup_flag("onboarding_category")
@@ -98,6 +99,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     camps_params = {
       onboarding: {
+        goal: "Become a Ruby Developer",
         camp_titles: [ "Get certified", "Land first role" ]
       }
     }
@@ -296,8 +298,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
 
     sign_in_as user
     get v2_onboarding_path
-    assert_redirected_to v2_onboarding_path(step: "climb")
-    follow_redirect!
+    assert_response :success
     assert_select "[data-controller='onboarding-climb']"
   end
 
