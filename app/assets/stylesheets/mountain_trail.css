@@ -6931,6 +6931,12 @@ body.is-arrange-open .lp-dash-nav__fab {
   display: none !important;
 }
 
+/* Full-screen overlays (Today finale, Base Camp intro) — clear the tab bar + FAB. */
+body.lp-overlay-open .lp-dash-nav,
+body.lp-overlay-open .lp-dash-nav__fab {
+  display: none !important;
+}
+
 body.is-trail-plant-open #mountain-trail.lp-trail {
   isolation: auto;
   position: relative;

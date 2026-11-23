@@ -2,6 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 import { enqueue, release } from "lib/lp_overlay_queue"
 import { haptic, sound, prefersReducedMotion } from "lib/lp_feedback"
 
+const OVERLAY_OPEN = "lp-overlay-open"
+
 // Full-screen all-battles-won finale — waits on the overlay queue.
 export default class extends Controller {
   static targets = [ "battlesCount", "battlesLabel" ]
@@ -15,6 +17,8 @@ export default class extends Controller {
 
   connect() {
     this.element.hidden = true
+    this._onBeforeVisit = () => this.clearOverlayOpen()
+    document.addEventListener("turbo:before-visit", this._onBeforeVisit)
     enqueue("finale", {
       open: () => this.reveal(),
       onFail: () => release("finale")
@@ -22,6 +26,8 @@ export default class extends Controller {
   }
 
   disconnect() {
+    document.removeEventListener("turbo:before-visit", this._onBeforeVisit)
+    this.clearOverlayOpen()
     release("finale")
   }
 
@@ -31,6 +37,7 @@ export default class extends Controller {
       return
     }
     this.element.hidden = false
+    this.markOverlayOpen()
     const reduce = prefersReducedMotion()
     this.element.classList.add("is-final")
     if (!reduce) this.element.classList.add("is-impact")
@@ -59,6 +66,7 @@ export default class extends Controller {
 
   continue(event) {
     event?.preventDefault?.()
+    this.clearOverlayOpen()
     release("finale")
     this.element.remove()
   }
@@ -102,5 +110,13 @@ export default class extends Controller {
       if (t < 1) requestAnimationFrame(frame)
     }
     requestAnimationFrame(frame)
+  }
+
+  markOverlayOpen() {
+    document.body.classList.add(OVERLAY_OPEN)
+  }
+
+  clearOverlayOpen() {
+    document.body.classList.remove(OVERLAY_OPEN)
   }
 }
