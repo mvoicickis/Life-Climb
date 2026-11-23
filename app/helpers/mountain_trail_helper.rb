@@ -270,6 +270,20 @@ module MountainTrailHelper
 
   # Map visible camps onto the lower slots of a fixed four-peg ladder (ignore stored trail_x/y).
   # Climb order: first node = base (high y); slot index 0 is peak-side (low y), so reverse.
+  # Onboarding intro art (builtin day photo) — same peg positions as the Mountain map.
+  def mountain_trail_intro_camp_positions(count = 3)
+    BUILTIN_TENT_SLOTS.first(count).map do |slot|
+      x = slot[:x].to_f
+      y = slot[:y].to_f
+      {
+        x: x.round(4),
+        y: y.round(4),
+        left: (x * 100).round(4),
+        top: (y * 100).round(4)
+      }
+    end
+  end
+
   def mountain_trail_map_layout_slot(node, visible_nodes, builtin_map: false)
     nodes = Array(visible_nodes)
     index = nodes.index { |candidate| candidate.id == node.id } || 0

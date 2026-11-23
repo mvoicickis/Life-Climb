@@ -1081,6 +1081,18 @@ class MountainTrailHelperTest < ActionView::TestCase
     refute_match(/translation_missing/, text)
   end
 
+  test "intro camp positions match builtin tent slots as percent left and top" do
+    positions = mountain_trail_intro_camp_positions(3)
+    assert_equal 3, positions.size
+    MountainTrailHelper::BUILTIN_TENT_SLOTS.first(3).each_with_index do |slot, index|
+      pos = positions[index]
+      assert_in_delta slot[:x], pos[:x], 0.0001
+      assert_in_delta slot[:y], pos[:y], 0.0001
+      assert_in_delta slot[:x] * 100, pos[:left], 0.0001
+      assert_in_delta slot[:y] * 100, pos[:top], 0.0001
+    end
+  end
+
   test "builtin map layout uses fixed tent slots bottom-up" do
     nodes = [
       Strategy::Trail::Node.new(id: 1, title: "A", state: :done, pct: 100, position: 0, record: nil, y: 80),

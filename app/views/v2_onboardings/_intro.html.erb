@@ -11,19 +11,18 @@
       </div>
     <% else %>
       <div class="lp-ob-intro__trail" aria-hidden="true">
-        <div class="lp-ob-intro__trail-path"></div>
-        <div class="lp-ob-intro__camp" style="left:22%; top:58%;">
-          <span class="lp-ob-intro__camp-num">1</span>
-          <span class="lp-ob-intro__tent lp-ob-intro__tent--a lp-ob-intro__tent--lg"></span>
-        </div>
-        <div class="lp-ob-intro__camp" style="left:48%; top:40%;">
-          <span class="lp-ob-intro__camp-num">2</span>
-          <span class="lp-ob-intro__tent lp-ob-intro__tent--b"></span>
-        </div>
-        <div class="lp-ob-intro__camp" style="left:70%; top:26%;">
-          <span class="lp-ob-intro__camp-num">3</span>
-          <span class="lp-ob-intro__tent lp-ob-intro__tent--c lp-ob-intro__tent--sm"></span>
-        </div>
+        <% tent_classes = [
+          %w[lp-ob-intro__tent--a lp-ob-intro__tent--lg],
+          %w[lp-ob-intro__tent--b],
+          %w[lp-ob-intro__tent--c lp-ob-intro__tent--sm]
+        ] %>
+        <% mountain_trail_intro_camp_positions.each_with_index do |pos, index| %>
+          <div class="lp-ob-intro__camp"
+               style="--lp-trail-x: <%= pos[:x] %>; --lp-trail-y: <%= pos[:y] %>;">
+            <span class="lp-ob-intro__camp-num"><%= index + 1 %></span>
+            <span class="lp-ob-intro__tent <%= tent_classes[index].join(" ") %>" aria-hidden="true"></span>
+          </div>
+        <% end %>
       </div>
     <% end %>
     <div class="lp-ob-intro__fade"></div>
