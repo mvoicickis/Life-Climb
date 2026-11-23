@@ -26,6 +26,10 @@ class CampArrangeProductionShapeTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: "Big climb" } }
     patch v2_onboarding_url(step: "camps"), params: { onboarding: { camp_titles: titles.first(3) } }
     patch v2_onboarding_url(step: "climb")
+    patch v2_onboarding_url(step: "battles"), params: {
+      onboarding: { battle_titles: [ "First step" ] }
+    }
+    patch v2_onboarding_url(step: "celebrate")
     follow_redirect!
     user = User.find_by!(email_address: email)
     user.primary_focused_journey.clear_first_camp_reveal!

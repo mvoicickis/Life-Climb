@@ -16,7 +16,12 @@
      else
        "click->trail-camp-sheet#openBase"
      end %>
-<% base_open_action = "click->trail-camp-sheet#openBase click->trail-dock#stopBubble" %>
+<% base_open_action =
+     if current_user.needs_base_camp_intro?
+       "click->base-camp-intro#interceptOpen click->trail-dock#stopBubble"
+     else
+       "click->trail-camp-sheet#openBase click->trail-dock#stopBubble"
+     end %>
 <% base_open_label = t("strategy.rpg.trail.base_camp.kicker") %>
 
 <div id="trail-dock" class="lp-trail__dock" data-trail-ignore data-controller="trail-dock">

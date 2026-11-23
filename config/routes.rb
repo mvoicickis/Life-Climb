@@ -97,6 +97,7 @@ Rails.application.routes.draw do
   resources :strategy_quantity_logs, only: :create
   resources :strategy_goal_restores, only: :create
   resource :mountain_trail_tour, only: :update, controller: "mountain_trail_tours"
+  resource :base_camp_intro, only: :update, controller: "base_camp_intros"
   post "battle_reopens/:id", to: "battle_reopens#create", as: :battle_reopen
   resources :journey_targets, only: %i[ destroy ] do
     member do

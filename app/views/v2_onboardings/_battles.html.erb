@@ -1,0 +1,72 @@
+<%# locals: journey, battle_titles, setup_step_index, setup_step_total %>
+<% battle_titles = Array(battle_titles) %>
+<div class="lp-ob lp-ob--battles">
+  <div class="lp-ob__strip" aria-hidden="true">
+    <%= image_tag "camp_fire_default.webp", class: "lp-ob__strip-photo", alt: "", decoding: "async" %>
+    <div class="lp-ob__strip-fade"></div>
+  </div>
+
+  <div class="lp-ob__body lp-ob__body--battles"
+       data-controller="onboarding-v3-battles"
+       data-onboarding-v3-battles-max-value="5">
+    <div class="lp-ob-battles__scroll">
+      <div class="lp-ob__step-head">
+        <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: setup_step_index, total: setup_step_total) %></span>
+      </div>
+      <div class="lp-ob__progress-track" role="progressbar" aria-valuemin="1" aria-valuenow="<%= setup_step_index %>" aria-valuemax="<%= setup_step_total %>">
+        <span class="lp-ob__progress-fill" style="width: 100%"></span>
+      </div>
+
+      <h1 class="lp-ob__title"><%= t("v2_onboarding.battles_title") %></h1>
+      <p class="lp-ob__lead"><%= t("v2_onboarding.battles_lead") %></p>
+
+      <section class="lp-ob-battles__example" aria-labelledby="ob-battles-example">
+        <p id="ob-battles-example" class="lp-ob-battles__example-label"><%= t("v2_onboarding.battles_example_label") %></p>
+        <p class="lp-ob-battles__example-row"><%= t("v2_onboarding.battles_example_intro") %></p>
+        <% t("v2_onboarding.battles_example_items").each do |line| %>
+          <p class="lp-ob-battles__example-row"><strong><%= line %></strong></p>
+        <% end %>
+      </section>
+
+      <p class="lp-ob-battles__kicker"><%= t("v2_onboarding.battles_today_kicker") %></p>
+
+      <%= form_with url: v2_onboarding_path(step: "battles"),
+            method: :patch,
+            class: "lp-ob-battles__form",
+            data: { turbo: false, onboarding_v3_battles_target: "form" } do %>
+        <label class="sr-only" for="onboarding_battle_add"><%= t("v2_onboarding.battles_add_placeholder") %></label>
+        <input type="text"
+               id="onboarding_battle_add"
+               class="lp-input w-full"
+               autocomplete="off"
+               maxlength="<%= StrategyGoal::TITLE_MAX %>"
+               enterkeyhint="done"
+               placeholder="<%= t("v2_onboarding.battles_add_placeholder") %>"
+               data-onboarding-v3-battles-target="addInput"
+               data-action="keydown->onboarding-v3-battles#addFromEnter">
+        <button type="button"
+                class="lp-cta lp-cta--ghost w-full"
+                data-action="click->onboarding-v3-battles#add">
+          <%= t("v2_onboarding.battles_add_battle") %>
+        </button>
+
+        <ul class="lp-ob-battles__list" data-onboarding-v3-battles-target="list" aria-label="<%= t("v2_onboarding.battles_list_label") %>">
+          <% battle_titles.each do |title| %>
+            <li class="lp-ob-battles__row">
+              <span class="lp-ob-battles__ring" aria-hidden="true"></span>
+              <span class="lp-ob-battles__label"><%= title %></span>
+              <%= hidden_field_tag "onboarding[battle_titles][]", title %>
+            </li>
+          <% end %>
+        </ul>
+
+        <footer class="lp-ob__cta-dock">
+          <%= submit_tag t("v2_onboarding.battles_done"),
+                class: "lp-cta w-full",
+                disabled: battle_titles.empty?,
+                data: { onboarding_v3_battles_target: "submit" } %>
+        </footer>
+      <% end %>
+    </div>
+  </div>
+</div>

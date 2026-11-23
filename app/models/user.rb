@@ -80,6 +80,7 @@ class User < ApplicationRecord
   PREMIUM_ACCESS_STATUSES = %w[active trialing].freeze
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
+  BASE_CAMP_INTRO_KEY = "base_camp_intro".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
   INSTALL_OFFER_MAX_ASKS = 2
   PUSH_OFFER_MAX_ASKS = 3
@@ -199,6 +200,22 @@ class User < ApplicationRecord
 
   def companion_pick_done?
     Array(support_milestones_shown).map(&:to_s).include?(COMPANION_PICK_KEY)
+  end
+
+  def base_camp_intro_seen?
+    Array(support_milestones_shown).map(&:to_s).include?(BASE_CAMP_INTRO_KEY)
+  end
+
+  def needs_base_camp_intro?
+    journey = primary_focused_journey
+    planning_v2? && onboarding_completed? && !base_camp_intro_seen? && journey&.onboarding_v3?
+  end
+
+  def mark_base_camp_intro_seen!
+    keys = Array(support_milestones_shown).map(&:to_s)
+    return if keys.include?(BASE_CAMP_INTRO_KEY)
+
+    update!(support_milestones_shown: keys + [ BASE_CAMP_INTRO_KEY ])
   end
 
   # Soft prompt for onboarded users still on blank / man / woman.

@@ -1,6 +1,6 @@
 <%# locals: step, photo, title, bodies, dot_index, battles_scene: false %>
 <% battles_scene = local_assigns.fetch(:battles_scene, false) %>
-<div class="lp-ob lp-ob--intro">
+<div class="lp-ob lp-ob--intro lp-ob--screen">
   <div class="lp-ob-intro__art" aria-hidden="false">
     <%= image_tag photo, class: "lp-ob-intro__photo", alt: "", decoding: "async" %>
     <% if battles_scene %>
@@ -45,10 +45,12 @@
       <span class="lp-ob-intro__dot<%= dot_index == 0 ? " is-on" : "" %>"></span>
       <span class="lp-ob-intro__dot<%= dot_index == 1 ? " is-on" : "" %>"></span>
     </div>
+  </div>
+  <footer class="lp-ob__cta-dock">
     <%= button_to t("v2_onboarding.intro_next"),
           v2_onboarding_path(step: step),
           method: :patch,
           class: "lp-cta w-full",
-          form: { data: { turbo: false } } %>
-  </div>
+          form: { class: "lp-ob__cta-dock-form", data: { turbo: false } } %>
+  </footer>
 </div>

@@ -1,0 +1,14 @@
+<div class="lp-base-camp-intro"
+     data-base-camp-intro-target="overlay"
+     hidden>
+  <div class="lp-base-camp-intro__card" role="dialog" aria-labelledby="base-camp-intro-title" aria-modal="true">
+    <p class="lp-base-camp-intro__kicker"><%= t("v2_onboarding.base_camp_intro_kicker") %></p>
+    <h2 id="base-camp-intro-title" class="lp-ob__title"><%= t("v2_onboarding.base_camp_intro_title") %></h2>
+    <p class="lp-base-camp-intro__body"><%= t("v2_onboarding.base_camp_intro_body") %></p>
+    <button type="button"
+            class="lp-cta w-full"
+            data-action="click->base-camp-intro#dismiss">
+      <%= t("v2_onboarding.base_camp_intro_cta") %>
+    </button>
+  </div>
+</div>

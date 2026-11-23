@@ -53,7 +53,11 @@
 <section class="lp-trail is-bleed is-v4 <%= 'is-summit-reached' if summit_reached %> <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %> <%= 'is-builtin-mountain-photos' if builtin_photos %> <%= 'is-day' if builtin_daytime == true %> <%= 'is-night' if builtin_daytime == false %>"
          id="mountain-trail"
          aria-label="<%= t('strategy.rpg.what_gets_me_there') %>"
-         data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %>"
+         data-controller="trail-canvas trail-camp-sheet trail-ambient<%= ' trail-coach' if show_tour %><%= ' first-camp-reveal' if first_camp_reveal %><%= ' base-camp-intro' if current_user.needs_base_camp_intro? %>"
+         <% if current_user.needs_base_camp_intro? %>
+         data-base-camp-intro-dismiss-url-value="<%= base_camp_intro_path %>"
+         data-action="base-camp-intro:resume-open@window->base-camp-intro#resumeOpenBase"
+         <% end %>
          data-trail-canvas-create-url-value="<%= strategy_goals_path %>"
          data-trail-canvas-csrf-value="<%= form_authenticity_token %>"
          data-trail-canvas-plan-id-value="<%= plan&.id.to_i %>"
@@ -541,6 +545,10 @@
           current_project: local_assigns[:current_project],
           focus: local_assigns[:focus] %>
   </details>
+
+  <% if current_user.needs_base_camp_intro? %>
+    <%= render "life_journeys/base_camp_intro" %>
+  <% end %>
 
   <% if first_camp_reveal %>
     <div id="first-camp-reveal-overlay"

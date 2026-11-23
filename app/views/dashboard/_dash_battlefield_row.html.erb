@@ -3,6 +3,7 @@
   todo = local_assigns[:todo]
   mission = local_assigns[:mission]
   row_state = local_assigns.fetch(:row_state, :open).to_sym
+  show_tap_hint = local_assigns.fetch(:show_tap_hint, false)
   qty_project = nil
   strategy_battle = nil
   if mission
@@ -125,6 +126,9 @@
         <p class="lp-today-v2-row__title"><%= title %></p>
       <% end %>
     </div>
+    <% if show_tap_hint %>
+      <p class="lp-today-v2-row__tap-hint"><%= t("strategy.rpg.trail.first_camp_reveal.tap_when_done") %></p>
+    <% end %>
   </div>
 
   <% if row_state == :pending_won %>
