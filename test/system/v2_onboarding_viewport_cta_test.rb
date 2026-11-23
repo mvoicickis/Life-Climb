@@ -21,11 +21,16 @@ class V2OnboardingViewportCtaTest < ApplicationSystemTestCase
   private
 
   def sign_in_via_ui!(user)
-    visit new_session_path
-    fill_in I18n.t("auth.email"), with: user.email_address
-    fill_in I18n.t("auth.password"), with: @password
-    click_button I18n.t("auth.sign_in_submit")
-    assert_selector ".lp-dash-nav", wait: 8
+    session = user.sessions.create!
+    jar = ActionDispatch::TestRequest.create.cookie_jar
+    jar.signed[:session_id] = session.id
+
+    visit root_path
+    page.driver.browser.manage.add_cookie(
+      name: "session_id",
+      value: jar[:session_id],
+      path: "/"
+    )
   end
 
   def fast_track_to_step!(step)
@@ -41,25 +46,33 @@ class V2OnboardingViewportCtaTest < ApplicationSystemTestCase
       user: user,
       goal_title: "Learn Latvian",
       camp_titles: %w[Basics Conversation Fluency],
-      complete_onboarding: false
+      complete_onboarding: false,
+      first_camp_reveal_status: "done"
     )
     journey = user.primary_focused_journey
-    journey.mark_onboarding_v3_climb_done!
-    if step == "battles"
-      return user
+    case step
+    when "climb"
+      user
+    when "battles"
+      journey.mark_onboarding_v3_climb_done!
+      user
+    when "celebrate"
+      journey.mark_onboarding_v3_climb_done!
+      Onboarding::PlantBattles.call(
+        user: user,
+        journey: journey,
+        battle_titles: [ "Practice ten words" ]
+      )
+      user
+    else
+      raise ArgumentError, "unknown step #{step}"
     end
-
-    Onboarding::PlantBattles.call(
-      user: user,
-      journey: journey,
-      battle_titles: [ "Practice ten words" ]
-    )
-    user
   end
 
   def assert_primary_cta_in_viewport!
     page.driver.browser.manage.window.resize_to(360, 640)
     assert_selector ".lp-ob__cta-dock .lp-cta", wait: 8
+    assert_selector ".lp-ob-climb__next.is-shown", wait: 15 if page.has_css?(".lp-ob-climb__next", wait: 0)
     visible = page.evaluate_script <<~JS
       (() => {
         const button = document.querySelector(".lp-ob__cta-dock .lp-cta:not([disabled])")
