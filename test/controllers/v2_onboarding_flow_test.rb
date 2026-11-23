@@ -61,10 +61,12 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_nil journey.setup_flag("route")
     assert user.daily_todos.where(scheduled_on: Date.current).exists?
 
-    gap = Today::Commitment.setup_gap(user: user, journey: journey)
-    refute_equal :habits, gap&.kind
-    refute_equal :battles, gap&.kind
-    assert_equal :set_time, gap&.kind
+    travel_to Time.zone.local(Date.current.year, Date.current.month, Date.current.day, 10, 0, 0) do
+      gap = Today::Commitment.setup_gap(user: user, journey: journey)
+      refute_equal :habits, gap&.kind
+      refute_equal :battles, gap&.kind
+      assert_equal :set_time, gap&.kind
+    end
 
     plan = user.strategy_goals.for_kind("plan").first
     assert_equal I18n.t("v2_onboarding.climb_plan_title"), plan.title
