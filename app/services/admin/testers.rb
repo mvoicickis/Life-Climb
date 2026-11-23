@@ -65,6 +65,10 @@ module Admin
       new.device_dashboard_stats(berlin_today: berlin_today)
     end
 
+    def self.device_profiles_for(user_ids)
+      new.send(:device_profiles_for, user_ids)
+    end
+
     def self.berlin_today
       Time.find_zone!(DAY_ZONE).today
     end

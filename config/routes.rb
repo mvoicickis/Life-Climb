@@ -193,6 +193,9 @@ Rails.application.routes.draw do
     resources :feedbacks, only: %i[ index destroy ]
     resources :testers, only: :index
     resources :beta_signups, only: %i[index destroy]
+    resources :beta_testers, only: %i[index create]
+    patch "beta_testers/invites/:user_id", to: "beta_testers#invite", as: :beta_tester_invite
+    patch "beta_testers/invites/:user_id/undo", to: "beta_testers#uninvite", as: :beta_tester_uninvite
     resources :tester_contacts, only: %i[ edit update ], param: :user_id
     resources :users, only: %i[ index show edit update destroy ] do
       member do
