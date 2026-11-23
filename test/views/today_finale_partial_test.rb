@@ -8,8 +8,8 @@ class TodayFinalePartialTest < ActiveSupport::TestCase
   end
 
   test "finale partial orders Continue before Share with primary and plural labels" do
-    assert_includes @erb, I18n.t("dash.finale.continue")
-    assert_includes @erb, I18n.t("dash.finale.share")
+    assert_includes @erb, 't("dash.finale.continue")'
+    assert_includes @erb, 't("dash.finale.share")'
     assert_includes @erb, "dash.finale.battles_today_label.one"
     assert_includes @erb, "dash.finale.battles_today_label.other"
     refute_includes I18n.t("dash.finale.goal_line", goal: "X"), "🏔"
