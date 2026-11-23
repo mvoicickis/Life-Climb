@@ -51,6 +51,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     user.reload
     first_project = user.strategy_goals.for_kind("project").order(:position).first
     assert user.onboarding_completed?
+    assert_equal 7, user.mountain_trail_tour_ack
     assert_equal "self", user.life_areas.v2_selected.first.key
     assert_equal "other", journey.setup_flag("onboarding_category")
     assert_equal "true", journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
@@ -76,6 +77,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     refute journey.first_camp_reveal_pending?
     assert_select ".lp-trail.is-first-camp-reveal", count: 0
+    assert_select ".lp-trail-coach", count: 0
+    plan.children.for_kind("project").order(:position).each do |camp|
+      assert_select "#trail-camp-#{camp.id}[data-camp-title=?]", camp.title
+    end
     assert_select "#trail-camp-#{first_project.id}[data-camp-title=?]", "Get certified"
 
     get dashboard_path

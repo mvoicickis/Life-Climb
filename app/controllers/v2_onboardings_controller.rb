@@ -301,7 +301,11 @@ class V2OnboardingsController < ApplicationController
   def complete_v2_onboarding!
     return if current_user.onboarding_completed? && current_user.planning_v2?
 
-    current_user.update!(onboarding_completed_at: Time.current, planning_version: 2)
+    current_user.update!(
+      onboarding_completed_at: Time.current,
+      planning_version: 2,
+      mountain_trail_tour_ack: 7
+    )
   end
 
   def step_incomplete?

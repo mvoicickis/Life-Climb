@@ -48,7 +48,8 @@
 <% builtin_photos = trail_world[:builtin_photos] %>
 <% builtin_daytime = trail_world[:builtin_daytime] %>
 <% night_photo_url = trail_world[:night_photo_url] %>
-<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal %>
+<% show_tour = tour_ack < 7 && !destination_overlay && plan.present? && !first_camp_reveal && !journey.onboarding_v3? %>
+<% tour_can_ack = show_tour && projects.any? && any_battles && any_wins %>
 
 <section class="lp-trail is-bleed is-v4 <%= 'is-summit-reached' if summit_reached %> <%= 'is-dormant' if dormant %> <%= 'is-guiding' if show_tour %> <%= 'is-first-camp-reveal' if first_camp_reveal %> <%= 'is-custom-mountain-photo' if custom_mountain_photo %> <%= 'is-builtin-mountain-photos' if builtin_photos %> <%= 'is-day' if builtin_daytime == true %> <%= 'is-night' if builtin_daytime == false %>"
          id="mountain-trail"
@@ -199,7 +200,11 @@
         <p class="lp-trail-coach__text" data-trail-coach-target="text"></p>
       </div>
       <div class="lp-trail-coach__actions">
-        <button type="button" class="lp-trail-coach__ack" data-action="click->trail-coach#ack">
+        <button type="button"
+                class="lp-trail-coach__ack"
+                data-trail-coach-target="ack"
+                data-action="click->trail-coach#ack"
+                <%= "hidden" unless tour_can_ack %>>
           <%= t("strategy.rpg.trail.coach.got_it") %>
         </button>
         <button type="button" class="lp-trail-coach__skip" data-action="click->trail-coach#skip">
