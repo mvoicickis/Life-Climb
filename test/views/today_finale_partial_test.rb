@@ -13,7 +13,7 @@ class TodayFinalePartialTest < ActiveSupport::TestCase
     assert_includes @erb, "dash.finale.battles_today_label.one"
     assert_includes @erb, "dash.finale.battles_today_label.other"
     refute_includes I18n.t("dash.finale.goal_line", goal: "X"), "🏔"
-    refute_includes @erb, "dash.finale.battles_today"
+    refute_match(/dash\.finale\.battles_today(?!_label)/, @erb)
 
     continue_at = @erb.index("lp-today-finale__continue")
     share_at = @erb.index("lp-today-finale__share")
