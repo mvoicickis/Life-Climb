@@ -6,6 +6,8 @@
      data-today-finale-share-text-value="<%= finale.share_text %>"
      data-today-finale-share-toast-value="<%= t('dash.battlefield.share_toast') %>"
      data-today-finale-battles-value="<%= finale.battles_today %>"
+     data-today-finale-battles-label-one-value="<%= t('dash.finale.battles_today_label.one') %>"
+     data-today-finale-battles-label-other-value="<%= t('dash.finale.battles_today_label.other') %>"
      role="dialog"
      aria-label="<%= t('dash.finale.aria') %>"
      hidden>
@@ -28,7 +30,7 @@
     <div class="lp-today-finale__stats">
       <div class="lp-today-finale__stat">
         <strong data-today-finale-target="battlesCount">0</strong>
-        <span><%= t("dash.finale.battles_today") %></span>
+        <span data-today-finale-target="battlesLabel"><%= t("dash.finale.battles_today_label.other") %></span>
       </div>
       <div class="lp-today-finale__stat is-camp">
         <strong><%= t("dash.finale.camp_of", current: finale.camp_current, total: [ finale.camp_total, 1 ].max) %></strong>
@@ -41,14 +43,14 @@
   </div>
   <div class="lp-today-finale__actions">
     <button type="button"
+            class="lp-cta w-full lp-today-finale__continue"
+            data-action="today-finale#continue">
+      <%= t("dash.finale.continue") %>
+    </button>
+    <button type="button"
             class="lp-btn-3d is-white is-block lp-today-finale__share"
             data-action="today-finale#share">
       <%= t("dash.finale.share") %>
-    </button>
-    <button type="button"
-            class="lp-today-finale__continue"
-            data-action="today-finale#continue">
-      <%= t("dash.finale.continue") %>
     </button>
   </div>
 </div>

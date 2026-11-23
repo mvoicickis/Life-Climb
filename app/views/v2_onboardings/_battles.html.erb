@@ -9,7 +9,7 @@
   <div class="lp-ob__body lp-ob__body--battles"
        data-controller="onboarding-v3-battles"
        data-onboarding-v3-battles-max-value="5">
-    <div class="lp-ob-battles__scroll">
+    <div class="lp-ob-battles__head">
       <div class="lp-ob__step-head">
         <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: setup_step_index, total: setup_step_total) %></span>
       </div>
@@ -20,24 +20,28 @@
       <h1 class="lp-ob__title"><%= t("v2_onboarding.battles_title") %></h1>
       <p class="lp-ob__lead"><%= t("v2_onboarding.battles_lead") %></p>
 
-      <section class="lp-ob-battles__example" aria-labelledby="ob-battles-example">
-        <p id="ob-battles-example" class="lp-ob-battles__example-label"><%= t("v2_onboarding.battles_example_label") %></p>
-        <p class="lp-ob-battles__example-row"><%= t("v2_onboarding.battles_example_intro") %></p>
-        <% t("v2_onboarding.battles_example_items").each do |line| %>
-          <p class="lp-ob-battles__example-row"><strong><%= line %></strong></p>
-        <% end %>
-      </section>
+      <details class="lp-ob-battles__example">
+        <summary class="lp-ob-battles__example-toggle"><%= t("v2_onboarding.battles_example_toggle") %></summary>
+        <div class="lp-ob-battles__example-body">
+          <p class="lp-ob-battles__example-row"><%= t("v2_onboarding.battles_example_intro") %></p>
+          <% t("v2_onboarding.battles_example_items").each do |line| %>
+            <p class="lp-ob-battles__example-row"><strong><%= line %></strong></p>
+          <% end %>
+        </div>
+      </details>
+    </div>
 
+    <%= form_with url: v2_onboarding_path(step: "battles"),
+          method: :patch,
+          class: "lp-ob-battles__form",
+          data: { turbo: false, onboarding_v3_battles_target: "form" } do %>
       <p class="lp-ob-battles__kicker"><%= t("v2_onboarding.battles_today_kicker") %></p>
 
-      <%= form_with url: v2_onboarding_path(step: "battles"),
-            method: :patch,
-            class: "lp-ob-battles__form",
-            data: { turbo: false, onboarding_v3_battles_target: "form" } do %>
+      <div class="lp-ob-steps__add lp-ob-battles__add">
         <label class="sr-only" for="onboarding_battle_add"><%= t("v2_onboarding.battles_add_placeholder") %></label>
         <input type="text"
                id="onboarding_battle_add"
-               class="lp-input w-full"
+               class="lp-input lp-ob-steps__add-input"
                autocomplete="off"
                maxlength="<%= StrategyGoal::TITLE_MAX %>"
                enterkeyhint="done"
@@ -45,11 +49,12 @@
                data-onboarding-v3-battles-target="addInput"
                data-action="keydown->onboarding-v3-battles#addFromEnter">
         <button type="button"
-                class="lp-cta lp-cta--ghost w-full"
-                data-action="click->onboarding-v3-battles#add">
-          <%= t("v2_onboarding.battles_add_battle") %>
-        </button>
+                class="lp-ob-steps__add-btn"
+                aria-label="<%= t("v2_onboarding.battles_add_button") %>"
+                data-action="click->onboarding-v3-battles#add">+</button>
+      </div>
 
+      <div class="lp-ob-battles__scroll" data-onboarding-v3-battles-target="scroll">
         <ul class="lp-ob-battles__list" data-onboarding-v3-battles-target="list" aria-label="<%= t("v2_onboarding.battles_list_label") %>">
           <% battle_titles.each do |title| %>
             <li class="lp-ob-battles__row">
@@ -59,14 +64,14 @@
             </li>
           <% end %>
         </ul>
+      </div>
 
-        <footer class="lp-ob__cta-dock">
-          <%= submit_tag t("v2_onboarding.battles_done"),
-                class: "lp-cta w-full",
-                disabled: battle_titles.empty?,
-                data: { onboarding_v3_battles_target: "submit" } %>
-        </footer>
-      <% end %>
-    </div>
+      <footer class="lp-ob__cta-dock" data-onboarding-v3-battles-target="dock">
+        <%= submit_tag t("v2_onboarding.battles_done"),
+              class: "lp-cta w-full",
+              disabled: battle_titles.empty?,
+              data: { onboarding_v3_battles_target: "submit" } %>
+      </footer>
+    <% end %>
   </div>
 </div>

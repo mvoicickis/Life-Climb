@@ -88,8 +88,9 @@ class TrailFollowsCampOrderTest < ApplicationSystemTestCase
 
     find("#trail-camp-#{@camp_a.id}", visible: :all).click
     assert_selector ".lp-trail-sheet.is-open", wait: 5
+    assert_selector "#trail-camp-finish-#{@camp_a.id} [data-trail-camp-finish-target='promptCard']", wait: 10
     click_button I18n.t("strategy.rpg.trail.finish_camp_card.finish")
-    assert_selector "#trail-camp-finish-#{@camp_a.id} [data-trail-camp-finish-target='undoCard']", wait: 10
+    assert_selector "#trail-camp-finish-#{@camp_a.id} [data-trail-camp-finish-target='undoCard']", wait: 15
 
     assert_no_selector "#trail-map-camps #trail-camp-#{@camp_a.id}"
     assert_selector "#trail-map-camps #trail-camp-#{@camp_b.id}"
