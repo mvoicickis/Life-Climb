@@ -297,6 +297,7 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
   def advance_through_intros!
     patch v2_onboarding_url(step: "intro_big_goals")
     assert_redirected_to v2_onboarding_path(step: "intro_battles")
+    follow_redirect!
     patch v2_onboarding_url(step: "intro_battles")
     assert_redirected_to v2_onboarding_path(step: "goal")
   end

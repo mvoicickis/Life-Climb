@@ -19,15 +19,18 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     fill_in I18n.t("auth.password"), with: @password
     click_button I18n.t("auth.register_submit")
 
-    assert_selector "h1", text: I18n.t("v2_onboarding.mountain_name_title"), wait: 8
+    assert_selector "h1", text: I18n.t("v2_onboarding.intro_big_goals_title"), wait: 8
+    click_button I18n.t("v2_onboarding.intro_skip")
+
+    assert_selector "h1", text: I18n.t("v2_onboarding.goal_title"), wait: 8
 
     fill_in "onboarding_goal", with: "Ship the app"
-    click_button I18n.t("v2_onboarding.continue")
+    click_button I18n.t("v2_onboarding.create_my_goal")
 
-    assert_selector "h1", text: I18n.t("v2_onboarding.camps_title"), wait: 8
+    assert_selector "h1", text: /What steps do you need to get to/i, wait: 8
 
     fill_in "onboarding_camp_add", with: "Launch beta"
-    click_button I18n.t("v2_onboarding.start_climbing")
+    click_button I18n.t("v2_onboarding.create_my_camps")
 
     assert_selector ".lp-trail", wait: 12
 
