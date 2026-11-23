@@ -1,0 +1,66 @@
+<% karen = stats[:karen] %>
+<% mareks = stats[:mareks] %>
+
+<section class="lp-admin-beta-stats" aria-label="<%= t('admin.beta_testers.stats.aria') %>">
+  <article class="lp-admin__panel lp-admin-beta-stats__card">
+    <header class="lp-admin__panel-head">
+      <h2 class="lp-admin__h2"><%= t("admin.beta_testers.stats.karen_title") %></h2>
+    </header>
+  <div class="lp-admin-beta-stats__metrics">
+    <div class="lp-admin-beta-stats__metric">
+      <p class="lp-admin__card-label"><%= t("admin.beta_testers.stats.invites_sent") %></p>
+      <p class="lp-admin-beta-stats__value">
+        <span class="lp-admin__card-value"><%= karen.this_week.invites_sent %></span>
+        <span class="lp-admin-beta-stats__delta">
+          <%= beta_testers_trend_delta(karen.this_week.invites_sent, karen.last_week.invites_sent) %>
+          <%= t("admin.beta_testers.stats.vs_last_week") %>
+        </span>
+      </p>
+    </div>
+    <div class="lp-admin-beta-stats__metric">
+      <p class="lp-admin__card-label"><%= t("admin.beta_testers.stats.became_testers") %></p>
+      <p class="lp-admin-beta-stats__value">
+        <span class="lp-admin__card-value"><%= karen.this_week.became_testers %></span>
+        <span class="lp-admin-beta-stats__delta">
+          <%= beta_testers_trend_delta(karen.this_week.became_testers, karen.last_week.became_testers) %>
+          <%= t("admin.beta_testers.stats.vs_last_week") %>
+        </span>
+      </p>
+    </div>
+  </div>
+  </article>
+
+  <article class="lp-admin__panel lp-admin-beta-stats__card">
+    <header class="lp-admin__panel-head">
+      <h2 class="lp-admin__h2"><%= t("admin.beta_testers.stats.mareks_title") %></h2>
+    </header>
+    <div class="lp-admin-beta-stats__metrics">
+      <div class="lp-admin-beta-stats__metric">
+        <p class="lp-admin__card-label"><%= t("admin.beta_testers.stats.daily_climbers") %></p>
+        <p class="lp-admin-beta-stats__value">
+          <span class="lp-admin__card-value">
+            <%= t("admin.beta_testers.stats.daily_climbers_count",
+                  count: mareks.this_week.daily_climbers,
+                  goal: mareks.this_week.goal) %>
+          </span>
+          <span class="lp-admin-beta-stats__delta">
+            <%= beta_testers_trend_delta(mareks.this_week.daily_climbers, mareks.last_week.daily_climbers) %>
+            <%= t("admin.beta_testers.stats.vs_last_week") %>
+          </span>
+        </p>
+        <div class="lp-admin-beta-stats__bar" role="progressbar"
+             aria-valuenow="<%= mareks.this_week.daily_climbers %>"
+             aria-valuemin="0"
+             aria-valuemax="<%= mareks.this_week.goal %>"
+             aria-label="<%= t('admin.beta_testers.stats.daily_climbers') %>">
+          <div class="lp-admin-beta-stats__bar-fill"
+               style="width: <%= beta_testers_progress_percent(mareks.this_week.daily_climbers, mareks.this_week.goal) %>%"></div>
+        </div>
+      </div>
+      <div class="lp-admin-beta-stats__metric">
+        <p class="lp-admin__card-label"><%= t("admin.beta_testers.stats.won_today") %></p>
+        <p class="lp-admin__card-value"><%= mareks.this_week.won_today %></p>
+      </div>
+    </div>
+  </article>
+</section>

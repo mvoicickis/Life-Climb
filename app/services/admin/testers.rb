@@ -69,6 +69,10 @@ module Admin
       new.send(:device_profiles_for, user_ids)
     end
 
+    def self.climber_user_ids_for_day(date)
+      new.send(:tester_climber_ids_for_day, date)
+    end
+
     def self.berlin_today
       Time.find_zone!(DAY_ZONE).today
     end

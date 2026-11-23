@@ -3,6 +3,7 @@
 module Admin
   class BetaTestersController < BaseController
     def index
+      @weekly_stats = BetaTestersWeeklyStats.call
       @roster = BetaTestersRoster.call
     end
 
