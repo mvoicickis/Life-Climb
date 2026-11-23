@@ -1,0 +1,109 @@
+<% content_for :title, t("admin.beta_testers.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.beta_testers.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.beta_testers.lead") %></p>
+  </div>
+</header>
+
+<%= form_with url: admin_beta_testers_path, method: :post, class: "lp-admin__panel lp-admin__stack" do |f| %>
+  <label class="lp-admin__stack" for="beta_testers_emails">
+    <span><%= t("admin.beta_testers.paste_label") %></span>
+    <%= f.text_area :emails,
+          id: "beta_testers_emails",
+          class: "lp-input",
+          rows: 5,
+          placeholder: t("admin.beta_testers.paste_placeholder") %>
+  </label>
+  <%= f.submit t("admin.beta_testers.add_testers"), class: "lp-admin__btn" %>
+<% end %>
+
+<section class="lp-admin__panel" aria-labelledby="beta-testers-not-yet">
+  <header class="lp-admin__panel-head">
+    <h2 id="beta-testers-not-yet" class="lp-admin__h2">
+      <%= t("admin.beta_testers.not_testers_heading", count: @roster[:not_testers].size) %>
+    </h2>
+  </header>
+  <% if @roster[:not_testers].any? %>
+    <ul class="lp-admin__stack lp-admin__list--blog-mobile">
+      <% @roster[:not_testers].each do |row| %>
+        <% user = row.user %>
+        <li class="lp-admin__panel">
+          <div class="lp-admin__stack">
+            <p class="lp-admin__meta"><%= beta_testers_tier_label(row.tier) %></p>
+            <strong><%= user.email_address %></strong>
+            <p class="lp-admin__meta">
+              <%= t("admin.beta_testers.joined", date: l(user.created_at.to_date, format: :long)) %>
+              · <%= t("admin.beta_testers.last_win") %>: <%= beta_testers_last_win_label(row.last_win_at) %>
+            </p>
+            <div class="lp-admin__btn-row">
+              <% if user.beta_invited_at.present? %>
+                <span class="lp-admin__meta"><%= t("admin.beta_testers.invited_on", date: l(user.beta_invited_at.to_date, format: :long)) %></span>
+                <%= button_to t("admin.beta_testers.undo_invite"),
+                      admin_beta_tester_uninvite_path(user_id: user.id),
+                      method: :patch,
+                      class: "lp-admin__ghost" %>
+              <% else %>
+                <%= button_to t("admin.beta_testers.invite"),
+                      admin_beta_tester_invite_path(user_id: user.id),
+                      method: :patch,
+                      class: "lp-admin__btn" %>
+              <% end %>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-admin__empty"><%= t("admin.beta_testers.not_testers_empty") %></p>
+  <% end %>
+</section>
+
+<section class="lp-admin__panel" aria-labelledby="beta-testers-on-list">
+  <header class="lp-admin__panel-head">
+    <h2 id="beta-testers-on-list" class="lp-admin__h2">
+      <%= t("admin.beta_testers.testers_heading", count: @roster[:testers].size) %>
+    </h2>
+  </header>
+  <% if @roster[:testers].any? %>
+    <ul class="lp-admin__stack lp-admin__list--blog-mobile">
+      <% @roster[:testers].each do |row| %>
+        <li class="lp-admin__panel">
+          <strong><%= row.beta_tester.email %></strong>
+          <p class="lp-admin__meta">
+            <%= t("admin.beta_testers.last_opened") %>:
+            <%= row.last_opened_on ? l(row.last_opened_on, format: :long) : t("admin.beta_testers.dash") %>
+            · <%= t("admin.beta_testers.wins_this_week", count: row.wins_this_week) %>
+            · <%= t("admin.beta_testers.play_app") %>: <%= beta_testers_play_label(row.play_app) %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-admin__empty"><%= t("admin.beta_testers.testers_empty") %></p>
+  <% end %>
+</section>
+
+<section class="lp-admin__panel" aria-labelledby="beta-testers-no-account">
+  <header class="lp-admin__panel-head">
+    <h2 id="beta-testers-no-account" class="lp-admin__h2">
+      <%= t("admin.beta_testers.no_account_heading", count: @roster[:no_account].size) %>
+    </h2>
+  </header>
+  <% if @roster[:no_account].any? %>
+    <ul class="lp-admin__stack lp-admin__list--blog-mobile">
+      <% @roster[:no_account].each do |row| %>
+        <li class="lp-admin__panel">
+          <strong><%= row.beta_tester.email %></strong>
+          <p class="lp-admin__meta">
+            <%= t("admin.beta_testers.added_on", date: l(row.beta_tester.added_at.to_date, format: :long)) %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="lp-admin__empty"><%= t("admin.beta_testers.no_account_empty") %></p>
+  <% end %>
+</section>
