@@ -111,6 +111,7 @@ module ClimbTogether
       patch v2_onboarding_url(step: "camps"), params: {
         onboarding: { camp_titles: [ "First camp", "Second camp" ] }
       }
+      patch v2_onboarding_url(step: "climb")
 
       assert_redirected_to climb_invite_path(@invite.token)
       follow_redirect!
@@ -145,6 +146,7 @@ module ClimbTogether
       patch v2_onboarding_url(step: "camps"), params: {
         onboarding: { camp_titles: [ "Camp one", "Camp two" ] }
       }
+      patch v2_onboarding_url(step: "climb")
 
       assert_redirected_to climb_invite_path(@invite.token)
     ensure
@@ -168,6 +170,7 @@ module ClimbTogether
       patch v2_onboarding_url(step: "camps"), params: {
         onboarding: { camp_titles: [ "Camp A", "Camp B" ] }
       }
+      patch v2_onboarding_url(step: "climb")
 
       user = User.find_by!(email_address: email)
       assert_redirected_to life_journey_path(user.primary_focused_journey)

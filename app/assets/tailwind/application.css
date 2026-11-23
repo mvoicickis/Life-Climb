@@ -29705,6 +29705,192 @@ html[data-lp-nav="back"] ::view-transition-new(lp-surface) {
   height: 30px;
 }
 
+.lp-ob--climb {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--lp-paper);
+}
+
+.lp-ob-climb {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--lp-paper);
+}
+
+.lp-ob-climb__bg {
+  position: absolute;
+  inset: 0;
+}
+
+.lp-ob-climb__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  transform: scale(1.04);
+}
+
+.lp-ob-climb__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--lp-ink) 8%, transparent) 0%,
+    transparent 35%,
+    color-mix(in srgb, var(--lp-ink) 28%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+.lp-ob-climb__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.lp-ob-climb__summit {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  opacity: 0;
+}
+
+.lp-ob-climb__summit.is-in {
+  opacity: 1;
+  animation: lp-ob-climb-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lp-ob-climb__peak-flag {
+  position: relative;
+  width: 4px;
+  height: 36px;
+  background: color-mix(in srgb, var(--lp-ink) 55%, transparent);
+  border-radius: 2px;
+}
+
+.lp-ob-climb__peak-flag::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  width: 18px;
+  height: 12px;
+  background: var(--lp-green);
+  border-radius: 0 2px 2px 0;
+}
+
+.lp-ob-climb__goal-chip {
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 70%, var(--lp-border));
+  box-shadow: var(--lp-shadow-card);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  white-space: nowrap;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-ob-climb__camp {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lp-ob-climb__camp.is-in {
+  opacity: 1;
+  animation: lp-ob-climb-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lp-ob-climb__camp-chip {
+  margin: 0;
+  padding: 0.28rem 0.6rem;
+  border-radius: var(--lp-radius-pill);
+  background: color-mix(in srgb, var(--lp-surface) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--lp-surface) 65%, var(--lp-border));
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+  white-space: nowrap;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--lp-ink) 12%, transparent);
+}
+
+.lp-ob-climb__dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+}
+
+.lp-ob-climb__next-form {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.lp-ob-climb__next {
+  min-width: 8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.lp-ob-climb__next.is-shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@keyframes lp-ob-climb-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.86);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-ob-climb__summit.is-in,
+  .lp-ob-climb__camp.is-in {
+    animation: none;
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+
+  .lp-ob-climb__photo {
+    transform: scale(1);
+  }
+}
+
 /* Legacy companion re-pick — matches onboarding goal/camps screens */
 .lp-companion-pick {
   position: fixed;

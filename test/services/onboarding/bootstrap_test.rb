@@ -102,6 +102,39 @@ class OnboardingBootstrapTest < ActiveSupport::TestCase
     assert_equal 0, @user.life_journeys.count
   end
 
+  test "complete_onboarding false leaves user incomplete until climb finishes" do
+    result = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Become a Ruby Developer",
+      camp_titles: [ "Get certified" ],
+      complete_onboarding: false
+    )
+
+    @user.reload
+    refute @user.onboarding_completed?
+    assert result.journey.present?
+    assert_equal "true", result.journey.setup_flag(Onboarding::Bootstrap::BOOTSTRAP_FLAG)
+  end
+
+  test "second call with different goal reuses bootstrap journey without duplicating spine" do
+    first = Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Become a Ruby Developer",
+      camp_titles: [ "Get certified", "Land first role" ],
+      complete_onboarding: false
+    )
+
+    assert_no_difference -> { @user.life_journeys.count } do
+      second = Onboarding::Bootstrap.call(
+        user: @user,
+        goal_title: "Different goal title",
+        camp_titles: [ "Other camp" ],
+        complete_onboarding: false
+      )
+      assert_equal first.journey.id, second.journey.id
+    end
+  end
+
   test "second call with same args returns the same journey without duplicating spine" do
     first = Onboarding::Bootstrap.call(
       user: @user,

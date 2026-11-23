@@ -31,9 +31,13 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
         camp_titles: [ "Get certified", "Land first role" ]
       }
     }
+    assert_redirected_to v2_onboarding_path(step: "climb")
 
     user.reload
     journey = user.primary_focused_journey
+    refute user.onboarding_completed?
+
+    patch v2_onboarding_url(step: "climb")
     first_project = user.strategy_goals.for_kind("project").order(:position).first
     assert_redirected_to life_journey_path(journey)
 
@@ -102,9 +106,14 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     user = User.find_by!(email_address: "double-camps@example.com")
     user.reload
     journey = user.primary_focused_journey
-    assert_redirected_to life_journey_path(journey)
+    assert_redirected_to v2_onboarding_path(step: "climb")
 
     patch v2_onboarding_url(step: "camps"), params: camps_params
+    user.reload
+    assert_redirected_to v2_onboarding_path(step: "climb")
+    assert_equal 1, user.life_journeys.count
+
+    patch v2_onboarding_url(step: "climb")
     user.reload
     assert_redirected_to life_journey_path(journey)
     assert user.onboarding_completed?
@@ -136,11 +145,19 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     patch v2_onboarding_url(step: "camps"), params: {
       onboarding: { camp_titles: [ "Launch" ] }
     }
+    follow_redirect!
+    get v2_onboarding_path(step: "climb")
+    viewed_steps = user.user_events.named("onboarding_step_viewed")
+                       .order(:id)
+                       .map { |event| event.properties["step"] }
+    assert_includes viewed_steps, "climb"
+
+    patch v2_onboarding_url(step: "climb")
 
     completed_steps = user.user_events.named("onboarding_step_completed")
                          .order(:id)
                          .map { |event| event.properties["step"] }
-    assert_equal %w[intro_big_goals intro_battles goal camps], completed_steps
+    assert_equal %w[intro_big_goals intro_battles goal camps climb], completed_steps
     refute user.user_events.named("onboarding_step_completed").any? { |e| e.properties["skipped"] }
   end
 
@@ -261,6 +278,29 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to life_journey_path(user.primary_focused_journey)
   end
 
+  test "bootstrap spine without completed onboarding resumes at climb in a new session" do
+    user = User.create!(
+      name: "Resume",
+      email_address: "resume-climb-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345",
+      character: "fox"
+    )
+    Onboarding::Bootstrap.call(
+      user: user,
+      goal_title: "Learn piano",
+      camp_titles: [ "Buy keyboard", "Practice scales" ],
+      complete_onboarding: false
+    )
+    refute user.reload.onboarding_completed?
+
+    sign_in_as user
+    get v2_onboarding_path
+    assert_redirected_to v2_onboarding_path(step: "climb")
+    follow_redirect!
+    assert_select "[data-controller='onboarding-climb']"
+  end
+
   test "registration assigns fox companion before onboarding" do
     post registration_url, params: registration_params("fox-climber@example.com")
 
@@ -309,5 +349,6 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     end
     patch v2_onboarding_url(step: "goal"), params: { onboarding: { goal: goal } }
     patch v2_onboarding_url(step: "camps"), params: { onboarding: { camp_titles: camps } }
+    patch v2_onboarding_url(step: "climb")
   end
 end

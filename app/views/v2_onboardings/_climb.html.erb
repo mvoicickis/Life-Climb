@@ -1,0 +1,42 @@
+<%# locals: goal_title, camp_titles %>
+<div class="lp-ob lp-ob--climb"
+     data-controller="onboarding-climb"
+     data-onboarding-climb-goal-value="<%= goal_title %>"
+     data-onboarding-climb-camps-value="<%= camp_titles.to_json %>"
+     data-action="click->onboarding-climb#skipToEnd">
+  <div class="lp-ob-climb" data-onboarding-climb-target="root">
+    <div class="lp-ob-climb__bg" aria-hidden="true">
+      <%= image_tag MountainTrailHelper::BUILTIN_DAY_PHOTO, class: "lp-ob-climb__photo", alt: "", decoding: "async" %>
+      <div class="lp-ob-climb__shade"></div>
+    </div>
+
+    <div class="lp-ob-climb__stage" data-onboarding-climb-target="stage">
+      <div class="lp-ob-climb__summit" data-onboarding-climb-target="summit">
+        <span class="lp-ob-climb__peak-flag" aria-hidden="true"></span>
+        <p class="lp-ob-climb__goal-chip"><%= goal_title %></p>
+      </div>
+
+      <div class="lp-ob-climb__camp" data-onboarding-climb-target="camp" style="left:28%; top:72%;">
+        <span class="lp-ob-intro__tent lp-ob-intro__tent--a lp-ob-intro__tent--lg" aria-hidden="true"></span>
+        <p class="lp-ob-climb__camp-chip" data-onboarding-climb-target="campChip"></p>
+      </div>
+      <div class="lp-ob-climb__camp" data-onboarding-climb-target="camp" style="left:52%; top:50%;">
+        <span class="lp-ob-intro__tent lp-ob-intro__tent--b" aria-hidden="true"></span>
+        <p class="lp-ob-climb__camp-chip" data-onboarding-climb-target="campChip"></p>
+      </div>
+      <div class="lp-ob-climb__camp" data-onboarding-climb-target="camp" style="left:70%; top:32%;">
+        <span class="lp-ob-intro__tent lp-ob-intro__tent--c lp-ob-intro__tent--sm" aria-hidden="true"></span>
+        <p class="lp-ob-climb__camp-chip" data-onboarding-climb-target="campChip"></p>
+      </div>
+    </div>
+
+    <div class="lp-ob-climb__dock">
+      <%= button_to t("v2_onboarding.climb_next"),
+            v2_onboarding_path(step: "climb"),
+            method: :patch,
+            class: "lp-cta lp-ob-climb__next",
+            form: { class: "lp-ob-climb__next-form", data: { onboarding_climb_next: true } },
+            data: { onboarding_climb_target: "next" } %>
+    </div>
+  </div>
+</div>

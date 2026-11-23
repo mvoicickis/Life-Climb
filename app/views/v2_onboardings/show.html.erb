@@ -134,4 +134,7 @@
       <% end %>
     </div>
   </div>
+
+<% elsif @step == "climb" %>
+  <%= render "v2_onboardings/climb", goal_title: @goal_title, camp_titles: @camp_titles %>
 <% end %>
