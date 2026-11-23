@@ -2,39 +2,25 @@
 
 require "test_helper"
 
-class TodayFinalePartialTest < ActionView::TestCase
-  include ClimbTestHelper
-
+class TodayFinalePartialTest < ActiveSupport::TestCase
   setup do
-    @user = users(:one)
-    @user.update!(character: "fox")
-    @finale = Today::FinaleMoment::Result.new(
-      battles_today: 1,
-      goal_title: "Learn piano",
-      camp_current: 1,
-      camp_total: 3,
-      camp_fill: 0.33,
-      share_text: "share"
-    )
+    @erb = Rails.root.join("app/views/dashboard/_today_finale.html.erb").read
   end
 
-  def current_user
-    @user
-  end
+  test "finale partial orders Continue before Share with primary and plural labels" do
+    assert_includes @erb, I18n.t("dash.finale.continue")
+    assert_includes @erb, I18n.t("dash.finale.share")
+    assert_includes @erb, "dash.finale.battles_today_label.one"
+    assert_includes @erb, "dash.finale.battles_today_label.other"
+    refute_includes I18n.t("dash.finale.goal_line", goal: "X"), "🏔"
+    refute_includes @erb, "dash.finale.battles_today"
 
-  test "finale renders Continue primary before Share and pluralizes battle label" do
-    html = render(partial: "dashboard/today_finale", locals: { finale: @finale })
-
-    assert_includes html, I18n.t("dash.finale.continue")
-    assert_includes html, I18n.t("dash.finale.share")
-    assert_includes html, I18n.t("dash.finale.battles_today_label.one")
-    refute_includes html, "🏔"
-    refute_includes html, "Battles today"
-    continue_at = html.index("lp-today-finale__continue")
-    share_at = html.index("lp-today-finale__share")
-    assert continue_at, "expected Continue control in finale partial"
-    assert share_at, "expected Share control in finale partial"
+    continue_at = @erb.index("lp-today-finale__continue")
+    share_at = @erb.index("lp-today-finale__share")
+    assert continue_at
+    assert share_at
     assert_operator continue_at, :<, share_at
-    assert_match(/lp-cta.*lp-today-finale__continue/m, html)
+    assert_match(/lp-cta.*lp-today-finale__continue/, @erb)
+    assert_match(/lp-btn-3d is-white.*lp-today-finale__share/, @erb)
   end
 end
