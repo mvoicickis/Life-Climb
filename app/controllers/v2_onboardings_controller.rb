@@ -3,8 +3,10 @@
 class V2OnboardingsController < ApplicationController
   skip_onboarding_check
 
-  STEPS = %w[goal camps].freeze
-  SETUP_STEPS = STEPS.freeze
+  INTRO_STEPS = %w[intro_big_goals intro_battles].freeze
+  STEPS = (INTRO_STEPS + %w[goal camps]).freeze
+  SETUP_STEPS = %w[goal camps].freeze
+  SETUP_STEP_DISPLAY_TOTAL = 3
   LEGACY_STEPS = %w[welcome category mountain commitment deadline forge how].freeze
   RETIRED_STEPS = %w[character camp battles basic].freeze
 
@@ -12,15 +14,21 @@ class V2OnboardingsController < ApplicationController
     return redirect_completed_user! if current_user.onboarding_completed? && current_user.planning_v2?
 
     @draft = normalized_draft
-    @step = (params[:step].presence || "goal").to_s
+    @step = requested_step
     if LEGACY_STEPS.include?(@step) || RETIRED_STEPS.include?(@step)
+      redirect_to v2_onboarding_path(step: legacy_or_retired_redirect_step(@step)) and return
+    end
+    unless STEPS.include?(@step)
+      redirect_to v2_onboarding_path(step: entry_step) and return
+    end
+
+    if INTRO_STEPS.include?(@step) && draft_goal_present?
       redirect_to v2_onboarding_path(step: missing_step) and return
     end
-    @step = "goal" unless STEPS.include?(@step)
 
     if SETUP_STEPS.include?(@step)
-      @setup_step_index = SETUP_STEPS.index(@step) + 1
-      @setup_step_total = SETUP_STEPS.size
+      @setup_step_index = setup_display_index(@step)
+      @setup_step_total = SETUP_STEP_DISPLAY_TOTAL
     end
 
     redirect_to v2_onboarding_path(step: missing_step) and return if step_incomplete?
@@ -40,18 +48,26 @@ class V2OnboardingsController < ApplicationController
         title = params.dig(:onboarding, :title).to_s.strip
         legacy_draft = legacy_draft.merge("goal" => title) if title.present?
         session[:v2_onboarding] = legacy_draft
+        session[:v2_onboarding_from_legacy_mountain] = true
       end
-      redirect_to v2_onboarding_path(step: missing_step) and return
+      redirect_to v2_onboarding_path(step: legacy_or_retired_redirect_step(step)) and return
     end
-    step = "goal" unless STEPS.include?(step)
+    unless STEPS.include?(step)
+      redirect_to v2_onboarding_path(step: entry_step) and return
+    end
 
     case step
+    when *INTRO_STEPS
+      skipped = intro_skip_requested?
+      track_onboarding_event!("onboarding_step_completed", step, skipped: skipped)
+      redirect_to intro_after_step(step, skipped: skipped)
     when "goal"
       goal = draft["goal"].to_s.strip
       if goal.blank?
         redirect_to v2_onboarding_path(step: "goal"), alert: t("v2_onboarding.need_goal") and return
       end
       session[:v2_onboarding] = draft.merge("goal" => goal)
+      session.delete(:v2_onboarding_from_legacy_mountain)
       track_onboarding_event!("onboarding_step_completed", step)
       redirect_to v2_onboarding_path(step: "camps")
     when "camps"
@@ -79,19 +95,58 @@ class V2OnboardingsController < ApplicationController
           camp_titles: titles
         )
         session.delete(:v2_onboarding)
+        session.delete(:v2_onboarding_from_legacy_mountain)
         redirect_after_onboarding!(fallback: life_journey_path(result.journey))
       rescue Onboarding::Bootstrap::Error => e
         redirect_to v2_onboarding_path(step: "camps"), alert: e.message
       end
     else
-      redirect_to v2_onboarding_path(step: "goal")
+      redirect_to v2_onboarding_path(step: entry_step)
     end
   end
 
   private
 
+  def requested_step
+    step = params[:step].presence&.to_s
+    return entry_step if step.blank?
+
+    step
+  end
+
+  def entry_step
+    draft_goal_present? ? missing_step : "intro_big_goals"
+  end
+
+  def draft_goal_present?
+    normalized_draft["goal"].to_s.strip.present?
+  end
+
+  def intro_skip_requested?
+    ActiveModel::Type::Boolean.new.cast(params[:skip]) ||
+      ActiveModel::Type::Boolean.new.cast(params.dig(:onboarding, :skip))
+  end
+
+  def intro_after_step(step, skipped:)
+    return v2_onboarding_path(step: "goal") if skipped
+
+    case step
+    when "intro_big_goals" then v2_onboarding_path(step: "intro_battles")
+    when "intro_battles" then v2_onboarding_path(step: "goal")
+    else v2_onboarding_path(step: "goal")
+    end
+  end
+
+  def setup_display_index(step)
+    case step
+    when "goal" then 1
+    when "camps" then 2
+    else 1
+    end
+  end
+
   def onboarding_params
-    params.fetch(:onboarding, {}).permit(:goal, :title, camp_titles: [])
+    params.fetch(:onboarding, {}).permit(:goal, :title, :skip, camp_titles: [])
   end
 
   def camp_titles_from_params
@@ -147,15 +202,30 @@ class V2OnboardingsController < ApplicationController
 
   def missing_step
     draft = normalized_draft
-    return "goal" if draft["goal"].blank?
+    return "intro_big_goals" if draft["goal"].blank?
 
-    "camps"
+    return "camps" if session[:v2_onboarding_from_legacy_mountain]
+
+    "goal"
   end
 
-  def track_onboarding_event!(name, step)
-    return unless SETUP_STEPS.include?(step)
+  def legacy_or_retired_redirect_step(legacy_step)
+    draft = normalized_draft
+    return "intro_big_goals" if draft["goal"].blank?
+    return "camps" if legacy_step == "mountain" || session[:v2_onboarding_from_legacy_mountain]
+    return "camps" if draft_goal_present?
 
-    Analytics::Track.call(user: current_user, name: name, properties: { step: step })
+    "goal"
+  end
+
+  def track_onboarding_event!(name, step, **properties)
+    return unless STEPS.include?(step)
+
+    Analytics::Track.call(
+      user: current_user,
+      name: name,
+      properties: { step: step }.merge(properties)
+    )
   end
 
   def onboarding_bootstrap_journey_for(goal_title)

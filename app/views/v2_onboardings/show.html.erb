@@ -2,13 +2,31 @@
 <% content_for :lp_game, true %>
 <% content_for :lp_hide_top_nav, true %>
 
-<% if @step == "goal" %>
+<% if @step == "intro_big_goals" %>
+  <%= render "v2_onboardings/intro",
+        step: "intro_big_goals",
+        photo: "mountain_trail_day.webp",
+        title: t("v2_onboarding.intro_big_goals_title"),
+        bodies: t("v2_onboarding.intro_big_goals_bodies"),
+        dot_index: 0 %>
+
+<% elsif @step == "intro_battles" %>
+  <%= render "v2_onboardings/intro",
+        step: "intro_battles",
+        photo: "camp_fire_default.webp",
+        title: t("v2_onboarding.intro_battles_title"),
+        bodies: t("v2_onboarding.intro_battles_bodies"),
+        dot_index: 1,
+        battles_scene: true %>
+
+<% elsif @step == "goal" %>
   <div class="lp-ob lp-ob--goal">
     <div class="lp-ob__mountain-bg" aria-hidden="true">
       <%= image_tag MountainTrailHelper::BUILTIN_DAY_PHOTO, class: "lp-ob__mountain-photo", alt: "", decoding: "async" %>
     </div>
 
     <div class="lp-ob__body">
+      <p class="lp-ob__kicker"><%= t("v2_onboarding.goal_kicker") %></p>
       <section class="lp-ob__card lp-ob__card--goal" aria-labelledby="onboarding-goal-title">
         <div class="lp-ob__step-head">
           <span class="lp-ob__progress-label"><%= t("v2_onboarding.step_progress", current: @setup_step_index, total: @setup_step_total) %></span>
@@ -17,10 +35,11 @@
           <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
         </div>
 
-        <h1 id="onboarding-goal-title" class="lp-ob__title"><%= t("v2_onboarding.mountain_name_title") %></h1>
+        <h1 id="onboarding-goal-title" class="lp-ob__title"><%= t("v2_onboarding.goal_title") %></h1>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.goal_lead") %></p>
 
         <%= form_with url: v2_onboarding_path(step: "goal"), method: :patch, class: "lp-ob__form", data: { turbo: false } do %>
-          <label class="sr-only" for="onboarding_goal"><%= t("v2_onboarding.mountain_name_title") %></label>
+          <label class="sr-only" for="onboarding_goal"><%= t("v2_onboarding.goal_title") %></label>
           <%= text_field_tag "onboarding[goal]", @draft["goal"],
                 id: "onboarding_goal",
                 required: true,
@@ -28,8 +47,8 @@
                 class: "lp-input w-full",
                 autocomplete: "off",
                 autofocus: true,
-                placeholder: t("v2_onboarding.mountain_name_placeholder") %>
-          <%= submit_tag t("v2_onboarding.continue"), class: "lp-cta w-full" %>
+                placeholder: t("v2_onboarding.goal_placeholder") %>
+          <%= submit_tag t("v2_onboarding.create_my_goal"), class: "lp-cta w-full" %>
         <% end %>
       </section>
     </div>
@@ -37,6 +56,8 @@
 
 <% elsif @step == "camps" %>
   <% camp_rows = Array(@draft["camp_titles"]).presence || [] %>
+  <% goal_label = @draft["goal"].to_s.strip %>
+  <p class="lp-ob__kicker lp-ob__kicker--standalone"><%= t("v2_onboarding.goal_kicker") %></p>
   <div class="lp-ob lp-ob--camps"
        data-controller="onboarding-camps"
        data-onboarding-camps-reorder-hint-value="<%= t("v2_onboarding.camps_reorder_hint") %>"
@@ -55,9 +76,9 @@
           <span class="lp-ob__progress-fill" style="width: <%= ((@setup_step_index.to_f / @setup_step_total) * 100).round %>%"></span>
         </div>
 
-        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title") %></h1>
-        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead") %></p>
-        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_lead_order") %></p>
+        <h1 class="lp-ob__title"><%= t("v2_onboarding.camps_title_with_goal", goal: goal_label) %></h1>
+        <p class="lp-ob__lead"><%= t("v2_onboarding.camps_instruction") %></p>
+        <p class="lp-ob__example-hint"><%= t("v2_onboarding.camps_example_hint") %></p>
       </header>
 
       <%= form_with url: v2_onboarding_path(step: "camps"),
@@ -105,7 +126,7 @@
         </div>
 
         <footer class="lp-ob-steps__dock" data-onboarding-camps-target="dock">
-          <%= submit_tag t("v2_onboarding.start_climbing"),
+          <%= submit_tag t("v2_onboarding.create_my_camps"),
                 class: "lp-cta w-full",
                 disabled: camp_rows.empty?,
                 data: { onboarding_camps_target: "submit" } %>

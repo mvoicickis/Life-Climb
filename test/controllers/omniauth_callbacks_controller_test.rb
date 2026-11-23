@@ -20,7 +20,7 @@ class OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
 
     get "/auth/google_oauth2/callback"
 
-    assert_redirected_to v2_onboarding_path(step: "goal")
+    assert_redirected_to v2_onboarding_path(step: "intro_big_goals")
     assert cookies[:session_id].present?
     assert User.exists?(email_address: email)
   end

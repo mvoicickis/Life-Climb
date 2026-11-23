@@ -25,6 +25,37 @@ class Admin::OnboardingStepFunnelTest < ActiveSupport::TestCase
     assert_equal 1, camps.drop_off_from_previous
   end
 
+  test "counts skipped intro completions separately" do
+    user = users(:two)
+    other = users(:one)
+
+    Analytics::Track.call(
+      user: user,
+      name: "onboarding_step_completed",
+      properties: { step: "intro_big_goals", skipped: true }
+    )
+    Analytics::Track.call(
+      user: other,
+      name: "onboarding_step_completed",
+      properties: { step: "intro_big_goals", skipped: false }
+    )
+    Analytics::Track.call(
+      user: other,
+      name: "onboarding_step_completed",
+      properties: { step: "intro_battles", skipped: true }
+    )
+
+    rows = Admin::OnboardingStepFunnel.call[:rows]
+    intro_one = rows.find { |row| row.key == "intro_big_goals" }
+    intro_two = rows.find { |row| row.key == "intro_battles" }
+    goal = rows.find { |row| row.key == "goal" }
+
+    assert_equal 1, intro_one.skipped
+    assert_equal 2, intro_one.completed
+    assert_equal 1, intro_two.skipped
+    assert_nil goal.skipped
+  end
+
   test "counts anonymous landing funnel events" do
     3.times { Analytics::Track.call(name: "landing_viewed") }
     Analytics::Track.call(name: "signup_started")
