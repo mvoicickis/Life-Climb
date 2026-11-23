@@ -20,7 +20,9 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     click_button I18n.t("auth.register_submit")
 
     assert_selector "h1", text: I18n.t("v2_onboarding.intro_big_goals_title"), wait: 8
-    click_button I18n.t("v2_onboarding.intro_skip")
+    click_button I18n.t("v2_onboarding.intro_next")
+    assert_selector "h1", text: I18n.t("v2_onboarding.intro_battles_title"), wait: 8
+    click_button I18n.t("v2_onboarding.intro_next")
 
     assert_selector "h1", text: I18n.t("v2_onboarding.goal_title"), wait: 8
 
