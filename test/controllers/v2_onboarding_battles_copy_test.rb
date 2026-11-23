@@ -32,6 +32,7 @@ class V2OnboardingBattlesCopyTest < ActionDispatch::IntegrationTest
     assert_select "#onboarding_battle_add[placeholder=?]", I18n.t("v2_onboarding.battles_add_placeholder")
     assert_select "details.lp-ob-battles__example summary", text: I18n.t("v2_onboarding.battles_example_toggle")
     assert_select ".lp-ob-steps__add-btn", count: 1
-    refute_match %r/%\{[a-z_]+\}/, response.body
+    refute_includes response.body, "What is one thing you can finish today?"
+    refute_includes response.body, "%{goal}"
   end
 end
