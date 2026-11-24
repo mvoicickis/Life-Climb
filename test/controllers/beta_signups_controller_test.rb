@@ -4,9 +4,16 @@ require "test_helper"
 
 class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
   ANDROID_UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+  SUCCESS_ESCAPE = ERB::Util.html_escape(I18n.t("beta_card.success"))
 
   setup do
     BetaSignup.delete_all
+  end
+
+  def assert_success_card_in_turbo_stream
+    assert_select "turbo-stream[action=replace][target=beta-signup-card]"
+    assert_select ".lp-beta-card__success", count: 1
+    assert_includes response.body, SUCCESS_ESCAPE
   end
 
   test "create saves one row with source_path and device" do
@@ -27,7 +34,7 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "/blog/my-post", signup.source_path
     assert_equal "android", signup.device
-    assert_includes response.body, I18n.t("beta_card.success")
+    assert_success_card_in_turbo_stream
   end
 
   test "duplicate email responds success and keeps one row" do
@@ -46,7 +53,7 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_includes response.body, I18n.t("beta_card.success")
+    assert_success_card_in_turbo_stream
   end
 
   test "honeypot responds success and saves nothing" do
@@ -63,7 +70,7 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_includes response.body, I18n.t("beta_card.success")
+    assert_success_card_in_turbo_stream
   end
 
   test "invalid email returns inline error on turbo stream" do
@@ -79,22 +86,28 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "rate limit blocks after five posts in a minute" do
-    5.times do |i|
+    previous_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    begin
+      5.times do |i|
+        post beta_signups_path,
+             params: { beta_signup: { email: "one#{i}@example.com", source_path: "/" } },
+             headers: { "HTTP_REFERER" => root_url },
+             as: :html
+        assert_redirected_to root_path
+      end
+
       post beta_signups_path,
-           params: { beta_signup: { email: "one#{i}@example.com", source_path: "/" } },
+           params: { beta_signup: { email: "six@example.com", source_path: "/" } },
            headers: { "HTTP_REFERER" => root_url },
            as: :html
+
       assert_redirected_to root_path
+      assert_equal I18n.t("beta_card.rate_limited"), flash[:alert]
+      assert_equal 5, BetaSignup.count
+    ensure
+      Rails.cache = previous_cache
     end
-
-    post beta_signups_path,
-         params: { beta_signup: { email: "six@example.com", source_path: "/" } },
-         headers: { "HTTP_REFERER" => root_url },
-         as: :html
-
-    assert_redirected_to root_path
-    assert_equal I18n.t("beta_card.rate_limited"), flash[:alert]
-    assert_equal 5, BetaSignup.count
   end
 
   test "html create redirects back with success flash" do

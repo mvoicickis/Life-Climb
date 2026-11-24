@@ -4,7 +4,14 @@ class BetaSignupsController < ApplicationController
   allow_unauthenticated_access only: :create
   skip_onboarding_check only: :create
 
-  rate_limit to: 5, within: 1.minute, only: :create, with: -> { rate_limited_response }
+  # Delegate so rate_limit uses Rails.cache at request time (test can swap to MemoryStore).
+  RATE_LIMIT_CACHE = Object.new.tap do |store|
+    store.define_singleton_method(:increment) do |key, amount, expires_in:|
+      Rails.cache.increment(key, amount, expires_in: expires_in)
+    end
+  end
+
+  rate_limit to: 5, within: 1.minute, only: :create, with: -> { rate_limited_response }, store: RATE_LIMIT_CACHE
 
   def create
     if honeypot_filled?
