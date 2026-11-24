@@ -4,9 +4,23 @@ require "test_helper"
 
 class FirstTipAcksControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = users(:one)
-    sign_in_as @user
+    @user = User.create!(
+      name: "Alex",
+      email_address: "first-tip-ack-#{SecureRandom.hex(4)}@example.com",
+      password: "password12345",
+      password_confirmation: "password12345"
+    )
+    Onboarding::Bootstrap.call(
+      user: @user,
+      goal_title: "Ship",
+      camp_titles: [ "Launch" ]
+    )
     @user.update!(support_milestones_shown: [])
+    sign_in_as @user
+  end
+
+  def sign_in_as(user)
+    post session_path, params: { email_address: user.email_address, password: "password12345" }
   end
 
   test "create marks milestone and daily log" do
@@ -36,7 +50,7 @@ class FirstTipAcksControllerTest < ActionDispatch::IntegrationTest
 
   test "impersonation blocks mutation" do
     admin = users(:admin)
-    sign_in_as admin
+    post session_path, params: { email_address: admin.email_address, password: "password12345" }
 
     post admin_impersonations_path, params: { user_id: @user.id }
     assert_response :redirect

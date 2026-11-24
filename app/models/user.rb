@@ -351,7 +351,14 @@ class User < ApplicationRecord
   def onboarding_local_day_index
     return nil unless onboarding_completed_at
 
-    completed_on = onboarding_completed_at.in_time_zone(time_zone).to_date
+    zone_name = Battles::WinsOnLocalDate.time_zone_for(self)
+    zone = Time.find_zone(zone_name)
+    completed_on =
+      if zone
+        onboarding_completed_at.in_time_zone(zone).to_date
+      else
+        onboarding_completed_at.to_date
+      end
     (local_today - completed_on).to_i
   end
 
