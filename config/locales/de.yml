@@ -1550,6 +1550,7 @@ de:
   landing:
     meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints macht aus einem echten Ziel einen Berg — und gibt dir jeden Tag einen klaren Schritt nach oben."
+    blog: "Blog" # TODO: translate
     sign_in: "Anmelden"
     start_free: "Kostenlos starten"
     back_home: "← Zurück zur Startseite"

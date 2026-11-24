@@ -1377,14 +1377,29 @@
     .lp-landing-nav__actions { gap: 0.75rem; }
   }
 
-  /* Hero already has CTAs — keep phone nav to brand + language. */
-  .lp-landing-nav .lp-landing-link,
+  /* Hero already has CTAs — phone nav shows brand + Blog; Sign in / Start free from 640px (Android Sign in excepted below). */
+  .lp-landing-nav .lp-landing-link:not(.lp-landing-nav__blog),
   .lp-landing-nav .lp-landing-cta--nav {
     display: none;
   }
 
+  .lp-landing-nav__blog {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--lp-tap);
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: var(--lp-surface);
+  }
+
+  .lp-landing-nav__blog:hover {
+    background: color-mix(in srgb, var(--lp-surface) 14%, transparent);
+    color: var(--lp-surface);
+  }
+
   @media (min-width: 640px) {
-    .lp-landing-nav .lp-landing-link,
+    .lp-landing-nav .lp-landing-link:not(.lp-landing-nav__blog),
     .lp-landing-nav .lp-landing-cta--nav {
       display: inline-flex;
     }
@@ -30765,7 +30780,7 @@ html.is-android .lp-landing-nav .lp-landing-cta--nav {
   display: none !important;
 }
 
-html.is-android .lp-landing-nav .lp-landing-link {
+html.is-android .lp-landing-nav .lp-landing-link:not(.lp-landing-nav__blog) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30780,7 +30795,7 @@ html.is-android .lp-landing-nav .lp-landing-link {
   white-space: nowrap;
 }
 
-html.is-android .lp-landing-nav .lp-landing-link:hover {
+html.is-android .lp-landing-nav .lp-landing-link:not(.lp-landing-nav__blog):hover {
   background: color-mix(in srgb, var(--lp-ink) 10%, transparent);
   color: var(--lp-ink);
 }

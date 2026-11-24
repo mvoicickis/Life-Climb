@@ -8,6 +8,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1.lp-landing-hero__title", text: "The mountain is yours to climb"
     assert_select ".lp-landing-nav__tagline", count: 0
+    assert_select ".lp-landing-nav__actions a.lp-landing-nav__blog[href=?]", blog_path, text: "Blog"
     assert_match(/Start free/, response.body)
     assert_match(/Plan it\. Fight it\. Climb\./, response.body)
     assert_match(/Two screens, one loop/, response.body)
