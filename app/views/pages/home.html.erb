@@ -42,10 +42,9 @@
         <%= link_to t("landing.sign_in"), new_session_path, class: "lp-landing-cta lp-landing-cta--ghost" %>
       </div>
       <p class="lp-landing-hero__note"><%= t("landing.hero_note") %></p>
+      <%= render "shared/beta_card", source_path: "/", hero: true %>
     </div>
   </section>
-
-  <%= render "shared/beta_card", source_path: "/" %>
 
   <section class="lp-landing-section lp-landing-section--light">
     <div class="lp-landing-section__inner lp-landing-section__inner--wide" data-landing-target="fade">

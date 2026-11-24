@@ -1546,13 +1546,17 @@ ru:
     default_two: "Выбери одну вещь, в которой хочешь превзойти вчера."
     default_three: "Сделай завтра простым: один ясный успех."
   beta_card:
+    chip: "Android beta" # TODO: translate
     android_heading: "Get Life Climb on Android" # TODO: translate
     android_lead: "Join the beta. We'll email you the invite link." # TODO: translate
     email_label: "Email" # TODO: translate
     email_placeholder: "you@example.com" # TODO: translate
     join: "Join the beta" # TODO: translate
+    no_spam: "No spam. Just the invite." # TODO: translate
+    browser_link: "Or try it in your browser →" # TODO: translate
     start_climbing: "Start climbing" # TODO: translate
-    success: "Thanks! We'll email you the invite link soon." # TODO: translate
+    success_title: "You're on the list!" # TODO: translate
+    success_body: "We'll email you the invite link soon." # TODO: translate
     email_invalid: "Enter a real email address." # TODO: translate
     rate_limited: "Too many tries. Wait a minute, then try again." # TODO: translate
   landing:

@@ -23,9 +23,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a.lp-legal-footer-links__link[href=?]", terms_path
     assert_select "a.lp-legal-footer-links__link[href=?]", delete_account_path
     assert_select "a.lp-legal-footer-links__link[href=?]", impressum_path
-    assert_select "#beta-signup-card", count: 1
+    assert_select ".lp-landing-hero__copy #beta-signup-card", count: 1
+    assert_select ".lp-landing-hero__copy .lp-beta-card--hero", count: 1
     assert_select "[data-beta-card-target='androidPanel']", count: 1
+    assert_select "a.lp-beta-browser-link[href=?]", new_registration_path
     assert_match(/Free to start/, response.body)
+    assert_match(/is-android/, response.body)
     assert_match(/\+1 battle won/, response.body)
     assert_match(/Battles won/, response.body)
     assert_no_match(/\+50 LP/, response.body)

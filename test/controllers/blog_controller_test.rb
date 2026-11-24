@@ -97,7 +97,9 @@ class BlogControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#beta-signup-card", count: 1
     assert_select ".lp-public-blog__start-card", count: 0
+    assert_select ".lp-beta-card__chip", text: I18n.t("beta_card.chip")
     assert_select "a.lp-beta-card__cta[href=?]", new_registration_path, text: I18n.t("beta_card.start_climbing")
+    assert_select "a.lp-beta-browser-link", count: 0
   end
 
   test "signed in user does not see beta card on blog post" do

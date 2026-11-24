@@ -1,5 +1,9 @@
-<section id="beta-signup-card" class="lp-beta-card lp-beta-card--success" role="status">
+<section id="beta-signup-card" class="lp-beta-card lp-beta-card--hero lp-beta-card--success" role="status">
   <div class="lp-beta-card__inner">
-    <p class="lp-beta-card__success"><%= t("beta_card.success") %></p>
+    <div class="lp-beta-card__success-block">
+      <span class="lp-beta-card__check" aria-hidden="true">✓</span>
+      <h2 class="lp-beta-card__success-title"><%= t("beta_card.success_title") %></h2>
+      <p class="lp-beta-card__success"><%= t("beta_card.success_body") %></p>
+    </div>
   </div>
 </section>

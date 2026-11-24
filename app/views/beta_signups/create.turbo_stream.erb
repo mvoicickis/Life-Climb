@@ -4,6 +4,9 @@
   <% end %>
 <% else %>
   <%= turbo_stream.replace "beta-signup-card" do %>
-    <%= render "shared/beta_card", source_path: @source_path, signup: @signup %>
+    <%= render "shared/beta_card",
+          source_path: @source_path,
+          signup: @signup,
+          hero: @source_path.to_s == "/" %>
   <% end %>
 <% end %>

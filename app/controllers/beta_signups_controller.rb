@@ -65,7 +65,7 @@ class BetaSignupsController < ApplicationController
   end
 
   def success_message
-    t("beta_card.success")
+    t("beta_card.success_title")
   end
 
   def respond_with_success

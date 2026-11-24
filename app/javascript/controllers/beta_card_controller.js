@@ -1,5 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
-import { isAndroid } from "push_subscription"
+
+function isAndroid() {
+  if (typeof navigator === "undefined") return false
+  return /Android/i.test(navigator.userAgent || "")
+}
 
 export default class extends Controller {
   static targets = [ "defaultPanel", "androidPanel" ]
@@ -7,8 +11,10 @@ export default class extends Controller {
   connect() {
     if (!isAndroid()) return
 
+    document.documentElement.classList.add("is-android")
     this.element.classList.add("is-android")
-    this.defaultPanelTarget.hidden = true
-    this.androidPanelTarget.hidden = false
+    if (this.hasDefaultPanelTarget) this.defaultPanelTarget.hidden = true
+    if (this.hasAndroidPanelTarget) this.androidPanelTarget.hidden = false
   }
 }
+

@@ -4,7 +4,8 @@ require "test_helper"
 
 class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
   ANDROID_UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
-  SUCCESS_ESCAPE = ERB::Util.html_escape(I18n.t("beta_card.success"))
+  SUCCESS_TITLE_ESCAPE = ERB::Util.html_escape(I18n.t("beta_card.success_title"))
+  SUCCESS_BODY_ESCAPE = ERB::Util.html_escape(I18n.t("beta_card.success_body"))
 
   setup do
     BetaSignup.delete_all
@@ -12,8 +13,10 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
 
   def assert_success_card_in_turbo_stream
     assert_select "turbo-stream[action=replace][target=beta-signup-card]"
-    assert_select ".lp-beta-card__success", count: 1
-    assert_includes response.body, SUCCESS_ESCAPE
+    assert_select ".lp-beta-card__success-title", count: 1
+    assert_select ".lp-beta-card__check", count: 1
+    assert_includes response.body, SUCCESS_TITLE_ESCAPE
+    assert_includes response.body, SUCCESS_BODY_ESCAPE
   end
 
   test "create saves one row with source_path and device" do
@@ -117,6 +120,6 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
          as: :html
 
     assert_redirected_to root_path
-    assert_equal I18n.t("beta_card.success"), flash[:notice]
+    assert_equal I18n.t("beta_card.success_title"), flash[:notice]
   end
 end
