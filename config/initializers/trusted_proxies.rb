@@ -40,6 +40,8 @@ module TrustProxyForwardedForOnly
   private
 
   def calculate_ip
+    return super unless @proxies.respond_to?(:any?)
+
     remote_addr = sanitize_ips(ips_from(@req.remote_addr)).last
     peer_is_trusted_proxy = @proxies.any? { |proxy| proxy === remote_addr }
     return remote_addr unless peer_is_trusted_proxy
