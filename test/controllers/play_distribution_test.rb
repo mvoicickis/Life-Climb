@@ -12,6 +12,15 @@ class PlayDistributionTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test "play app cookie hides beta card on landing" do
+    cookies[:lp_distribution] = "play"
+
+    get root_path
+
+    assert_response :success
+    assert_select "#beta-signup-card", count: 0
+  end
+
   test "distribution=play sets httponly cookie" do
     get root_path(distribution: "play")
 

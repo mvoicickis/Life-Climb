@@ -1545,6 +1545,16 @@ ru:
     default_one: "Запиши то, что важно — даже маленькое число считается."
     default_two: "Выбери одну вещь, в которой хочешь превзойти вчера."
     default_three: "Сделай завтра простым: один ясный успех."
+  beta_card:
+    android_heading: "Get Life Climb on Android" # TODO: translate
+    android_lead: "Join the beta. We'll email you the invite link." # TODO: translate
+    email_label: "Email" # TODO: translate
+    email_placeholder: "you@example.com" # TODO: translate
+    join: "Join the beta" # TODO: translate
+    start_climbing: "Start climbing" # TODO: translate
+    success: "Thanks! We'll email you the invite link soon." # TODO: translate
+    email_invalid: "Enter a real email address." # TODO: translate
+    rate_limited: "Too many tries. Wait a minute, then try again." # TODO: translate
   landing:
     meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints превращает одну настоящую цель в гору — и каждый день даёт тебе один ясный шаг вверх."

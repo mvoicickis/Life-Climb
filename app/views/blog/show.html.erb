@@ -78,10 +78,6 @@
       </section>
     <% end %>
 
-    <section class="lp-public-blog__start-card" aria-labelledby="blog-start-heading">
-      <h2 id="blog-start-heading" class="lp-public-blog__start-title"><%= t("blog.cta_title") %></h2>
-      <p class="lp-public-blog__start-body"><%= t("blog.cta_body") %></p>
-      <%= link_to t("blog.start_climbing"), new_registration_path, class: "lp-public-blog__cta lp-public-blog__cta--wide" %>
-    </section>
+    <%= render "shared/beta_card", source_path: blog_post_path(@blog_post.slug) %>
   </div>
 </article>

@@ -1533,6 +1533,16 @@ es:
     default_one: "Registra lo que importa hoy: incluso un número pequeño cuenta."
     default_two: "Elige una cosa en la que superar a ayer."
     default_three: "Mantén mañana simple: una victoria clara."
+  beta_card:
+    android_heading: "Get Life Climb on Android" # TODO: translate
+    android_lead: "Join the beta. We'll email you the invite link." # TODO: translate
+    email_label: "Email" # TODO: translate
+    email_placeholder: "you@example.com" # TODO: translate
+    join: "Join the beta" # TODO: translate
+    start_climbing: "Start climbing" # TODO: translate
+    success: "Thanks! We'll email you the invite link soon." # TODO: translate
+    email_invalid: "Enter a real email address." # TODO: translate
+    rate_limited: "Too many tries. Wait a minute, then try again." # TODO: translate
   landing:
     meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints convierte una meta real en una montaña — y te da un paso claro hacia arriba, cada día."

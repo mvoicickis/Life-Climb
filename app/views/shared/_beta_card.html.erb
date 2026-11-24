@@ -1,0 +1,42 @@
+<%# locals: (source_path:, signup: nil) %>
+<% return unless beta_card_visible? %>
+
+<% signup ||= BetaSignup.new %>
+<% email_value = signup.email %>
+
+<section id="beta-signup-card" class="lp-beta-card" data-controller="beta-card">
+  <div class="lp-beta-card__inner">
+    <div data-beta-card-target="defaultPanel">
+      <%= link_to t("beta_card.start_climbing"), new_registration_path, class: "lp-beta-card__cta" %>
+    </div>
+
+    <div data-beta-card-target="androidPanel" class="lp-beta-card__android" hidden>
+      <h2 class="lp-beta-card__title"><%= t("beta_card.android_heading") %></h2>
+      <p class="lp-beta-card__lead"><%= t("beta_card.android_lead") %></p>
+
+      <%= form_with url: beta_signups_path, scope: :beta_signup, method: :post, class: "lp-beta-card__form" do |f| %>
+        <%= f.hidden_field :source_path, value: source_path %>
+        <div class="lp-beta-card__honeypot" aria-hidden="true">
+          <%= f.text_field :company, tabindex: "-1", autocomplete: "off" %>
+        </div>
+
+        <div class="lp-beta-card__field">
+          <label class="lp-beta-card__label" for="beta_signup_email"><%= t("beta_card.email_label") %></label>
+          <%= f.email_field :email,
+                id: "beta_signup_email",
+                value: email_value,
+                required: true,
+                autocomplete: "email",
+                inputmode: "email",
+                class: "lp-beta-card__input #{"is-invalid" if signup.errors[:email].any?}",
+                placeholder: t("beta_card.email_placeholder") %>
+          <% if signup.errors[:email].any? %>
+            <p class="lp-beta-card__error" role="alert"><%= signup.errors.full_messages_for(:email).first %></p>
+          <% end %>
+        </div>
+
+        <%= f.submit t("beta_card.join"), class: "lp-beta-card__cta" %>
+      <% end %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,9 @@
+<% if @success %>
+  <%= turbo_stream.replace "beta-signup-card" do %>
+    <%= render "shared/beta_card_success" %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "beta-signup-card" do %>
+    <%= render "shared/beta_card", source_path: @source_path, signup: @signup %>
+  <% end %>
+<% end %>
