@@ -1,10 +1,21 @@
 <div id="blog_post_editor"
      class="lp-blog-writer"
      data-controller="blog-writer blog-slug blog-trix-toolbar blog-title-field"
-     data-action="trix-change->blog-writer#scheduleSave turbo:submit-end->blog-writer#noteSaved"
+     data-action="trix-change->blog-writer#scheduleSave turbo:submit-end->blog-writer#noteSaved input->blog-writer#markDirty change->blog-writer#markDirty"
      data-blog-writer-new-value="<%= @blog_post.persisted? ? "false" : "true" %>"
+     data-blog-writer-post-id-value="<%= @blog_post.persisted? ? @blog_post.id : "new" %>"
+     data-blog-writer-untitled-value="<%= BlogPost::UNTITLED_TITLE %>"
+     data-blog-writer-server-snapshot-value="<%= admin_blog_writer_snapshot(@blog_post) %>"
      data-blog-writer-preview-missing-value="<%= t("admin.blog_posts.google_preview_missing") %>"
-     data-blog-writer-preview-url-value="<%= @blog_post.persisted? ? preview_admin_blog_post_path(@blog_post) : "" %>">
+     data-blog-writer-preview-url-value="<%= @blog_post.persisted? ? preview_admin_blog_post_path(@blog_post) : "" %>"
+     data-blog-writer-copy-saving-value="<%= t("admin.blog_posts.saving") %>"
+     data-blog-writer-copy-saved-value="<%= t("admin.blog_posts.saved_now") %>"
+     data-blog-writer-copy-saved-just-now-value="<%= t("admin.blog_posts.saved_just_now") %>"
+     data-blog-writer-copy-not-saved-yet-value="<%= t("admin.blog_posts.not_saved_yet") %>"
+     data-blog-writer-copy-not-saved-tap-value="<%= t("admin.blog_posts.not_saved_tap") %>"
+     data-blog-writer-copy-draft-value="<%= t("admin.blog_posts.save_status_draft") %>"
+     data-blog-writer-copy-published-value="<%= t("admin.blog_posts.save_status_published") %>">
+  <%= render "backup_restore" %>
   <header class="lp-blog-writer__bar">
     <%= link_to t("admin.blog_posts.back_to_list"), admin_blog_posts_path, class: "lp-blog-writer__back" %>
     <%= render "save_status", blog_post: @blog_post %>
@@ -16,16 +27,22 @@
               target: "_blank",
               rel: "noopener",
               data: { action: "click->blog-writer#openPreview" } %>
-        <% if @blog_post.status == "published" %>
-          <button type="submit" form="blog-post-writer" class="lp-blog-writer__btn is-green" data-turbo="false">
-            <%= t("admin.blog_posts.update") %>
-          </button>
-        <% else %>
-          <%= button_to t("admin.blog_posts.publish"),
-                publish_admin_blog_post_path(@blog_post),
-                method: :patch,
-                class: "lp-blog-writer__btn is-green" %>
-        <% end %>
+      <% end %>
+      <% if @blog_post.status != "published" %>
+        <button type="button"
+                class="lp-blog-writer__btn is-white"
+                data-action="click->blog-writer#saveDraft">
+          <%= t("admin.blog_posts.save_draft") %>
+        </button>
+        <button type="button"
+                class="lp-blog-writer__btn is-green"
+                data-action="click->blog-writer#publish">
+          <%= t("admin.blog_posts.publish") %>
+        </button>
+      <% else %>
+        <button type="submit" form="blog-post-writer" class="lp-blog-writer__btn is-green" data-turbo="false">
+          <%= t("admin.blog_posts.update") %>
+        </button>
       <% end %>
     </div>
   </header>
@@ -36,24 +53,31 @@
         class: "lp-blog-writer__layout",
         data: { blog_writer_target: "form", turbo: true } do |f| %>
       <%= hidden_field_tag :autosave, "", data: { blog_writer_target: "autosaveFlag" } %>
+      <%= hidden_field_tag :publish, "", data: { blog_writer_target: "publishFlag" } %>
       <%= hidden_field_tag :slug_auto, "", data: { blog_writer_target: "slugAutoFlag" } %>
 
     <div class="lp-blog-writer__main">
       <%= render "cover", blog_post: @blog_post, form: f %>
 
+      <%= render "publish_title_error", blog_post: @blog_post %>
+
+      <% title_field_class = "lp-blog-writer__title" %>
+      <% title_field_class += " has-error" if defined?(@publish_error) && @publish_error %>
       <%= f.text_area :title,
-            class: "lp-blog-writer__title",
+            class: title_field_class,
             placeholder: t("admin.blog_posts.writer_title_placeholder"),
-            required: true,
             rows: 1,
+            value: (@blog_post.untitled_draft_title? ? "" : @blog_post.title),
             data: {
               blog_slug_target: "title",
               blog_title_field_target: "input",
-              action: "input->blog-slug#syncFromTitle input->blog-writer#scheduleSave input->blog-writer#syncGooglePreview input->blog-title-field#input keydown->blog-title-field#keydown blur->blog-writer#saveOnBlur"
+              blog_writer_target: "titleInput",
+              blog_slug_untitled_value: BlogPost::UNTITLED_TITLE,
+              action: "input->blog-slug#syncFromTitle input->blog-writer#scheduleSave input->blog-writer#syncGooglePreview input->blog-writer#markDirty input->blog-title-field#input keydown->blog-title-field#keydown blur->blog-writer#saveOnBlur"
             } %>
 
       <div class="lp-blog-writer__body-wrap">
-        <%= f.rich_text_area :body, placeholder: t("admin.blog_posts.body_placeholder"), data: { action: "trix-change->blog-writer#syncGooglePreview" } %>
+        <%= f.rich_text_area :body, placeholder: t("admin.blog_posts.body_placeholder"), data: { action: "trix-change->blog-writer#syncGooglePreview trix-change->blog-writer#markDirty", blog_writer_target: "bodyField" } %>
       </div>
 
       <details class="lp-blog-writer__more">

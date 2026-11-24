@@ -43,6 +43,59 @@ module Admin
       assert_response :success
       assert_select "#blog_post_editor"
       assert_no_match(/lp-blog-writer__status-ok/, response.body)
+      assert_select "button", text: I18n.t("admin.blog_posts.save_draft")
+      assert_select "button", text: I18n.t("admin.blog_posts.publish")
+    end
+
+    test "first autosave with body only and blank title creates untitled draft" do
+      sign_in_as @admin
+
+      assert_difference -> { BlogPost.count }, 1 do
+        post admin_blog_posts_path, params: {
+          autosave: "1",
+          blog_post: { title: "", body: "Mountain story text only." }
+        }, headers: { Accept: "text/vnd.turbo-stream.html" }
+      end
+
+      assert_response :success
+      created = BlogPost.order(:id).last
+      assert_equal BlogPost::UNTITLED_TITLE, created.title
+      assert created.auto_draft_slug?
+      assert_includes created.body.to_plain_text, "Mountain story text only."
+    end
+
+    test "publish with blank title keeps draft and shows error" do
+      sign_in_as @admin
+      post_record = BlogPost.create!(
+        title: BlogPost::UNTITLED_TITLE,
+        slug: "draft-testslug1",
+        status: "draft"
+      )
+      post_record.body = "Body without a real title."
+      post_record.save!
+
+      patch publish_admin_blog_post_path(post_record)
+
+      assert_response :unprocessable_entity
+      assert_match I18n.t("admin.blog_posts.publish_title_required"), response.body
+      assert_equal "draft", post_record.reload.status
+    end
+
+    test "duplicate blank title drafts get unique slugs" do
+      sign_in_as @admin
+
+      2.times do |index|
+        post admin_blog_posts_path, params: {
+          autosave: "1",
+          blog_post: { title: "", body: "Story #{index}." }
+        }, headers: { Accept: "text/vnd.turbo-stream.html" }
+
+        assert_response :success
+      end
+
+      slugs = BlogPost.order(:id).last(2).map(&:slug)
+      assert_equal 2, slugs.uniq.length
+      assert slugs.all? { |slug| slug.match?(/\Adraft-[a-z0-9]+\z/) }
     end
 
     test "first autosave on new post creates the record" do
@@ -90,8 +143,8 @@ module Admin
 
       assert_response :success
       post_record.reload
-      assert_equal "youll-climb", post_record.slug
-      assert_match(/value="youll-climb"/, response.body)
+      assert_equal "you-ll-climb", post_record.slug
+      assert_match(/value="you-ll-climb"/, response.body)
     end
 
     test "autosave never publishes" do
@@ -172,6 +225,8 @@ module Admin
       assert_select "details.lp-blog-writer__seo-panel", count: 0
       assert_select "details.lp-blog-writer__seo-edit summary", text: I18n.t("admin.blog_posts.edit_google_text")
       assert_select "[data-blog-writer-target=?]", "previewTitle", text: "Writer layout test"
+      assert_select "button", text: I18n.t("admin.blog_posts.save_draft")
+      assert_select "button", text: I18n.t("admin.blog_posts.publish")
     end
 
     test "page title does not double escape apostrophes" do

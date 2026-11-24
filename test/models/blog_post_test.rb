@@ -3,11 +3,37 @@
 require "test_helper"
 
 class BlogPostTest < ActiveSupport::TestCase
-  test "requires title" do
-    post = BlogPost.new(title: "", slug: "hello")
+  test "draft save applies untitled title and unique draft slug" do
+    post = BlogPost.new(title: "", status: "draft")
+    post.body = "Hello from the trail."
 
-    assert_not post.valid?
-    assert_includes post.errors[:title], "can't be blank"
+    assert post.save, post.errors.full_messages.join(", ")
+    assert_equal BlogPost::UNTITLED_TITLE, post.title
+    assert post.auto_draft_slug?
+    assert_includes post.body.to_plain_text, "Hello from the trail."
+  end
+
+  test "publish requires a real title" do
+    post = BlogPost.create!(title: BlogPost::UNTITLED_TITLE, slug: "draft-abc12345", status: "draft")
+    post.body = "Ready except for the title."
+
+    assert_not post.publish_now!
+    assert_includes post.errors[:title], I18n.t("admin.blog_posts.publish_title_required")
+    assert_equal "draft", post.reload.status
+  end
+
+  test "blank draft saves get unique slugs" do
+    first = BlogPost.new(title: "", status: "draft")
+    first.body = "First story"
+    first.save!
+
+    second = BlogPost.new(title: "", status: "draft")
+    second.body = "Second story"
+    second.save!
+
+    assert_not_equal first.slug, second.slug
+    assert first.auto_draft_slug?
+    assert second.auto_draft_slug?
   end
 
   test "assigns slug from title when blank" do

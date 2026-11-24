@@ -6,16 +6,23 @@ class BlogPost < ApplicationRecord
   EXCERPT_LENGTH = 160
   SEO_TITLE_MAX = 60
   META_DESCRIPTION_MAX = 155
+  UNTITLED_TITLE = "Untitled draft"
+  DRAFT_SLUG_PREFIX = "draft-"
 
   has_rich_text :body
   has_one_attached :cover_photo
 
-  validates :title, presence: true
+  attr_accessor :sync_slug_from_title
+
   validates :slug, presence: true, uniqueness: true
   validates :status, inclusion: { in: STATUSES }
   validates :seo_title, length: { maximum: SEO_TITLE_MAX }, allow_blank: true
   validates :meta_description, length: { maximum: META_DESCRIPTION_MAX }, allow_blank: true
+  validates :title, presence: true, on: :publish
+  validate :title_is_real_for_publish, on: :publish
+  validate :slug_is_real_for_publish, on: :publish
 
+  before_validation :apply_draft_defaults, if: :saving_as_draft?
   before_validation :assign_slug_from_title
   before_validation :normalize_slug
   before_validation :assign_excerpt_from_body
@@ -90,17 +97,64 @@ class BlogPost < ApplicationRecord
     seo_title.presence || title
   end
 
+  def auto_draft_slug?
+    slug.to_s.match?(/\A#{DRAFT_SLUG_PREFIX}[a-z0-9]+\z/i)
+  end
+
+  def untitled_draft_title?
+    title.to_s.strip.blank? || title.to_s.strip == UNTITLED_TITLE
+  end
+
+  def publish_now!
+    self.status = "published"
+    self.published_at = Time.current if published_at.blank?
+    save(context: :publish)
+  end
+
   private
 
+  def saving_as_draft?
+    status == "draft" && validation_context != :publish
+  end
+
+  def apply_draft_defaults
+    self.title = UNTITLED_TITLE if title.to_s.strip.blank?
+    assign_unique_draft_slug if slug.blank?
+  end
+
+  def assign_unique_draft_slug
+    loop do
+      candidate = "#{DRAFT_SLUG_PREFIX}#{SecureRandom.alphanumeric(8).downcase}"
+      next if BlogPost.exists?(slug: candidate)
+
+      self.slug = candidate
+      break
+    end
+  end
+
   def assign_slug_from_title
-    return if slug.present?
     return if title.blank?
+    return if untitled_draft_title?
+    return unless slug.blank? || auto_draft_slug? || sync_slug_from_title
 
     self.slug = title
   end
 
   def normalize_slug
     self.slug = slug.to_s.parameterize.presence
+    assign_unique_draft_slug if slug.blank? && saving_as_draft?
+  end
+
+  def title_is_real_for_publish
+    return unless untitled_draft_title?
+
+    errors.add(:title, I18n.t("admin.blog_posts.publish_title_required"))
+  end
+
+  def slug_is_real_for_publish
+    return if slug.present? && !auto_draft_slug?
+
+    errors.add(:title, I18n.t("admin.blog_posts.publish_title_required"))
   end
 
   def assign_excerpt_from_body
@@ -125,7 +179,7 @@ class BlogPost < ApplicationRecord
   end
 
   def assign_seo_defaults
-    if seo_title.blank? && title.present?
+    if seo_title.blank? && title.present? && !untitled_draft_title?
       self.seo_title = title.to_s.truncate(SEO_TITLE_MAX, omission: "")
     end
 

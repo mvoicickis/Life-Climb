@@ -17,5 +17,20 @@ module Admin
         t("admin.blog_posts.save_status_draft")
       end
     end
+
+    def admin_blog_writer_snapshot(post)
+      {
+        title: display_writer_title(post),
+        body: post.body.to_plain_text.to_s,
+        excerpt: post.excerpt.to_s,
+        updated_at: post.persisted? ? post.updated_at.to_i : 0
+      }.to_json
+    end
+
+    def display_writer_title(post)
+      return "" if post.untitled_draft_title?
+
+      post.title.to_s
+    end
   end
 end

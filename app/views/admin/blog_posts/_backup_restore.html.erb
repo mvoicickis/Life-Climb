@@ -1,0 +1,18 @@
+<div id="blog_backup_bar"
+     class="lp-blog-writer__backup"
+     hidden
+     data-blog-writer-target="backupBar">
+  <p class="lp-blog-writer__backup-text"><%= t("admin.blog_posts.backup_restore_prompt") %></p>
+  <div class="lp-blog-writer__backup-actions">
+    <button type="button"
+            class="lp-blog-writer__btn is-white"
+            data-action="click->blog-writer#dismissBackup">
+      <%= t("admin.blog_posts.backup_dismiss") %>
+    </button>
+    <button type="button"
+            class="lp-blog-writer__btn is-green"
+            data-action="click->blog-writer#restoreBackup">
+      <%= t("admin.blog_posts.backup_restore") %>
+    </button>
+  </div>
+</div>

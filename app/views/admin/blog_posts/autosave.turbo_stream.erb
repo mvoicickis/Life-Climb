@@ -1,6 +1,9 @@
 <%= turbo_stream.replace "blog_save_status" do %>
   <%= render "save_status", blog_post: @blog_post, save_state: :saved %>
 <% end %>
+<%= turbo_stream.replace "blog_publish_title_error" do %>
+  <%= render "publish_title_error", blog_post: @blog_post %>
+<% end %>
 <%= turbo_stream.replace "blog_google_preview" do %>
   <%= render "google_preview", blog_post: @blog_post %>
 <% end %>
