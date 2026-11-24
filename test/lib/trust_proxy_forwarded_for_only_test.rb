@@ -3,22 +3,21 @@
 require "test_helper"
 
 class TrustProxyForwardedForOnlyTest < ActiveSupport::TestCase
-  # Web Console passes a Permissions object instead of an enumerable proxy list.
-  class NonEnumerableProxies
-  end
-
-  test "remote_ip middleware does not call any? when proxies are not enumerable" do
+  test "calculate_ip falls back to super when proxies are not enumerable" do
     env = {
       "REMOTE_ADDR" => "203.0.113.1",
       "REQUEST_METHOD" => "GET",
       "PATH_INFO" => "/",
       "rack.input" => StringIO.new
     }
+    req = ActionDispatch::Request.new(env)
+    get_ip = ActionDispatch::RemoteIp::GetIp.new(req, true, ActionDispatch::RemoteIp::TRUSTED_PROXIES)
+    get_ip.instance_variable_set(:@proxies, Object.new)
+    # Web Console’s GetSecureIp overrides filter_proxies; stand in so super can finish.
+    get_ip.define_singleton_method(:filter_proxies) { |ips| ips }
 
-    assert_nothing_raised do
-      ActionDispatch::RemoteIp.new(->(e) { [ 200, {}, [] ] }, true, NonEnumerableProxies.new).call(env)
-    end
-
-    assert_equal "203.0.113.1", env["action_dispatch.remote_ip"]
+    ip = nil
+    assert_nothing_raised { ip = get_ip.send(:calculate_ip) }
+    assert_equal "203.0.113.1", ip
   end
 end
