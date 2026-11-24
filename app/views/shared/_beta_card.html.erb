@@ -1,16 +1,20 @@
-<%# locals: (source_path:, signup: nil) %>
+<%# locals: (source_path:, signup: nil, hero: false) %>
 <% return unless beta_card_visible? %>
 
 <% signup ||= BetaSignup.new %>
 <% email_value = signup.email %>
+<% hero = local_assigns.fetch(:hero, false) %>
 
-<section id="beta-signup-card" class="lp-beta-card" data-controller="beta-card">
+<section id="beta-signup-card"
+         class="lp-beta-card<%= " lp-beta-card--hero" if hero %>"
+         data-controller="beta-card">
   <div class="lp-beta-card__inner">
-    <div data-beta-card-target="defaultPanel">
+    <div class="lp-beta-card__default" data-beta-card-target="defaultPanel">
       <%= link_to t("beta_card.start_climbing"), new_registration_path, class: "lp-beta-card__cta" %>
     </div>
 
-    <div data-beta-card-target="androidPanel" class="lp-beta-card__android" hidden>
+    <div class="lp-beta-card__android" data-beta-card-target="androidPanel">
+      <span class="lp-beta-card__chip"><%= t("beta_card.chip") %></span>
       <h2 class="lp-beta-card__title"><%= t("beta_card.android_heading") %></h2>
       <p class="lp-beta-card__lead"><%= t("beta_card.android_lead") %></p>
 
@@ -37,6 +41,12 @@
 
         <%= f.submit t("beta_card.join"), class: "lp-beta-card__cta" %>
       <% end %>
+
+      <p class="lp-beta-card__fine"><%= t("beta_card.no_spam") %></p>
     </div>
   </div>
 </section>
+
+<% if hero %>
+  <%= link_to t("beta_card.browser_link"), new_registration_path, class: "lp-beta-browser-link" %>
+<% end %>

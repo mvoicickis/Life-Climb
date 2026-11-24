@@ -1,0 +1,4 @@
+<%# Tiny early boot: set html.is-android before paint so CSS can hide hero CTAs (no flash). %>
+<%= javascript_tag(nonce: true) do %>
+  if (/Android/i.test(navigator.userAgent || "")) document.documentElement.classList.add("is-android");
+<% end %>
