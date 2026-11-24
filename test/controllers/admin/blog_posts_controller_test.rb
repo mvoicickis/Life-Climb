@@ -143,8 +143,8 @@ module Admin
 
       assert_response :success
       post_record.reload
-      assert_equal "youll-climb", post_record.slug
-      assert_match(/value="youll-climb"/, response.body)
+      assert_equal "you-ll-climb", post_record.slug
+      assert_match(/value="you-ll-climb"/, response.body)
     end
 
     test "autosave never publishes" do
