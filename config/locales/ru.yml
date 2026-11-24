@@ -1645,6 +1645,19 @@ ru:
       restart_npe: "Перезапустить опыт нового игрока"
       restart_npe_confirm: "Очистить Цели, Планы, Проекты, Битвы, Базовые привычки и путешествия этого аккаунта, сбросить онбординг и обнулить Action Points, и открыть первый экран? Вход сохраняется." # TODO: translate (Basic → habit)
       restart_npe_done: "Опыт нового игрока перезапущен — данные Стратегии очищены."
+  first_tips: # TODO: translate
+    circle:
+      html: 'Tap the <strong>circle</strong> when it''s done'
+    mountain:
+      html: 'See your climb on the <strong>Mountain</strong>'
+    camp:
+      html: 'Each camp is a <strong>step</strong>. Tap one.'
+    habit:
+      html: 'Tap <strong>Habits</strong> to add a daily one'
+    habit_add:
+      html: 'Add your first <strong>habit</strong>'
+    animal:
+      html: 'Make it <strong>yours</strong>. Pick your animal'
   v2_onboarding:
     title: "Начни своё приключение"
     welcome_title: "Добро пожаловать в LifePoints"

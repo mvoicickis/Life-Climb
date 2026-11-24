@@ -57,7 +57,7 @@ class ServiceWorkerActionsContractTest < ActiveSupport::TestCase
   end
 
   test "cache version bumped for high_five push visibility" do
-    assert_includes @source, 'CACHE_VERSION = "v13"'
+    assert_includes @source, 'CACHE_VERSION = "v14"'
     assert_includes @source, "PAGE_CACHE_NAME"
     assert_includes @source, "-pages"
   end

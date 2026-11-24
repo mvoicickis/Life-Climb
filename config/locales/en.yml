@@ -3259,6 +3259,23 @@ en:
       restart_npe: "Restart New Player Experience"
       restart_npe_confirm: "Wipe this account’s Goals, Camps, Battles, habits, and journeys, reset onboarding and Action Points to zero, then open the first onboarding screen? Your login account stays." # TODO: translate for lv/de/es/ru.
       restart_npe_done: "New Player Experience restarted — Strategy data cleared."
+  dev:
+    first_tips:
+      finish:
+        html: 'Finish this to clear the <strong>camp</strong> 🏕' # design preview only
+  first_tips:
+    circle:
+      html: 'Tap the <strong>circle</strong> when it''s done'
+    mountain:
+      html: 'See your climb on the <strong>Mountain</strong>'
+    camp:
+      html: 'Each camp is a <strong>step</strong>. Tap one.'
+    habit:
+      html: 'Tap <strong>Habits</strong> to add a daily one'
+    habit_add:
+      html: 'Add your first <strong>habit</strong>'
+    animal:
+      html: 'Make it <strong>yours</strong>. Pick your animal'
   feedback:
     title: "Feedback"
     subtitle: "Tell us what feels good, what’s confusing, or what to fix. Takes a minute."

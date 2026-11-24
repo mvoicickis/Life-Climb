@@ -1,6 +1,7 @@
 class DashboardController < ApplicationController
   include Dashboard::TodaySurface
   include PushOfferEndpoint
+  include FirstTips::Assign
 
   def show
     promote_legacy_tree_users!
@@ -69,6 +70,7 @@ class DashboardController < ApplicationController
     @overshoot_bonus = current_user.day_overshoot_bonuses.find_by(on_date: Date.current)
     @push_offer_show_on_visit = push_offer_show_on_today_visit?
     assign_streak_moment!
+    assign_first_tip_for_today!
     render "dashboard/show_v2"
   end
 

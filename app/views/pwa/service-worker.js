@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v13"
+const CACHE_VERSION = "v14"
 const CACHE_NAME = `lifepoints-${CACHE_VERSION}`
 const PAGE_CACHE_NAME = `${CACHE_NAME}-pages`
 const OFFLINE_URL = "/offline.html"

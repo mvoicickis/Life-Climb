@@ -1,0 +1,31 @@
+<%# locals: page — :today, :mountain, or :you %>
+<% cfg = first_tip_layer_config(page) %>
+<% return unless cfg %>
+<div class="lp-first-tip"
+     hidden
+     data-controller="first-tip"
+     data-first-tip-selector-value="<%= cfg[:selector] %>"
+     data-first-tip-shape-value="<%= cfg[:shape] %>"
+     data-first-tip-side-value="<%= cfg[:side] %>"
+     data-first-tip-pick-value="<%= cfg[:pick] %>"
+     data-first-tip-guide-url-value="<%= first_tip_guide_path %>"
+     data-first-tip-key-value="<%= cfg[:key] %>"
+     data-first-tip-ack-url-value="<%= first_tip_ack_path %>"
+     <% if cfg[:key].to_s == "habit" %>
+     data-first-tip-habit-add-selector-value="<%= cfg[:habit_add_selector] %>"
+     data-first-tip-habit-add-copy-value="<%= sanitize t('first_tips.habit_add.html'), tags: %w[strong] %>"
+     <% end %>
+     role="presentation">
+  <div class="lp-first-tip__capture"
+       data-first-tip-target="capture"
+       data-action="click->first-tip#captureClick"
+       aria-hidden="true"></div>
+  <span class="lp-first-tip__hole" data-first-tip-target="hole" hidden></span>
+  <span class="lp-first-tip__ring" data-first-tip-target="ring" hidden></span>
+  <div class="lp-first-tip__bubble lp-first-tip__bubble--arrow-down"
+       data-first-tip-target="bubble"
+       hidden>
+    <span class="lp-first-tip__guide-face" data-first-tip-target="guide" aria-hidden="true"></span>
+    <p class="lp-first-tip__copy" data-first-tip-target="copy"><%= sanitize first_tip_bubble_copy(cfg[:key]), tags: %w[strong] %></p>
+  </div>
+</div>

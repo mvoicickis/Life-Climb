@@ -1633,6 +1633,19 @@ es:
       restart_npe: "Reiniciar experiencia de nuevo jugador"
       restart_npe_confirm: "¿Borrar Metas, Planes, Proyectos, Batallas, Básicos y viajes de esta cuenta, reiniciar el onboarding y poner Action Points a cero, y abrir la primera pantalla? Tu cuenta de acceso se mantiene." # TODO: translate (Basic → habit)
       restart_npe_done: "Experiencia de nuevo jugador reiniciada — datos de Estrategia borrados."
+  first_tips: # TODO: translate
+    circle:
+      html: 'Tap the <strong>circle</strong> when it''s done'
+    mountain:
+      html: 'See your climb on the <strong>Mountain</strong>'
+    camp:
+      html: 'Each camp is a <strong>step</strong>. Tap one.'
+    habit:
+      html: 'Tap <strong>Habits</strong> to add a daily one'
+    habit_add:
+      html: 'Add your first <strong>habit</strong>'
+    animal:
+      html: 'Make it <strong>yours</strong>. Pick your animal'
   v2_onboarding:
     title: "Empieza tu aventura"
     welcome_title: "Bienvenido a LifePoints"

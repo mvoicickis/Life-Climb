@@ -72,4 +72,8 @@ export function resetForTests() {
   waiting.length = 0
 }
 
-export default { enqueue, release, isActive, hasPending, resetForTests }
+export function queueIdle() {
+  return active === null && waiting.length === 0
+}
+
+export default { enqueue, release, isActive, hasPending, resetForTests, queueIdle }

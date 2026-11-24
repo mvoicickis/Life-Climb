@@ -1,4 +1,6 @@
 class SettingsController < ApplicationController
+  include FirstTips::Assign
+
   def show
     @account_delete_open = params[:delete_account].present?
     @account_delete_sheet_error = session.delete(:account_delete_sheet_error)
@@ -12,6 +14,7 @@ class SettingsController < ApplicationController
     @climb_partner = ClimbTogether::PartnerFor.call(user: current_user)
     @climb_invite = ClimbTogether::Invite.call(user: current_user) unless @climb_partner
     load_you_profile_stats!
+    assign_first_tip_for_you!
   end
 
   def edit_name
