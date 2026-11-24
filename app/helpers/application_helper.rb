@@ -545,6 +545,10 @@ module ApplicationHelper
     %w[FBAN FBAV FB_IAB FBIOS Instagram Messenger].any? { |token| ua.include?(token) }
   end
 
+  def beta_card_visible?
+    !authenticated? && !play_app?
+  end
+
   def google_sign_in_button_visible?
     google_sign_in_configured? && !in_app_browser?
   end

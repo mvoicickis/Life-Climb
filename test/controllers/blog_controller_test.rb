@@ -91,6 +91,24 @@ class BlogControllerTest < ActionDispatch::IntegrationTest
     assert_match(/height="480"/, response.body)
   end
 
+  test "published post renders beta card instead of start climbing block" do
+    get blog_post_path(@published.slug)
+
+    assert_response :success
+    assert_select "#beta-signup-card", count: 1
+    assert_select ".lp-public-blog__start-card", count: 0
+    assert_select "a.lp-beta-card__cta[href=?]", new_registration_path, text: I18n.t("beta_card.start_climbing")
+  end
+
+  test "signed in user does not see beta card on blog post" do
+    sign_in_as users(:one)
+
+    get blog_post_path(@published.slug)
+
+    assert_response :success
+    assert_select "#beta-signup-card", count: 0
+  end
+
   test "published post renders meta og and json-ld" do
     get blog_post_path(@published.slug)
 

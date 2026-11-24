@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   root "pages#home"
   get "blog", to: "blog#index", as: :blog
   get "blog/:slug", to: "blog#show", as: :blog_post
+  resources :beta_signups, only: :create
   get "sitemap.xml", to: "sitemaps#show", defaults: { format: :xml }
   get "privacy", to: "legal#privacy", as: :privacy
   get "terms", to: "legal#terms", as: :terms

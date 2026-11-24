@@ -3431,6 +3431,16 @@ en:
     cta_body: "Free to start. Pick one goal and win one battle today."
     empty: "No posts yet. Check back soon."
     draft_preview_banner: "Draft preview — not public yet"
+  beta_card:
+    android_heading: "Get Life Climb on Android"
+    android_lead: "Join the beta. We'll email you the invite link."
+    email_label: "Email"
+    email_placeholder: "you@example.com"
+    join: "Join the beta"
+    start_climbing: "Start climbing"
+    success: "Thanks! We'll email you the invite link soon."
+    email_invalid: "Enter a real email address."
+    rate_limited: "Too many tries. Wait a minute, then try again."
   landing:
     meta_title: "Life Climb — The mountain is yours to climb"
     meta_description: "Life Climb turns one real goal into a mountain — and gives you one clear step up it, every day."

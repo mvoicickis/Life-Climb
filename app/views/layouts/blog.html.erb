@@ -17,9 +17,15 @@
 
     <%= render "shared/nunito_fonts", preload: true %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
   <body class="lp-min-h-screen antialiased lp-public-blog-body">
+    <% if flash[:notice].present? %>
+      <p class="lp-beta-card-flash" role="status"><%= flash[:notice] %></p>
+    <% elsif flash[:alert].present? %>
+      <p class="lp-beta-card-flash lp-beta-card-flash--alert" role="alert"><%= flash[:alert] %></p>
+    <% end %>
     <%= render "blog/header" %>
     <%= yield %>
   </body>
