@@ -61,8 +61,10 @@
 
       <%= render "publish_title_error", blog_post: @blog_post %>
 
+      <% title_field_class = "lp-blog-writer__title" %>
+      <% title_field_class += " has-error" if defined?(@publish_error) && @publish_error %>
       <%= f.text_area :title,
-            class: "lp-blog-writer__title<%= " has-error" if defined?(@publish_error) && @publish_error %>",
+            class: title_field_class,
             placeholder: t("admin.blog_posts.writer_title_placeholder"),
             rows: 1,
             value: (@blog_post.untitled_draft_title? ? "" : @blog_post.title),
