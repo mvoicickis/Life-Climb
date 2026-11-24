@@ -1562,6 +1562,7 @@ ru:
   landing:
     meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints превращает одну настоящую цель в гору — и каждый день даёт тебе один ясный шаг вверх."
+    blog: "Blog" # TODO: translate
     sign_in: "Войти"
     start_free: "Начать бесплатно"
     back_home: "← На главную"

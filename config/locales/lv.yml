@@ -1785,6 +1785,7 @@ lv:
   landing:
     meta_title: "Life Climb — The mountain is yours to climb" # TODO: translate
     meta_description: "LifePoints pārvērš vienu īstu mērķi kalnā — un katru dienu dod tev vienu skaidru soli uz augšu."
+    blog: "Blog" # TODO: translate
     sign_in: "Ienākt"
     start_free: "Sākt bez maksas"
     back_home: "← Atpakaļ uz sākumu"
