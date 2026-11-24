@@ -6,6 +6,12 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
 
+  def visit(location, **kwargs)
+    super
+    dismiss_first_tip_overlay!
+    dismiss_first_tip_overlay! if page.has_css?(".lp-first-tip", wait: 2)
+  end
+
   # Cards stay closed. Quest Space loads in ⋮ → Objectives.
   def open_project_objectives(project)
     open_mountain_list_fallback!
@@ -86,5 +92,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       document.querySelector(".lp-dash-nav__fab")?.click();
     JS
     assert_selector ".lp-trail-plant.is-open, .lp-trail-plant:not([hidden])", wait: 5
+  end
+
+  def dismiss_first_tip_overlay!
+    return unless page.has_css?(".lp-first-tip", wait: 0.5)
+
+    page.execute_script(<<~JS)
+      document.querySelectorAll(".lp-first-tip").forEach((el) => el.remove());
+    JS
+  rescue Selenium::WebDriver::Error::WebDriverError, Capybara::NotSupportedByDriverError
+    nil
   end
 end
