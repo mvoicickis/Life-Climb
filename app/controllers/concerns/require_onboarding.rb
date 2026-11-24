@@ -100,6 +100,7 @@ module RequireOnboarding
       habits
       habit_improvement_projects
       strategy_goal_habit_links
+      first_tip_acks
     ].include?(controller_name)
   end
 end
