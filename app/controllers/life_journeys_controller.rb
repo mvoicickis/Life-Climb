@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class LifeJourneysController < ApplicationController
+  include FirstTips::Assign
   before_action :require_planning_v2
   before_action :set_journey, only: %i[ show update ]
 
@@ -57,7 +58,10 @@ class LifeJourneysController < ApplicationController
     if @goal.blank?
       begin_empty_goal_repair!(@journey)
       redirect_to new_life_journey_path(step: "goal", repair: @journey.id), status: :see_other
+      return
     end
+
+    assign_first_tip_for_mountain!
   end
 
   def update

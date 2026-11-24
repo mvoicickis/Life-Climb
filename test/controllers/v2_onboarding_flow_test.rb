@@ -86,8 +86,10 @@ class V2OnboardingFlowTest < ActionDispatch::IntegrationTest
     get dashboard_path
     assert_response :success
     assert_select ".lp-today-v2-row", minimum: 1
-    assert_select ".lp-today-v2-row__tap-hint",
-                  text: I18n.t("strategy.rpg.trail.first_camp_reveal.tap_when_done")
+    assert_select ".lp-today-v2-row__tap-hint", count: 0
+    assert_select "[data-controller='first-tip']", count: 1
+    assert_select "[data-first-tip-key-value=?]", "circle"
+    assert_select "[data-first-tip-ack-url-value=?]", first_tip_ack_path
     assert_equal 0, user.habits.count
   end
 

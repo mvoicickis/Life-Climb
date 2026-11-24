@@ -1869,6 +1869,19 @@ lv:
       restart_npe: "Restartēt jaunā spēlētāja pieredzi"
       restart_npe_confirm: "Notīrīt šī konta Mērķus, Plānus, Projektus, Kaujas, Pamatus un ceļojumus, atiestatīt ievadīšanu un Action Points uz nulli, un atvērt pirmo ievadīšanas ekrānu? Pieteikšanās konts paliek."
       restart_npe_done: "Jaunā spēlētāja pieredze restartēta — Stratēģijas dati notīrīti."
+  first_tips: # TODO: translate
+    circle:
+      html: 'Tap the <strong>circle</strong> when it''s done'
+    mountain:
+      html: 'See your climb on the <strong>Mountain</strong>'
+    camp:
+      html: 'Each camp is a <strong>step</strong>. Tap one.'
+    habit:
+      html: 'Tap <strong>Habits</strong> to add a daily one'
+    habit_add:
+      html: 'Add your first <strong>habit</strong>'
+    animal:
+      html: 'Make it <strong>yours</strong>. Pick your animal'
   v2_onboarding:
     title: "Sāc savu piedzīvojumu"
     welcome_title: "Laipni lūgts LifePoints"

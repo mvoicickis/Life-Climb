@@ -20,6 +20,7 @@ class LpOverlayQueueTest < ActiveSupport::TestCase
     assert_includes @source, "push_offer: 40"
     assert_includes @source, "export function enqueue"
     assert_includes @source, "export function release"
+    assert_includes @source, "export function queueIdle"
   end
 
   test "finale streak climb and push wait on the queue" do

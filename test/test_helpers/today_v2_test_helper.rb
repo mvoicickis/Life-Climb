@@ -123,6 +123,8 @@ module TodayV2TestHelper
   end
 
   def click_battle_row_check!(todo: nil, label: nil)
+    dismiss_first_tip_overlay! if respond_to?(:dismiss_first_tip_overlay!)
+
     selector =
       if todo
         ".lp-today-v2-row[data-todo-id='#{todo.id}'] .lp-today-v2-row__check"
