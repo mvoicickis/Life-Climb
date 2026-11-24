@@ -82,6 +82,8 @@ class User < ApplicationRecord
   COMPANION_PICK_KEY = "companion_pick".freeze
   BASE_CAMP_INTRO_KEY = "base_camp_intro".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
+  FIRST_TIP_KEYS = %w[circle mountain camp habit animal].freeze
+  FIRST_TIP_DAILY_LIMIT = 2
   INSTALL_OFFER_MAX_ASKS = 2
   PUSH_OFFER_MAX_ASKS = 3
   INSTALL_OFFER_RESHOW_AFTER = 30.days
@@ -327,6 +329,63 @@ class User < ApplicationRecord
     update!(support_milestones_shown: shown + [ DAY_SHIELD_TIP_KEY ])
   end
 
+  def first_tip_milestone_key(key)
+    "first_tip_#{key}"
+  end
+
+  def first_tip_seen?(key)
+    Array(support_milestones_shown).map(&:to_s).include?(first_tip_milestone_key(key))
+  end
+
+  def mark_first_tip_seen!(key)
+    key = key.to_s
+    return unless FIRST_TIP_KEYS.include?(key)
+
+    milestone = first_tip_milestone_key(key)
+    shown = Array(support_milestones_shown).map(&:to_s)
+    return if shown.include?(milestone)
+
+    update!(support_milestones_shown: shown + [ milestone ])
+  end
+
+  def onboarding_local_day_index
+    return nil unless onboarding_completed_at
+
+    zone_name = Battles::WinsOnLocalDate.time_zone_for(self)
+    zone = Time.find_zone(zone_name)
+    completed_on =
+      if zone
+        onboarding_completed_at.in_time_zone(zone).to_date
+      else
+        onboarding_completed_at.to_date
+      end
+    (local_today - completed_on).to_i
+  end
+
+  def first_tip_daily_budget_available?
+    reset_first_tips_daily_if_stale!
+    Array(first_tips_daily_hash["keys"]).size < FIRST_TIP_DAILY_LIMIT
+  end
+
+  def record_first_tip_shown_today!(key)
+    key = key.to_s
+    return if key == "circle"
+    return unless FIRST_TIP_KEYS.include?(key)
+
+    reset_first_tips_daily_if_stale!
+    data = first_tips_daily_hash
+    keys = Array(data["keys"]).map(&:to_s)
+    return if keys.include?(key)
+    return unless keys.size < FIRST_TIP_DAILY_LIMIT
+
+    keys << key
+    update!(first_tips_daily: { "on" => local_today.iso8601, "keys" => keys })
+  end
+
+  def reset_first_tips_daily!
+    update!(first_tips_daily: {})
+  end
+
   # Any completed DailyTodo counts as a Battle win (Today authority).
   def battle_won_once?
     daily_todos.where.not(completed_at: nil).exists?
@@ -454,5 +513,21 @@ class User < ApplicationRecord
 
   def normalize_avatar_key
     self.avatar_key = avatar_key.presence
+  end
+
+  def first_tips_daily_hash
+    raw = first_tips_daily
+    raw.is_a?(Hash) ? raw.stringify_keys : {}
+  end
+
+  def reset_first_tips_daily_if_stale!
+    data = first_tips_daily_hash
+    return if data.blank?
+
+    stored_on = data["on"].to_s
+    return if stored_on.blank?
+    return if stored_on == local_today.iso8601
+
+    update!(first_tips_daily: {})
   end
 end

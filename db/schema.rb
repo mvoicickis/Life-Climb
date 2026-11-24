@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_100100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -688,6 +688,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_100100) do
     t.date "last_finale_on"
     t.integer "longest_streak_days", default: 0, null: false
     t.datetime "beta_invited_at"
+    t.json "first_tips_daily", default: {}, null: false
     t.index ["beta_invited_at"], name: "index_users_on_beta_invited_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
