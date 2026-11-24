@@ -1,0 +1,6 @@
+<%# locals: (blog_post:) %>
+<div id="blog_publish_title_error" class="lp-blog-writer__publish-error" role="alert">
+  <% if defined?(@publish_error) && @publish_error && blog_post.errors[:title].present? %>
+    <%= blog_post.errors[:title].first %>
+  <% end %>
+</div>

@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "blog_save_status" do %>
+  <%= render "save_status", blog_post: @blog_post, save_state: :error %>
+<% end %>
+<%= turbo_stream.replace "blog_publish_title_error" do %>
+  <%= render "publish_title_error", blog_post: @blog_post %>
+<% end %>
+<% if @replace_editor %>
+  <%= turbo_stream.replace "blog_post_editor" do %>
+    <%= render "editor" %>
+  <% end %>
+<% end %>

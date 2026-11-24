@@ -15,11 +15,15 @@ module Admin
 
     def create
       autosaving = params[:autosave].to_s == "1"
+      publishing = params[:publish].to_s == "1"
       @blog_post = BlogPost.new(blog_post_params)
       @blog_post.author_name = default_author_name if @blog_post.author_name.blank?
+      @blog_post.sync_slug_from_title = params[:slug_auto].to_s == "1"
       @replace_editor = true
 
       if @blog_post.save
+        return complete_publish(publishing, autosaving) if publishing
+
         respond_to do |format|
           format.turbo_stream { render :autosave, status: :ok }
           format.html { redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.updated") }
@@ -46,10 +50,14 @@ module Admin
 
     def update
       autosaving = params[:autosave].to_s == "1"
+      publishing = params[:publish].to_s == "1"
       @blog_post.assign_attributes(blog_post_params)
+      @blog_post.sync_slug_from_title = params[:slug_auto].to_s == "1"
       @replace_editor = false
 
       if @blog_post.save
+        return complete_publish(publishing, autosaving) if publishing
+
         respond_to do |format|
           format.turbo_stream do
             autosaving ? render(:autosave, status: :ok) : head(:ok)
@@ -72,10 +80,12 @@ module Admin
     end
 
     def publish
-      attrs = { status: "published" }
-      attrs[:published_at] = Time.current if @blog_post.published_at.blank?
-      @blog_post.update!(attrs)
-      redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.published")
+      if @blog_post.publish_now!
+        redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.published")
+      else
+        @publish_error = true
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def unpublish
@@ -113,6 +123,20 @@ module Admin
 
     def default_author_name
       t("admin.blog_posts.default_author")
+    end
+
+    def complete_publish(_publishing, autosaving)
+      if @blog_post.publish_now!
+        redirect_to edit_admin_blog_post_path(@blog_post), notice: t("admin.blog_posts.published")
+        return
+      end
+
+      @publish_error = true
+      @replace_editor = action_name == "create" && @blog_post.persisted?
+      respond_to do |format|
+        format.turbo_stream { render :publish_error, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 end

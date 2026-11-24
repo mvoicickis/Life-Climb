@@ -1,5 +1,5 @@
 <%# locals: (blog_post:, save_state: :idle) %>
-<p class="lp-blog-writer__status<%= " is-error" if save_state == :error %>"
+<p class="lp-blog-writer__status<%= " is-error" if save_state == :error %><%= " is-saving" if save_state == :saving %>"
    id="blog_save_status"
    data-blog-writer-target="statusBar"
    <%= %(data-action="click->blog-writer#retrySave") if save_state == :error %>>
@@ -8,6 +8,10 @@
     · <%= t("admin.blog_posts.saved_now") %>
     <span class="lp-blog-writer__status-ok" aria-hidden="true">✓</span>
     <%= t("admin.blog_posts.saved_just_now") %>
+  <% elsif save_state == :saving %>
+    · <%= t("admin.blog_posts.saving") %>
+  <% elsif save_state == :dirty %>
+    · <%= t("admin.blog_posts.not_saved_yet") %>
   <% elsif save_state == :error %>
     · <%= t("admin.blog_posts.not_saved_tap") %>
   <% end %>
