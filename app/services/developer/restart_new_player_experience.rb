@@ -41,6 +41,7 @@ module Developer
         shown = Array(@user.support_milestones_shown).map(&:to_s)
         shown.delete(User::ADVENTURE_GUIDE_KEY)
         shown.delete(User::COMPANION_PICK_KEY)
+        shown.reject! { |key| key.start_with?("first_tip_") }
 
         @user.update!(
           onboarding_completed_at: nil,
@@ -56,6 +57,7 @@ module Developer
           day_shields_available: 1,
           day_shield_on: nil,
           support_milestones_shown: shown,
+          first_tips_daily: {},
           push_offer_dismiss_count: 0,
           push_offer_dismissed_at: nil,
           push_offer_permission_denied_at: nil,

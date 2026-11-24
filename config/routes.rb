@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   resource :today_eod_acknowledge, only: :create, controller: "today/eod_acknowledges"
   resource :today_plan_tomorrow_battle, only: :create, controller: "today/plan_tomorrow_battles"
   resource :day_shield_tip, only: :destroy
+  resource :first_tip_ack, only: :create, controller: "first_tip_acks"
   resource :install_offer, only: %i[ destroy update ]
   resource :push_offer, only: %i[ destroy update ] do
     patch :shown, on: :member

@@ -20,7 +20,8 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
       route_mission: true
     )
     user.update!(
-      support_milestones_shown: %w[adventure_guide first_finished_product],
+      support_milestones_shown: %w[adventure_guide first_finished_product first_tip_circle first_tip_mountain],
+      first_tips_daily: { "on" => Date.current.iso8601, "keys" => %w[mountain] },
       strategy_points: 50,
       climb_streak_days: 8,
       climb_streak_on: Date.current,
@@ -53,6 +54,8 @@ class DeveloperRestartNewPlayerExperienceTest < ActiveSupport::TestCase
     assert user.needs_onboarding?
     refute user.adventure_guide_done?
     assert_includes user.support_milestones_shown, "first_finished_product"
+    refute user.support_milestones_shown.any? { |key| key.start_with?("first_tip_") }
+    assert_equal({}, user.first_tips_daily)
     assert_equal 0, user.strategy_goals.count
     assert_equal 0, user.life_journeys.count
     assert_equal 0, user.life_areas.count
