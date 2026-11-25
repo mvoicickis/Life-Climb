@@ -21,6 +21,8 @@ class LpOverlayQueueTest < ActiveSupport::TestCase
     assert_includes @source, "export function enqueue"
     assert_includes @source, "export function release"
     assert_includes @source, "export function queueIdle"
+    assert_includes @source, 'new CustomEvent("lp-overlay-idle")'
+    assert_includes @source, "notifyOverlayIdleIfNeeded"
   end
 
   test "finale streak climb and push wait on the queue" do

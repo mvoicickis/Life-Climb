@@ -25,6 +25,9 @@ class DailyTodosFirstTipStreamTest < ActionDispatch::IntegrationTest
       journey: @journey,
       battle_titles: [ "Battle one", "Battle two" ]
     )
+    @zone = "Europe/Berlin"
+    @user.create_notification_preference!(time_zone: @zone) unless @user.notification_preference
+    @user.notification_preference.update!(time_zone: @zone)
     sign_in_as(@user)
     @todo = @user.daily_todos.where(completed_at: nil).order(:id).first
   end
@@ -36,6 +39,36 @@ class DailyTodosFirstTipStreamTest < ActionDispatch::IntegrationTest
     assert_match %(action="replace" target="first-tip-host"), response.body
     assert_match 'data-first-tip-key-value="mountain"', response.body
     assert_match 'data-controller="first-tip"', response.body
+  end
+
+  test "win stream with streak moment still replaces first-tip-host with mountain key" do
+    tz = Time.find_zone!(@zone)
+
+    travel_to tz.local(2026, 8, 5, 12, 0, 0) do
+      post complete_daily_todo_path(@todo), as: :turbo_stream
+      assert_response :ok
+    end
+
+    travel_to tz.local(2026, 8, 6, 12, 0, 0) do
+      todo2 = @user.daily_todos.where(completed_at: nil).order(:id).first
+      assert todo2, "expected a second open battle"
+
+      post complete_daily_todo_path(todo2), as: :turbo_stream
+
+      assert_response :ok
+      assert_match "data-controller=\"streak-moment\"", response.body
+      assert_match %(action="replace" target="first-tip-host"), response.body
+      assert_match 'data-first-tip-key-value="mountain"', response.body
+    end
+  end
+
+  test "does not replace first-tip-host when next tip is nil" do
+    @user.mark_first_tip_seen!("mountain")
+
+    post complete_daily_todo_path(@todo), as: :turbo_stream
+
+    assert_response :ok
+    assert_no_match %(action="replace" target="first-tip-host"), response.body
   end
 
   test "uncomplete does not replace first-tip-host" do
