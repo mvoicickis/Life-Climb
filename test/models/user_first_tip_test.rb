@@ -24,32 +24,11 @@ class UserFirstTipTest < ActiveSupport::TestCase
     assert_equal 2, user.onboarding_local_day_index
   end
 
-  test "daily budget excludes circle and caps at two" do
+  test "record_first_tip_shown_today! still writes legacy log when called" do
     user = users(:one)
     user.update!(first_tips_daily: {})
 
-    assert user.first_tip_daily_budget_available?
-
     user.record_first_tip_shown_today!("mountain")
-    assert user.reload.first_tip_daily_budget_available?
-
-    user.record_first_tip_shown_today!("camp")
-    refute user.reload.first_tip_daily_budget_available?
-
-    user.record_first_tip_shown_today!("circle")
-    refute user.reload.first_tip_daily_budget_available?
-  end
-
-  test "stale first_tips_daily resets on read" do
-    user = users(:one)
-    user.update!(
-      first_tips_daily: {
-        "on" => (user.local_today - 1).iso8601,
-        "keys" => %w[mountain camp]
-      }
-    )
-
-    assert user.first_tip_daily_budget_available?
-    assert_equal({}, user.reload.first_tips_daily)
+    assert_equal %w[mountain], Array(user.reload.first_tips_daily["keys"])
   end
 end

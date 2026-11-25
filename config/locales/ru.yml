@@ -1652,12 +1652,16 @@ ru:
       html: 'See your climb on the <strong>Mountain</strong>'
     camp:
       html: 'Each camp is a <strong>step</strong>. Tap one.'
+    camp_sheet:
+      html: 'Add a <strong>battle</strong> for this camp'
+    you_tab:
+      html: 'Make it <strong>yours</strong>. Pick your animal'
     habit:
       html: 'Tap <strong>Habits</strong> to add a daily one'
     habit_add:
       html: 'Add your first <strong>habit</strong>'
     animal:
-      html: 'Make it <strong>yours</strong>. Pick your animal'
+      html: 'Tap to pick your <strong>animal</strong>'
   v2_onboarding:
     title: "Начни своё приключение"
     welcome_title: "Добро пожаловать в LifePoints"
