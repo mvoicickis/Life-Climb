@@ -11,7 +11,16 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
       ideal_scene: "App live", current_reality: "Building", next_win: "Launch",
       today_mission: "Write tests", closer_percent: 20, route_mission: true
     )
-    @user.update!(support_milestones_shown: [ User::ADVENTURE_GUIDE_KEY ], character: "fox", mountain_trail_tour_ack: 7)
+    first_tip_milestones = User::FIRST_TIP_KEYS.map { |key| "first_tip_#{key}" }
+    @user.update!(
+      support_milestones_shown: [
+        User::ADVENTURE_GUIDE_KEY,
+        User::BASE_CAMP_INTRO_KEY,
+        *first_tip_milestones
+      ],
+      character: "fox",
+      mountain_trail_tour_ack: 7
+    )
     @journey = @user.reload.primary_focused_journey
     @area = @journey.life_area
     @goal = @user.strategy_goals.for_kind("goal").roots.first
@@ -199,11 +208,16 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
     within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
     assert_selector ".lp-trail-base-card", wait: 5
 
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
-    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    assert_selector "#trail-base-habit-#{habit.id} [data-controller~='tcard-menu']"
+    within("#trail-base-habit-#{habit.id}") do
+      find(".lp-trail-battles__kebab-btn", visible: :all).click
+      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
+    end
     assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
     scrim = find("body > .lp-dash-habit__scrim", visible: :all)
