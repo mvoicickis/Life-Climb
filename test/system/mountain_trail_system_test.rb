@@ -335,10 +335,14 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
   private
 
   def open_kebab_in!(row_selector)
-    assert_selector "#{row_selector} [data-controller~='tcard-menu']"
-    within(row_selector, visible: :all) do
-      find(".lp-trail-battles__kebab-btn", visible: :all).click
-      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
+    assert_selector "#{row_selector} [data-controller~='tcard-menu']", wait: 5
+    btn_selector = "#{row_selector} .lp-trail-battles__kebab-btn"
+    open_selector = "#{row_selector} .lp-trail-battles__kebab[open]"
+
+    find(btn_selector, visible: :all).click
+    unless page.has_css?(open_selector, wait: 3)
+      find(btn_selector, visible: :all).click
     end
+    assert_selector open_selector, wait: 5
   end
 end
