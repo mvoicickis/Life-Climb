@@ -73,6 +73,11 @@ class NotifyAdminsNewBetaSignupJobTest < ActiveJob::TestCase
     assert_equal "droid@example.com · Android", payload["body"]
   end
 
+  test "admin recipient scope does not use DISTINCT" do
+    sql = NotifyAdminsNewBetaSignupJob.new.send(:admin_recipients).to_sql
+    refute_match(/\bDISTINCT\b/i, sql)
+  end
+
   test "missing signup does nothing" do
     assert_no_enqueued_jobs only: SendWebPushJob do
       NotifyAdminsNewBetaSignupJob.perform_now(-1)

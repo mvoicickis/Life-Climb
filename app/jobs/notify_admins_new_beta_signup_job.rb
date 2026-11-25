@@ -16,12 +16,16 @@ class NotifyAdminsNewBetaSignupJob < ApplicationJob
       "tag" => "beta-signup-#{signup.id}"
     }
 
-    User.where(admin: true).joins(:push_subscriptions).distinct.find_each do |admin|
+    admin_recipients.find_each do |admin|
       SendWebPushJob.perform_later(admin.id, payload)
     end
   end
 
   private
+
+  def admin_recipients
+    User.where(admin: true).where(id: PushSubscription.select(:user_id))
+  end
 
   def push_body_for(signup)
     body = signup.email
