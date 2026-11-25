@@ -63,6 +63,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.teardownOverlayWait()
     window.removeEventListener("resize", this.boundReposition)
     window.removeEventListener("orientationchange", this.boundReposition)
     document.removeEventListener("turbo:render", this.boundTurboRender)
@@ -82,11 +83,54 @@ export default class extends Controller {
   }
 
   async waitForOverlaysIdle() {
-    for (let attempt = 0; attempt < 600; attempt += 1) {
-      if (this.overlaysIdle()) return true
-      await new Promise((resolve) => requestAnimationFrame(resolve))
+    if (this.overlaysIdle()) return true
+
+    return new Promise((resolve) => {
+      const finish = (ok) => {
+        this.teardownOverlayWait()
+        resolve(ok)
+      }
+
+      const check = () => {
+        if (this.dismissed) {
+          finish(false)
+          return
+        }
+        if (this.overlaysIdle()) finish(true)
+      }
+
+      const onSignal = () => check()
+
+      document.addEventListener("lp-overlay-idle", onSignal)
+      this._onOverlayIdle = onSignal
+
+      this._overlayBodyObserver = new MutationObserver(onSignal)
+      this._overlayBodyObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: [ "class" ]
+      })
+
+      this._overlayDomObserver = new MutationObserver(onSignal)
+      this._overlayDomObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [ "hidden", "open" ]
+      })
+
+      requestAnimationFrame(check)
+    })
+  }
+
+  teardownOverlayWait() {
+    if (this._onOverlayIdle) {
+      document.removeEventListener("lp-overlay-idle", this._onOverlayIdle)
+      this._onOverlayIdle = null
     }
-    return false
+    this._overlayBodyObserver?.disconnect()
+    this._overlayBodyObserver = null
+    this._overlayDomObserver?.disconnect()
+    this._overlayDomObserver = null
   }
 
   overlaysIdle() {

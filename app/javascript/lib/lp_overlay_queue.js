@@ -15,9 +15,17 @@ function sortWaiting() {
   waiting.sort((a, b) => (ORDER[a.kind] || 99) - (ORDER[b.kind] || 99))
 }
 
+function notifyOverlayIdleIfNeeded() {
+  if (!queueIdle()) return
+  document.dispatchEvent(new CustomEvent("lp-overlay-idle"))
+}
+
 function openNext() {
   if (active) return
-  if (!waiting.length) return
+  if (!waiting.length) {
+    notifyOverlayIdleIfNeeded()
+    return
+  }
   sortWaiting()
   active = waiting.shift()
   try {
@@ -52,10 +60,12 @@ export function release(kind) {
   if (active?.kind === kind) {
     active = null
     openNext()
+    notifyOverlayIdleIfNeeded()
     return
   }
   const idx = waiting.findIndex((item) => item.kind === kind)
   if (idx >= 0) waiting.splice(idx, 1)
+  notifyOverlayIdleIfNeeded()
 }
 
 export function isActive(kind) {

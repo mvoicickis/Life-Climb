@@ -13,6 +13,9 @@ class FirstTipControllerContractTest < ActiveSupport::TestCase
     assert_includes @source, "sendAck"
     assert_includes @source, "queueIdle"
     assert_includes @source, "waitForOverlaysIdle"
+    assert_includes @source, "lp-overlay-idle"
+    assert_includes @source, "teardownOverlayWait"
+    refute_match(/attempt < 600/, @source)
     assert_includes @source, "guideInitial"
     assert_includes @source, 'closest(".lp-dash-nav")'
   end

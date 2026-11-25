@@ -102,9 +102,11 @@
     <% end %>
   <% end %>
 
-  <%= turbo_stream.replace "first-tip-host" do %>
-    <div id="first-tip-host">
-      <%= render "shared/first_tip_layer", page: :today %>
-    </div>
+  <% if @first_tip.present? %>
+    <%= turbo_stream.replace "first-tip-host" do %>
+      <div id="first-tip-host">
+        <%= render "shared/first_tip_layer", page: :today %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

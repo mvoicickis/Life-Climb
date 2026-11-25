@@ -209,8 +209,13 @@ class DailyTodosController < ApplicationController
         share_text: @recap_share
       )
 
-      @streak_moment = @stream_streak_moment
-      assign_first_tip_for_today!
+      assign_first_tip!(
+        page: :today,
+        open_battle_count: @battle_open_count.to_i,
+        streak_moment: false,
+        climb_reward: false,
+        plan_route: @show_plan_route == true
+      )
     end
   end
 
