@@ -35,8 +35,8 @@ class V2OnboardingCampsTypedSubmitTest < ApplicationSystemTestCase
     click_button I18n.t("v2_onboarding.create_my_camps")
 
     assert_selector "[data-controller='onboarding-climb']", wait: 12
-    assert_selector ".lp-ob-climb__next.is-shown", wait: 15
-    find(".lp-ob-climb__next.is-shown").click
+    assert_selector "[data-controller='onboarding-climb'] button.lp-ob-climb__next", wait: 15
+    click_button I18n.t("v2_onboarding.climb_next")
 
     assert_selector "[data-controller='onboarding-v3-battles']", wait: 12
     fill_in "onboarding_battle_add", with: "Ship slice 3"

@@ -117,11 +117,8 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
                     count: 2, visible: :all, wait: 5
 
     move_up = I18n.t("strategy.rpg.trail.battle_move_up")
-    within("#trail-battle-#{later.id}", visible: :all) do
-      find(".lp-trail-battles__kebab-btn", visible: :all).click
-      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
-      within(".lp-trail-battles__kebab-menu", visible: :all) { click_button move_up }
-    end
+    open_kebab_in!("#trail-battle-#{later.id}")
+    within("#trail-battle-#{later.id} .lp-trail-battles__kebab-menu", visible: :all) { click_button move_up }
     assert_selector "#trail-battles-#{@project.id} .lp-trail-battles__list li:first-child", text: /Pack the bags/, visible: :all, wait: 5
   end
 
@@ -213,11 +210,7 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
 
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
-    assert_selector "#trail-base-habit-#{habit.id} [data-controller~='tcard-menu']"
-    within("#trail-base-habit-#{habit.id}") do
-      find(".lp-trail-battles__kebab-btn", visible: :all).click
-      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
-    end
+    open_kebab_in!("#trail-base-habit-#{habit.id}")
     assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
     scrim = find("body > .lp-dash-habit__scrim", visible: :all)
@@ -249,10 +242,11 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     click_button "Sign in"
     assert_selector ".lp-dash-nav", wait: 5
     within(".lp-dash-nav") { click_link "Mountain" }
+    assert_selector "#mountain-trail", wait: 5
     find(".lp-trail-base-card__base-row").click
     assert_selector "#trail-base-sheet:not([hidden])", visible: :all, wait: 5
 
-    within("#trail-base-habit-#{habit.id}") { find(".lp-trail-battles__kebab-btn").click }
+    open_kebab_in!("#trail-base-habit-#{habit.id}")
     assert_selector "body > ##{edit_sheet_id}", visible: :all, wait: 5
 
     within("##{edit_sheet_id}") do
@@ -336,5 +330,15 @@ class MountainTrailSystemTest < ApplicationSystemTestCase
     assert overlap, "expected camp sheet body, last battle row, and composer"
     assert_operator overlap, :>=, 0,
       "expected composer below last battle when scrolled, gap was #{overlap}px"
+  end
+
+  private
+
+  def open_kebab_in!(row_selector)
+    assert_selector "#{row_selector} [data-controller~='tcard-menu']"
+    within(row_selector, visible: :all) do
+      find(".lp-trail-battles__kebab-btn", visible: :all).click
+      assert_selector ".lp-trail-battles__kebab[open]", wait: 3
+    end
   end
 end
