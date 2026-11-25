@@ -2,12 +2,14 @@
 
 # Chooses the next first-time tip for onboarding v3 users (data layer; UI in slice 2).
 module FirstTips
-  CHAIN = %w[circle mountain camp habit animal].freeze
+  CHAIN = %w[circle mountain camp camp_sheet you_tab habit animal].freeze
 
   PAGE_FOR = {
     "circle" => :today,
     "mountain" => :today,
     "camp" => :mountain,
+    "camp_sheet" => :mountain,
+    "you_tab" => :mountain,
     "habit" => :today,
     "animal" => :you
   }.freeze
@@ -25,7 +27,6 @@ module FirstTips
         next if user.first_tip_seen?(key)
         next unless PAGE_FOR[key] == page.to_sym
         next unless eligible?(user, key, context)
-        next unless budget_allows?(user, key)
 
         return Presenter.config_for(key)
       end
@@ -43,6 +44,10 @@ module FirstTips
         mountain_eligible?(user, context)
       when "camp"
         camp_eligible?(user)
+      when "camp_sheet"
+        camp_sheet_eligible?(user)
+      when "you_tab"
+        you_tab_eligible?(user)
       when "habit"
         habit_eligible?(user)
       when "animal"
@@ -70,6 +75,14 @@ module FirstTips
       user.first_tip_seen?("mountain")
     end
 
+    def camp_sheet_eligible?(user)
+      user.first_tip_seen?("camp")
+    end
+
+    def you_tab_eligible?(user)
+      user.first_tip_seen?("camp_sheet")
+    end
+
     def habit_eligible?(user)
       day_index = user.onboarding_local_day_index
       return false if day_index.nil? || day_index < 1
@@ -78,14 +91,7 @@ module FirstTips
     end
 
     def animal_eligible?(user)
-      day_index = user.onboarding_local_day_index
-      !day_index.nil? && day_index >= 1
-    end
-
-    def budget_allows?(user, key)
-      return true if key == "circle"
-
-      user.first_tip_daily_budget_available?
+      user.first_tip_seen?("you_tab")
     end
   end
 end

@@ -23,12 +23,11 @@ class FirstTipAcksControllerTest < ActionDispatch::IntegrationTest
     post session_path, params: { email_address: user.email_address, password: "password12345" }
   end
 
-  test "create marks milestone and daily log" do
+  test "create marks milestone" do
     post first_tip_ack_path, params: { key: "mountain" }, as: :json
 
     assert_response :no_content
     assert @user.reload.first_tip_seen?("mountain")
-    assert_equal %w[mountain], Array(@user.first_tips_daily["keys"])
   end
 
   test "create is idempotent" do

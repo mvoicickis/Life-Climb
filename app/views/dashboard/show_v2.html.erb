@@ -133,7 +133,9 @@
   <%= render "shared/lp_dash_nav", active: :today %>
 </div>
 
-<%= render "shared/first_tip_layer", page: :today %>
+<div id="first-tip-host">
+  <%= render "shared/first_tip_layer", page: :today %>
+</div>
 
 <div id="climb-reward-host">
   <%= render "shared/climb_reward", reward: flash[:climb_reward] if flash[:climb_reward].present? %>

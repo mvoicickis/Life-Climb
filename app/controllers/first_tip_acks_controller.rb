@@ -11,7 +11,6 @@ class FirstTipAcksController < ApplicationController
     return head :no_content if read_only_impersonation?
 
     current_user.mark_first_tip_seen!(key)
-    current_user.record_first_tip_shown_today!(key)
     head :no_content
   end
 end

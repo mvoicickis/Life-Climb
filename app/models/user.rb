@@ -82,7 +82,8 @@ class User < ApplicationRecord
   COMPANION_PICK_KEY = "companion_pick".freeze
   BASE_CAMP_INTRO_KEY = "base_camp_intro".freeze
   DAY_SHIELD_TIP_KEY = "day_shield_tip".freeze
-  FIRST_TIP_KEYS = %w[circle mountain camp habit animal].freeze
+  FIRST_TIP_KEYS = %w[circle mountain camp camp_sheet you_tab habit animal].freeze
+  # Legacy daily cap — no longer enforced by FirstTips; methods remain for stale data.
   FIRST_TIP_DAILY_LIMIT = 2
   INSTALL_OFFER_MAX_ASKS = 2
   PUSH_OFFER_MAX_ASKS = 3

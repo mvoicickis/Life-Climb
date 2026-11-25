@@ -3,6 +3,7 @@
 class DailyTodosController < ApplicationController
   include Dashboard::TodaySurface
   include PushOfferEndpoint
+  include FirstTips::Assign
 
   # Freeform battles are planned on Strategy and synced to Today.
   # Today completes / undoes / removes / sets times on already-fed battles.
@@ -207,6 +208,9 @@ class DailyTodosController < ApplicationController
         camp: @goal_card_camp,
         share_text: @recap_share
       )
+
+      @streak_moment = @stream_streak_moment
+      assign_first_tip_for_today!
     end
   end
 
