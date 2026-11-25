@@ -4,7 +4,8 @@ class SendWebPushJob < ApplicationJob
   queue_as :default
 
   HIGH_FIVE_VIBRATE = [ 80, 40, 80, 40, 160 ].freeze
-  NO_ACTIONS_KINDS = %w[morning evening high_five].freeze
+  NO_ACTIONS_KINDS = %w[morning evening high_five admin_beta_signup].freeze
+  GATE_EXEMPT_KINDS = %w[admin_beta_signup].freeze
 
   # payload: { "title" => "...", "body" => "...", "url" => "/dashboard", "kind" => "test" }
   # Returns true when at least one subscription received the push.
@@ -13,12 +14,15 @@ class SendWebPushJob < ApplicationJob
     return false unless user
 
     message = payload.is_a?(Hash) ? payload.deep_stringify_keys : {}
-    gate = NotificationGate.allow?(user: user, kind: message["kind"])
-    unless gate.allowed?
-      Rails.logger.info(
-        "[NotificationGate] skip user=#{user.id} kind=#{message["kind"].inspect} reason=#{gate.reason}"
-      )
-      return false
+    kind = message["kind"].to_s
+    unless kind.in?(GATE_EXEMPT_KINDS)
+      gate = NotificationGate.allow?(user: user, kind: kind)
+      unless gate.allowed?
+        Rails.logger.info(
+          "[NotificationGate] skip user=#{user.id} kind=#{kind.inspect} reason=#{gate.reason}"
+        )
+        return false
+      end
     end
 
     enrich_message!(user, message)
@@ -75,7 +79,7 @@ class SendWebPushJob < ApplicationJob
       return
     end
 
-    return if kind.in?(%w[morning evening])
+    return if kind.in?(NO_ACTIONS_KINDS)
 
     I18n.with_locale(:en) do
       action_day = morning_action_day(user, kind)
