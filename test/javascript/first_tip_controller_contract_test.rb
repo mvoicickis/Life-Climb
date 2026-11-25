@@ -13,10 +13,14 @@ class FirstTipControllerContractTest < ActiveSupport::TestCase
     assert_includes @source, "sendAck"
     assert_includes @source, "queueIdle"
     assert_includes @source, "waitForOverlaysIdle"
+    assert_includes @source, "guideInitial"
+    assert_includes @source, 'closest(".lp-dash-nav")'
   end
 
   test "layer passes ack url data value" do
     assert_includes @layer, "data-first-tip-ack-url-value"
     assert_includes @layer, "first_tip_ack_path"
+    assert_includes @layer, "data-first-tip-guide-initial-value"
+    assert_includes @layer, "first_tip_guide_avatar_url"
   end
 end

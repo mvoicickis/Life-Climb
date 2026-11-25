@@ -38,6 +38,16 @@ class FirstTipsTodayTest < ActionDispatch::IntegrationTest
     assert_select "[data-first-tip-ack-url-value=?]", first_tip_ack_path
   end
 
+  test "guide initial when user has no avatar image" do
+    @user.update!(name: "Hope", avatar_key: nil, character: "fox")
+
+    get dashboard_path
+
+    assert_response :success
+    assert_select "[data-first-tip-guide-initial-value=?]", "H"
+    assert_select "[data-first-tip-guide-url-value]", count: 0
+  end
+
   test "tip preview query is ignored in test" do
     get dashboard_path, params: { tip: "mountain" }
 

@@ -20,8 +20,7 @@ module FirstTips
       journey = @journey || current_user.primary_focused_journey
       assign_first_tip!(
         page: :mountain,
-        first_camp_reveal: journey&.first_camp_reveal_pending? == true,
-        base_camp_intro: current_user.needs_base_camp_intro?
+        first_camp_reveal: journey&.first_camp_reveal_pending? == true
       )
     end
 
@@ -31,7 +30,7 @@ module FirstTips
 
     def assign_first_tip!(page:, open_battle_count: 0, streak_moment: false,
                           climb_reward: false, plan_route: false,
-                          first_camp_reveal: false, base_camp_intro: false)
+                          first_camp_reveal: false)
       if read_only_impersonation?
         @first_tip = nil
         return
@@ -44,8 +43,7 @@ module FirstTips
         streak_moment: streak_moment,
         climb_reward: climb_reward,
         plan_route: plan_route,
-        first_camp_reveal: first_camp_reveal,
-        base_camp_intro: base_camp_intro
+        first_camp_reveal: first_camp_reveal
       )
       @first_tip = FirstTips.next_tip_for(user: current_user, page: page, context: context)
     end

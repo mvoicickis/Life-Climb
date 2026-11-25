@@ -31201,6 +31201,16 @@ html.is-android .lp-landing-hero__body {
   background-position: center;
 }
 
+.lp-first-tip__guide-face.is-initial {
+  display: grid;
+  place-items: center;
+  font-family: var(--lp-font-ui);
+  font-size: 0.95rem;
+  font-weight: var(--lp-weight-800);
+  color: var(--lp-ink);
+  background-image: none;
+}
+
 .lp-first-tip__copy {
   margin: 0;
 }

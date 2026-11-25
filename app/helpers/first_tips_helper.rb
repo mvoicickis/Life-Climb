@@ -12,8 +12,15 @@ module FirstTipsHelper
     @first_tip
   end
 
-  def first_tip_guide_path(user = current_user)
-    image_path(hero_animal_image_path(user))
+  def first_tip_guide_avatar_url(user = current_user)
+    image = user.avatar_image
+    image.present? ? image_path(image) : nil
+  end
+
+  def first_tip_guide_initial(user = current_user)
+    return if user.avatar_image.present?
+
+    user.name.to_s.strip.first&.upcase.presence || "?"
   end
 
   def first_tip_bubble_copy(key)

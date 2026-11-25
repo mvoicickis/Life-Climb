@@ -86,6 +86,19 @@ class FirstTipsTest < ActiveSupport::TestCase
     assert_equal "camp", tip[:key]
   end
 
+  test "camp on mountain when base camp intro still needed" do
+    @user.mark_first_tip_seen!("mountain")
+    assert @user.needs_base_camp_intro?
+
+    tip = FirstTips.next_tip_for(
+      user: @user,
+      page: :mountain,
+      context: mountain_ctx
+    )
+
+    assert_equal "camp", tip[:key]
+  end
+
   test "habit on today from day two with no on-home habits" do
     @user.update!(onboarding_completed_at: 1.day.ago)
     %w[circle mountain camp animal].each { |key| @user.mark_first_tip_seen!(key) }

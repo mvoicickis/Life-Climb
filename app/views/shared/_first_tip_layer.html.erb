@@ -8,7 +8,11 @@
      data-first-tip-shape-value="<%= cfg[:shape] %>"
      data-first-tip-side-value="<%= cfg[:side] %>"
      data-first-tip-pick-value="<%= cfg[:pick] %>"
-     data-first-tip-guide-url-value="<%= first_tip_guide_path %>"
+     <% if (guide_url = first_tip_guide_avatar_url) %>
+     data-first-tip-guide-url-value="<%= guide_url %>"
+     <% elsif (guide_initial = first_tip_guide_initial) %>
+     data-first-tip-guide-initial-value="<%= guide_initial %>"
+     <% end %>
      data-first-tip-key-value="<%= cfg[:key] %>"
      data-first-tip-ack-url-value="<%= first_tip_ack_path %>"
      <% if cfg[:key].to_s == "habit" %>
