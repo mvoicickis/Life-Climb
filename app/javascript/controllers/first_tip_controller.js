@@ -16,6 +16,7 @@ export default class extends Controller {
     side: { type: String, default: "above" },
     pick: { type: String, default: "first" },
     guideUrl: String,
+    guideInitial: String,
     key: String,
     habitAddSelector: String,
     habitAddCopy: String,
@@ -29,8 +30,13 @@ export default class extends Controller {
     this.boundReposition = this.reposition.bind(this)
     this.boundTurboRender = this.onTurboRender.bind(this)
 
-    if (this.hasGuideTarget && this.guideUrlValue) {
-      this.guideTarget.style.backgroundImage = `url(${this.guideUrlValue})`
+    if (this.hasGuideTarget) {
+      if (this.guideUrlValue) {
+        this.guideTarget.style.backgroundImage = `url(${this.guideUrlValue})`
+      } else if (this.guideInitialValue) {
+        this.guideTarget.classList.add("is-initial")
+        this.guideTarget.textContent = this.guideInitialValue
+      }
     }
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -134,7 +140,7 @@ export default class extends Controller {
     const rawBox = this.spotlightBox(rect)
     const frameW = window.innerWidth
     const frameH = window.innerHeight
-    const box = this.insetSpotlightBox(rawBox, frameW, frameH)
+    const box = this.insetSpotlightBox(rawBox, frameW, frameH, this.targetEl)
     const radius = this.borderRadiusFor(this.targetEl)
 
     ;[this.holeTarget, this.ringTarget].forEach((el) => {
@@ -160,11 +166,14 @@ export default class extends Controller {
     }
   }
 
-  insetSpotlightBox(box, frameW, frameH) {
+  insetSpotlightBox(box, frameW, frameH, target = null) {
     const minTop = VIEWPORT_PAD + RING_INSET
     const minLeft = VIEWPORT_PAD + RING_INSET
     const maxRight = frameW - VIEWPORT_PAD - RING_INSET
-    const maxBottom = frameH - NAV_CLEARANCE - RING_INSET
+    const inDashNav = target?.closest(".lp-dash-nav")
+    const maxBottom = inDashNav
+      ? frameH - VIEWPORT_PAD - RING_INSET
+      : frameH - NAV_CLEARANCE - RING_INSET
 
     let { left, top, width, height } = box
 

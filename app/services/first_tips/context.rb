@@ -4,8 +4,7 @@ module FirstTips
   # Server-side inputs for whether a tip may be offered on this page load.
   class Context
     attr_reader :page, :open_battle_count, :read_only_impersonation,
-                :streak_moment, :climb_reward, :first_camp_reveal,
-                :base_camp_intro, :plan_route
+                :streak_moment, :climb_reward, :first_camp_reveal, :plan_route
 
     def initialize(
       page:,
@@ -14,7 +13,6 @@ module FirstTips
       streak_moment: false,
       climb_reward: false,
       first_camp_reveal: false,
-      base_camp_intro: false,
       plan_route: false
     )
       @page = page.to_sym
@@ -23,7 +21,6 @@ module FirstTips
       @streak_moment = streak_moment
       @climb_reward = climb_reward
       @first_camp_reveal = first_camp_reveal
-      @base_camp_intro = base_camp_intro
       @plan_route = plan_route
     end
 
@@ -32,7 +29,7 @@ module FirstTips
     end
 
     def blocked_by_overlays?
-      streak_moment || climb_reward || first_camp_reveal || base_camp_intro || plan_route
+      streak_moment || climb_reward || first_camp_reveal || plan_route
     end
   end
 end
