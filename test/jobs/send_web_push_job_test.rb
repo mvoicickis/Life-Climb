@@ -265,6 +265,36 @@ class SendWebPushJobTest < ActiveJob::TestCase
     refute payload.key?("actions")
   end
 
+  test "admin_beta_signup has no actions and sends during quiet hours" do
+    @user.create_notification_preference!(
+      frequency: "off",
+      time_zone: "UTC",
+      quiet_hours_start: 0,
+      quiet_hours_end: 23
+    )
+
+    travel_to Time.utc(2026, 8, 6, 23, 30, 0) do
+      SendWebPushJob.perform_now(
+        @user.id,
+        {
+          "title" => "New beta tester 🎉",
+          "body" => "join@example.com",
+          "url" => "/admin/beta_signups",
+          "kind" => "admin_beta_signup",
+          "tag" => "beta-signup-1"
+        }
+      )
+    end
+
+    assert_equal 1, @send_calls
+    payload = JSON.parse(@last_kwargs[:message])
+    assert_equal "join@example.com", payload["body"]
+    assert_equal "admin_beta_signup", payload["kind"]
+    assert_equal "/admin/beta_signups", payload["url"]
+    assert_equal "beta-signup-1", payload["tag"]
+    refute payload.key?("actions")
+  end
+
   test "test kind still gets default actions and preference intensity" do
     @user.create_notification_preference!(intensity: "gentle")
     @user.daily_todos.delete_all

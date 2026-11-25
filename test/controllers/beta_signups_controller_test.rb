@@ -19,6 +19,23 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, SUCCESS_BODY_ESCAPE
   end
 
+  test "create enqueues admin notify job for new signup" do
+    assert_enqueued_with(job: NotifyAdminsNewBetaSignupJob) do
+      post beta_signups_path,
+           params: {
+             beta_signup: {
+               email: "notify@example.com",
+               source_path: "/"
+             }
+           },
+           as: :turbo_stream
+    end
+
+    job = enqueued_jobs.find { |j| j["job_class"] == "NotifyAdminsNewBetaSignupJob" }
+    signup_id, = ActiveJob::Arguments.deserialize(job["arguments"])
+    assert_equal BetaSignup.find_by!(email: "notify@example.com").id, signup_id
+  end
+
   test "create saves one row with source_path and device" do
     assert_difference "BetaSignup.count", 1 do
       post beta_signups_path,
@@ -49,10 +66,12 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
     )
 
     assert_no_difference "BetaSignup.count" do
-      post beta_signups_path,
-           params: { beta_signup: { email: "JOIN@example.com", source_path: "/" } },
-           headers: { "HTTP_REFERER" => root_url },
-           as: :turbo_stream
+      assert_no_enqueued_jobs only: NotifyAdminsNewBetaSignupJob do
+        post beta_signups_path,
+             params: { beta_signup: { email: "JOIN@example.com", source_path: "/" } },
+             headers: { "HTTP_REFERER" => root_url },
+             as: :turbo_stream
+      end
     end
 
     assert_response :success
@@ -61,15 +80,17 @@ class BetaSignupsControllerTest < ActionDispatch::IntegrationTest
 
   test "honeypot responds success and saves nothing" do
     assert_no_difference "BetaSignup.count" do
-      post beta_signups_path,
-           params: {
-             beta_signup: {
-               email: "bot@example.com",
-               source_path: "/",
-               company: "https://spam.example"
-             }
-           },
-           as: :turbo_stream
+      assert_no_enqueued_jobs only: NotifyAdminsNewBetaSignupJob do
+        post beta_signups_path,
+             params: {
+               beta_signup: {
+                 email: "bot@example.com",
+                 source_path: "/",
+                 company: "https://spam.example"
+               }
+             },
+             as: :turbo_stream
+      end
     end
 
     assert_response :success

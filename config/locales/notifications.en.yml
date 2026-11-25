@@ -142,3 +142,6 @@ en:
     high_five_push:
       title: "%{name} 🙌"
       body: "%{name} high-fived your battle: %{title}"
+    admin_beta_signup_push:
+      title: "New beta tester 🎉"
+      android_suffix: " · Android"

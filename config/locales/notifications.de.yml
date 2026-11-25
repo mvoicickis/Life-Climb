@@ -142,3 +142,6 @@ de:
     high_five_push: # TODO: translate
       title: "%{name} 🙌"
       body: "%{name} high-fived your battle: %{title}"
+    admin_beta_signup_push: # TODO: translate
+      title: "New beta tester 🎉"
+      android_suffix: " · Android"

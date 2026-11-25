@@ -34,6 +34,7 @@ class BetaSignupsController < ApplicationController
     )
 
     if @signup.save
+      enqueue_admin_notify!
       respond_with_success
     else
       respond_with_error
@@ -48,6 +49,15 @@ class BetaSignupsController < ApplicationController
 
   def honeypot_filled?
     beta_signup_params[:company].present?
+  end
+
+  def enqueue_admin_notify!
+    NotifyAdminsNewBetaSignupJob.perform_later(@signup.id)
+  rescue StandardError => e
+    Rails.logger.warn(
+      "[BetaSignupsController] notify admins enqueue failed signup=#{@signup.id} " \
+      "#{e.class}: #{e.message}"
+    )
   end
 
   def existing_signup?(email)
