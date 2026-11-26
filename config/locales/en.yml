@@ -155,9 +155,6 @@ en:
       share_recap: "Share recap"
       next_day: "Next day →"
       share_toast: "Recap ready — share sheet would open here."
-      share_text:
-        one: "%{title} — %{done}/%{total} battle won on Life Climb"
-        other: "%{title} — %{done}/%{total} battles won on Life Climb"
     finale:
       aria: "All battles won"
       title: "ALL BATTLES WON!"
@@ -167,6 +164,7 @@ en:
         other: "battles today"
       camp_of: "Camp %{current} of %{total}"
       share: "Share my day"
+      share_text: "I reached the summit of my goal 🏔️ lifeclimb.app"
       continue: "Continue"
     end_of_day:
       title: "End of day"
@@ -180,9 +178,8 @@ en:
       saved: "Saved for tomorrow — %{title} (+%{count} planning points)"
       saved_today: "Added for today — %{title}"
       share_recap:
-        one: "Today I won %{count} battle toward my goal: %{goal} ⛰ lifeclimb.app"
-        other: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
-      share_text: "%{title}. %{stats} on Life Climb"
+        one: "I won %{count} battle today 🏔️ lifeclimb.app"
+        other: "I won %{count} battles today 🏔️ lifeclimb.app"
       ack:
         all_battles_won:
           one: "All %{count} battle won today"

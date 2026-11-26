@@ -29,26 +29,28 @@ module Today
           result_title: ""
         )
 
+        secret = "SECRET GOAL XYZ"
         finale = FinaleMoment.present_for!(
           user: @user,
           health: health,
-          goal_title: "Ship Life Climb",
-          camp: { camp_current: 1, camp_count: 4, percent: 25 },
-          share_text: "share me"
+          goal_title: secret,
+          camp: { camp_current: 1, camp_count: 4, percent: 25 }
         )
         assert_equal 2, finale.battles_today
-        assert_equal "Ship Life Climb", finale.goal_title
+        assert_equal secret, finale.goal_title
         assert_equal 1, finale.camp_current
         assert_equal 4, finale.camp_total
         assert_in_delta 0.25, finale.camp_fill, 0.001
+        assert_equal I18n.t("dash.finale.share_text"), finale.share_text
+        refute_includes finale.share_text, secret
+        assert_includes finale.share_text, "lifeclimb.app"
         assert_equal @today, @user.reload.last_finale_on
 
         again = FinaleMoment.present_for!(
           user: @user,
           health: health,
-          goal_title: "Ship Life Climb",
-          camp: { camp_current: 1, camp_count: 4, percent: 25 },
-          share_text: "share me"
+          goal_title: secret,
+          camp: { camp_current: 1, camp_count: 4, percent: 25 }
         )
         assert_nil again
       end
@@ -72,8 +74,7 @@ module Today
           user: @user,
           health: open,
           goal_title: "Goal",
-          camp: nil,
-          share_text: ""
+          camp: nil
         )
 
         empty = BattlefieldHealth::Result.new(
@@ -90,8 +91,7 @@ module Today
           user: @user,
           health: empty,
           goal_title: "Goal",
-          camp: nil,
-          share_text: ""
+          camp: nil
         )
         assert_nil @user.reload.last_finale_on
       end

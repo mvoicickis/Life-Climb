@@ -14,22 +14,20 @@ module Today
       keyword_init: true
     )
 
-    def self.present_for!(user:, health:, goal_title:, camp:, share_text:)
+    def self.present_for!(user:, health:, goal_title:, camp:)
       new(
         user: user,
         health: health,
         goal_title: goal_title,
-        camp: camp,
-        share_text: share_text
+        camp: camp
       ).present!
     end
 
-    def initialize(user:, health:, goal_title:, camp:, share_text:)
+    def initialize(user:, health:, goal_title:, camp:)
       @user = user
       @health = health
       @goal_title = goal_title
       @camp = camp
-      @share_text = share_text
     end
 
     def present!
@@ -48,7 +46,7 @@ module Today
         camp_current: @camp&.dig(:camp_current).to_i,
         camp_total: @camp&.dig(:camp_count).to_i,
         camp_fill: (@camp&.dig(:percent).to_f / 100.0).clamp(0, 1),
-        share_text: @share_text.to_s
+        share_text: I18n.t("dash.finale.share_text")
       )
     end
 
