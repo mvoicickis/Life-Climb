@@ -7,8 +7,6 @@ module Admin
     setup do
       @admin = users(:admin)
       @user = users(:one)
-      User.where.not(referred_by_id: nil).update_all(referred_by_id: nil)
-      BetaSignup.delete_all
     end
 
     test "non admin is redirected with access denied" do
@@ -28,8 +26,14 @@ module Admin
     test "empty state shows admin share link" do
       sign_in_as @admin
       url = admin_referral_link_for(@admin)
+      empty = {
+        summary: ReferralsRoster::Summary.new(0, 0, 0, 0),
+        cards: []
+      }
 
-      get admin_referrals_path
+      ReferralsRoster.stub(:call, empty) do
+        get admin_referrals_path
+      end
 
       assert_response :success
       assert_includes response.body, I18n.t("admin.referrals.empty")

@@ -4,11 +4,6 @@ require "test_helper"
 
 module Admin
   class ReferralsRosterTest < ActiveSupport::TestCase
-    setup do
-      User.where.not(referred_by_id: nil).update_all(referred_by_id: nil)
-      BetaSignup.delete_all
-    end
-
     test "summary counts referred accounts beta signups and first wins" do
       referrer = users(:one)
       invitee = User.create!(
