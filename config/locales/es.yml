@@ -901,7 +901,12 @@ es:
       continue: "Continue"
       show_it_off: "Show it off"
       longest: "Your longest climb yet!"
-      share_text: "%{count} day streak on Life Climb — %{goal}"
+      share_text_climbing:
+        one: "I'm climbing %{count} day in a row 🏔️ lifeclimb.app"
+        other: "I'm climbing %{count} days in a row 🏔️ lifeclimb.app"
+      share_text_goal_done:
+        one: "I did %{count} day in a row 🏔️ lifeclimb.app"
+        other: "I did %{count} days in a row 🏔️ lifeclimb.app"
       day_of: "Day %{n} of %{m}"
       you_did_it: "You did it."
       pick_next: "Pick your next climb"
