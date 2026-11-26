@@ -4,7 +4,13 @@ require "test_helpers/today_v2_test_helper"
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include TodayV2TestHelper
 
-  driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
+  driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ] do |driver_options|
+    next unless ENV["CHROME_BIN"].present?
+
+    driver_options.binary = ENV["CHROME_BIN"]
+    driver_options.add_argument("--no-sandbox")
+    driver_options.add_argument("--disable-dev-shm-usage")
+  end
 
   def visit(location, **kwargs)
     super

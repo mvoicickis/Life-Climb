@@ -93,9 +93,25 @@ jobs:
         with:
           bundler-cache: true
 
+      # Pinned to Chrome 157 until capybara#2867 is released — remove the pin then.
+      - name: Set up Chrome for Testing
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v2.2.0
+        with:
+          chrome-version: 157
+          install-chromedriver: true
+          install-dependencies: true
+
+      - name: Print Chrome and ChromeDriver versions
+        run: |
+          "${{ steps.setup-chrome.outputs.chrome-path }}" --version
+          "${{ steps.setup-chrome.outputs.chromedriver-path }}" --version
+
       - name: Run tests
         env:
           RAILS_ENV: test
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+          SE_CHROMEDRIVER: ${{ steps.setup-chrome.outputs.chromedriver-path }}
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
@@ -123,9 +139,25 @@ jobs:
         with:
           bundler-cache: true
 
+      # Pinned to Chrome 157 until capybara#2867 is released — remove the pin then.
+      - name: Set up Chrome for Testing
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v2.2.0
+        with:
+          chrome-version: 157
+          install-chromedriver: true
+          install-dependencies: true
+
+      - name: Print Chrome and ChromeDriver versions
+        run: |
+          "${{ steps.setup-chrome.outputs.chrome-path }}" --version
+          "${{ steps.setup-chrome.outputs.chromedriver-path }}" --version
+
       - name: Run System Tests
         env:
           RAILS_ENV: test
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+          SE_CHROMEDRIVER: ${{ steps.setup-chrome.outputs.chromedriver-path }}
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test:system
