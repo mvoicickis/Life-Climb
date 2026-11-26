@@ -19,6 +19,15 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     assert_includes @source, "scrollTop"
     assert_includes @source, "removeEventListener"
     assert_match(/scrollTop\s*>\s*COLLAPSE_AT/, @source)
+    assert_match(/EXPAND_AT\s*=\s*8/, @source)
+    assert_includes @source, "wantsCollapsed"
+    assert_match(/scrollTop\s*>\s*EXPAND_AT/, @source)
+  end
+
+  test "hysteresis keeps collapsed until scroll returns near top" do
+    assert_includes @source, "classList.contains(COLLAPSED_CLASS) === collapsed"
+    assert_match(/wantsCollapsed[\s\S]*EXPAND_AT[\s\S]*COLLAPSE_AT/m, @source)
+    assert_match(/flag === "true"\)[\s\S]*EXPAND_AT/m, @source)
   end
 
   test "pad flag survives stream replace and connect applies it without transition flash" do

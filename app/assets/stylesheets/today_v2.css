@@ -1797,6 +1797,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
 .lp-dash.is-today-v2.is-today-photo .lp-today-group-card--goal {
   position: relative;
   z-index: 30;
+  overflow-anchor: none;
   display: flex;
   flex-direction: column;
   gap: 0;
