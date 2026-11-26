@@ -26,10 +26,8 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
 
   test "hysteresis keeps collapsed until scroll returns near top" do
     assert_includes @source, "classList.contains(COLLAPSED_CLASS) === collapsed"
-    wants_body = @source[/wantsCollapsed\(\)\s*\{([^}]+)\}/m, 1]
-    assert wants_body.present?
-    assert_includes wants_body, "EXPAND_AT"
-    assert_includes wants_body, "COLLAPSE_AT"
+    assert_match(/wantsCollapsed[\s\S]*EXPAND_AT[\s\S]*COLLAPSE_AT/m, @source)
+    assert_match(/flag === "true"\)[\s\S]*EXPAND_AT/m, @source)
   end
 
   test "pad flag survives stream replace and connect applies it without transition flash" do
