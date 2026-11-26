@@ -195,6 +195,7 @@ Rails.application.routes.draw do
     resources :feedbacks, only: %i[ index destroy ]
     resources :testers, only: :index
     resources :beta_signups, only: %i[index destroy]
+    resources :referrals, only: :index
     resources :beta_testers, only: %i[index create]
     patch "beta_testers/invites/:user_id", to: "beta_testers#invite", as: :beta_tester_invite
     patch "beta_testers/invites/:user_id/undo", to: "beta_testers#uninvite", as: :beta_tester_uninvite

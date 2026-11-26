@@ -1,0 +1,107 @@
+<% content_for :title, t("admin.referrals.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.referrals.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.referrals.lead") %></p>
+  </div>
+</header>
+
+<% summary = @roster[:summary] %>
+<section class="lp-admin__cards" aria-label="<%= t('admin.referrals.summary_aria') %>">
+  <% [
+    [ summary.referrers, t("admin.referrals.summary.referrers") ],
+    [ summary.accounts, t("admin.referrals.summary.accounts") ],
+    [ summary.beta_emails, t("admin.referrals.summary.beta_emails") ],
+    [ summary.first_wins, t("admin.referrals.summary.first_wins") ]
+  ].each do |value, label| %>
+    <article class="lp-admin__card">
+      <p class="lp-admin__card-label"><%= label %></p>
+      <p class="lp-admin__card-value"><%= value %></p>
+    </article>
+  <% end %>
+</section>
+
+<% if @roster[:cards].empty? %>
+  <section class="lp-admin__panel lp-admin__stack"
+           data-controller="admin-copy-emails"
+           data-admin-copy-emails-emails-value="<%= j @admin_referral_url %>"
+           data-admin-copy-emails-copied-value="<%= j t("admin.referrals.copied") %>">
+    <p class="lp-admin__lead"><%= t("admin.referrals.empty") %></p>
+    <p class="lp-admin__meta"><%= @admin_referral_url %></p>
+    <button type="button"
+            class="lp-admin__ghost"
+            data-admin-copy-emails-target="button"
+            data-action="click->admin-copy-emails#copy">
+      <%= t("admin.referrals.copy_link") %>
+    </button>
+  </section>
+<% else %>
+  <div class="lp-admin__stack">
+    <% @roster[:cards].each do |card| %>
+      <% referrer = card.referrer %>
+      <section class="lp-admin__panel lp-admin__stack"
+               data-controller="admin-copy-emails"
+               data-admin-copy-emails-emails-value="<%= j card.referral_url %>"
+               data-admin-copy-emails-copied-value="<%= j t("admin.referrals.copied") %>">
+        <header class="lp-admin__panel-head">
+          <div class="lp-admin__stack">
+            <strong><%= referrer.display_name %></strong>
+            <p class="lp-admin__meta"><%= referrer.email_address %></p>
+            <p class="lp-admin__meta">
+              <%= t("admin.referrals.link") %>:
+              <%= card.referral_url %>
+              <button type="button"
+                      class="lp-admin__ghost"
+                      data-admin-copy-emails-target="button"
+                      data-action="click->admin-copy-emails#copy">
+                <%= t("admin.referrals.copy_link") %>
+              </button>
+            </p>
+            <p class="lp-admin__meta">
+              <%= t("admin.referrals.totals_line",
+                    accounts: card.accounts_count,
+                    beta: card.beta_count,
+                    wins: card.first_wins_count,
+                    active: card.active_7d_count) %>
+            </p>
+          </div>
+        </header>
+
+        <% if card.account_rows.any? %>
+          <h2 class="lp-admin__h2"><%= t("admin.referrals.accounts_heading") %></h2>
+          <ul class="lp-admin__stack lp-admin__list--blog-mobile">
+            <% card.account_rows.each do |row| %>
+              <% user = row.user %>
+              <li class="lp-admin__panel">
+                <strong><%= user.display_name %></strong>
+                <p class="lp-admin__meta"><%= user.email_address %></p>
+                <p class="lp-admin__meta">
+                  <%= t("admin.referrals.signed_up", date: l(user.created_at.to_date, format: :long)) %>
+                  · <%= t("admin.referrals.first_win") %>: <%= admin_referral_first_win_label(row.first_battle_at) %>
+                  · <%= t("admin.referrals.streak") %>: <%= user.climb_streak_days %>
+                  · <%= t("admin.referrals.last_opened") %>: <%= admin_referral_last_opened_label(user.last_opened_on) %>
+                </p>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <% if card.beta_rows.any? %>
+          <h2 class="lp-admin__h2"><%= t("admin.referrals.beta_heading") %></h2>
+          <ul class="lp-admin__stack lp-admin__list--blog-mobile">
+            <% card.beta_rows.each do |row| %>
+              <li class="lp-admin__panel">
+                <strong><%= row.signup.email %></strong>
+                <p class="lp-admin__meta">
+                  <%= t("admin.referrals.waitlist_joined", date: l(row.signup.created_at.to_date, format: :long)) %>
+                </p>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+<% end %>
