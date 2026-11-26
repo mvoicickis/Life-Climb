@@ -26,14 +26,8 @@ module Admin
     test "empty state shows admin share link" do
       sign_in_as @admin
       url = admin_referral_link_for(@admin)
-      empty = {
-        summary: ReferralsRoster::Summary.new(0, 0, 0, 0),
-        cards: []
-      }
 
-      ReferralsRoster.stub(:call, empty) do
-        get admin_referrals_path
-      end
+      get admin_referrals_path
 
       assert_response :success
       assert_includes response.body, I18n.t("admin.referrals.empty")
@@ -49,15 +43,9 @@ module Admin
         password: "password12345",
         referred_by_id: referrer.id
       )
-      Onboarding::Bootstrap.call(
-        user: invitee,
-        goal_title: "Test goal",
-        camp_titles: [ "Camp" ],
-        first_camp_reveal_status: "done"
-      )
+      seed_climb!(invitee, today_mission: "Win for referrals admin")
       win_at = Time.zone.local(2026, 11, 20, 10, 0, 0)
-      battle = invitee.strategy_goals.battles.first
-      battle.update!(completed_at: win_at)
+      invitee.strategy_goals.battles.order(:id).last.update!(completed_at: win_at, repeat: nil)
       BetaSignup.create!(
         email: "waitlist@example.com",
         source_path: "/",

@@ -12,13 +12,8 @@ module Admin
         password: "password12345",
         referred_by_id: referrer.id
       )
-      Onboarding::Bootstrap.call(
-        user: invitee,
-        goal_title: "Test goal",
-        camp_titles: [ "Camp" ],
-        first_camp_reveal_status: "done"
-      )
-      invitee.strategy_goals.battles.first.update!(completed_at: Time.current)
+      seed_climb!(invitee, today_mission: "Win for referrals roster")
+      invitee.strategy_goals.battles.order(:id).last.update!(completed_at: Time.current, repeat: nil)
       BetaSignup.create!(email: "beta-only@example.com", source_path: "/", referred_by_id: referrer.id)
 
       result = ReferralsRoster.call
