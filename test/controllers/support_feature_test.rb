@@ -25,7 +25,8 @@ class SupportFeatureTest < ActionDispatch::IntegrationTest
     assert_match(/data-controller="share"/, response.body)
     assert_match(/data-action="click-&gt;share#open"|data-action="click->share#open"/, response.body)
     assert_match(/share-sheet/, response.body)
-    assert_match(%r{/\?s=lp}, response.body)
+    assert_match(%r{\?r=#{Regexp.escape(@user.referral_code)}}, response.body)
+    assert_match(%r{s=lp}, response.body)
   end
 
   test "about page links to support" do

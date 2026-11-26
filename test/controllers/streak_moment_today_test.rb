@@ -43,7 +43,7 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
       refute_includes html, secret
       share_attr = node["data-streak-moment-share-text-value"]
       refute_includes share_attr.to_s, secret
-      assert_includes share_attr.to_s, "lifeclimb.app"
+      assert_includes share_attr.to_s, "?r=#{@user.referral_code}"
     end
   end
 

@@ -36,7 +36,7 @@ class TodaySharePrivacyTest < ActionDispatch::IntegrationTest
       assert recap.present?
       refute_includes recap, @secret_goal
       refute_includes recap, @secret_battle
-      assert_includes recap, "lifeclimb.app"
+      assert_includes recap, "?r=#{@user.referral_code}"
     end
   end
 
@@ -74,9 +74,10 @@ class TodaySharePrivacyTest < ActionDispatch::IntegrationTest
       )
       node = Nokogiri::HTML.fragment(html).at_css(".lp-today-finale")
       share_attr = node["data-today-finale-share-text-value"].to_s
-      assert_equal I18n.t("dash.finale.share_text"), share_attr
+      expected = I18n.t("dash.finale.share_text", url: ReferralShareUrl.for(@user))
+      assert_equal expected, share_attr
       refute_includes share_attr, @secret_goal
-      assert_includes share_attr, "lifeclimb.app"
+      assert_includes share_attr, "?r=#{@user.referral_code}"
     end
   end
 end

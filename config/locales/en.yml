@@ -164,7 +164,7 @@ en:
         other: "battles today"
       camp_of: "Camp %{current} of %{total}"
       share: "Share my day"
-      share_text: "I reached the summit of my goal 🏔️ lifeclimb.app"
+      share_text: "I reached the summit of my goal 🏔️ %{url}"
       continue: "Continue"
     end_of_day:
       title: "End of day"
@@ -178,8 +178,8 @@ en:
       saved: "Saved for tomorrow — %{title} (+%{count} planning points)"
       saved_today: "Added for today — %{title}"
       share_recap:
-        one: "I won %{count} battle today 🏔️ lifeclimb.app"
-        other: "I won %{count} battles today 🏔️ lifeclimb.app"
+        one: "I won %{count} battle today 🏔️ %{url}"
+        other: "I won %{count} battles today 🏔️ %{url}"
       ack:
         all_battles_won:
           one: "All %{count} battle won today"
@@ -2088,11 +2088,11 @@ en:
       show_it_off: "Show it off"
       longest: "Your longest climb yet!"
       share_text_climbing:
-        one: "I'm climbing %{count} day in a row 🏔️ lifeclimb.app"
-        other: "I'm climbing %{count} days in a row 🏔️ lifeclimb.app"
+        one: "I'm climbing %{count} day in a row 🏔️ %{url}"
+        other: "I'm climbing %{count} days in a row 🏔️ %{url}"
       share_text_goal_done:
-        one: "I did %{count} day in a row 🏔️ lifeclimb.app"
-        other: "I did %{count} days in a row 🏔️ lifeclimb.app"
+        one: "I did %{count} day in a row 🏔️ %{url}"
+        other: "I did %{count} days in a row 🏔️ %{url}"
       day_of: "Day %{n} of %{m}"
       you_did_it: "You did it."
       pick_next: "Pick your next climb"

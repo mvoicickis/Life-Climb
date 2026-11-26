@@ -5,6 +5,10 @@ require "test_helper"
 class EndOfDayHelperTest < ActionView::TestCase
   include ApplicationHelper
 
+  def current_user
+    users(:one)
+  end
+
   test "end_of_day_recap_stats uses singular battle when total is one" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
 
@@ -29,10 +33,24 @@ class EndOfDayHelperTest < ActionView::TestCase
     secret = "SECRET GOAL XYZ"
 
     text = end_of_day_share_text(health)
-    assert_equal I18n.t("dash.end_of_day.share_recap", count: 3), text
+    url = ReferralShareUrl.for(current_user)
+    assert_equal I18n.t("dash.end_of_day.share_recap", count: 3, url: url), text
     assert_includes text, "3 battles"
-    assert_includes text, "lifeclimb.app"
+    assert_includes text, "?r=#{current_user.referral_code}"
     refute_includes text, secret
+  end
+
+  test "end_of_day_share_text without referral code uses plain landing" do
+    health = Today::BattlefieldHealth.call(open_count: 0, total_count: 1)
+    user = User.new(referral_code: nil)
+    text = end_of_day_share_text(health, user: user)
+
+    assert_equal I18n.t(
+      "dash.end_of_day.share_recap",
+      count: 1,
+      url: ReferralShareUrl.for(user)
+    ), text
+    refute_includes text, "?r="
   end
 
   test "end_of_day_battles_won_line uses singular copy" do
