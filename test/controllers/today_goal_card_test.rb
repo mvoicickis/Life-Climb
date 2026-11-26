@@ -17,19 +17,20 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
 
   test "header shows Your goal kicker, camp name, bar, and won count" do
     clear_camp_battles!
-    first = add_camp_battle!("Fight one", position: 0)
-    add_camp_battle!("Fight two", position: 1)
+    first = add_camp_battle!("Fight one", position: 0, on: Date.current)
+    add_camp_battle!("Fight two", position: 1, on: Date.current)
     first.update!(completed_at: Time.current)
+    @user.daily_todos.for_day(Date.current).where(strategy_goal_id: first.id).update_all(completed_at: Time.current)
 
     get dashboard_path
     assert_response :success
 
     assert_select "#today-battlefield-header .lp-today-goal-kicker", text: "Your goal", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title, count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
-    assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
-    assert_match(/Camp \d+ of \d+/, css_select("#today-battlefield-header .lp-today-camp-bar").first["aria-valuetext"])
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
+    bar = css_select("#today-battlefield-header .lp-today-camp-bar").first
+    assert_equal "2", bar["aria-valuemax"]
+    assert_equal "1", bar["aria-valuenow"]
     assert_select "#today-battlefield-header .lp-today-camp-bar__fill[data-today-goal-bar][style*='--lp-fill: 0.5']", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won", text: "1 won", count: 1
     assert_select "#today-battlefield-header .lp-today-v2-hp-bar", count: 0
@@ -46,8 +47,6 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-today-goal-kicker", text: "Your goal", count: 1
     assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title, count: 1
     assert_select "#today-battlefield-header .lp-today-camp-bar", count: 1
-    assert_select "#today-battlefield-header .lp-today-camp-of", count: 0
-    assert_select "#today-battlefield-header .lp-today-camp-bar[aria-valuetext]", count: 1
     assert_select "#today-battlefield-header .lp-today-camp-won[hidden]", count: 1
   end
 
@@ -86,10 +85,52 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     assert_select "#today-battlefield-header .lp-today-v2-header__name[title=?]", long_goal
   end
 
-  test "win and undo streams update camp bar percent" do
+  test "goal card bar reflects today's battle share" do
     clear_camp_battles!
-    first = add_camp_battle!("Fight one", position: 0)
-    add_camp_battle!("Fight two", position: 1)
+    todos = 3.times.map { |i| add_camp_battle!("Fight #{i}", position: i, on: Date.current) }
+    todos.each do |battle|
+      assert @user.daily_todos.for_day(Date.current).exists?(strategy_goal_id: battle.id)
+    end
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 0.0']", count: 1
+
+    todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: todos.first.id)
+    post complete_daily_todo_path(todo), as: :turbo_stream
+    assert_response :ok
+    assert_match(/lp-today-camp-bar__fill[^>]*--lp-fill: 0\.33/, response.body)
+
+    get dashboard_path
+    assert_response :success
+    assert_match(/--lp-fill: 0\.33/, css_select("#today-battlefield-header .lp-today-camp-bar__fill").first["style"])
+
+    @user.daily_todos.for_day(Date.current).where(completed_at: nil).find_each do |row|
+      post complete_daily_todo_path(row), as: :turbo_stream
+      assert_response :ok
+    end
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-header .lp-today-camp-bar__fill[style*='--lp-fill: 1.0']", count: 1
+  end
+
+  test "goal card hides bar when no battles are scheduled today" do
+    clear_camp_battles!
+    battle = add_camp_battle!("Later", position: 0, on: Date.current + 1.day)
+    battle.update!(completed_at: Time.current)
+
+    get dashboard_path
+    assert_response :success
+    assert_select "#today-battlefield-header .lp-today-goal-camp", text: @camp.title, count: 1
+    assert_select "#today-battlefield-header .lp-today-camp-bar", count: 0
+    assert_select "#today-battlefield-header .lp-today-camp-won", text: "1 won", count: 1
+  end
+
+  test "win and undo streams update today's bar fill" do
+    clear_camp_battles!
+    first = add_camp_battle!("Fight one", position: 0, on: Date.current)
+    add_camp_battle!("Fight two", position: 1, on: Date.current)
     todo = @user.daily_todos.for_day(Date.current).find_by!(strategy_goal_id: first.id)
 
     get dashboard_path
@@ -117,14 +158,14 @@ class TodayGoalCardTest < ActionDispatch::IntegrationTest
     @camp.children.where(horizon: "day").delete_all
   end
 
-  def add_camp_battle!(title, position:)
+  def add_camp_battle!(title, position:, on: nil)
     battle = @camp.children.create!(
       user: @user,
       life_area: @journey.life_area,
       life_journey: @journey,
       horizon: "day",
       title: title,
-      scheduled_on: Date.current + position.days,
+      scheduled_on: on || Date.current + position.days,
       position: position
     )
     Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)

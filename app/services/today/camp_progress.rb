@@ -39,7 +39,8 @@ module Today
         elsif total.zero?
           0
         else
-          ((won.to_f / total) * 100).round
+          raw = ((won.to_f / total) * 100).round
+          raw.clamp(0, 100)
         end
 
       path_camps = path_camps_for(@goal)

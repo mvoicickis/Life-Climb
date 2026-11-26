@@ -68,6 +68,7 @@ en:
       goal_card:
         label: "Your goal"
         camp_bar: "Camp progress"
+        today_battles_bar: "Today's battles"
         camp_of: "Camp %{current} of %{total}"
         won: "%{count} won"
       other_mountains:

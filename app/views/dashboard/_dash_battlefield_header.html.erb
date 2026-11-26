@@ -1,13 +1,11 @@
-<%# Today V2 — frosted goal card. Camp progress from @goal_card_camp (Today::CampProgress). %>
+<%# Today V2 — frosted goal card. Camp name + lifetime wins from @goal_card_camp; bar = today's battles (@battlefield_health). %>
 <% goal_title = active_goal_title(strategy_goal: @strategy_goal, journey: @journey) %>
 <% camp = @goal_card_camp %>
 <% camp_title = camp&.dig(:camp_title).to_s %>
 <% camp_won = camp&.dig(:won).to_i %>
-<% camp_total = camp&.dig(:total).to_i %>
-<% camp_percent = camp&.dig(:percent).to_i %>
-<% camp_current = camp&.dig(:camp_current).to_i %>
-<% camp_count = camp&.dig(:camp_count).to_i %>
-<% camp_of_label = camp.present? ? t("dash.battlefield.goal_card.camp_of", current: camp_current, total: camp_count) : nil %>
+<% today_total = @battlefield_health&.total_count.to_i %>
+<% today_won = @battlefield_health&.done_count.to_i %>
+<% today_fill = today_total.positive? ? (today_won.to_f / today_total).clamp(0, 1) : 0 %>
 
 <div class="lp-today-group-card lp-today-group-card--goal"
      data-controller="today-goal-card">
@@ -21,17 +19,18 @@
     <% if camp.present? %>
       <p class="lp-today-goal-camp" title="<%= camp_title %>"><%= camp_title %></p>
       <div class="lp-today-camp-bar-row">
-        <div class="lp-today-camp-bar"
-             role="progressbar"
-             aria-valuemin="0"
-             aria-valuemax="<%= [ camp_total, 100 ].max %>"
-             aria-valuenow="<%= camp_won %>"
-             aria-valuetext="<%= camp_of_label %>"
-             aria-label="<%= t('dash.battlefield.goal_card.camp_bar') %>">
-          <span class="lp-today-camp-bar__fill"
-                data-today-goal-bar
-                style="--lp-fill: <%= (camp_percent.to_f / 100.0).clamp(0, 1) %>"></span>
-        </div>
+        <% if today_total.positive? %>
+          <div class="lp-today-camp-bar"
+               role="progressbar"
+               aria-valuemin="0"
+               aria-valuemax="<%= today_total %>"
+               aria-valuenow="<%= today_won %>"
+               aria-label="<%= t('dash.battlefield.goal_card.today_battles_bar') %>">
+            <span class="lp-today-camp-bar__fill"
+                  data-today-goal-bar
+                  style="--lp-fill: <%= today_fill %>"></span>
+          </div>
+        <% end %>
         <p class="lp-today-camp-won"<%= " hidden" unless camp_won.positive? %>>
           <%= t("dash.battlefield.goal_card.won", count: camp_won) %>
         </p>

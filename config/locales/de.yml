@@ -646,6 +646,7 @@ de:
       goal_card:
         label: "Your goal"  # TODO: translate
         camp_bar: "Camp progress"  # TODO: translate
+        today_battles_bar: "Today's battles"  # TODO: translate
         won: "%{count} won"  # TODO: translate
         camp_of: "Camp %{current} of %{total}" # TODO: translate
       other_mountains:
