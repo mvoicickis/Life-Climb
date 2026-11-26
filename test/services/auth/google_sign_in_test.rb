@@ -77,6 +77,38 @@ module Auth
       assert OauthIdentity.exists?(user: user, provider: "google", email: email)
     end
 
+    test "new user stores referrer when provided" do
+      referrer = users(:one)
+      email = "new-google-ref-#{SecureRandom.hex(4)}@example.com"
+
+      result = GoogleSignIn.call(
+        google_auth_hash(sub: "sub-new-ref-#{SecureRandom.hex(4)}", email: email, name: "New Ref"),
+        referrer: referrer
+      )
+
+      assert result.ok?
+      assert result.new_account
+      assert_equal referrer.id, result.user.referred_by_id
+    end
+
+    test "linking existing email does not set referred_by" do
+      user = User.create!(
+        name: "Password User",
+        email_address: "password-ref-#{SecureRandom.hex(4)}@example.com",
+        password: "password12345",
+        password_confirmation: "password12345"
+      )
+
+      result = GoogleSignIn.call(
+        google_auth_hash(sub: "sub-link-ref-#{SecureRandom.hex(4)}", email: user.email_address),
+        referrer: users(:one)
+      )
+
+      assert result.ok?
+      refute result.new_account
+      assert_nil user.reload.referred_by_id
+    end
+
     test "rejects unverified email without creating user or identity" do
       email = "unverified-#{SecureRandom.hex(4)}@example.com"
 

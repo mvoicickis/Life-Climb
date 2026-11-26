@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include PlayDistribution
+  include ReferralCapture
   include Authentication
   include SetLocale
   include RequireOnboarding

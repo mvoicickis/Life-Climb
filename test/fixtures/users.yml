@@ -3,6 +3,7 @@
 one:
   email_address: one@example.com
   name: One
+  referral_code: fixt1one
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
@@ -15,6 +16,7 @@ one:
 two:
   email_address: two@example.com
   name: Two
+  referral_code: fixt2two
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6
@@ -27,6 +29,7 @@ two:
 admin:
   email_address: admin@example.com
   name: Admin
+  referral_code: fixtadmin
   password_digest: <%= password_digest %>
   total_points: 0
   home_stat_count: 6

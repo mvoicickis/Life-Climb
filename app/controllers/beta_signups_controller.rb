@@ -32,6 +32,7 @@ class BetaSignupsController < ApplicationController
       source_path: @source_path,
       user_agent: request.user_agent.to_s.truncate(512)
     )
+    Referrals.attach_to_beta_signup!(signup: @signup, cookies: cookies)
 
     if @signup.save
       enqueue_admin_notify!

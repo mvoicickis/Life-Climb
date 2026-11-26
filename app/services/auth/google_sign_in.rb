@@ -6,12 +6,13 @@ module Auth
 
     Result = Data.define(:ok?, :user, :new_account, :reason)
 
-    def self.call(auth_hash)
-      new(auth_hash).call
+    def self.call(auth_hash, referrer: nil)
+      new(auth_hash, referrer: referrer).call
     end
 
-    def initialize(auth_hash)
+    def initialize(auth_hash, referrer: nil)
       @auth_hash = normalize_auth_hash(auth_hash)
+      @referrer = referrer
     end
 
     def call
@@ -93,6 +94,7 @@ module Auth
           character: "fox"
         )
         user.mark_companion_pick_done!
+        Referrals.attach!(user: user, referrer: @referrer)
         OauthIdentity.create!(
           user: user,
           provider: PROVIDER,

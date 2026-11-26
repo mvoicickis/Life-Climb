@@ -7,7 +7,7 @@ class OmniauthCallbacksController < ApplicationController
     auth = request.env["omniauth.auth"]
     return google_sign_in_failed! if auth.blank?
 
-    result = Auth::GoogleSignIn.call(auth)
+    result = Auth::GoogleSignIn.call(auth, referrer: Referrals.referrer_for(cookies))
     return google_sign_in_failed! unless result.ok?
 
     complete_sign_in!(result.user, new_account: result.new_account)
