@@ -4,6 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 // Collapsed preference lives on .lp-today-scroll__pad so stream-replaced cards
 // reconnect without flashing the expanded height.
 const COLLAPSE_AT = 24
+const EXPAND_AT = 8
 const COLLAPSED_CLASS = "is-collapsed"
 const NO_TRANSITION_CLASS = "is-no-transition"
 const PAD_FLAG = "goalCardCollapsed"
@@ -44,17 +45,27 @@ export default class extends Controller {
 
   syncCollapsed() {
     if (!this.pad) return
-    this.setCollapsed(this.pad.scrollTop > COLLAPSE_AT, { silent: false })
+    this.setCollapsed(this.wantsCollapsed(), { silent: false })
+  }
+
+  wantsCollapsed() {
+    const scrollTop = this.pad.scrollTop
+    if (this.element.classList.contains(COLLAPSED_CLASS)) {
+      return scrollTop > EXPAND_AT
+    }
+    return scrollTop > COLLAPSE_AT
   }
 
   readCollapsedPreference() {
     const flag = this.pad.dataset[PAD_FLAG]
-    if (flag === "true") return true
-    if (flag === "false") return false
-    return this.pad.scrollTop > COLLAPSE_AT
+    const scrollTop = this.pad.scrollTop
+    if (flag === "true") return scrollTop > EXPAND_AT
+    if (flag === "false") return scrollTop > COLLAPSE_AT
+    return scrollTop > COLLAPSE_AT
   }
 
   setCollapsed(collapsed, { silent = false } = {}) {
+    if (this.element.classList.contains(COLLAPSED_CLASS) === collapsed) return
     this.pad.dataset[PAD_FLAG] = collapsed ? "true" : "false"
     if (silent) {
       this.element.classList.add(NO_TRANSITION_CLASS)
