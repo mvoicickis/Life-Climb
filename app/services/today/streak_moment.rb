@@ -117,7 +117,7 @@ module Today
         else
           "climb.streak_moment.share_text_climbing"
         end
-      I18n.t(key, count: days)
+      I18n.t(key, count: days, url: ReferralShareUrl.for(@user))
     end
 
     def local_today

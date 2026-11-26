@@ -36,7 +36,12 @@ module Today
         assert moment.offer_commit
         assert_equal [ 3, 7, 14, 30 ], moment.offered_targets
         assert_equal 7, moment.default_target
-        assert_equal I18n.t("climb.streak_moment.share_text_climbing", count: 2), moment.share_text
+        assert_equal I18n.t(
+          "climb.streak_moment.share_text_climbing",
+          count: 2,
+          url: ReferralShareUrl.for(@user)
+        ), moment.share_text
+        assert_includes moment.share_text, "?r=#{@user.referral_code}"
         refute_includes moment.share_text, "Run a half marathon"
         assert_equal @today, @user.reload.last_streak_moment_on
 
@@ -170,7 +175,7 @@ module Today
 
         celebrate = StreakMoment.present_for!(user: @user)
         refute_includes celebrate.share_text, secret
-        assert_includes celebrate.share_text, "lifeclimb.app"
+        assert_includes celebrate.share_text, "?r=#{@user.referral_code}"
       end
 
       travel_to zone_time(2026, 8, 6, 12) do
@@ -184,7 +189,11 @@ module Today
 
         progress = StreakMoment.present_for!(user: @user)
         refute_includes progress.share_text, secret
-        assert_equal I18n.t("climb.streak_moment.share_text_climbing", count: 4), progress.share_text
+        assert_equal I18n.t(
+          "climb.streak_moment.share_text_climbing",
+          count: 4,
+          url: ReferralShareUrl.for(@user)
+        ), progress.share_text
       end
 
       travel_to zone_time(2026, 8, 6, 12) do
@@ -198,7 +207,11 @@ module Today
 
         goal = StreakMoment.present_for!(user: @user)
         refute_includes goal.share_text, secret
-        assert_equal I18n.t("climb.streak_moment.share_text_goal_done", count: 7), goal.share_text
+        assert_equal I18n.t(
+          "climb.streak_moment.share_text_goal_done",
+          count: 7,
+          url: ReferralShareUrl.for(@user)
+        ), goal.share_text
       end
     end
 

@@ -41,9 +41,9 @@ module Today
         assert_equal 1, finale.camp_current
         assert_equal 4, finale.camp_total
         assert_in_delta 0.25, finale.camp_fill, 0.001
-        assert_equal I18n.t("dash.finale.share_text"), finale.share_text
+        assert_equal I18n.t("dash.finale.share_text", url: ReferralShareUrl.for(@user)), finale.share_text
         refute_includes finale.share_text, secret
-        assert_includes finale.share_text, "lifeclimb.app"
+        assert_includes finale.share_text, "?r=#{@user.referral_code}"
         assert_equal @today, @user.reload.last_finale_on
 
         again = FinaleMoment.present_for!(

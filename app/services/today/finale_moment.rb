@@ -46,7 +46,7 @@ module Today
         camp_current: @camp&.dig(:camp_current).to_i,
         camp_total: @camp&.dig(:camp_count).to_i,
         camp_fill: (@camp&.dig(:percent).to_f / 100.0).clamp(0, 1),
-        share_text: I18n.t("dash.finale.share_text")
+        share_text: I18n.t("dash.finale.share_text", url: ReferralShareUrl.for(@user))
       )
     end
 

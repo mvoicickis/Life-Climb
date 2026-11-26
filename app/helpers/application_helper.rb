@@ -136,6 +136,10 @@ module ApplicationHelper
     absolute_url("/?s=lp")
   end
 
+  def referral_share_url(user = current_user)
+    ReferralShareUrl.for(user, base_url: canonical_base_url)
+  end
+
   def app_version
     APP_VERSION
   end
@@ -237,11 +241,11 @@ module ApplicationHelper
   end
 
   def invite_share_message
-    InviteShareMessage.call(landing_url: share_landing_url)
+    InviteShareMessage.call(landing_url: referral_share_url)
   end
 
   def invite_share_message_body
-    InviteShareMessage.body(landing_url: share_landing_url)
+    InviteShareMessage.body(landing_url: referral_share_url)
   end
 
   # Accepts Numeric or string (e.g. session undo snapshots store decimals as text).
@@ -440,10 +444,10 @@ module ApplicationHelper
     end
   end
 
-  def end_of_day_share_text(health)
+  def end_of_day_share_text(health, user: current_user)
     return "" if health.blank?
 
-    t("dash.end_of_day.share_recap", count: health.done_count)
+    t("dash.end_of_day.share_recap", count: health.done_count, url: referral_share_url(user))
   end
 
   def end_of_day_battles_won_line(health)
