@@ -77,10 +77,6 @@ class DashboardController < ApplicationController
   def assign_streak_moment!
     return if read_only_impersonation?
 
-    goal_title = helpers.active_goal_title(strategy_goal: @strategy_goal, journey: @journey)
-    @streak_moment = Today::StreakMoment.present_for!(
-      user: current_user,
-      goal_title: goal_title
-    )
+    @streak_moment = Today::StreakMoment.present_for!(user: current_user)
   end
 end

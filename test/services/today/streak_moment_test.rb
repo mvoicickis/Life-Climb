@@ -19,7 +19,7 @@ module Today
       travel_to zone_time(2026, 8, 6, 12) do
         complete_one_shot!("Only today", on: @today)
         assert_not StreakMoment.eligible?(user: @user)
-        assert_nil StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        assert_nil StreakMoment.present_for!(user: @user)
       end
     end
 
@@ -29,18 +29,19 @@ module Today
         complete_one_shot!("Today", on: @today)
 
         assert StreakMoment.eligible?(user: @user)
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Run a half marathon")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :celebrate, moment.kind
         assert_equal 2, moment.days
         assert_equal 1, moment.from_days
         assert moment.offer_commit
         assert_equal [ 3, 7, 14, 30 ], moment.offered_targets
         assert_equal 7, moment.default_target
-        assert_equal "Run a half marathon", moment.goal_title
+        assert_equal I18n.t("climb.streak_moment.share_text_climbing", count: 2), moment.share_text
+        refute_includes moment.share_text, "Run a half marathon"
         assert_equal @today, @user.reload.last_streak_moment_on
 
         assert_not StreakMoment.eligible?(user: @user)
-        assert_nil StreakMoment.present_for!(user: @user, goal_title: "Run a half marathon")
+        assert_nil StreakMoment.present_for!(user: @user)
       end
     end
 
@@ -77,7 +78,7 @@ module Today
           streak_commitment_started_on: @today - 3
         )
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :progress, moment.kind
         assert_equal 4, moment.days
         assert_equal 7, moment.target_days
@@ -94,7 +95,7 @@ module Today
           streak_commitment_started_on: @today - 6
         )
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :goal, moment.kind
         assert_equal 7, moment.days
         assert_equal 7, moment.target_days
@@ -106,7 +107,7 @@ module Today
         complete_one_shot!("Day 8", on: @today + 1)
         @user.update!(last_streak_moment_on: nil)
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :celebrate, moment.kind
         assert moment.offer_commit
         assert_not_equal :goal, moment.kind
@@ -119,7 +120,7 @@ module Today
         complete_one_shot!("Today", on: @today)
         @user.update!(streak_commit_declines: 2)
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :celebrate, moment.kind
         assert_not moment.offer_commit
         assert_empty moment.offered_targets
@@ -130,7 +131,7 @@ module Today
       travel_to zone_time(2026, 8, 6, 12) do
         30.times { |i| complete_one_shot!("Day #{i}", on: @today - (29 - i)) }
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_equal :celebrate, moment.kind
         assert_not moment.offer_commit
         assert_empty moment.offered_targets
@@ -145,14 +146,59 @@ module Today
         complete_one_shot!("Yesterday", on: @today - 1)
         complete_one_shot!("Today", on: @today)
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert moment.new_record
         assert_equal 2, @user.reload.longest_streak_days
 
         @user.update!(last_streak_moment_on: nil)
-        moment2 = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment2 = StreakMoment.present_for!(user: @user)
         assert_not moment2.new_record
         assert_equal 2, @user.reload.longest_streak_days
+      end
+    end
+
+    test "share_text never includes goal title for celebrate progress or goal kinds" do
+      secret = "SECRET GOAL XYZ"
+
+      travel_to zone_time(2026, 8, 6, 12) do
+        complete_one_shot!("Yesterday", on: @today - 1)
+        complete_one_shot!("Today", on: @today)
+        @user.strategy_goals.find_by!(horizon: "goal")&.update!(title: secret)
+
+        reset_streak_state!
+        @user.update!(last_streak_moment_on: nil)
+
+        celebrate = StreakMoment.present_for!(user: @user)
+        refute_includes celebrate.share_text, secret
+        assert_includes celebrate.share_text, "lifeclimb.app"
+      end
+
+      travel_to zone_time(2026, 8, 6, 12) do
+        4.times { |i| complete_one_shot!("Day #{i}", on: @today - (3 - i)) }
+        @user.update!(
+          last_streak_moment_on: nil,
+          streak_commitment_target_days: 7,
+          streak_commitment_started_on: @today - 3
+        )
+        @user.strategy_goals.find_by!(horizon: "goal")&.update!(title: secret)
+
+        progress = StreakMoment.present_for!(user: @user)
+        refute_includes progress.share_text, secret
+        assert_equal I18n.t("climb.streak_moment.share_text_climbing", count: 4), progress.share_text
+      end
+
+      travel_to zone_time(2026, 8, 6, 12) do
+        7.times { |i| complete_one_shot!("Day #{i}", on: @today - (6 - i)) }
+        @user.update!(
+          last_streak_moment_on: nil,
+          streak_commitment_target_days: 7,
+          streak_commitment_started_on: @today - 6
+        )
+        @user.strategy_goals.find_by!(horizon: "goal")&.update!(title: secret)
+
+        goal = StreakMoment.present_for!(user: @user)
+        refute_includes goal.share_text, secret
+        assert_equal I18n.t("climb.streak_moment.share_text_goal_done", count: 7), goal.share_text
       end
     end
 
@@ -164,7 +210,7 @@ module Today
         complete_one_shot!("Today", on: @today)
         @user.update!(longest_streak_days: 2, last_streak_moment_on: nil)
 
-        moment = StreakMoment.present_for!(user: @user, goal_title: "Goal")
+        moment = StreakMoment.present_for!(user: @user)
         assert_not moment.new_record
         assert_equal 2, @user.reload.longest_streak_days
       end

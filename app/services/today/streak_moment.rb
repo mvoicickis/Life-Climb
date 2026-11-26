@@ -10,7 +10,6 @@ module Today
       :days,
       :from_days,
       :week,
-      :goal_title,
       :target_days,
       :fill_pct,
       :offer_commit,
@@ -25,8 +24,8 @@ module Today
       new(user:).eligible?
     end
 
-    def self.present_for!(user:, goal_title:)
-      new(user:).present_for!(goal_title: goal_title)
+    def self.present_for!(user:)
+      new(user:).present_for!
     end
 
     def initialize(user:)
@@ -47,7 +46,7 @@ module Today
       won_today?
     end
 
-    def present_for!(goal_title:)
+    def present_for!
       return nil if read_only?
 
       # Quiet-reset before the days ≥ 2 gate so broken commitments clear.
@@ -81,18 +80,13 @@ module Today
         days: days,
         from_days: [ days - 1, 1 ].max,
         week: week,
-        goal_title: goal_title.to_s,
         target_days: target,
         fill_pct: fill_pct,
         offer_commit: offer_commit,
         offered_targets: show_targets ? offered : [],
         default_target: show_targets ? @commitment.default_target(offered) : nil,
         new_record: new_record,
-        share_text: I18n.t(
-          "climb.streak_moment.share_text",
-          count: days,
-          goal: goal_title.to_s.presence || I18n.t("dash.active_goal_fallback")
-        )
+        share_text: share_text_for(kind: kind, days: days)
       )
 
       # Goal shows once: clear commitment in the same request after building the result.
@@ -114,6 +108,16 @@ module Today
       return 0 if target.blank? || target.to_i <= 0
 
       [ ((days.to_f * 100.0) / target.to_i).round, 100 ].min
+    end
+
+    def share_text_for(kind:, days:)
+      key =
+        if kind == :goal
+          "climb.streak_moment.share_text_goal_done"
+        else
+          "climb.streak_moment.share_text_climbing"
+        end
+      I18n.t(key, count: days)
     end
 
     def local_today

@@ -14,6 +14,39 @@ class StreakMomentTodayTest < ActionDispatch::IntegrationTest
     @today = Date.new(2026, 8, 6)
   end
 
+  test "streak moment share data never exposes goal title" do
+    travel_to Time.find_zone!(@zone).local(2026, 8, 6, 12, 0, 0) do
+      secret = "SECRET GOAL XYZ"
+      seed_climb!(@user, today_mission: "Today win")
+      journey = @user.primary_focused_journey
+      goal = @user.strategy_goals.find_by!(horizon: "goal")
+      goal.update!(title: secret)
+      project = @user.strategy_goals.find_by!(horizon: "project", title: "Auth")
+      project.children.create!(
+        user: @user,
+        life_area: journey.life_area,
+        life_journey: journey,
+        horizon: "day",
+        title: "Yesterday win",
+        scheduled_on: @today - 1,
+        position: 1,
+        completed_at: Time.find_zone!(@zone).local(2026, 8, 5, 9, 0, 0)
+      )
+      project.children.find_by!(horizon: "day", title: "Today win")
+        .update!(completed_at: Time.find_zone!(@zone).local(2026, 8, 6, 9, 0, 0))
+
+      get dashboard_path
+      assert_response :success
+      node = css_select(".lp-streak-moment").first
+      assert node, "expected streak moment overlay"
+      html = node.to_s
+      refute_includes html, secret
+      share_attr = node["data-streak-moment-share-text-value"]
+      refute_includes share_attr.to_s, secret
+      assert_includes share_attr.to_s, "lifeclimb.app"
+    end
+  end
+
   test "today visit after mountain win shows streak moment once" do
     travel_to Time.find_zone!(@zone).local(2026, 8, 6, 12, 0, 0) do
       seed_climb!(@user, today_mission: "Today win")
