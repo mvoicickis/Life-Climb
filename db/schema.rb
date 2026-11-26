@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -74,7 +74,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "referred_by_id"
     t.index ["email"], name: "index_beta_signups_on_email", unique: true
+    t.index ["referred_by_id"], name: "index_beta_signups_on_referred_by_id"
   end
 
   create_table "beta_testers", force: :cascade do |t|
@@ -689,8 +691,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
     t.integer "longest_streak_days", default: 0, null: false
     t.datetime "beta_invited_at"
     t.json "first_tips_daily", default: {}, null: false
+    t.string "referral_code", null: false
+    t.bigint "referred_by_id"
     t.index ["beta_invited_at"], name: "index_users_on_beta_invited_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["referral_code"], name: "index_users_on_referral_code", unique: true
+    t.index ["referred_by_id"], name: "index_users_on_referred_by_id"
     t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"
   end
@@ -698,6 +704,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "areas", "users"
+  add_foreign_key "beta_signups", "users", column: "referred_by_id"
   add_foreign_key "beta_testers", "users"
   add_foreign_key "buildings", "steps"
   add_foreign_key "buildings", "users"
@@ -762,4 +769,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_210000) do
   add_foreign_key "today_actions", "users"
   add_foreign_key "user_events", "users"
   add_foreign_key "users", "buildings", column: "focus_building_id"
+  add_foreign_key "users", "users", column: "referred_by_id"
 end

@@ -14,6 +14,7 @@ class RegistrationsController < ApplicationController
     @user.character = "fox"
 
     if @user.save
+      Referrals.attach_from_cookie!(user: @user, cookies: cookies)
       @user.mark_companion_pick_done!
       capture_signup_time_zone!
       start_new_session_for @user

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class BetaSignup < ApplicationRecord
+  belongs_to :referred_by, class_name: "User", optional: true
+
   scope :newest_first, -> { order(created_at: :desc) }
 
   DEVICES = [

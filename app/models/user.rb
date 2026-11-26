@@ -43,6 +43,9 @@ class User < ApplicationRecord
   has_one :tester_contact, dependent: :destroy
 
   belongs_to :focus_building, class_name: "Building", optional: true
+  belongs_to :referred_by, class_name: "User", optional: true
+  has_many :referrals, class_name: "User", foreign_key: :referred_by_id,
+           inverse_of: :referred_by, dependent: :nullify
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.to_s.strip.squeeze(" ").presence }
@@ -66,8 +69,11 @@ class User < ApplicationRecord
     in: ->(_) { I18n.available_locales.map(&:to_s) }
   }, allow_nil: true
   validates :theme, inclusion: { in: ->(_) { THEMES } }
+  validates :referral_code, presence: true, uniqueness: true
 
   before_validation :normalize_avatar_key
+  before_validation :assign_referral_code, on: :create
+  after_create :copy_referred_by_from_beta_signup
 
   # Current companion set. Legacy man/woman remain in DB until the user re-picks.
   CHARACTERS = %w[birdie bee bear fox horse raven].freeze
@@ -78,6 +84,10 @@ class User < ApplicationRecord
   AVATAR_KEYS = %w[bird bear fox wolf].freeze
   THEMES = %w[light dark].freeze
   PREMIUM_ACCESS_STATUSES = %w[active trialing].freeze
+
+  def self.generate_referral_code
+    SecureRandom.urlsafe_base64(6)
+  end
   ADVENTURE_GUIDE_KEY = "adventure_guide".freeze
   COMPANION_PICK_KEY = "companion_pick".freeze
   BASE_CAMP_INTRO_KEY = "base_camp_intro".freeze
@@ -510,6 +520,25 @@ class User < ApplicationRecord
     return true if CHARACTERS.include?(character.to_s)
 
     false
+  end
+
+  def assign_referral_code
+    return if referral_code.present?
+
+    loop do
+      self.referral_code = self.class.generate_referral_code
+      break unless self.class.exists?(referral_code: referral_code)
+    end
+  end
+
+  def copy_referred_by_from_beta_signup
+    return if referred_by_id.present?
+
+    signup = BetaSignup.find_by(email: email_address)
+    return if signup.blank? || signup.referred_by_id.blank?
+    return if signup.referred_by_id == id
+
+    update_column(:referred_by_id, signup.referred_by_id)
   end
 
   def normalize_avatar_key
