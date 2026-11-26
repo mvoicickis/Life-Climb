@@ -196,6 +196,7 @@ class DailyTodosController < ApplicationController
       @stream_climb_reward = flash[:climb_reward]
       @stream_win_number = @win_number.to_i
       @stream_push_offer_eligible = push_offer_eligible_for_win(win_number: @stream_win_number)
+      goal_title = helpers.active_goal_title(strategy_goal: @strategy_goal, journey: @journey)
       @stream_streak_moment = Today::StreakMoment.present_for!(user: current_user)
       @stream_finale = Today::FinaleMoment.present_for!(
         user: current_user,
