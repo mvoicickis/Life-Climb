@@ -96,7 +96,7 @@ jobs:
       # Pinned to Chrome 157 until capybara#2867 is released — remove the pin then.
       - name: Set up Chrome for Testing
         id: setup-chrome
-        uses: browser-actions/setup-chrome@v2.11.1
+        uses: browser-actions/setup-chrome@v2.2.0
         with:
           chrome-version: 157
           install-chromedriver: true
@@ -142,7 +142,7 @@ jobs:
       # Pinned to Chrome 157 until capybara#2867 is released — remove the pin then.
       - name: Set up Chrome for Testing
         id: setup-chrome
-        uses: browser-actions/setup-chrome@v2.11.1
+        uses: browser-actions/setup-chrome@v2.2.0
         with:
           chrome-version: 157
           install-chromedriver: true
