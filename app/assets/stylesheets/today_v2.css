@@ -1762,6 +1762,7 @@ html:has(.lp-dash.is-today-v2.is-today-photo) body,
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  overflow-anchor: none;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom) + 1rem);

@@ -9,25 +9,35 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     @css = Rails.root.join("app/assets/stylesheets/today_v2.css").read
   end
 
-  test "toggles is-collapsed past the scroll threshold and cleans up" do
-    assert_match(/COLLAPSE_AT\s*=\s*24/, @source)
+  test "collapses only with measured room and wide hysteresis" do
     assert_match(/COLLAPSED_CLASS\s*=\s*["']is-collapsed["']/, @source)
+    assert_match(/EXPAND_AT\s*=\s*4/, @source)
+    assert_match(/COLLAPSE_EXTRA\s*=\s*16/, @source)
+    assert_match(/ROOM_SLACK\s*=\s*40/, @source)
+    assert_match(/TRANSITION_LOCK_MS\s*=\s*300/, @source)
+    assert_includes @source, "ensureCollapsedDelta"
+    assert_includes @source, "hasCollapseRoom"
+    assert_includes @source, "getBoundingClientRect"
+    assert_includes @source, "scrollHeight"
+    assert_includes @source, "clientHeight"
+    assert_includes @source, "wantsCollapsed"
+    assert_includes @source, "collapseAt"
     assert_includes @source, "requestAnimationFrame"
     assert_includes @source, "cancelAnimationFrame"
     assert_includes @source, "passive: true"
     assert_includes @source, "lp-today-scroll__pad"
-    assert_includes @source, "scrollTop"
     assert_includes @source, "removeEventListener"
-    assert_match(/scrollTop\s*>\s*COLLAPSE_AT/, @source)
-    assert_match(/EXPAND_AT\s*=\s*8/, @source)
-    assert_includes @source, "wantsCollapsed"
-    assert_match(/scrollTop\s*>\s*EXPAND_AT/, @source)
+    assert_includes @source, "transitionend"
+    assert_includes @source, "transitionLocked"
+    refute_match(/COLLAPSE_AT\s*=/, @source)
   end
 
-  test "hysteresis keeps collapsed until scroll returns near top" do
-    assert_includes @source, "classList.contains(COLLAPSED_CLASS) === collapsed"
-    assert_match(/wantsCollapsed[\s\S]*EXPAND_AT[\s\S]*COLLAPSE_AT/m, @source)
-    assert_match(/flag === "true"\)[\s\S]*EXPAND_AT/m, @source)
+  test "ignores scroll while collapse transition is locked" do
+    assert_includes @source, "lockTransition"
+    assert_includes @source, "handleTransitionEnd"
+    sync_body = @source[/syncCollapsed\(\)\s*\{([^}]+)\}/m, 1]
+    assert sync_body.present?
+    assert_includes sync_body, "transitionLocked"
   end
 
   test "pad flag survives stream replace and connect applies it without transition flash" do
@@ -52,7 +62,7 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     assert_match(/dataset\[PAD_FLAG\]\s*=\s*collapsed \? ["']true["'] : ["']false["']/, @source)
   end
 
-  test "collapsed CSS hides the kicker and camp bar fill uses deep green" do
+  test "collapsed CSS hides the kicker and disables scroll anchoring" do
     assert_match(/\.lp-today-group-card--goal\.is-collapsed/, @css)
     assert_match(
       /\.lp-today-group-card--goal\.is-collapsed\s+\.lp-today-goal-kicker-row\s*\{[^}]*max-height:\s*0/m,
@@ -66,5 +76,13 @@ class TodayGoalCardControllerContractTest < ActiveSupport::TestCase
     assert_includes @css, "is-no-transition"
     assert_includes @css, "prefers-reduced-motion: reduce"
     refute_match(/#[0-9a-fA-F]{3,8}/, @css[/\.lp-today-group-card--goal\.is-collapsed[\s\S]{0,400}/])
+
+    pad = @css[/\.lp-dash\.is-today-v2\.is-today-photo \.lp-today-scroll__pad\s*\{[^}]+\}/m]
+    assert pad.present?
+    assert_match(/overflow-anchor:\s*none/, pad)
+
+    goal = @css[/\.lp-dash\.is-today-v2\.is-today-photo \.lp-today-group-card--goal\s*\{[^}]+\}/m]
+    assert goal.present?
+    assert_match(/overflow-anchor:\s*none/, goal)
   end
 end
