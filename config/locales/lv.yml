@@ -925,7 +925,6 @@ lv:
       share_recap: "Dalīties"
       next_day: "Nākamā diena"
       share_toast: "Kopsavilkums gatavs."
-      share_text: '%{title} — %{done}/%{total} uzvarētas cīņas · %{hp}% veselība LifePoints'
     finale: # TODO: translate
       aria: "All battles won"
       title: "ALL BATTLES WON!"
@@ -933,14 +932,15 @@ lv:
       battles_today: "Battles today"
       camp_of: "Camp %{current} of %{total}"
       share: "Share my day"
+      share_text: "I reached the summit of my goal 🏔️ lifeclimb.app"
       continue: "Continue"
     # TODO: translate
     end_of_day:
       goal_label: "Your goal"
       open_mountain: "Open Mountain"
       share_recap:
-        one: "Today I won %{count} battle toward my goal: %{goal} ⛰ lifeclimb.app"
-        other: "Today I won %{count} battles toward my goal: %{goal} ⛰ lifeclimb.app"
+        one: "I won %{count} battle today 🏔️ lifeclimb.app"
+        other: "I won %{count} battles today 🏔️ lifeclimb.app"
       ack:
         all_battles_won:
           one: "All %{count} battle won today"

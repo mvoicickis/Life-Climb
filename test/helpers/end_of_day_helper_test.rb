@@ -24,14 +24,15 @@ class EndOfDayHelperTest < ActionView::TestCase
     assert_includes end_of_day_recap_stats(health), "2 of 3 battles"
   end
 
-  test "end_of_day_share_text uses goal and battle count" do
+  test "end_of_day_share_text uses battle count only without goal title" do
     health = Today::BattlefieldHealth.call(open_count: 0, total_count: 3)
-    journey = LifeJourney.new(title: "Journey")
+    secret = "SECRET GOAL XYZ"
 
-    text = end_of_day_share_text(health, strategy_goal: nil, journey: journey)
+    text = end_of_day_share_text(health)
+    assert_equal I18n.t("dash.end_of_day.share_recap", count: 3), text
     assert_includes text, "3 battles"
-    assert_includes text, "Journey"
     assert_includes text, "lifeclimb.app"
+    refute_includes text, secret
   end
 
   test "end_of_day_battles_won_line uses singular copy" do

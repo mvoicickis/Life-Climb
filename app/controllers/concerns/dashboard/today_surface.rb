@@ -133,11 +133,7 @@ module Dashboard
       @battlefield_day_ended = Today::BattlefieldDay.ended?(session)
       @climb_streak = Climb::Streak.status(user: current_user)
       assign_end_of_day!
-      @recap_share = helpers.end_of_day_share_text(
-        @battlefield_health,
-        strategy_goal: @strategy_goal,
-        journey: @journey
-      )
+      @recap_share = helpers.end_of_day_share_text(@battlefield_health)
     end
 
     def sync_today_battles!

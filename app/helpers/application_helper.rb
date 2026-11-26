@@ -440,13 +440,10 @@ module ApplicationHelper
     end
   end
 
-  def end_of_day_share_text(health, strategy_goal: nil, journey: nil)
+  def end_of_day_share_text(health)
     return "" if health.blank?
 
-    goal = active_goal_title(strategy_goal: strategy_goal, journey: journey)
-    t("dash.end_of_day.share_recap",
-      count: health.done_count,
-      goal: goal)
+    t("dash.end_of_day.share_recap", count: health.done_count)
   end
 
   def end_of_day_battles_won_line(health)
