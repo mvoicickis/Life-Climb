@@ -92,6 +92,39 @@ class Today::CampProgressTest < ActiveSupport::TestCase
     assert_operator after[:percent], :<, before[:percent]
   end
 
+  test "percent clamps at 100 when recurring wins outnumber battle definitions" do
+    clear_camp_battles!(@camp)
+    battle = @camp.children.create!(
+      user: @user,
+      life_area: @journey.life_area,
+      life_journey: @journey,
+      horizon: "day",
+      title: "Daily",
+      scheduled_on: Date.current,
+      position: 0,
+      repeat: "daily"
+    )
+    Strategy::CascadeToDaily.call(user: @user, life_area: @journey.life_area)
+
+    3.times do |i|
+      on = Date.current - i.days
+      todo = @user.daily_todos.find_or_create_by!(strategy_goal_id: battle.id, scheduled_on: on) do |row|
+        row.user = @user
+        row.title = battle.title
+        row.aspect_key = @journey.life_area.key
+        row.position = i
+        row.tag = "strategy"
+      end
+      todo.update!(completed_at: Time.current)
+    end
+
+    result = Today::CampProgress.call(user: @user, journey: @journey, goal: @goal)
+
+    assert_equal 3, result[:won]
+    assert_equal 1, result[:total]
+    assert_equal 100, result[:percent]
+  end
+
   test "finished camp reads 100 percent" do
     clear_camp_battles!(@camp)
     open_battle = @camp.children.create!(
