@@ -4,7 +4,17 @@ require "test_helpers/today_v2_test_helper"
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include TodayV2TestHelper
 
-  driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
+  if ENV["SE_CHROMEDRIVER"].present?
+    Selenium::WebDriver::Chrome::Service.driver_path = ENV["SE_CHROMEDRIVER"]
+  end
+
+  if ENV["CHROME_BIN"].present?
+    driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ] do |driver_options|
+      driver_options.binary = ENV["CHROME_BIN"]
+    end
+  else
+    driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
+  end
 
   def visit(location, **kwargs)
     super
