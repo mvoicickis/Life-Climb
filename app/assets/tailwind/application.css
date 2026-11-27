@@ -17484,6 +17484,10 @@ button.lp-strategy-overflow {
 }
 
 /* Dev board kanban (admin) */
+.lp-admin__main:has(.lp-dev-board-page) {
+  max-width: 1280px;
+}
+
 .lp-dev-board__board {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -17545,7 +17549,7 @@ button.lp-strategy-overflow {
 }
 
 .lp-dev-board__card-type {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   line-height: 1;
   flex-shrink: 0;
 }
@@ -17584,20 +17588,27 @@ button.lp-strategy-overflow {
   color: var(--lp-muted);
 }
 
+.lp-dev-board__owner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+  min-width: 0;
+}
+
+.lp-dev-board__owner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
 .lp-dev-board__owner-label {
-  margin: 0 0 0.35rem;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--lp-muted);
-}
-
-.lp-dev-board__owner-row {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-width: 0;
 }
 
 .lp-dev-board .lp-avatar-circle,
@@ -17611,7 +17622,7 @@ button.lp-strategy-overflow {
   justify-content: center;
   object-fit: cover;
   background: var(--lp-surface);
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 2px solid rgba(15, 23, 42, 0.08);
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--lp-ink);
@@ -17631,7 +17642,7 @@ button.lp-strategy-overflow {
 }
 
 .lp-dev-board__meta {
-  margin: 0.45rem 0 0;
+  margin: 0;
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--lp-muted);
@@ -17646,6 +17657,7 @@ button.lp-strategy-overflow {
 }
 
 .lp-dev-board__later {
+  margin-top: 0.85rem;
   padding: 0.65rem 0.85rem;
   background: rgba(255, 255, 255, 0.6);
   border: 1px dashed rgba(15, 23, 42, 0.15);
@@ -17653,6 +17665,9 @@ button.lp-strategy-overflow {
 }
 
 .lp-dev-board__later-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.88rem;
   font-weight: 800;
   color: var(--lp-muted);
@@ -17662,6 +17677,15 @@ button.lp-strategy-overflow {
 
 .lp-dev-board__later-summary::-webkit-details-marker {
   display: none;
+}
+
+.lp-dev-board__later-chev {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.lp-dev-board__later[open] .lp-dev-board__later-chev {
+  transform: rotate(90deg);
 }
 
 .lp-dev-board__later[open] .lp-dev-board__col-cards {

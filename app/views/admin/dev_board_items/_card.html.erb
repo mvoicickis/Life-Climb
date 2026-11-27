@@ -1,0 +1,19 @@
+<article class="lp-dev-board__card">
+  <div class="lp-dev-board__card-top">
+    <span class="lp-dev-board__card-type" aria-hidden="true"><%= item.kind_icon %></span>
+    <h3 class="lp-dev-board__card-title"><%= item.title %></h3>
+  </div>
+  <span class="lp-dev-board__pill lp-dev-board__pill--<%= item.priority %>"><%= item.priority_label %></span>
+  <div class="lp-dev-board__owner-row">
+    <%= render "shared/avatar_circle", user: item.owner, size: :lg %>
+    <div class="lp-dev-board__owner-text">
+      <span class="lp-dev-board__owner-label"><%= t("admin.dev_board.owner") %></span>
+      <span class="lp-dev-board__owner-name"><%= item.owner.display_name %></span>
+    </div>
+  </div>
+  <p class="lp-dev-board__meta">
+    <%= t("admin.dev_board.reported_by",
+          name: item.reported_by_label,
+          date: l(item.created_at.to_date, format: :long)) %>
+  </p>
+</article>
