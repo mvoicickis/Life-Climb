@@ -3911,7 +3911,38 @@ en:
       ops: "Ops"
       strategy: "AI Strategist"
       blog: "Blog"
+      dev_board: "Dev board"
       app: "Back to app"
+    dev_board:
+      title: "Dev board"
+      lead: "Shared bugs, features, and checks for the team."
+      owner: "Owner"
+      column_empty: "Nothing here"
+      later_summary:
+        one: "Later (1)"
+        other: "Later (%{count})"
+      reported_by: "Reported by %{name} · %{date}"
+      reported_internal: "Internal"
+      columns:
+        todo: "To do"
+        doing: "Doing"
+        needs_check: "Needs check"
+        done: "Done"
+      kinds:
+        bug: "Bug"
+        feature: "Feature"
+        improvement: "Improvement"
+        check: "Check"
+      priorities:
+        urgent: "Urgent"
+        important: "Important"
+        nice_to_have: "Nice to have"
+      statuses:
+        todo: "Open"
+        doing: "Doing"
+        needs_check: "Needs check"
+        done: "Done"
+        later: "Later"
     referrals:
       title: "Referrals"
       lead: "Who brought new climbers and how they are doing."

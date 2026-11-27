@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -188,6 +188,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "on_date"], name: "index_day_overshoot_bonuses_on_user_id_and_on_date", unique: true
     t.index ["user_id"], name: "index_day_overshoot_bonuses_on_user_id"
+  end
+
+  create_table "dev_board_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "done_at"
+    t.string "kind", default: "bug", null: false
+    t.integer "owner_id", null: false
+    t.string "priority", default: "important", null: false
+    t.integer "reported_by_id"
+    t.string "reporter_note"
+    t.string "status", default: "todo", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "index_dev_board_items_on_owner_id"
+    t.index ["reported_by_id"], name: "index_dev_board_items_on_reported_by_id"
+    t.index ["status", "priority"], name: "index_dev_board_items_on_status_and_priority"
   end
 
   create_table "dreams", force: :cascade do |t|
@@ -717,6 +734,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
   add_foreign_key "daily_todos", "strategy_goals"
   add_foreign_key "daily_todos", "users"
   add_foreign_key "day_overshoot_bonuses", "users"
+  add_foreign_key "dev_board_items", "users", column: "owner_id"
+  add_foreign_key "dev_board_items", "users", column: "reported_by_id", on_delete: :nullify
   add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
   add_foreign_key "finished_products", "buildings"
