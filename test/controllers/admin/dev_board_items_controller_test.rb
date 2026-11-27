@@ -23,6 +23,14 @@ module Admin
       assert_redirected_to new_session_path
     end
 
+    test "preview sample is ignored in test" do
+      sign_in_as @admin
+      get admin_dev_board_items_path, params: { preview: "sample" }
+
+      assert_response :success
+      assert_no_match(/Memory leak on Render/, response.body)
+    end
+
     test "admin can open dev board" do
       DevBoardItem.create!(
         owner: @admin,
