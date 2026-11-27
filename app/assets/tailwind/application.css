@@ -17483,6 +17483,191 @@ button.lp-strategy-overflow {
   align-items: center;
 }
 
+/* Dev board kanban (admin) */
+.lp-dev-board__board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: start;
+  margin-bottom: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .lp-dev-board__board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .lp-dev-board__board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lp-dev-board__column {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  padding: 0.65rem 0.55rem 0.85rem;
+}
+
+.lp-dev-board__col-head {
+  margin: 0 0 0.55rem;
+  padding: 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--lp-muted);
+}
+
+.lp-dev-board__col-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 2rem;
+}
+
+.lp-dev-board__card {
+  background: var(--lp-surface);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 0.95rem;
+  padding: 0.75rem 0.8rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.lp-dev-board__card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.lp-dev-board__card-type {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.lp-dev-board__card-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board__pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.18rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+}
+
+.lp-dev-board__pill--urgent {
+  background: rgba(244, 63, 94, 0.14);
+  color: #be123c;
+}
+
+.lp-dev-board__pill--important {
+  background: rgba(250, 204, 21, 0.22);
+  color: #a16207;
+}
+
+.lp-dev-board__pill--nice_to_have {
+  background: rgba(15, 23, 42, 0.07);
+  color: var(--lp-muted);
+}
+
+.lp-dev-board__owner-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--lp-muted);
+}
+
+.lp-dev-board__owner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.lp-dev-board .lp-avatar-circle,
+.lp-dev-board .lp-avatar-circle--initial {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+  background: var(--lp-surface);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board .lp-avatar-circle.is-lg,
+.lp-dev-board .lp-avatar-circle--initial.is-lg {
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.1rem;
+}
+
+.lp-dev-board__owner-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board__meta {
+  margin: 0.45rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+  line-height: 1.35;
+}
+
+.lp-dev-board__empty {
+  margin: 0.25rem 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--lp-muted);
+}
+
+.lp-dev-board__later {
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed rgba(15, 23, 42, 0.15);
+  border-radius: 0.85rem;
+}
+
+.lp-dev-board__later-summary {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--lp-muted);
+  cursor: pointer;
+  list-style: none;
+}
+
+.lp-dev-board__later-summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dev-board__later[open] .lp-dev-board__col-cards {
+  margin-top: 0.65rem;
+}
+
 .lp-admin__form {
   display: flex;
   flex-direction: column;

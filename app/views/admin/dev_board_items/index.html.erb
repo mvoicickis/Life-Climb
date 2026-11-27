@@ -1,0 +1,80 @@
+<% content_for :title, t("admin.dev_board.title") %>
+
+<header class="lp-admin__page-head">
+  <div>
+    <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
+    <h1 class="lp-admin__h1"><%= t("admin.dev_board.title") %></h1>
+    <p class="lp-admin__lead"><%= t("admin.dev_board.lead") %></p>
+  </div>
+</header>
+
+<div class="lp-dev-board__board" id="dev-board">
+  <% DevBoardItem::COLUMN_STATUSES.each do |status| %>
+    <% items = @columns[status] %>
+    <section class="lp-dev-board__column" aria-labelledby="dev-board-col-<%= status %>">
+      <h2 class="lp-dev-board__col-head" id="dev-board-col-<%= status %>">
+        <%= t("admin.dev_board.columns.#{status}") %>
+      </h2>
+      <div class="lp-dev-board__col-cards">
+        <% if items.any? %>
+          <% items.each do |item| %>
+            <article class="lp-dev-board__card">
+              <div class="lp-dev-board__card-top">
+                <span class="lp-dev-board__card-type" aria-hidden="true"><%= item.kind_icon %></span>
+                <h3 class="lp-dev-board__card-title"><%= item.title %></h3>
+              </div>
+              <span class="lp-dev-board__pill lp-dev-board__pill--<%= item.priority %>"><%= item.priority_label %></span>
+              <div class="lp-dev-board__owner">
+                <p class="lp-dev-board__owner-label"><%= t("admin.dev_board.owner") %></p>
+                <div class="lp-dev-board__owner-row">
+                  <%= render "shared/avatar_circle", user: item.owner, size: :lg %>
+                  <span class="lp-dev-board__owner-name"><%= item.owner.display_name %></span>
+                </div>
+              </div>
+              <p class="lp-dev-board__meta">
+                <%= t("admin.dev_board.reported_by",
+                      name: item.reported_by_label,
+                      date: l(item.created_at.to_date, format: :long)) %>
+              </p>
+            </article>
+          <% end %>
+        <% else %>
+          <p class="lp-dev-board__empty"><%= t("admin.dev_board.column_empty") %></p>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
+
+<details class="lp-dev-board__later">
+  <summary class="lp-dev-board__later-summary">
+    <%= t("admin.dev_board.later_summary", count: @later_items.size) %>
+  </summary>
+  <div class="lp-dev-board__col-cards">
+    <% if @later_items.any? %>
+      <% @later_items.each do |item| %>
+        <article class="lp-dev-board__card">
+          <div class="lp-dev-board__card-top">
+            <span class="lp-dev-board__card-type" aria-hidden="true"><%= item.kind_icon %></span>
+            <h3 class="lp-dev-board__card-title"><%= item.title %></h3>
+          </div>
+          <span class="lp-dev-board__pill lp-dev-board__pill--<%= item.priority %>"><%= item.priority_label %></span>
+          <div class="lp-dev-board__owner">
+            <p class="lp-dev-board__owner-label"><%= t("admin.dev_board.owner") %></p>
+            <div class="lp-dev-board__owner-row">
+              <%= render "shared/avatar_circle", user: item.owner, size: :lg %>
+              <span class="lp-dev-board__owner-name"><%= item.owner.display_name %></span>
+            </div>
+          </div>
+          <p class="lp-dev-board__meta">
+            <%= t("admin.dev_board.reported_by",
+                  name: item.reported_by_label,
+                  date: l(item.created_at.to_date, format: :long)) %>
+          </p>
+        </article>
+      <% end %>
+    <% else %>
+      <p class="lp-dev-board__empty"><%= t("admin.dev_board.column_empty") %></p>
+    <% end %>
+  </div>
+</details>

@@ -37,6 +37,7 @@
           <%= link_to t("admin.nav.referrals"), admin_referrals_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "referrals"}" %>
           <%= link_to t("admin.nav.blog"), admin_blog_posts_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "blog_posts"}" %>
           <%= link_to t("admin.nav.users"), admin_users_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "users"}" %>
+          <%= link_to t("admin.nav.dev_board"), admin_dev_board_items_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "dev_board_items"}" %>
           <%= link_to t("admin.nav.statistics"), admin_statistics_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "statistics"}" %>
           <%= link_to t("admin.nav.feedback"), admin_feedbacks_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "feedbacks"}" %>
           <%= link_to t("admin.nav.system"), admin_system_path, class: "lp-admin__nav-link #{"is-active" if controller_name == "systems"}" %>
