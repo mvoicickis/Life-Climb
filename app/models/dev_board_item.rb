@@ -31,6 +31,7 @@ class DevBoardItem < ApplicationRecord
   }, validate: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
+  validates :description, length: { maximum: SUMMARY_MAX }, allow_blank: true
   validates :reporter_note, length: { maximum: REPORTER_NOTE_MAX }, allow_blank: true
 
   scope :column_sorted, -> {

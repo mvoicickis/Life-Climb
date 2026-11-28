@@ -17,6 +17,16 @@ class DevBoardItemTest < ActiveSupport::TestCase
     assert_equal "todo", item.status
   end
 
+  test "rejects description over summary max" do
+    item = DevBoardItem.new(
+      owner: @owner,
+      title: "Long write-up",
+      description: "x" * (TextLimits::SUMMARY_MAX + 1)
+    )
+    assert_not item.valid?
+    assert item.errors[:description].present?
+  end
+
   test "rejects blank title" do
     item = DevBoardItem.new(owner: @owner, title: "")
     assert_not item.valid?

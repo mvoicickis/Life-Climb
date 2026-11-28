@@ -1,0 +1,82 @@
+<dialog class="lp-dev-board__dialog"
+        data-dev-board-report-target="dialog"
+        data-action="click->dev-board-report#backdropClose">
+  <div class="lp-dev-board__dialog-panel">
+    <header class="lp-dev-board__dialog-head">
+      <h2 class="lp-dev-board__dialog-title" id="dev-board-report-title">
+        <%= t("admin.dev_board.report.title") %>
+      </h2>
+      <button type="button"
+              class="lp-dev-board__dialog-close"
+              aria-label="<%= t("admin.dev_board.report.close") %>"
+              data-action="dev-board-report#close">
+        ×
+      </button>
+    </header>
+
+    <%= form_with model: @report_item,
+                  url: admin_dev_board_items_path,
+                  class: "lp-dev-board__report-form",
+                  html: { "aria-labelledby": "dev-board-report-title" } do |f| %>
+      <% if @report_item.errors.any? %>
+        <div class="lp-admin__flash is-alert" role="alert">
+          <%= @report_item.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_title") %></span>
+        <%= f.text_field :title, class: "lp-input lp-dev-board__control", required: true, autocomplete: "off" %>
+      </label>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_description") %></span>
+        <%= f.text_area :description, class: "lp-input lp-dev-board__control lp-dev-board__control--area", rows: 4 %>
+      </label>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_kind") %></span>
+        <%= f.select :kind,
+                     options_for_select(
+                       DevBoardItem::KINDS.map { |kind| [t("admin.dev_board.kinds.#{kind}"), kind] },
+                       @report_item.kind
+                     ),
+                     {},
+                     class: "lp-input lp-dev-board__control" %>
+      </label>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_priority") %></span>
+        <%= f.select :priority,
+                     options_for_select(
+                       DevBoardItem::PRIORITIES.map { |priority|
+                         [t("admin.dev_board.priorities.#{priority}"), priority]
+                       },
+                       @report_item.priority
+                     ),
+                     {},
+                     class: "lp-input lp-dev-board__control" %>
+      </label>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_owner") %></span>
+        <%= f.select :owner_id,
+                     @admin_owners.map { |user| [user.display_name, user.id] },
+                     { include_blank: t("admin.dev_board.report.owner_blank") },
+                     class: "lp-input lp-dev-board__control", required: true %>
+      </label>
+
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.report.field_reporter_note") %></span>
+        <%= f.text_field :reporter_note, class: "lp-input lp-dev-board__control", autocomplete: "off" %>
+      </label>
+
+      <div class="lp-admin__btn-row">
+        <button type="button" class="lp-admin__ghost" data-action="dev-board-report#close">
+          <%= t("admin.dev_board.report.cancel") %>
+        </button>
+        <%= f.submit t("admin.dev_board.report.submit"), class: "lp-admin__btn is-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</dialog>
