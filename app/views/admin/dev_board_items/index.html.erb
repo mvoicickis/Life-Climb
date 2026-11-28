@@ -37,20 +37,4 @@
       </section>
     <% end %>
   </div>
-
-  <details class="lp-dev-board__later">
-    <summary class="lp-dev-board__later-summary">
-      <span class="lp-dev-board__later-chev" aria-hidden="true">▸</span>
-      <%= t("admin.dev_board.later_summary", count: @later_items.size) %>
-    </summary>
-    <div class="lp-dev-board__col-cards">
-      <% if @later_items.any? %>
-        <% @later_items.each do |item| %>
-          <%= render "card", item: item, admin_owners: @admin_owners %>
-        <% end %>
-      <% else %>
-        <p class="lp-dev-board__empty"><%= t("admin.dev_board.column_empty") %></p>
-      <% end %>
-    </div>
-  </details>
 </div>

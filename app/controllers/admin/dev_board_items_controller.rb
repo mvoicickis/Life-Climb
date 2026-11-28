@@ -18,7 +18,7 @@ module Admin
 
     def create
       @report_item = DevBoardItem.new(dev_board_item_params)
-      @report_item.status = :todo
+      @report_item.status = :idea
       @report_item.reported_by = current_user
       ensure_owner_is_admin!
 
@@ -37,7 +37,8 @@ module Admin
         to: params[:to],
         actor: current_user,
         admins: @admin_owners.to_a,
-        check_note: params[:check_note]
+        check_note: params[:check_note],
+        column: params[:column]
       )
         redirect_to admin_dev_board_items_path, notice: t("admin.dev_board.moves.success")
         return
@@ -78,7 +79,6 @@ module Admin
       admins = @admin_owners.limit(2).to_a
       data = DevBoardSamplePreview.build(users: admins)
       @columns = data[:columns]
-      @later_items = data[:later_items]
     end
 
     def load_board_from_db!
@@ -88,7 +88,6 @@ module Admin
         .group_by(&:status)
 
       @columns = DevBoardItem::COLUMN_STATUSES.index_with { |status| grouped[status] || [] }
-      @later_items = grouped[DevBoardItem::LATER_STATUS] || []
     end
   end
 end

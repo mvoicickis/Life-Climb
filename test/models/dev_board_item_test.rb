@@ -30,7 +30,7 @@ class DevBoardItemTest < ActiveSupport::TestCase
     item.save!
     assert_equal "bug", item.kind
     assert_equal "important", item.priority
-    assert_equal "todo", item.status
+    assert_equal "idea", item.status
   end
 
   test "rejects description over summary max" do
@@ -74,6 +74,12 @@ class DevBoardItemTest < ActiveSupport::TestCase
 
     item.update!(reported_by: nil, reporter_note: "A beta tester")
     assert_equal "A beta tester", item.reported_by_label
+  end
+
+  test "move plan for week sends idea to this week" do
+    item = create_item!(status: :idea)
+    assert item.move!(to: "plan_for_week", actor: @owner, admins: @admins)
+    assert item.todo?
   end
 
   test "move start sends item to doing" do
@@ -123,28 +129,41 @@ class DevBoardItemTest < ActiveSupport::TestCase
     assert item.needs_check?
   end
 
-  test "move later from todo" do
-    item = create_item!(status: :todo)
-    assert item.move!(to: "later", actor: @owner, admins: @admins)
-    assert item.later?
+  test "relocate to done sets done_at and clears review fields" do
+    item = create_item!(
+      status: :todo,
+      check_note: "Note",
+      work_owner_id: @owner.id
+    )
+    assert item.move!(to: "relocate", column: "done", actor: @owner, admins: @admins)
+    item.reload
+    assert item.done?
+    assert item.done_at.present?
+    assert_nil item.work_owner_id
+    assert_nil item.check_note
   end
 
-  test "move later from doing" do
-    item = create_item!(status: :doing)
-    assert item.move!(to: "later", actor: @owner, admins: @admins)
-    assert item.later?
-  end
-
-  test "move later is not allowed from needs check" do
-    item = create_item!(status: :needs_check, owner: @checker, work_owner_id: @owner.id)
-    assert_not item.move!(to: "later", actor: @checker, admins: @admins)
-    assert item.needs_check?
-  end
-
-  test "move to todo from later" do
-    item = create_item!(status: :later)
-    assert item.move!(to: "move_to_todo", actor: @owner, admins: @admins)
+  test "relocate out of done clears done_at" do
+    item = create_item!(status: :done, done_at: 1.day.ago)
+    assert item.move!(to: "relocate", column: "todo", actor: @owner, admins: @admins)
+    item.reload
     assert item.todo?
+    assert_nil item.done_at
+  end
+
+  test "relocate to needs check behaves like send to check" do
+    item = create_item!(status: :idea, owner: @owner)
+    assert item.move!(to: "relocate", column: "needs_check", actor: @owner, admins: @admins)
+    item.reload
+    assert item.needs_check?
+    assert_equal @checker, item.owner
+    assert_equal @owner.id, item.work_owner_id
+  end
+
+  test "relocate rejects same column" do
+    item = create_item!(status: :idea)
+    assert_not item.move!(to: "relocate", column: "idea", actor: @owner, admins: @admins)
+    assert item.idea?
   end
 
   test "disallowed move is rejected" do

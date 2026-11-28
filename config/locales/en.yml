@@ -3918,13 +3918,11 @@ en:
       lead: "Shared bugs, features, and checks for the team."
       owner: "Owner"
       column_empty: "Nothing here"
-      later_summary:
-        one: "Later (1)"
-        other: "Later (%{count})"
       reported_by: "Reported by %{name} · %{date}"
       reported_internal: "Internal"
       columns:
-        todo: "To do"
+        idea: "Ideas"
+        todo: "This week"
         doing: "Doing"
         needs_check: "Needs check"
         done: "Done"
@@ -3938,11 +3936,11 @@ en:
         important: "Important"
         nice_to_have: "Nice to have"
       statuses:
-        todo: "Open"
+        idea: "Idea"
+        todo: "This week"
         doing: "Doing"
         needs_check: "Needs check"
         done: "Done"
-        later: "Later"
       report:
         open: "Report a bug or idea"
         title: "Report a bug or idea"
@@ -3959,12 +3957,11 @@ en:
         submit: "Add to board"
         created: "Added to the board."
       moves:
+        plan_for_week: "Plan for this week"
         start: "Start"
         send_to_check: "Send to %{name} to check"
         looks_good: "Looks good ✓"
         not_yet: "Not yet"
-        later: "Later"
-        move_to_todo: "Move to To do"
         menu: "More"
         check_note_label: "What still needs work?"
         check_note_required: "can't be blank"

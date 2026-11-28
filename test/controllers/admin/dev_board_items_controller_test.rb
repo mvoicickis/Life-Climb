@@ -46,9 +46,9 @@ module Admin
 
       assert_response :success
       assert_select "h1", text: /Dev board/
-      assert_select ".lp-dev-board__column", count: 4
+      assert_select ".lp-dev-board__column", count: 5
       assert_match(/Stats page locks on old calendar month/, response.body)
-      assert_match(/To do/, response.body)
+      assert_match(/This week/, response.body)
       assert_match(/Needs check/, response.body)
     end
 
@@ -70,7 +70,7 @@ module Admin
       assert_equal "Added to the board.", flash[:notice]
 
       item = DevBoardItem.order(:id).last
-      assert_equal "todo", item.status
+      assert_equal "idea", item.status
       assert_equal @admin, item.owner
       assert_equal @admin, item.reported_by
       assert_equal "Splash screen stuck on old build", item.title
