@@ -169,8 +169,8 @@ class DevBoardItem < ApplicationRecord
     when "needs_check"
       return false unless apply_send_to_check!(admins)
     when "idea", "todo", "doing"
-      self.status = dest
       self.done_at = nil if done?
+      self.status = dest
     end
 
     save
