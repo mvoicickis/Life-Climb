@@ -455,9 +455,27 @@ export default class extends Controller {
         return
       }
       this.dismissAndAct(target)
+    } else if (this.keyValue === "circle") {
+      this.nudgeRingPulse()
     } else {
       this.dismissWithoutAckForCircle()
     }
+  }
+
+  skip(event) {
+    event?.preventDefault()
+    event?.stopPropagation()
+    if (this.dismissed || this.keyValue !== "circle") return
+    this.dismissSilently()
+  }
+
+  nudgeRingPulse() {
+    if (!this.hasRingTarget) return
+
+    const ring = this.ringTarget
+    ring.classList.remove("is-nudge")
+    void ring.offsetWidth
+    ring.classList.add("is-nudge")
   }
 
   async advanceHabitStage() {

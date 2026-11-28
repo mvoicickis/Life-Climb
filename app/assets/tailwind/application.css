@@ -31620,6 +31620,14 @@ html.is-android .lp-landing-hero__body {
   animation: none;
 }
 
+.lp-first-tip__ring.is-nudge {
+  animation: lp-first-tip-ring-pulse 1.1s var(--lp-ease-out) 1;
+}
+
+.lp-first-tip.is-reduced-motion .lp-first-tip__ring.is-nudge {
+  animation: none;
+}
+
 .lp-first-tip__bubble {
   position: fixed;
   z-index: 2;
@@ -31721,6 +31729,22 @@ html.is-android .lp-landing-hero__body {
 
 .lp-first-tip__copy {
   margin: 0;
+}
+
+.lp-first-tip__skip {
+  display: block;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  font-family: var(--lp-font-ui);
+  font-size: var(--lp-type-ui-sm);
+  font-weight: var(--lp-weight-600);
+  color: var(--lp-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
 }
 
 @import "../stylesheets/mountain_trail.css";
