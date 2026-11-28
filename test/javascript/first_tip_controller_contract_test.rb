@@ -23,10 +23,17 @@ class FirstTipControllerContractTest < ActiveSupport::TestCase
   end
 
   test "circle outside tap and waitForTarget timeout dismiss without ack" do
-    assert_includes @source, "dismissWithoutAckForCircle"
-    assert_includes @source, "dismissSilently"
-    refute_match(/captureClick[\s\S]*?else \{\s*this\.dismiss\(\)/m, @source)
-    assert_includes @source, "dismissWithoutAckForCircle()"
+    dismiss_silently = @source[/dismissSilently\(\) \{[\s\S]*?\n  \}/m]
+    assert dismiss_silently
+    refute_includes dismiss_silently, "sendAck"
+
+    capture = @source[/captureClick\(event\) \{[\s\S]*?\n  \}/m]
+    assert_includes capture, "dismissWithoutAckForCircle()"
+    refute_includes capture, "this.dismiss()"
+
+    wait_for_target = @source[/async waitForTarget\(\) \{[\s\S]*?\n  \}/m]
+    assert_includes wait_for_target, "dismissWithoutAckForCircle()"
+    refute_includes wait_for_target, "this.dismiss()"
   end
 
   test "circle target tap still posts ack via dismissAndAct" do
