@@ -16,9 +16,9 @@ module Admin
         owner: :karen, reporter: :karen, created_on: Date.new(2026, 11, 24) },
       { status: :done, kind: :check, title: "Export stats missing last week", priority: :important,
         owner: :mareks, reporter: :mareks, created_on: Date.new(2026, 11, 18) },
-      { status: :later, kind: :bug, title: "Mountain trail coach text runs off on small phones",
+      { status: :idea, kind: :bug, title: "Mountain trail coach text runs off on small phones",
         priority: :important, owner: :mareks, reporter: :mareks, created_on: Date.new(2026, 11, 21) },
-      { status: :later, kind: :check, title: "Rename Basics to Habits", priority: :nice_to_have,
+      { status: :idea, kind: :check, title: "Rename Basics to Habits", priority: :nice_to_have,
         owner: :karen, reporter: :karen, created_on: Date.new(2026, 11, 20) }
     ].freeze
 
@@ -31,8 +31,7 @@ module Admin
       items = SAMPLES.map { |row| build_item(row, owners) }
       grouped = items.group_by(&:status)
       columns = DevBoardItem::COLUMN_STATUSES.index_with { |status| grouped[status] || [] }
-      later = grouped[DevBoardItem::LATER_STATUS] || []
-      { columns: columns, later_items: later }
+      { columns: columns }
     end
 
     def self.resolve_owners(users)

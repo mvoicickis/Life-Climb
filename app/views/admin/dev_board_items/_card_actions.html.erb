@@ -1,8 +1,13 @@
 <% checker = DevBoardItem.other_admin(item.owner, admin_owners) %>
-<% show_later = item.todo? || item.doing? %>
 
 <div class="lp-dev-board__actions">
-  <% if item.todo? %>
+  <% if item.idea? %>
+    <%= button_to t("admin.dev_board.moves.plan_for_week"),
+                  move_admin_dev_board_item_path(item),
+                  method: :patch,
+                  params: { to: "plan_for_week" },
+                  class: "lp-dev-board__move-btn" %>
+  <% elsif item.todo? %>
     <%= button_to t("admin.dev_board.moves.start"),
                   move_admin_dev_board_item_path(item),
                   method: :patch,
@@ -17,47 +22,26 @@
                     class: "lp-dev-board__move-btn" %>
     <% end %>
   <% elsif item.needs_check? %>
-  <%= button_to t("admin.dev_board.moves.looks_good"),
-                move_admin_dev_board_item_path(item),
-                method: :patch,
-                params: { to: "looks_good" },
-                class: "lp-dev-board__move-btn" %>
-  <%= form_with url: move_admin_dev_board_item_path(item),
-                method: :patch,
-                class: "lp-dev-board__not-yet-form",
-                local: true do %>
-    <%= hidden_field_tag :to, "not_yet" %>
-    <label class="lp-admin__field">
-      <span><%= t("admin.dev_board.moves.check_note_label") %></span>
-      <%= text_area_tag :check_note,
-                        nil,
-                        class: "lp-input lp-dev-board__control lp-dev-board__control--area",
-                        rows: 2,
-                        required: true,
-                        maxlength: DevBoardItem::CHECK_NOTE_MAX %>
-    </label>
-    <%= button_tag t("admin.dev_board.moves.not_yet"), type: "submit", class: "lp-dev-board__move-btn" %>
-  <% end %>
-  <% elsif item.later? %>
-    <%= button_to t("admin.dev_board.moves.move_to_todo"),
+    <%= button_to t("admin.dev_board.moves.looks_good"),
                   move_admin_dev_board_item_path(item),
                   method: :patch,
-                  params: { to: "move_to_todo" },
+                  params: { to: "looks_good" },
                   class: "lp-dev-board__move-btn" %>
-  <% end %>
-
-  <% if show_later %>
-    <details class="lp-dev-board__card-menu">
-      <summary class="lp-dev-board__card-menu-summary" aria-label="<%= t("admin.dev_board.moves.menu") %>">
-        ⋯
-      </summary>
-      <div class="lp-dev-board__card-menu-panel">
-        <%= button_to t("admin.dev_board.moves.later"),
-                      move_admin_dev_board_item_path(item),
-                      method: :patch,
-                      params: { to: "later" },
-                      class: "lp-dev-board__menu-btn" %>
-      </div>
-    </details>
+    <%= form_with url: move_admin_dev_board_item_path(item),
+                  method: :patch,
+                  class: "lp-dev-board__not-yet-form",
+                  local: true do %>
+      <%= hidden_field_tag :to, "not_yet" %>
+      <label class="lp-admin__field">
+        <span><%= t("admin.dev_board.moves.check_note_label") %></span>
+        <%= text_area_tag :check_note,
+                          nil,
+                          class: "lp-input lp-dev-board__control lp-dev-board__control--area",
+                          rows: 2,
+                          required: true,
+                          maxlength: DevBoardItem::CHECK_NOTE_MAX %>
+      </label>
+      <%= button_tag t("admin.dev_board.moves.not_yet"), type: "submit", class: "lp-dev-board__move-btn" %>
+    <% end %>
   <% end %>
 </div>

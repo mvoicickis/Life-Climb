@@ -5,19 +5,17 @@ class DevBoardItem < ApplicationRecord
 
   KINDS = %w[bug feature improvement check].freeze
   PRIORITIES = %w[urgent important nice_to_have].freeze
-  STATUSES = %w[todo doing needs_check done later].freeze
-  COLUMN_STATUSES = %w[todo doing needs_check done].freeze
-  LATER_STATUS = "later"
+  STATUSES = %w[idea todo doing needs_check done].freeze
+  COLUMN_STATUSES = %w[idea todo doing needs_check done].freeze
   REPORTER_NOTE_MAX = 120
   CHECK_NOTE_MAX = 500
 
   MOVES = {
+    "plan_for_week" => %w[idea].freeze,
     "start" => %w[todo].freeze,
     "send_to_check" => %w[doing].freeze,
     "looks_good" => %w[needs_check].freeze,
-    "not_yet" => %w[needs_check].freeze,
-    "later" => %w[todo doing].freeze,
-    "move_to_todo" => %w[later].freeze
+    "not_yet" => %w[needs_check].freeze
   }.freeze
 
   KIND_ICONS = {
@@ -34,11 +32,11 @@ class DevBoardItem < ApplicationRecord
   enum :kind, { bug: "bug", feature: "feature", improvement: "improvement", check: "check" }, validate: true
   enum :priority, { urgent: "urgent", important: "important", nice_to_have: "nice_to_have" }, validate: true
   enum :status, {
+    idea: "idea",
     todo: "todo",
     doing: "doing",
     needs_check: "needs_check",
-    done: "done",
-    later: "later"
+    done: "done"
   }, validate: true
 
   validates :title, presence: true, length: { maximum: TITLE_MAX }
@@ -59,8 +57,10 @@ class DevBoardItem < ApplicationRecord
     Array(admins).find { |user| user.id != owner.id }
   end
 
-  def move!(to:, actor:, admins:, check_note: nil)
+  def move!(to:, actor:, admins:, check_note: nil, column: nil)
     move = to.to_s
+    return apply_relocate!(column: column, admins: admins) if move == "relocate"
+
     unless MOVES.key?(move)
       errors.add(:base, I18n.t("admin.dev_board.moves.invalid"))
       return false
@@ -74,22 +74,14 @@ class DevBoardItem < ApplicationRecord
     admin_ids = Array(admins).map(&:id)
 
     case move
+    when "plan_for_week"
+      self.status = :todo
     when "start"
       self.status = :doing
     when "send_to_check"
-      checker = self.class.other_admin(owner, admins)
-      if checker.nil?
-        errors.add(:base, I18n.t("admin.dev_board.moves.need_second_admin"))
-        return false
-      end
-      self.work_owner_id = owner_id
-      self.owner = checker
-      self.status = :needs_check
+      return false unless apply_send_to_check!(admins)
     when "looks_good"
-      self.status = :done
-      self.done_at = Time.current
-      self.work_owner_id = nil
-      self.check_note = nil
+      apply_mark_done!
     when "not_yet"
       note = check_note.to_s.strip
       if note.blank?
@@ -108,11 +100,6 @@ class DevBoardItem < ApplicationRecord
       self.work_owner_id = nil
       self.status = :doing
       self.check_note = note
-    when "later"
-      self.status = :later
-      self.done_at = nil
-    when "move_to_todo"
-      self.status = :todo
     end
 
     save
@@ -142,5 +129,50 @@ class DevBoardItem < ApplicationRecord
     else
       I18n.t("admin.dev_board.reported_internal")
     end
+  end
+
+  private
+
+  def apply_send_to_check!(admins)
+    checker = self.class.other_admin(owner, admins)
+    if checker.nil?
+      errors.add(:base, I18n.t("admin.dev_board.moves.need_second_admin"))
+      return false
+    end
+    self.work_owner_id = owner_id
+    self.owner = checker
+    self.status = :needs_check
+    true
+  end
+
+  def apply_mark_done!
+    self.status = :done
+    self.done_at = Time.current
+    self.work_owner_id = nil
+    self.check_note = nil
+  end
+
+  def apply_relocate!(column:, admins:)
+    dest = column.to_s
+    unless STATUSES.include?(dest)
+      errors.add(:column, I18n.t("admin.dev_board.moves.invalid"))
+      return false
+    end
+    if dest == status
+      errors.add(:base, I18n.t("admin.dev_board.moves.not_allowed"))
+      return false
+    end
+
+    case dest
+    when "done"
+      apply_mark_done!
+    when "needs_check"
+      return false unless apply_send_to_check!(admins)
+    when "idea", "todo", "doing"
+      self.done_at = nil if done?
+      self.status = dest
+    end
+
+    save
   end
 end
