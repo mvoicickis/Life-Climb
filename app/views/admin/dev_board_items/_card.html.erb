@@ -11,9 +11,17 @@
       <span class="lp-dev-board__owner-name"><%= item.owner.display_name %></span>
     </div>
   </div>
+  <% if item.doing? && item.check_note.present? %>
+    <p class="lp-dev-board__check-note">
+      <%= truncate(item.check_note, length: 80) %>
+    </p>
+  <% end %>
   <p class="lp-dev-board__meta">
     <%= t("admin.dev_board.reported_by",
           name: item.reported_by_label,
           date: l(item.created_at.to_date, format: :long)) %>
   </p>
+  <% if item.persisted? %>
+    <%= render "card_actions", item: item, admin_owners: admin_owners %>
+  <% end %>
 </article>

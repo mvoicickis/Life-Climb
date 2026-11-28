@@ -28,7 +28,7 @@
         <div class="lp-dev-board__col-cards">
           <% if items.any? %>
             <% items.each do |item| %>
-              <%= render "card", item: item %>
+              <%= render "card", item: item, admin_owners: @admin_owners %>
             <% end %>
           <% else %>
             <p class="lp-dev-board__empty"><%= t("admin.dev_board.column_empty") %></p>
@@ -46,7 +46,7 @@
     <div class="lp-dev-board__col-cards">
       <% if @later_items.any? %>
         <% @later_items.each do |item| %>
-          <%= render "card", item: item %>
+          <%= render "card", item: item, admin_owners: @admin_owners %>
         <% end %>
       <% else %>
         <p class="lp-dev-board__empty"><%= t("admin.dev_board.column_empty") %></p>

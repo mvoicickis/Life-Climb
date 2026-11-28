@@ -2,7 +2,8 @@
 
 module Admin
   class DevBoardItemsController < BaseController
-    before_action :load_admin_owners, only: %i[index create]
+    before_action :load_admin_owners, only: %i[index create move]
+    before_action :set_dev_board_item, only: :move
 
     def index
       @report_item = DevBoardItem.new
@@ -31,7 +32,25 @@ module Admin
       render :index, status: :unprocessable_entity
     end
 
+    def move
+      if @item.move!(
+        to: params[:to],
+        actor: current_user,
+        admins: @admin_owners.to_a,
+        check_note: params[:check_note]
+      )
+        redirect_to admin_dev_board_items_path, notice: t("admin.dev_board.moves.success")
+        return
+      end
+
+      redirect_to admin_dev_board_items_path, alert: @item.errors.full_messages.to_sentence
+    end
+
     private
+
+    def set_dev_board_item
+      @item = DevBoardItem.find(params[:id])
+    end
 
     def load_admin_owners
       @admin_owners = User.where(admin: true).order(:id)
@@ -64,7 +83,7 @@ module Admin
 
     def load_board_from_db!
       grouped = DevBoardItem
-        .includes(:owner, :reported_by)
+        .includes(:owner, :reported_by, :work_owner)
         .column_sorted
         .group_by(&:status)
 

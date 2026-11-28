@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_28_103000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -74,7 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "referred_by_id"
+    t.integer "referred_by_id"
     t.index ["email"], name: "index_beta_signups_on_email", unique: true
     t.index ["referred_by_id"], name: "index_beta_signups_on_referred_by_id"
   end
@@ -191,20 +191,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
   end
 
   create_table "dev_board_items", force: :cascade do |t|
-    t.datetime "created_at", null: false
+    t.string "title", null: false
     t.text "description"
-    t.datetime "done_at"
     t.string "kind", default: "bug", null: false
-    t.integer "owner_id", null: false
     t.string "priority", default: "important", null: false
+    t.string "status", default: "todo", null: false
+    t.integer "owner_id", null: false
     t.integer "reported_by_id"
     t.string "reporter_note"
-    t.string "status", default: "todo", null: false
-    t.string "title", null: false
+    t.string "check_note"
+    t.integer "work_owner_id"
+    t.datetime "done_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["owner_id"], name: "index_dev_board_items_on_owner_id"
     t.index ["reported_by_id"], name: "index_dev_board_items_on_reported_by_id"
     t.index ["status", "priority"], name: "index_dev_board_items_on_status_and_priority"
+    t.index ["work_owner_id"], name: "index_dev_board_items_on_work_owner_id"
   end
 
   create_table "dreams", force: :cascade do |t|
@@ -709,12 +712,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
     t.datetime "beta_invited_at"
     t.json "first_tips_daily", default: {}, null: false
     t.string "referral_code", null: false
-    t.bigint "referred_by_id"
+    t.integer "referred_by_id"
     t.index ["beta_invited_at"], name: "index_users_on_beta_invited_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["referral_code"], name: "index_users_on_referral_code", unique: true
     t.index ["referred_by_id"], name: "index_users_on_referred_by_id"
-    t.index ["focus_building_id"], name: "index_users_on_focus_building_id"
     t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"
   end
 
@@ -736,6 +739,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_153000) do
   add_foreign_key "day_overshoot_bonuses", "users"
   add_foreign_key "dev_board_items", "users", column: "owner_id"
   add_foreign_key "dev_board_items", "users", column: "reported_by_id", on_delete: :nullify
+  add_foreign_key "dev_board_items", "users", column: "work_owner_id"
   add_foreign_key "dreams", "users"
   add_foreign_key "feedbacks", "users"
   add_foreign_key "finished_products", "buildings"
