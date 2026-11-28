@@ -153,7 +153,7 @@ export default class extends Controller {
       if (this.targetEl) return true
       await new Promise((resolve) => requestAnimationFrame(resolve))
     }
-    this.dismiss()
+    this.dismissWithoutAckForCircle()
     return false
   }
 
@@ -436,7 +436,7 @@ export default class extends Controller {
     if (this.dismissed) return
     const target = this.targetEl || this.findTarget()
     if (!target) {
-      this.dismiss()
+      this.dismissWithoutAckForCircle()
       return
     }
     const rect = target.getBoundingClientRect()
@@ -456,7 +456,7 @@ export default class extends Controller {
       }
       this.dismissAndAct(target)
     } else {
-      this.dismiss()
+      this.dismissWithoutAckForCircle()
     }
   }
 
@@ -483,8 +483,26 @@ export default class extends Controller {
   dismiss() {
     if (this.dismissed) return
     this.dismissed = true
-    void this.sendAck()
+    if (this.ackOnPlainDismiss()) void this.sendAck()
     this.element.remove()
+  }
+
+  dismissWithoutAckForCircle() {
+    if (this.keyValue === "circle") {
+      this.dismissSilently()
+    } else {
+      this.dismiss()
+    }
+  }
+
+  dismissSilently() {
+    if (this.dismissed) return
+    this.dismissed = true
+    this.element.remove()
+  }
+
+  ackOnPlainDismiss() {
+    return this.keyValue !== "circle"
   }
 
   dismissAndAct(target) {
