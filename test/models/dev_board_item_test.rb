@@ -14,7 +14,7 @@ class DevBoardItemTest < ActiveSupport::TestCase
       onboarding_completed_at: Time.current,
       home_stat_count: 6
     )
-    @admins = [@owner, @checker].sort_by(&:id)
+    @admins = [ @owner, @checker ].sort_by(&:id)
     @reporter = users(:one)
   end
 
