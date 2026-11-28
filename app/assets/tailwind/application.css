@@ -17692,6 +17692,110 @@ button.lp-strategy-overflow {
   margin-top: 0.65rem;
 }
 
+.lp-dev-board__report-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: var(--lp-tap);
+  padding: 0.65rem 1.15rem;
+  border: 0;
+  border-radius: var(--lp-radius-pill);
+  background: var(--lp-green);
+  color: var(--lp-ink);
+  font-family: var(--lp-font-ui);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--lp-shadow-cta);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.lp-dev-board__report-btn:hover {
+  background: var(--lp-green-deep);
+  color: #fff;
+}
+
+.lp-dev-board__dialog {
+  border: 0;
+  padding: 0;
+  margin: auto;
+  max-width: min(92vw, 28rem);
+  width: 100%;
+  max-height: min(85dvh, 40rem);
+  background: transparent;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board__dialog::backdrop {
+  background: color-mix(in srgb, var(--lp-ink) 45%, transparent);
+}
+
+.lp-dev-board__dialog-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-height: min(85dvh, 40rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 1.1rem max(1rem, env(safe-area-inset-bottom, 0px));
+  border-radius: var(--lp-radius-card);
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  box-shadow: var(--lp-shadow-card);
+}
+
+.lp-dev-board__dialog-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.lp-dev-board__dialog-title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--lp-font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board__dialog-close {
+  flex-shrink: 0;
+  width: var(--lp-tap);
+  height: var(--lp-tap);
+  margin: -0.35rem -0.35rem 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lp-muted);
+  font-size: 1.65rem;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-dev-board__report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.lp-dev-board__control {
+  border-radius: var(--lp-radius-field);
+  font-size: 1rem;
+  min-height: var(--lp-tap);
+}
+
+.lp-dev-board__control--area {
+  min-height: 6rem;
+  resize: vertical;
+  border-radius: var(--lp-radius-field);
+}
+
 .lp-admin__form {
   display: flex;
   flex-direction: column;

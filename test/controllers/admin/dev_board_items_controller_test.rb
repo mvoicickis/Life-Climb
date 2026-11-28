@@ -51,5 +51,84 @@ module Admin
       assert_match(/To do/, response.body)
       assert_match(/Needs check/, response.body)
     end
+
+    test "admin can create a dev board item" do
+      sign_in_as @admin
+
+      assert_difference -> { DevBoardItem.count }, 1 do
+        post admin_dev_board_items_path, params: {
+          dev_board_item: {
+            title: "Splash screen stuck on old build",
+            kind: "bug",
+            priority: "urgent",
+            owner_id: @admin.id
+          }
+        }
+      end
+
+      assert_redirected_to admin_dev_board_items_path
+      assert_equal "Added to the board.", flash[:notice]
+
+      item = DevBoardItem.order(:id).last
+      assert_equal "todo", item.status
+      assert_equal @admin, item.owner
+      assert_equal @admin, item.reported_by
+      assert_equal "Splash screen stuck on old build", item.title
+    end
+
+    test "create rejects blank title" do
+      sign_in_as @admin
+
+      assert_no_difference -> { DevBoardItem.count } do
+        post admin_dev_board_items_path, params: {
+          dev_board_item: {
+            title: "",
+            kind: "bug",
+            priority: "important",
+            owner_id: @admin.id
+          }
+        }
+      end
+
+      assert_response :unprocessable_entity
+      assert_match(/Title.*blank/i, response.body)
+    end
+
+    test "non admin cannot create dev board item" do
+      sign_in_as @user
+
+      assert_no_difference -> { DevBoardItem.count } do
+        post admin_dev_board_items_path, params: {
+          dev_board_item: {
+            title: "Should not save",
+            kind: "bug",
+            priority: "important",
+            owner_id: @admin.id
+          }
+        }
+      end
+
+      assert_redirected_to dashboard_path
+      follow_redirect!
+      assert_match(/Access denied/i, flash[:alert].to_s + response.body)
+    end
+
+    test "create rejects non admin owner" do
+      sign_in_as @admin
+
+      assert_no_difference -> { DevBoardItem.count } do
+        post admin_dev_board_items_path, params: {
+          dev_board_item: {
+            title: "Wrong owner",
+            kind: "bug",
+            priority: "important",
+            owner_id: @user.id
+          }
+        }
+      end
+
+      assert_response :unprocessable_entity
+      assert_match(/team admin/i, response.body)
+    end
   end
 end

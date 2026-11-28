@@ -1,13 +1,22 @@
 <% content_for :title, t("admin.dev_board.title") %>
 
-<div class="lp-dev-board lp-dev-board-page">
+<div class="lp-dev-board lp-dev-board-page"
+     data-controller="dev-board-report"
+     data-dev-board-report-open-value="<%= @open_report_modal ? "true" : "false" %>">
   <header class="lp-admin__page-head">
-    <div>
+    <div class="lp-admin__page-head__title">
       <p class="lp-admin__eyebrow"><%= t("admin.brand") %></p>
       <h1 class="lp-admin__h1"><%= t("admin.dev_board.title") %></h1>
       <p class="lp-admin__lead"><%= t("admin.dev_board.lead") %></p>
     </div>
+    <button type="button"
+            class="lp-dev-board__report-btn"
+            data-action="dev-board-report#open">
+      <%= t("admin.dev_board.report.open") %>
+    </button>
   </header>
+
+  <%= render "report_modal" %>
 
   <div class="lp-dev-board__board" id="dev-board">
     <% DevBoardItem::COLUMN_STATUSES.each do |status| %>
