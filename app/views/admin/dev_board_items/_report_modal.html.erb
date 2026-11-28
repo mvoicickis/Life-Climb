@@ -3,8 +3,11 @@
         data-action="click->dev-board-report#backdropClose">
   <div class="lp-dev-board__dialog-panel">
     <header class="lp-dev-board__dialog-head">
-      <h2 class="lp-dev-board__dialog-title" id="dev-board-report-title">
-        <%= t("admin.dev_board.report.title") %>
+      <h2 class="lp-dev-board__dialog-title"
+          id="dev-board-report-title"
+          data-dev-board-report-target="heading"
+          data-default-title="<%= t("admin.dev_board.report.title") %>">
+        <%= @report_item.persisted? ? t("admin.dev_board.report.edit_title") : t("admin.dev_board.report.title") %>
       </h2>
       <button type="button"
               class="lp-dev-board__dialog-close"
@@ -14,10 +17,18 @@
       </button>
     </header>
 
+    <% report_url = @report_item.persisted? ? admin_dev_board_item_path(@report_item) : admin_dev_board_items_path %>
     <%= form_with model: @report_item,
-                  url: admin_dev_board_items_path,
+                  url: report_url,
+                  method: @report_item.persisted? ? :patch : :post,
                   class: "lp-dev-board__report-form",
-                  html: { "aria-labelledby": "dev-board-report-title" } do |f| %>
+                  html: {
+                    "aria-labelledby": "dev-board-report-title",
+                    data: {
+                      dev_board_report_target: "form",
+                      dev_board_report_create_url_value: admin_dev_board_items_path
+                    }
+                  } do |f| %>
       <% if @report_item.errors.any? %>
         <div class="lp-admin__flash is-alert" role="alert">
           <%= @report_item.errors.full_messages.to_sentence %>
@@ -75,7 +86,12 @@
         <button type="button" class="lp-admin__ghost" data-action="dev-board-report#close">
           <%= t("admin.dev_board.report.cancel") %>
         </button>
-        <%= f.submit t("admin.dev_board.report.submit"), class: "lp-admin__btn is-secondary" %>
+        <%= f.submit(@report_item.persisted? ? t("admin.dev_board.report.save") : t("admin.dev_board.report.submit"),
+                     class: "lp-admin__btn is-secondary",
+                     data: {
+                       dev_board_report_target: "submit",
+                       default_label: t("admin.dev_board.report.submit")
+                     }) %>
       </div>
     <% end %>
   </div>

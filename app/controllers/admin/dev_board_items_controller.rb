@@ -2,8 +2,8 @@
 
 module Admin
   class DevBoardItemsController < BaseController
-    before_action :load_admin_owners, only: %i[index create move]
-    before_action :set_dev_board_item, only: :move
+    before_action :load_admin_owners, only: %i[index create update move]
+    before_action :set_dev_board_item, only: %i[move update destroy]
 
     def index
       @report_item = DevBoardItem.new
@@ -30,6 +30,26 @@ module Admin
       @open_report_modal = true
       load_board_from_db!
       render :index, status: :unprocessable_entity
+    end
+
+    def update
+      @report_item = @item
+      @report_item.assign_attributes(dev_board_item_params)
+      ensure_owner_is_admin!
+
+      if @report_item.errors.empty? && @report_item.save
+        redirect_to admin_dev_board_items_path, notice: t("admin.dev_board.report.updated")
+        return
+      end
+
+      @open_report_modal = true
+      load_board_from_db!
+      render :index, status: :unprocessable_entity
+    end
+
+    def destroy
+      @item.destroy!
+      redirect_to admin_dev_board_items_path, notice: t("admin.dev_board.delete.deleted")
     end
 
     def move
@@ -69,10 +89,11 @@ module Admin
     end
 
     def ensure_owner_is_admin!
-      owner_id = @report_item.owner_id.to_i
+      record = @report_item
+      owner_id = record.owner_id.to_i
       return if owner_id.positive? && @admin_owners.any? { |user| user.id == owner_id }
 
-      @report_item.errors.add(:owner, t("admin.dev_board.report.owner_invalid"))
+      record.errors.add(:owner, t("admin.dev_board.report.owner_invalid"))
     end
 
     def load_sample_preview!

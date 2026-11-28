@@ -17541,6 +17541,75 @@ button.lp-strategy-overflow {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
+.lp-dev-board__card--compact {
+  padding: 0.55rem 0.65rem;
+}
+
+.lp-dev-board__card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-bottom: 0.2rem;
+}
+
+.lp-dev-board__card-title-btn {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--lp-font-ui);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--lp-ink);
+  cursor: pointer;
+}
+
+.lp-dev-board__card--compact .lp-dev-board__pill {
+  margin-bottom: 0.3rem;
+}
+
+.lp-dev-board__owner-row--compact {
+  margin: 0.15rem 0 0;
+  gap: 0.35rem;
+}
+
+.lp-dev-board .lp-avatar-circle.is-sm,
+.lp-dev-board .lp-avatar-circle--initial.is-sm {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.72rem;
+  border-width: 1px;
+}
+
+.lp-dev-board__owner-row--compact .lp-dev-board__owner-name {
+  font-size: 0.82rem;
+}
+
+.lp-dev-board__card-desc {
+  display: none;
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--lp-ink);
+}
+
+.lp-dev-board__card--compact .lp-dev-board__meta {
+  display: none;
+  margin: 0.3rem 0 0;
+}
+
+.lp-dev-board__card--compact:hover .lp-dev-board__meta,
+.lp-dev-board__card--compact.is-open .lp-dev-board__meta,
+.lp-dev-board__card--compact:hover .lp-dev-board__card-desc,
+.lp-dev-board__card--compact.is-open .lp-dev-board__card-desc {
+  display: block;
+}
+
 .lp-dev-board__card-top {
   display: flex;
   align-items: flex-start;
@@ -17776,6 +17845,46 @@ button.lp-strategy-overflow {
 
 .lp-dev-board__menu-btn {
   width: 100%;
+}
+
+.lp-dev-board__card-menu-panel .lp-dev-board__menu-btn,
+.lp-dev-board__card-menu-panel form {
+  flex: none;
+  width: 100%;
+}
+
+.lp-dev-board__card-menu-panel .lp-dev-board__menu-btn {
+  justify-content: flex-start;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+}
+
+.lp-dev-board__card-menu-panel .lp-dev-board__menu-btn:hover {
+  background: var(--lp-paper);
+}
+
+.lp-dev-board__menu-btn.is-danger {
+  color: #be123c;
+}
+
+.lp-dev-board__move-submenu {
+  margin: 0.15rem 0;
+}
+
+.lp-dev-board__move-submenu > summary {
+  list-style: none;
+}
+
+.lp-dev-board__move-submenu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-dev-board__move-submenu-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.25rem 0 0.15rem 0.35rem;
 }
 
 .lp-dev-board__report-btn {
