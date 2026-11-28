@@ -192,7 +192,11 @@ Rails.application.routes.draw do
     resource :system, only: :show, controller: "systems"
     resource :ops, only: %i[ show update ], controller: "ops"
     resource :strategy, only: %i[ show create ], controller: "strategy"
-    resources :dev_board_items, only: %i[index create], path: "dev_board"
+    resources :dev_board_items, only: %i[index create], path: "dev_board" do
+      member do
+        patch :move
+      end
+    end
     resources :feedbacks, only: %i[ index destroy ]
     resources :testers, only: :index
     resources :beta_signups, only: %i[index destroy]

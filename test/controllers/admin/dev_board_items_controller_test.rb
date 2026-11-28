@@ -130,5 +130,39 @@ module Admin
       assert_response :unprocessable_entity
       assert_match(/team admin/i, response.body)
     end
+
+    test "non admin cannot move dev board item" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Lock card",
+        kind: :bug,
+        priority: :important,
+        status: :todo
+      )
+
+      sign_in_as @user
+      patch move_admin_dev_board_item_path(item), params: { to: "start" }
+
+      assert_redirected_to dashboard_path
+      assert item.reload.todo?
+    end
+
+    test "admin can move dev board item via patch" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Start me",
+        kind: :bug,
+        priority: :important,
+        status: :todo
+      )
+
+      sign_in_as @admin
+      patch move_admin_dev_board_item_path(item), params: { to: "start" }
+
+      assert_redirected_to admin_dev_board_items_path
+      assert item.reload.doing?
+    end
   end
 end
