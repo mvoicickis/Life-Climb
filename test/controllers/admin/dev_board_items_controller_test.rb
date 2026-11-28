@@ -164,5 +164,101 @@ module Admin
       assert_redirected_to admin_dev_board_items_path
       assert item.reload.doing?
     end
+
+    test "admin can update dev board item" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Old title",
+        description: "Old note",
+        kind: :bug,
+        priority: :important,
+        status: :idea
+      )
+
+      sign_in_as @admin
+      patch admin_dev_board_item_path(item), params: {
+        dev_board_item: {
+          title: "New title",
+          description: "Updated note",
+          kind: "feature",
+          priority: "urgent",
+          owner_id: @admin.id
+        }
+      }
+
+      assert_redirected_to admin_dev_board_items_path
+      assert_equal "Card updated.", flash[:notice]
+
+      item.reload
+      assert_equal "New title", item.title
+      assert_equal "Updated note", item.description
+      assert_equal "feature", item.kind
+      assert_equal "urgent", item.priority
+    end
+
+    test "admin can destroy dev board item" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Remove me",
+        kind: :bug,
+        priority: :important,
+        status: :idea
+      )
+
+      sign_in_as @admin
+
+      assert_difference -> { DevBoardItem.count }, -1 do
+        delete admin_dev_board_item_path(item)
+      end
+
+      assert_redirected_to admin_dev_board_items_path
+      assert_equal "Card deleted.", flash[:notice]
+    end
+
+    test "non admin cannot update dev board item" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Locked",
+        kind: :bug,
+        priority: :important,
+        status: :idea
+      )
+
+      sign_in_as @user
+      patch admin_dev_board_item_path(item), params: {
+        dev_board_item: {
+          title: "Hacked",
+          kind: "bug",
+          priority: "important",
+          owner_id: @admin.id
+        }
+      }
+
+      assert_redirected_to dashboard_path
+      assert_equal "Locked", item.reload.title
+    end
+
+    test "non admin cannot destroy dev board item" do
+      item = DevBoardItem.create!(
+        owner: @admin,
+        reported_by: @admin,
+        title: "Stay",
+        kind: :bug,
+        priority: :important,
+        status: :idea
+      )
+
+      sign_in_as @user
+
+      assert_no_difference -> { DevBoardItem.count } do
+        delete admin_dev_board_item_path(item)
+      end
+
+      assert_redirected_to dashboard_path
+      assert item.reload.persisted?
+    end
   end
 end

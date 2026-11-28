@@ -44,4 +44,46 @@
       <%= button_tag t("admin.dev_board.moves.not_yet"), type: "submit", class: "lp-dev-board__move-btn" %>
     <% end %>
   <% end %>
+
+  <details class="lp-dev-board__card-menu">
+    <summary class="lp-dev-board__card-menu-summary" aria-label="<%= t("admin.dev_board.moves.menu") %>">
+      ⋯
+    </summary>
+    <div class="lp-dev-board__card-menu-panel">
+      <button type="button"
+              class="lp-dev-board__menu-btn"
+              data-action="dev-board-report#openEdit"
+              data-dev-board-report-url-value="<%= admin_dev_board_item_path(item) %>"
+              data-dev-board-report-title-label-value="<%= t('admin.dev_board.report.edit_title') %>"
+              data-dev-board-report-submit-label-value="<%= t('admin.dev_board.report.save') %>"
+              data-dev-board-report-item-title-value="<%= item.title %>"
+              data-dev-board-report-item-description-value="<%= item.description.to_s %>"
+              data-dev-board-report-item-kind-value="<%= item.kind %>"
+              data-dev-board-report-item-priority-value="<%= item.priority %>"
+              data-dev-board-report-item-owner-id-value="<%= item.owner_id %>"
+              data-dev-board-report-item-reporter-note-value="<%= item.reporter_note.to_s %>">
+        <%= t("admin.dev_board.report.edit") %>
+      </button>
+      <details class="lp-dev-board__move-submenu">
+        <summary class="lp-dev-board__menu-btn lp-dev-board__menu-btn--sub">
+          <%= t("admin.dev_board.moves.move_to") %>
+        </summary>
+        <div class="lp-dev-board__move-submenu-panel">
+          <% DevBoardItem::COLUMN_STATUSES.each do |status| %>
+            <% next if status == item.status %>
+            <%= button_to t("admin.dev_board.columns.#{status}"),
+                          move_admin_dev_board_item_path(item),
+                          method: :patch,
+                          params: { to: "relocate", column: status },
+                          class: "lp-dev-board__menu-btn" %>
+          <% end %>
+        </div>
+      </details>
+      <%= button_to t("admin.dev_board.delete.action"),
+                    admin_dev_board_item_path(item),
+                    method: :delete,
+                    class: "lp-dev-board__menu-btn is-danger",
+                    form: { data: { turbo_confirm: t("admin.dev_board.delete.confirm") } } %>
+    </div>
+  </details>
 </div>

@@ -3956,6 +3956,14 @@ en:
         cancel: "Cancel"
         submit: "Add to board"
         created: "Added to the board."
+        edit: "Edit"
+        edit_title: "Edit card"
+        save: "Save"
+        updated: "Card updated."
+      delete:
+        action: "Delete"
+        confirm: "Delete this card?"
+        deleted: "Card deleted."
       moves:
         plan_for_week: "Plan for this week"
         start: "Start"
@@ -3963,6 +3971,7 @@ en:
         looks_good: "Looks good ✓"
         not_yet: "Not yet"
         menu: "More"
+        move_to: "Move to…"
         check_note_label: "What still needs work?"
         check_note_required: "can't be blank"
         success: "Board updated."
