@@ -22,18 +22,27 @@ class FirstTipControllerContractTest < ActiveSupport::TestCase
     assert_includes @source, 'closest(".lp-dash-nav")'
   end
 
-  test "circle outside tap and waitForTarget timeout dismiss without ack" do
+  test "circle outside tap nudges without dismiss or ack" do
     dismiss_silently = @source[/dismissSilently\(\) \{[\s\S]*?\n  \}/m]
     assert dismiss_silently
     refute_includes dismiss_silently, "sendAck"
 
     capture = @source[/captureClick\(event\) \{[\s\S]*?\n  \}/m]
+    assert_includes capture, "nudgeRingPulse()"
+    assert_includes capture, 'keyValue === "circle"'
+    refute_match(/else if \(this\.keyValue === "circle"\)[\s\S]*?dismissSilently/m, capture)
     assert_includes capture, "dismissWithoutAckForCircle()"
-    refute_includes capture, "this.dismiss()"
 
     wait_for_target = @source[/async waitForTarget\(\) \{[\s\S]*?\n  \}/m]
     assert_includes wait_for_target, "dismissWithoutAckForCircle()"
     refute_includes wait_for_target, "this.dismiss()"
+  end
+
+  test "circle skip dismisses silently without ack" do
+    skip_fn = @source[/skip\(event\) \{[\s\S]*?\n  \}/m]
+    assert skip_fn
+    assert_includes skip_fn, "dismissSilently()"
+    refute_includes skip_fn, "sendAck"
   end
 
   test "circle target tap still posts ack via dismissAndAct" do
@@ -52,5 +61,12 @@ class FirstTipControllerContractTest < ActiveSupport::TestCase
     assert_includes @layer, "first_tip_ack_path"
     assert_includes @layer, "data-first-tip-guide-initial-value"
     assert_includes @layer, "first_tip_guide_avatar_url"
+  end
+
+  test "layer renders circle skip control" do
+    assert_includes @layer, 'cfg[:key].to_s == "circle"'
+    assert_includes @layer, "lp-first-tip__skip"
+    assert_includes @layer, "click->first-tip#skip"
+    assert_includes @layer, "first_tips.skip"
   end
 end

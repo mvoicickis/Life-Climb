@@ -3267,6 +3267,7 @@ en:
       finish:
         html: 'Finish this to clear the <strong>camp</strong> 🏕' # design preview only
   first_tips:
+    skip: "Skip"
     circle:
       html: 'Tap the <strong>circle</strong> when it''s done'
     mountain:
