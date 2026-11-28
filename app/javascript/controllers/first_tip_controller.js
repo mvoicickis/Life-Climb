@@ -153,7 +153,7 @@ export default class extends Controller {
       if (this.targetEl) return true
       await new Promise((resolve) => requestAnimationFrame(resolve))
     }
-    this.dismissWithoutAckForCircle()
+    this.closeWithoutWin()
     return false
   }
 
@@ -436,7 +436,7 @@ export default class extends Controller {
     if (this.dismissed) return
     const target = this.targetEl || this.findTarget()
     if (!target) {
-      this.dismissWithoutAckForCircle()
+      this.closeWithoutWin()
       return
     }
     const rect = target.getBoundingClientRect()
@@ -455,18 +455,20 @@ export default class extends Controller {
         return
       }
       this.dismissAndAct(target)
-    } else if (this.keyValue === "circle") {
-      this.nudgeRingPulse()
     } else {
-      this.dismissWithoutAckForCircle()
+      this.nudgeRingPulse()
     }
   }
 
   skip(event) {
     event?.preventDefault()
     event?.stopPropagation()
-    if (this.dismissed || this.keyValue !== "circle") return
-    this.dismissSilently()
+    if (this.dismissed) return
+    if (this.keyValue === "circle") {
+      this.dismissSilently()
+    } else {
+      this.dismiss()
+    }
   }
 
   nudgeRingPulse() {
@@ -484,15 +486,22 @@ export default class extends Controller {
       this.copyTarget.innerHTML = this.habitAddCopyValue
     }
 
+    let stageTwoReady = false
     for (let attempt = 0; attempt < 40; attempt += 1) {
       await new Promise((resolve) => requestAnimationFrame(resolve))
       this.targetEl = this.findTarget()
       if (this.targetEl) {
         const body = this.targetEl.closest(".lp-dash-anytime__body")
         if (!body || !body.hidden) {
+          stageTwoReady = true
           break
         }
       }
+    }
+
+    if (!stageTwoReady || !this.findTarget()) {
+      this.dismiss()
+      return
     }
 
     this.reposition()
@@ -505,7 +514,7 @@ export default class extends Controller {
     this.element.remove()
   }
 
-  dismissWithoutAckForCircle() {
+  closeWithoutWin() {
     if (this.keyValue === "circle") {
       this.dismissSilently()
     } else {
@@ -525,11 +534,19 @@ export default class extends Controller {
 
   dismissAndAct(target) {
     const el = target
+    const key = this.keyValue
     if (this.dismissed) return
     this.dismissed = true
     void this.sendAck()
     this.element.remove()
-    window.requestAnimationFrame(() => el.click())
+    window.requestAnimationFrame(() => {
+      if (key === "camp_sheet") {
+        const field = el.querySelector("input, textarea")
+        field?.focus()
+      } else {
+        el.click()
+      }
+    })
   }
 
   async sendAck() {
