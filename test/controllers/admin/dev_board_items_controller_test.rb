@@ -91,7 +91,7 @@ module Admin
       end
 
       assert_response :unprocessable_entity
-      assert_match(/can't be blank/i, response.body)
+      assert_match(/Title.*blank/i, response.body)
     end
 
     test "non admin cannot create dev board item" do
